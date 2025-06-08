@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "libs/actus-core",
+    "libs/lib2",
+    "main"
+]
+resolver = "2"

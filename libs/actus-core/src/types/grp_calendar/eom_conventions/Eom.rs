@@ -1,0 +1,63 @@
+
+use crate::subtypes::IsoDatetime::IsoDatetime;
+use chrono::{Datelike, Duration, Timelike};
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct EOM;
+
+impl EOM {
+    pub fn new() -> Self {
+        return EOM;
+    }
+    pub fn type_str(&self) -> String {
+        return "EOM eom".to_string();
+    }
+}
+
+impl EndOfMonthConventionTrait for EOM {
+    fn shift(&self, datetime: &IsoDatetime) -> IsoDatetime {
+        // IsoDateTime creation with last day of month
+        // Extraire l'année et le mois
+        let year = datetime.year();
+        let month = datetime.month();
+
+        // Déterminer le premier jour du mois suivant
+        let first_day_next_month = if month == 12 {
+            IsoDatetime::from_ymd_opt(year + 1, 1, 1).unwrap()
+        } else {
+            IsoDatetime::from_ymd_opt(year, month + 1, 1).unwrap()
+        };
+
+        // Revenir d'un jour pour obtenir le dernier jour du mois actuel
+        let last_day = first_day_next_month - Duration::days(1);
+
+        // Créer un `NaiveDateTime` avec la même heure que l'entrée
+        let shifted_datetime = last_day.and_hms_opt(
+            datetime.hour(), 
+            datetime.minute(), 
+            datetime.second());
+
+        shifted_datetime.unwrap_or(last_day)
+    }
+}
+
+impl TraitEnumOptionDescription for EOM {
+    fn get_option_rank(&self) -> &str {
+        "1"
+    }
+    fn get_identifier(&self) -> &str {
+        "endOfMonth"
+    }
+    fn get_name(&self) -> &str {
+        "End of Month"
+    }
+    fn get_acronym(&self) -> &str {
+        "EOM"
+    }
+    fn get_description(&self) -> &str {
+        "Schedule times fall on the end of every month if the anchor date represents the last day of the respective month."
+    }
+}
+
+
