@@ -1,7 +1,7 @@
-use crate::subtypes::IsoDatetime::IsoDatetime;
 
+use chrono::NaiveDateTime;
 
-pub type StatusDate = IsoDatetime;
+pub type StatusDate = NaiveDateTime;
 
 // impl TermDescriptionTrait for StatusDate {
 //     fn get_identifier(&self) -> &str {
