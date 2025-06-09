@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lib1 = { path = "../libs/actus-core" }
-lib2 = { path = "../libs/lib2" }
+lib_actus_core = { path = "../libs/lib_actus_core" }
+lib_datetime_period = { path = "../libs/lib_datetime_period" }

@@ -1,0 +1,12 @@
+[package]
+name = "lib_datetime_period"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "lib_datetime_period"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+chrono = "0.4.41"
+regex = "1.11.1"

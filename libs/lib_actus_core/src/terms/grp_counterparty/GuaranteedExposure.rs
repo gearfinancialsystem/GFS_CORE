@@ -1,0 +1,95 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
+use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
+use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::traits::TraitTermDescription::TraitTermDescription;
+use crate::util::ParseError::ParseError;
+
+#[derive(PartialEq, Eq, Debug)]
+pub enum GuaranteedExposure {
+    NO(NO),
+    NI(NI),
+    MV(MV),
+    None
+}
+
+impl GuaranteedExposure {
+    pub fn description(&self) -> String {
+        match self {
+            Self::NO(NO) => NO.type_str(),
+            Self::NI(NI) => NI.type_str(),
+            Self::MV(MV) => MV.type_str(),
+            Self::None => "".to_string()
+        }
+    }
+    pub fn new_NO() -> Self {
+        Self::NO(NO::new())
+    }
+    pub fn new_NI() -> Self {
+        Self::NI(NI::new())
+    }
+    pub fn new_MV() -> Self {
+        Self::MV(MV::new())
+    }
+
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
+        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
+        string_map
+            .get(key)
+            .and_then(|s| {
+                Self::from_str(s).ok()
+            })
+            .map(|b| Box::new(b)) // On stocke la convention dans une Box
+            .unwrap_or_default()
+    }
+}
+
+impl FromStr for GuaranteedExposure {
+    type Err = ParseError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "NO" => Ok(Self::NO(NO::new())),
+            "NI" => Ok(Self::NI(NI::new())),
+            "MV" => Ok(Self::MV(MV::new())),
+            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+        }
+    }
+}
+
+impl Default for GuaranteedExposure {
+    fn default() -> Self {
+        GuaranteedExposure::None
+    }
+}
+
+impl TraitTermDescription for GuaranteedExposure {
+    fn get_identifier(&self) -> &str {
+        "guaranteedExposure"
+    }
+    fn get_group(&self) -> &str {
+        "Counterparty"
+    }
+    fn get_name(&self) -> &str {
+        "Guaranteed Exposure"
+    }
+    fn get_acronym(&self) -> &str {
+        "CEGE"
+    }
+    fn get_type(&self) -> &str {
+        "Enum"
+    }
+    fn get_allowed_values(&self) -> &str {
+        "[{'option': '0', 'identifier': 'nominalValue', 'name': 'Nominal Value', 'acronym': 'NO', 'description': 'Nominal value of the exposure is covered.\r'}, {'option': '1', 'identifier': 'nominalValuePlusInterest', 'name': 'Nominal Value plus Interest', 'acronym': 'NI', 'description': 'Nominal value of the exposure plus interest accrued is covered.\r'}, {'option': '2', 'identifier': 'marketValue', 'name': 'Market Value', 'acronym': 'MV', 'description': 'Market value of the exposure is covered.'}]"
+    }
+    fn get_default_value(&self) -> &str {
+        ""
+    }
+    fn get_description(&self) -> &str {
+        "Defines which value of the exposure is covered:
+- NO: Nominal Value
+- NI: Nominal plus Interest
+- MV: Market Value"
+    }
+}
