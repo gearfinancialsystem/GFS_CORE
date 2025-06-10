@@ -66,29 +66,3 @@ impl Default for EndOfMonthConvention {
     }
 }
 
-impl TraitTermDescription for EndOfMonthConvention {
-    fn get_identifier(&self) -> &str {
-        "endOfMonthConvention"
-    }
-    fn get_group(&self) -> &str {
-        "Calendar"
-    }
-    fn get_name(&self) -> &str {
-        "End Of Month Convention"
-    }
-    fn get_acronym(&self) -> &str {
-        "EOMC"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'sameDay', 'name': 'Same Day', 'acronym': 'SD', 'description': 'Schedule times always fall on the schedule anchor date day of the month.\r'}, {'option': '1', 'identifier': 'endOfMonth', 'name': 'End of Month', 'acronym': 'EOM', 'description': 'Schedule times fall on the end of every month if the anchor date represents the last day of the respective month.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "sd"
-    }
-    fn get_description(&self) -> &str {
-        "When computing schedules a special problem arises if an anchor date is at the end of a month and a cycle of monthly or quarterly is applied (yearly in the case of leap years only). How do we have to interpret an anchor date April 30 plus 1M cycles? In case where EOM is selected, it will jump to the 31st of May, then June 30, July 31 and so on. If SM is selected, it will jump to the 30st always with of course an exception in February. This logic applies for all months having 30 or less days and an anchor date at the last day. Month with 31 days will at any rate jump to the last of the month if anchor date is on the last day."
-    }
-}    

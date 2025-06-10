@@ -12,20 +12,3 @@ impl LAM {
     }
 }
 
-impl TraitEnumOptionDescription for LAM {
-    fn get_option_rank(&self) -> &str {
-        "3"
-    }
-    fn get_identifier(&self) -> &str {
-        "linearAmortizer"
-    }
-    fn get_name(&self) -> &str {
-        "Linear Amortizer"
-    }
-    fn get_acronym(&self) -> &str {
-        "LAM"
-    }
-    fn get_description(&self) -> &str {
-        "Lending agreements with fixed principal repayment amounts and variable interest payments."
-    }
-}

@@ -12,20 +12,3 @@ impl CEC {
     }
 }
 
-impl TraitEnumOptionDescription for CEC {
-    fn get_option_rank(&self) -> &str {
-        "17"
-    }
-    fn get_identifier(&self) -> &str {
-        "creditEnhancementCollateral"
-    }
-    fn get_name(&self) -> &str {
-        "Credit Enhancement Collateral"
-    }
-    fn get_acronym(&self) -> &str {
-        "CEC"
-    }
-    fn get_description(&self) -> &str {
-        "A collateral securing the scheduled payment obligations of an underlying instrument"
-    }
-}   

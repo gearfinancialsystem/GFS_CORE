@@ -61,29 +61,3 @@ impl FromStr for ClearingHouse {
 
 
 
-impl TraitTermDescription for ClearingHouse {
-    fn get_identifier(&self) -> &str {
-        "clearingHouse"
-    }
-    fn get_group(&self) -> &str {
-        "Margining"
-    }
-    fn get_name(&self) -> &str {
-        "Clearing House"
-    }
-    fn get_acronym(&self) -> &str {
-        "MRCLH"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'isClearingHouse', 'name': 'Is Clearing House', 'acronym': 'Y', 'description': 'Contract creator is the clearing house.\r'}, {'option': '1', 'identifier': 'isNotClearingHouse', 'name': 'Is Not Clearing House', 'acronym': 'N', 'description': 'Contract creator is not the clearing house.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Indicates wheter CRID takes a clearing house function or not. In other word, whether CRID receive margins (MRIM, MRVM)."
-    }
-}

@@ -12,20 +12,3 @@ impl BRL {
     }
 }
 
-impl TraitEnumOptionDescription for BRL {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "barrel"
-    }
-    fn get_name(&self) -> &str {
-        "Barrel"
-    }
-    fn get_acronym(&self) -> &str {
-        "BRL"
-    }
-    fn get_description(&self) -> &str {
-        "Physical unit of the contract is Barrels."
-    }
-}

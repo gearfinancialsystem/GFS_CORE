@@ -62,29 +62,3 @@ impl Default for OptionType {
     }
 }
 
-impl TraitTermDescription for OptionType {
-    fn get_identifier(&self) -> &str {
-        "optionType"
-    }
-    fn get_group(&self) -> &str {
-        "Optionality"
-    }
-    fn get_name(&self) -> &str {
-        "Option Type"
-    }
-    fn get_acronym(&self) -> &str {
-        "OPTP"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'call', 'name': 'Call', 'acronym': 'C', 'description': 'Call option.\r'}, {'option': '1', 'identifier': 'put', 'name': 'Put', 'acronym': 'P', 'description': 'Put option.\r'}, {'option': '2', 'identifier': 'callPut', 'name': 'Call-Put', 'acronym': 'CP', 'description': 'Combination of call and put option.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Defines whether the option is a call or put or a combination of it. This field has to be seen in combination with CNTRL where it is defined whether CRID is the buyer or the seller."
-    }
-}

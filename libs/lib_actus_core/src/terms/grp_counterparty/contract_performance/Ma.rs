@@ -13,20 +13,3 @@ impl MA {
     }
 }
 
-impl TraitEnumOptionDescription for MA {
-    fn get_option_rank(&self) -> &str {
-        "4"
-    }
-    fn get_identifier(&self) -> &str {
-        "matured"
-    }
-    fn get_name(&self) -> &str {
-        "Matured"
-    }
-    fn get_acronym(&self) -> &str {
-        "MA"
-    }
-    fn get_description(&self) -> &str {
-        "Contract matured."
-    }
-}

@@ -12,3 +12,13 @@ for term in d['terms'].keys():
     types_lst.append(d['terms'][term]['type'])
 
 print(set(types_lst))
+
+
+types_lst = []
+for term in d['terms'].keys():
+    if d['terms'][term]['type'] == "Enum":
+        print("group " + d['terms'][term]['group'] + " - " + term)
+
+
+
+

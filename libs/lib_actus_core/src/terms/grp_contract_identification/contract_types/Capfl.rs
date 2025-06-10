@@ -13,20 +13,3 @@ impl CAPFL {
 }
 
 
-impl TraitEnumOptionDescription for CAPFL {
-    fn get_option_rank(&self) -> &str {
-        "13"
-    }
-    fn get_identifier(&self) -> &str {
-        "capFloor"
-    }
-    fn get_name(&self) -> &str {
-        "Cap and Floor"
-    }
-    fn get_acronym(&self) -> &str {
-        "CAPFL"
-    }
-    fn get_description(&self) -> &str {
-        "An agreement of paying the differential (cap or floor) of a reference rate versus a fixed rate."
-    }
-}   

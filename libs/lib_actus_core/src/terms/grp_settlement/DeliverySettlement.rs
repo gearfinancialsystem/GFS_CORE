@@ -53,32 +53,3 @@ impl Default for DeliverySettlement {
         DeliverySettlement::None
     }
 }
-
-
-impl TraitTermDescription for DeliverySettlement {
-    fn get_identifier(&self) -> &str {
-        "deliverySettlement"
-    }
-    fn get_group(&self) -> &str {
-        "Settlement"
-    }
-    fn get_name(&self) -> &str {
-        "Delivery Settlement"
-    }
-    fn get_acronym(&self) -> &str {
-        "DS"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'cashSettlement', 'name': 'Cash Settlement', 'acronym': 'S', 'description': 'The market value of the underlying is settled.\r'}, {'option': '1', 'identifier': 'physicalSettlement', 'name': 'Physical Settlement', 'acronym': 'D', 'description': 'The underlying is delivered physically.\r'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "D"
-    }
-    fn get_description(&self) -> &str {
-        "Indicates whether the contract is settled in cash or physical delivery.
-In case of physical delivery, the underlying contract and associated (future) cash flows are effectively exchanged. In case of cash settlement, the current market value of the underlying contract determines the cash flow exchanged."
-    }
-}

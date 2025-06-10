@@ -16,20 +16,3 @@ impl RPA {
     }
 }
 
-impl TraitEnumOptionDescription for RPA {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "realPositionAsset"
-    }
-    fn get_name(&self) -> &str {
-        "Real Position Asset"
-    }
-    fn get_acronym(&self) -> &str {
-        "RPA"
-    }
-    fn get_description(&self) -> &str { 
-        "Contract creator takes the asset or lender side."
-    }
-}   

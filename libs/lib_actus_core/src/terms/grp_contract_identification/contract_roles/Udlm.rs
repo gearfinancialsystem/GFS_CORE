@@ -16,20 +16,3 @@ impl UDLM {
     }
 }
 
-impl TraitEnumOptionDescription for UDLM {
-    fn get_option_rank(&self) -> &str {
-        "12"
-    }
-    fn get_identifier(&self) -> &str {
-        "underlyingMinus"
-    }
-    fn get_name(&self) -> &str {
-        "Underlying Minus"
-    }
-    fn get_acronym(&self) -> &str {
-        "UDLM"
-    }
-    fn get_description(&self) -> &str {
-        "Contract represents the underlying to a composed contract. Role of the underlying is derived from the parent. When considered a standalone contract the underlying’s creator takes the liability side."
-    }
-}

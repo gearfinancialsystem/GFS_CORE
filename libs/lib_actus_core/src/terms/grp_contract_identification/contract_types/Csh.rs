@@ -12,20 +12,3 @@ impl CSH {
     }
 }
 
-impl TraitEnumOptionDescription for CSH {
-    fn get_option_rank(&self) -> &str {
-        "7"
-    }
-    fn get_identifier(&self) -> &str {
-        "cash"
-    }
-    fn get_name(&self) -> &str {
-        "Cash"
-    }
-    fn get_acronym(&self) -> &str {
-        "CSH"
-    }
-    fn get_description(&self) -> &str {
-        "Represents cash holdings."
-    }
-}   

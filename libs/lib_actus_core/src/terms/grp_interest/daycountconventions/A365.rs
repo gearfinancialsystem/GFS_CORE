@@ -24,20 +24,3 @@ impl TraitDayCountConvention for A365 {
     }
 }
 
-impl TraitEnumOptionDescription for A365 {
-    fn get_option_rank(&self) -> &str {
-        "2"
-    }
-    fn get_identifier(&self) -> &str {
-        "actualThreeSixtyFive"
-    }
-    fn get_name(&self) -> &str {
-        "Actual Three Sixty Five"
-    }
-    fn get_acronym(&self) -> &str {
-        "A365"
-    }
-    fn get_description(&self) -> &str {
-        "Year fractions accrue on the basis of the actual number of days per month and 365 days per year in the respective period."
-    }
-}    

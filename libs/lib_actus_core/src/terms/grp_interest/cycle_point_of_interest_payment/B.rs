@@ -13,20 +13,3 @@ impl B {
     }
 }
 
-impl TraitEnumOptionDescription for B {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "beginning"
-    }
-    fn get_name(&self) -> &str {
-        "Beginning"
-    }
-    fn get_acronym(&self) -> &str {
-        "B"
-    }
-    fn get_description(&self) -> &str {
-        "Interest is paid upfront of the interest period."
-    }
-}

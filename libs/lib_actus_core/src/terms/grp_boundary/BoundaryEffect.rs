@@ -64,29 +64,4 @@ impl Default for BoundaryEffect {
     }
 }
 
-impl TraitTermDescription for BoundaryEffect {
-    fn get_identifier(&self) -> &str {
-        "boundaryEffect"
-    }
-    fn get_group(&self) -> &str {
-        "Boundary"
-    }
-    fn get_name(&self) -> &str {
-        "Boundary Effect"
-    }
-    fn get_acronym(&self) -> &str {
-        "BEF"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'knockINFirstLeg', 'name': 'KnockIN First Leg', 'acronym': 'INFIL', 'description': 'effect of boundary crossing is to knock IN the first leg making this the active contract; monitoring of the boundary stops.\r'}, {'option': '1', 'identifier': 'knockINSecondLeg', 'name': 'KnockIN Second Leg', 'acronym': 'INSEL', 'description': 'effect of boundary crossing is to knock IN the Second Leg making this the active contract; monitoring of the boundary stops.\r'}, {'option': '2', 'identifier': 'knockOUTCurrentLeg', 'name': 'KnockOUT Current Leg', 'acronym': 'OUT', 'description': 'effect of boundary crossing is to knockOUT any active contract so there is no active contract after the boundary crossing; monitoring of the boundary stops.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "This term specifies which leg - if any-  becomes the active subcontract  when the underlying asset's price crosses the specified boundary value in the specified direction triggerring a boundary crossing event."
-    }
-}
+

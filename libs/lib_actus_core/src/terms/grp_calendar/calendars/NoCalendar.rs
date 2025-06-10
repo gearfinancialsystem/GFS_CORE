@@ -23,21 +23,3 @@ impl TraitBusinessDayCalendar for NC {
     }
 }
 
-impl TraitEnumOptionDescription for NC {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "noCalendar"
-    }
-    fn get_name(&self) -> &str {
-        "No Calendar"
-    }
-    fn get_acronym(&self) -> &str {
-        "NC"
-    }
-
-    fn get_description(&self) -> &str {
-        "No holidays defined\r"
-    }
-}

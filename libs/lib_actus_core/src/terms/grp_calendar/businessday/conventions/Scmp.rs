@@ -30,20 +30,3 @@ impl SCMP {
 }
 
 
-impl TraitEnumOptionDescription for SCMP {
-    fn get_option_rank(&self) -> &str {
-        "6"
-    }
-    fn get_identifier(&self) -> &str {
-        "shiftCalculateModifiedPreceding"
-    }
-    fn get_name(&self) -> &str {
-        "Shift-Calculate Modified-Preceding"
-    }
-    fn get_acronym(&self) -> &str {
-        "SCMP"
-    }
-    fn get_description(&self) -> &str {
-        "Shift event dates first then calculate accruals etc. Shift to the most recent preceding business day if this falls in the same month. Shift to the next following business day otherwise."
-    }
-}    

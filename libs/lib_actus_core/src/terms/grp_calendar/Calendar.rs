@@ -76,29 +76,3 @@ impl Default for Calendar {
     }
 }
 
-impl TraitTermDescription for Calendar {
-    fn get_identifier(&self) -> &str {
-        "calendar"
-    }
-    fn get_group(&self) -> &str {
-        "Calendar"
-    }
-    fn get_name(&self) -> &str {
-        "Calendar"
-    }
-    fn get_acronym(&self) -> &str {
-        "CLDR"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'noCalendar', 'name': 'No Calendar', 'acronym': 'NC', 'description': 'No holidays defined\r'}, {'option': '1', 'identifier': 'mondayToFriday', 'name': 'MondayToFriday', 'acronym': 'MF', 'description': 'Saturdays and Sundays are holidays'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "noCalendar"
-    }
-    fn get_description(&self) -> &str {
-        "Calendar defines the non-working days which affect the dates of contract events (CDE's) in combination with EOMC and BDC. Custom calendars can be added as additional enum options."
-    }
-}  

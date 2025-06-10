@@ -55,29 +55,3 @@ impl Default for CyclePointOfInterestPayment {
     }
 }
 
-impl TraitTermDescription for CyclePointOfInterestPayment {
-    fn get_identifier(&self) -> &str {
-        "cyclePointOfInterestPayment"
-    }
-    fn get_group(&self) -> &str {
-        "Interest"
-    }
-    fn get_name(&self) -> &str {
-        "Cycle Point Of Interest Payment"
-    }
-    fn get_acronym(&self) -> &str {
-        "IPPNT"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'beginning', 'name': 'Beginning', 'acronym': 'B', 'description': 'Interest is paid upfront of the interest period.\r'}, {'option': '1', 'identifier': 'end', 'name': 'End', 'acronym': 'E', 'description': 'Interest is paid at the end of the interest period.\r'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "E"
-    }
-    fn get_description(&self) -> &str {
-        "Usually, interest is paid at the end of each IPCL which corresponds to a IPPNT value of E which is also the default. If interest payment occurs at the beginning of the cycle, the value is B."
-    }
-}

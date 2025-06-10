@@ -61,31 +61,5 @@ impl Default for BoundaryLegInitiallyActive {
     }
 }
 
-impl TraitTermDescription for BoundaryLegInitiallyActive {
-    fn get_identifier(&self) -> &str {
-        "boundaryLegInitiallyActive"
-    }
-    fn get_group(&self) -> &str {
-        "Boundary"
-    }
-    fn get_name(&self) -> &str {
-        "Boundary Leg Initially Active"
-    }
-    fn get_acronym(&self) -> &str {
-        "BLIA"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'firstLeg', 'name': 'First Leg', 'acronym': 'FIL', 'description': 'the first leg is active when the boundary controlled switch contract is initialized.\r'}, {'option': '1', 'identifier': 'secondLeg', 'name': 'Second Leg', 'acronym': 'SEL', 'description': 'the second leg is active when the boundary controlled switch contract starts.\r'}, {'option': '2', 'identifier': 'Null', 'name': 'Null', 'acronym': 'Null', 'description': 'there is no active subcontract when the boundary controlled switch contract starts.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "there is no active subcontract"
-    }
-    fn get_description(&self) -> &str {
-        "Specifies which leg - if any - is the active contract  in effect when the boundary controlled switch contract starts."
-    }
-}
 
 

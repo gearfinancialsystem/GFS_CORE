@@ -12,20 +12,3 @@ impl C {
         return "A Scaling Effect".to_string();
     }
 }
-impl TraitEnumOptionDescription for C {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "call"
-    }
-    fn get_name(&self) -> &str {
-        "Call"
-    }
-    fn get_acronym(&self) -> &str {
-        "C"
-    }
-    fn get_description(&self) -> &str {
-        "Call option."
-    }
-}

@@ -30,20 +30,3 @@ impl SCMF {
     }
 }
 
-impl TraitEnumOptionDescription for SCMF {
-    fn get_option_rank(&self) -> &str {
-        "2"
-    }
-    fn get_identifier(&self) -> &str {
-        "shiftCalculateModifiedFollowing"
-    }
-    fn get_name(&self) -> &str {
-        "Shift-Calculate Modified-Following"
-    }
-    fn get_acronym(&self) -> &str {
-        "SCMF"
-    }
-    fn get_description(&self) -> &str {
-        "Shift event dates first then calculate accruals etc. Shift to the next following business day if this falls in the same month. Shift to the most recent preceding business day otherwise."
-    }
-}   

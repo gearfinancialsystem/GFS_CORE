@@ -13,20 +13,3 @@ impl DEC {
     }
 }
 
-impl TraitEnumOptionDescription for DEC {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "decrease"
-    }
-    fn get_name(&self) -> &str {
-        "Decrease"
-    }
-    fn get_acronym(&self) -> &str {
-        "DEC"
-    }
-    fn get_description(&self) -> &str {
-        "Notional is decreased in this period."
-    }
-} 

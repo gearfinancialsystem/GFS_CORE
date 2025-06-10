@@ -13,20 +13,3 @@ impl DQ {
     }
 }
 
-impl TraitEnumOptionDescription for DQ {
-    fn get_option_rank(&self) -> &str {
-        "2"
-    }
-    fn get_identifier(&self) -> &str {
-        "delinquent"
-    }
-    fn get_name(&self) -> &str {
-        "Delinquent"
-    }
-    fn get_acronym(&self) -> &str {
-        "DQ"
-    }
-    fn get_description(&self) -> &str {
-        "Contractual payment obligations are delinquent according to the Delinquency Period."
-    }
-}   

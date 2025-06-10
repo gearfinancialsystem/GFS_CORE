@@ -32,20 +32,3 @@ impl PAM {
 // }
 
 
-impl TraitEnumOptionDescription for PAM {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "principalAtMaturity"
-    }
-    fn get_name(&self) -> &str {
-        "Principal at Maturity"
-    }
-    fn get_acronym(&self) -> &str {
-        "PAM"
-    }
-    fn get_description(&self) -> &str {
-        "Lending agreements with full amortization at maturity."
-    }
-}    

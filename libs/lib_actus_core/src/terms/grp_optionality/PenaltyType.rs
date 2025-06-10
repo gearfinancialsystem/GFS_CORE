@@ -69,29 +69,3 @@ impl Default for PenaltyType {
     }
 }
 
-impl TraitTermDescription for PenaltyType {
-    fn get_identifier(&self) -> &str {
-        "penaltyType"
-    }
-    fn get_group(&self) -> &str {
-        "Optionality"
-    }
-    fn get_name(&self) -> &str {
-        "Penalty Type"
-    }
-    fn get_acronym(&self) -> &str {
-        "PYTP"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'noPenalty', 'name': 'No Penalty', 'acronym': 'N', 'description': 'No penalty applies.\r'}, {'option': '1', 'identifier': 'fixedPenalty', 'name': 'Fixed Penalty', 'acronym': 'A', 'description': 'A fixed amount applies as penalty.\r'}, {'option': '2', 'identifier': 'relativePenalty', 'name': 'Relative Penalty', 'acronym': 'R', 'description': 'A penalty relative to the notional outstanding applies.\r'}, {'option': '3', 'identifier': 'interestRateDifferential', 'name': 'Interest Rate Differential', 'acronym': 'I', 'description': 'A penalty based on the current interest rate differential relative to the notional outstanding applies.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "O"
-    }
-    fn get_description(&self) -> &str {
-        "Defines whether prepayment is linked to a penalty and of which kind."
-    }
-}  

@@ -13,20 +13,3 @@ impl PF {
     }
 }
 
-impl TraitEnumOptionDescription for PF {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "performant"
-    }
-    fn get_name(&self) -> &str {
-        "Performant"
-    }
-    fn get_acronym(&self) -> &str {
-        "PF"
-    }
-    fn get_description(&self) -> &str {
-        "Contract is performing according to terms and conditions."
-    }
-}

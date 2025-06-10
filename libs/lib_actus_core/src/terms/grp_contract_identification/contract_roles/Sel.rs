@@ -16,19 +16,3 @@ impl SEL {
     }
 }
 
-impl TraitEnumOptionDescription for SEL {
-    fn get_option_rank(&self) -> &str {
-        "7"
-    }
-    fn get_identifier(&self) -> &str {
-        "seller"
-    }
-    fn get_name(&self) -> &str {
-        "Seller"
-    }
-    fn get_acronym(&self) -> &str {
-        "SEL"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator holds the obligation to sell the underlying / deliver the option."            }
-}

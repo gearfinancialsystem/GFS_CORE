@@ -13,20 +13,3 @@ impl A {
     }
 }
 
-impl TraitEnumOptionDescription for A {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "absoluteValue"
-    }
-    fn get_name(&self) -> &str {
-        "Absolute Value"
-    }
-    fn get_acronym(&self) -> &str {
-        "A"
-    }
-    fn get_description(&self) -> &str {
-        "The fee rate represents an absolute value."
-    }
-}

@@ -16,20 +16,3 @@ impl RPL {
     }
 }
 
-impl TraitEnumOptionDescription for RPL {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "realPositionLiability"
-    }
-    fn get_name(&self) -> &str {
-        "Real Position Liability"
-    }
-    fn get_acronym(&self) -> &str {
-        "RPL"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator takes the liability or borrower side."
-    }
-}    

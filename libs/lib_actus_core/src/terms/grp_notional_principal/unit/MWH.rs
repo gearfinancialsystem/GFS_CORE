@@ -13,20 +13,3 @@ impl MWH {
     }
 }
 
-impl TraitEnumOptionDescription for MWH {
-    fn get_option_rank(&self) -> &str {
-        "4"
-    }
-    fn get_identifier(&self) -> &str {
-        "megaWattHours"
-    }
-    fn get_name(&self) -> &str {
-        "Mega Watt Hours"
-    }
-    fn get_acronym(&self) -> &str {
-        "MWH"
-    }
-    fn get_description(&self) -> &str {
-        "Physical unit of the contract is Mega Watt Hours."
-    }
-}   

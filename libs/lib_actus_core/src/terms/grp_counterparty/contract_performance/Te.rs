@@ -14,20 +14,3 @@ impl TE {
 }
 
 
-impl TraitEnumOptionDescription for TE {
-    fn get_option_rank(&self) -> &str {
-        "5"
-    }
-    fn get_identifier(&self) -> &str {
-        "terminated"
-    }
-    fn get_name(&self) -> &str {
-        "Terminated"
-    }
-    fn get_acronym(&self) -> &str {
-        "TE"
-    }
-    fn get_description(&self) -> &str {
-        "Contract has been terminated."
-    }
-}    

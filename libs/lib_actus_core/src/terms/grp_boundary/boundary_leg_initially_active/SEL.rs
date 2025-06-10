@@ -13,20 +13,3 @@ impl SEL {
     }
 }
 
-impl TraitEnumOptionDescription for SEL {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "secondLeg"
-    }
-    fn get_name(&self) -> &str {
-        "Second Leg"
-    }
-    fn get_acronym(&self) -> &str {
-        "SEL"
-    }
-    fn get_description(&self) -> &str {
-        "the second leg is active when the boundary controlled switch contract starts."
-    }
-}

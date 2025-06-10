@@ -12,20 +12,3 @@ impl SWPPV {
     }
 }
 
-impl TraitEnumOptionDescription for SWPPV {
-    fn get_option_rank(&self) -> &str {
-        "11"
-    }
-    fn get_identifier(&self) -> &str {
-        "plainVanillaSwap"
-    }
-    fn get_name(&self) -> &str {
-        "Plain Vanilla Swap"
-    }
-    fn get_acronym(&self) -> &str {
-        "SWPPV"
-    }
-    fn get_description(&self) -> &str {
-        "Plain vanilla interest rate swaps."
-    }
-}    

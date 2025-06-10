@@ -16,20 +16,4 @@ impl RFL {
     }
 }
 
-impl TraitEnumOptionDescription for RFL {
-    fn get_option_rank(&self) -> &str {
-        "2"
-    }
-    fn get_identifier(&self) -> &str {
-        "receiveFirstLegl"
-    }
-    fn get_name(&self) -> &str {
-        "Receive First Leg"
-    }
-    fn get_acronym(&self) -> &str {
-        "RFL"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator receives the first leg."
-    }
-}
+

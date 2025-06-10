@@ -13,20 +13,3 @@ impl DL {
     }
 }
 
-impl TraitEnumOptionDescription for DL {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "delayed"
-    }
-    fn get_name(&self) -> &str {
-        "Delayed"
-    }
-    fn get_acronym(&self) -> &str {
-        "DL"
-    }
-    fn get_description(&self) -> &str {
-        "Contractual payment obligations are delayed according to the Grace Period."
-    }
-}    

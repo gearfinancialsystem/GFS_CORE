@@ -13,20 +13,3 @@ impl J {
     }
 }
 
-impl TraitEnumOptionDescription for J {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "junior"
-    }
-    fn get_name(&self) -> &str {
-        "Junior"
-    }
-    fn get_acronym(&self) -> &str {
-        "J"
-    }
-    fn get_description(&self) -> &str {
-        "Contract represents junior debt."
-    }
-}

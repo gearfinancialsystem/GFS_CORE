@@ -105,33 +105,3 @@ impl FromStr for Unit {
         }
     }
 }
-
-
-
-
-impl TraitTermDescription for Unit {
-    fn get_identifier(&self) -> &str {
-        "unit"
-    }
-    fn get_group(&self) -> &str {
-        "Notional Principal"
-    }
-    fn get_name(&self) -> &str {
-        "Unit"
-    }
-    fn get_acronym(&self) -> &str {
-        "UT"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'barrel', 'name': 'Barrel', 'acronym': 'BRL', 'description': 'Physical unit of the contract is Barrels.\r'}, {'option': '1', 'identifier': 'bushel', 'name': 'Bushel', 'acronym': 'BSH', 'description': 'Physical unit of the contract is Bushel.\r'}, {'option': '2', 'identifier': 'gallon', 'name': 'Gallon', 'acronym': 'GLN', 'description': 'Physical unit of the contract is Gallons.\r'}, {'option': '3', 'identifier': 'currencyUnit', 'name': 'Currency Unit', 'acronym': 'CUU', 'description': 'Physical unit of the contract is Currency Units.\r'}, {'option': '4', 'identifier': 'megaWattHours', 'name': 'Mega Watt Hours', 'acronym': 'MWH', 'description': 'Physical unit of the contract is Mega Watt Hours.\r'}, {'option': '5', 'identifier': 'pounds', 'name': 'Pounds', 'acronym': 'PND', 'description': 'Physical unit of the contract is Pounds.\r'}, {'option': '6', 'identifier': 'shortTons', 'name': 'Short Tons', 'acronym': 'STN', 'description': 'Physical unit of the contract is Short Tons.\r'}, {'option': '7', 'identifier': 'tons', 'name': 'Tons', 'acronym': 'TON', 'description': 'Physical unit of the contract is Tons.\r'}, {'option': '8', 'identifier': 'troyOunce', 'name': 'Troy Ounce', 'acronym': 'TRO', 'description': 'Physical unit of the contract is Troy Ounces.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "The physical unit of the contract. Example: Barrels for an Oil COM CT."
-    }
-}

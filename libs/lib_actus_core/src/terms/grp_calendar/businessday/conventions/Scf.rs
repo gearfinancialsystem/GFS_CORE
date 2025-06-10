@@ -32,20 +32,3 @@ impl SCF {
     }
 }
 
-impl TraitEnumOptionDescription for SCF {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "shiftCalculateFollowing"
-    }
-    fn get_name(&self) -> &str {
-        "Shift-Calculate Following"
-    }
-    fn get_acronym(&self) -> &str {
-        "SCF"
-    }
-    fn get_description(&self) -> &str {
-        "Shift event dates first then calculate accruals etc. Strictly shift to the next following business day."
-    }
-}    

@@ -61,29 +61,3 @@ impl Default for Seniority {
     }
 }
 
-impl TraitTermDescription for Seniority {
-    fn get_identifier(&self) -> &str {
-        "seniority"
-    }
-    fn get_group(&self) -> &str {
-        "Counterparty"
-    }
-    fn get_name(&self) -> &str {
-        "Seniority"
-    }
-    fn get_acronym(&self) -> &str {
-        "SEN"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'senior', 'name': 'Senior', 'acronym': 'S', 'description': 'Contract represents senior debt.\r'}, {'option': '1', 'identifier': 'junior', 'name': 'Junior', 'acronym': 'J', 'description': 'Contract represents junior debt.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Refers to the order of repayment in the event of a sale or default of the issuer. "
-    }
-}

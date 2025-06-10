@@ -50,20 +50,3 @@ impl TraitDayCountConvention for AAISDA {
     }
 }
 
-impl TraitEnumOptionDescription for AAISDA {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "actualActual"
-    }
-    fn get_name(&self) -> &str {
-        "Actual/Actual"
-    }
-    fn get_acronym(&self) -> &str {
-        "AA"
-    }
-    fn get_description(&self) -> &str {
-        "Year fractions accrue on the basis of the actual number of days per month and per year in the respective period."
-    }
-}  

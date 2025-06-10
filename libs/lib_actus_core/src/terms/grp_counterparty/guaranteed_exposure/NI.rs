@@ -13,20 +13,3 @@ impl NI {
     }
 }
 
-impl TraitEnumOptionDescription for NI {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "nominalValuePlusInterest"
-    }
-    fn get_name(&self) -> &str {
-        "Nominal Value plus Interest"
-    }
-    fn get_acronym(&self) -> &str {
-        "NI"
-    }
-    fn get_description(&self) -> &str {
-        "Nominal value of the exposure plus interest accrued is covered."
-    }
-}    

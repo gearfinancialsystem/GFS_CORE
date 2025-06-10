@@ -13,20 +13,3 @@ impl E {
     }
 }
 
-impl TraitEnumOptionDescription for E {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "european"
-    }
-    fn get_name(&self) -> &str {
-        "European"
-    }
-    fn get_acronym(&self) -> &str {
-        "E"
-    }
-    fn get_description(&self) -> &str {
-        "European-cont_type exercise."
-    }
-}

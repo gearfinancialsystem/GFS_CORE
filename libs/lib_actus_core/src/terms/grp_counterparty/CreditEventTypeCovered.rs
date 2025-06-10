@@ -63,29 +63,3 @@ impl Default for CreditEventTypeCovered {
     }
 }
 
-impl TraitTermDescription for CreditEventTypeCovered {
-    fn get_identifier(&self) -> &str {
-        "creditEventTypeCovered"
-    }
-    fn get_group(&self) -> &str {
-        "Counterparty"
-    }
-    fn get_name(&self) -> &str {
-        "Credit Event Type Covered"
-    }
-    fn get_acronym(&self) -> &str {
-        "CETC"
-    }
-    fn get_type(&self) -> &str {
-        "Enum[]"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'delayed', 'name': 'Delayed', 'acronym': 'DL', 'description': 'Delay of the underlying represents a credit event.\r'}, {'option': '1', 'identifier': 'delinquent', 'name': 'Delinquent', 'acronym': 'DQ', 'description': 'Delinquency of the underlying represents a credit event.\r'}, {'option': '2', 'identifier': 'default', 'name': 'Default', 'acronym': 'DF', 'description': 'Default of the underlying represents a credit event.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "DF"
-    }
-    fn get_description(&self) -> &str {
-        "The cont_type of credit events covered e.g. in credit enhancement or credit default swap contracts. Only the defined credit event terms may trigger the protection."
-    }
-}

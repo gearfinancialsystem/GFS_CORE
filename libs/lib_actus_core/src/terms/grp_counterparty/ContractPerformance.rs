@@ -84,29 +84,3 @@ impl Default for ContractPerformance {
     }
 }
 
-impl TraitTermDescription for ContractPerformance {
-    fn get_identifier(&self) -> &str {
-        "contractPerformance"
-    }
-    fn get_group(&self) -> &str {
-        "Counterparty"
-    }
-    fn get_name(&self) -> &str {
-        "Contract Performance"
-    }
-    fn get_acronym(&self) -> &str {
-        "PRF"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'performant', 'name': 'Performant', 'acronym': 'PF', 'description': 'Contract is performing according to terms and conditions.\r'}, {'option': '1', 'identifier': 'delayed', 'name': 'Delayed', 'acronym': 'DL', 'description': 'Contractual payment obligations are delayed according to the Grace Period.\r'}, {'option': '2', 'identifier': 'delinquent', 'name': 'Delinquent', 'acronym': 'DQ', 'description': 'Contractual payment obligations are delinquent according to the Delinquency Period.\r'}, {'option': '3', 'identifier': 'default', 'name': 'Default', 'acronym': 'DF', 'description': 'Contract defaulted on payment obligations according to Delinquency Period.\r'}, {'option': '4', 'identifier': 'matured', 'name': 'Matured', 'acronym': 'MA', 'description': 'Contract matured.\r'}, {'option': '5', 'identifier': 'terminated', 'name': 'Terminated', 'acronym': 'TE', 'description': 'Contract has been terminated.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "PF"
-    }
-    fn get_description(&self) -> &str {
-        "Indicates the current contract performance status. Different states of the contract range from performing to default."
-    }
-}

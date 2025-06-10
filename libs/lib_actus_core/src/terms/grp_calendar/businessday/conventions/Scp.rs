@@ -29,20 +29,3 @@ impl SCP {
     }
 }
 
-impl TraitEnumOptionDescription for SCP {
-    fn get_option_rank(&self) -> &str {
-        "5"
-    }
-    fn get_identifier(&self) -> &str {
-        "shiftCalculatePreceding"
-    }
-    fn get_name(&self) -> &str {
-        "Shift-Calculate Preceding"
-    }
-    fn get_acronym(&self) -> &str {
-        "SCP"
-    }
-    fn get_description(&self) -> &str {
-        "Shift event dates first then calculate accruals etc. Strictly shift to the most recent preceding business day."
-    }
-}

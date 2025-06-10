@@ -13,20 +13,3 @@ impl N {
     }
 }
 
-impl TraitEnumOptionDescription for N {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "isNotClearingHouse"
-    }
-    fn get_name(&self) -> &str {
-        "Is Not Clearing House"
-    }
-    fn get_acronym(&self) -> &str {
-        "N"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator is not the clearing house."
-    }
-}

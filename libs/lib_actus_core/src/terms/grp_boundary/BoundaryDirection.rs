@@ -59,29 +59,3 @@ impl Default for BoundaryDirection {
     }
 }
 
-impl TraitTermDescription for BoundaryDirection {
-    fn get_identifier(&self) -> &str {
-        "boundaryDirection"
-    }
-    fn get_group(&self) -> &str {
-        "Boundary"
-    }
-    fn get_name(&self) -> &str {
-        "Boundary Direction"
-    }
-    fn get_acronym(&self) -> &str {
-        "BDR"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'fromBelow', 'name': 'From Below', 'acronym': 'INCR', 'description': 'Boundary effect is trigerred if the observed underlying asset value is greater than or equal to the boundary value at a monitor time.\r'}, {'option': '1', 'identifier': 'fromAbove', 'name': 'From Above', 'acronym': 'DECR', 'description': 'Boundary action if observed market object value less than or equal to boundary value at a monitor time.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Boundary direction specifies the direction of motion in the underlying asset's price which will be considered a valid crossing of the boundary and trigger the boundary effect changing which, if any, of the boundary legs is  active."
-    }
-}

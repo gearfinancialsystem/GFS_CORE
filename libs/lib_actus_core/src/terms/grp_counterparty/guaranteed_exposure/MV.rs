@@ -13,20 +13,3 @@ impl MV {
     }
 }
 
-impl TraitEnumOptionDescription for MV {
-    fn get_option_rank(&self) -> &str {
-        "2"
-    }
-    fn get_identifier(&self) -> &str {
-        "marketValue"
-    }
-    fn get_name(&self) -> &str {
-        "Market Value"
-    }
-    fn get_acronym(&self) -> &str {
-        "MV"
-    }
-    fn get_description(&self) -> &str {
-        "Market value of the exposure is covered."
-    }
-}

@@ -16,20 +16,3 @@ impl PF {
     }
 }
 
-impl TraitEnumOptionDescription for PF {
-    fn get_option_rank(&self) -> &str {
-        "5"
-    }
-    fn get_identifier(&self) -> &str {
-        "payFix"
-    }
-    fn get_name(&self) -> &str {
-        "Pay Fix"
-    }
-    fn get_acronym(&self) -> &str {
-        "PF"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator pays the fixed leg."
-    }
-}    

@@ -71,30 +71,3 @@ impl Default for ScalingEffect {
     }
 }
 
-impl TraitTermDescription for ScalingEffect {
-    fn get_identifier(&self) -> &str {
-        "scalingEffect"
-    }
-    fn get_group(&self) -> &str {
-        "Notional Principal"
-    }
-    fn get_name(&self) -> &str {
-        "Scaling Effect"
-    }
-    fn get_acronym(&self) -> &str {
-        "SCEF"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'noScaling', 'name': 'No Scaling', 'acronym': '000', 'description': 'No scaling applies.\r'}, {'option': '1', 'identifier': 'interestIsScaled', 'name': 'Interest is Scaled', 'acronym': 'I00', 'description': 'Scaling applies only to interest.\r'}, {'option': '2', 'identifier': 'principalIsScaled', 'name': 'Principal is Scaled', 'acronym': '0N0', 'description': 'Scaling applies only to principal.\r'}, {'option': '3', 'identifier': 'interestAndPrincipalIsScaled', 'name': 'Interest and Principal is Scaled', 'acronym': 'IN0', 'description': 'Scaling applies to interest and principal.\r'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "000
-"
-    }
-    fn get_description(&self) -> &str {
-        "Indicates which payments are scaled. I = Interest payments, N = Nominal payments and M = Maximum deferred interest amount. They can be scaled in any combination."
-    }
-}    

@@ -16,20 +16,3 @@ impl CNO {
     }
 }
 
-impl TraitEnumOptionDescription for CNO {
-    fn get_option_rank(&self) -> &str {
-        "9"
-    }
-    fn get_identifier(&self) -> &str {
-        "closeOutNetting"
-    }
-    fn get_name(&self) -> &str {
-        "Close out Netting"
-    }
-    fn get_acronym(&self) -> &str {
-        "CNO"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator and counterparty agree on netting payment obligations of underlying instruments in case of default."
-    }
-}

@@ -13,20 +13,3 @@ impl V {
     }
 }
 
-impl TraitEnumOptionDescription for V {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "variableRate"
-    }
-    fn get_name(&self) -> &str {
-        "Variable Rate"
-    }
-    fn get_acronym(&self) -> &str {
-        "V"
-    }
-    fn get_description(&self) -> &str {
-        "Rate spread represents the spread on top of a reference rate."
-    }
-}    

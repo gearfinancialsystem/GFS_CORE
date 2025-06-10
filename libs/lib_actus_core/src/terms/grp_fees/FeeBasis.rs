@@ -56,29 +56,3 @@ impl Default for FeeBasis {
     }
 }
 
-impl TraitTermDescription for FeeBasis {
-    fn get_identifier(&self) -> &str {
-        "feeBasis"
-    }
-    fn get_group(&self) -> &str {
-        "Fees"
-    }
-    fn get_name(&self) -> &str {
-        "Fee Basis"
-    }
-    fn get_acronym(&self) -> &str {
-        "FEB"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'absoluteValue', 'name': 'Absolute Value', 'acronym': 'A', 'description': 'The fee rate represents an absolute value.\r'}, {'option': '1', 'identifier': 'nonimalValueOfTheUnderlying', 'name': 'Nominal Value of the Underlying', 'acronym': 'N', 'description': 'The fee rate represents a rate that accrues fees on the basis of the nominal value of the underlying.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Basis, on which Fee is calculated. For FEB=’A’, FER is interpreted as an absolute amount to be paid at every FP event and for FEB=’N’, FER represents a rate at which FP amounts accrue on the basis of the contract’s NT."
-    }
-}   

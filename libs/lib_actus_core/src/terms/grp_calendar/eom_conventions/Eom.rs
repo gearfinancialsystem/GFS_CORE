@@ -43,22 +43,6 @@ impl TraitEndOfMonthConvention for EOM {
     }
 }
 
-impl TraitEnumOptionDescription for EOM {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "endOfMonth"
-    }
-    fn get_name(&self) -> &str {
-        "End of Month"
-    }
-    fn get_acronym(&self) -> &str {
-        "EOM"
-    }
-    fn get_description(&self) -> &str {
-        "Schedule times fall on the end of every month if the anchor date represents the last day of the respective month."
-    }
-}
+
 
 

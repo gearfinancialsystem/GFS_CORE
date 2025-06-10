@@ -64,32 +64,3 @@ impl Default for GuaranteedExposure {
     }
 }
 
-impl TraitTermDescription for GuaranteedExposure {
-    fn get_identifier(&self) -> &str {
-        "guaranteedExposure"
-    }
-    fn get_group(&self) -> &str {
-        "Counterparty"
-    }
-    fn get_name(&self) -> &str {
-        "Guaranteed Exposure"
-    }
-    fn get_acronym(&self) -> &str {
-        "CEGE"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'nominalValue', 'name': 'Nominal Value', 'acronym': 'NO', 'description': 'Nominal value of the exposure is covered.\r'}, {'option': '1', 'identifier': 'nominalValuePlusInterest', 'name': 'Nominal Value plus Interest', 'acronym': 'NI', 'description': 'Nominal value of the exposure plus interest accrued is covered.\r'}, {'option': '2', 'identifier': 'marketValue', 'name': 'Market Value', 'acronym': 'MV', 'description': 'Market value of the exposure is covered.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Defines which value of the exposure is covered:
-- NO: Nominal Value
-- NI: Nominal plus Interest
-- MV: Market Value"
-    }
-}

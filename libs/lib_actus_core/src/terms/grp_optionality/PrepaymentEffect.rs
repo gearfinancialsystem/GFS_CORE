@@ -62,29 +62,3 @@ impl Default for PrepaymentEffect {
     }
 }
 
-impl TraitTermDescription for PrepaymentEffect {
-    fn get_identifier(&self) -> &str {
-        "prepaymentEffect"
-    }
-    fn get_group(&self) -> &str {
-        "Optionality"
-    }
-    fn get_name(&self) -> &str {
-        "Prepayment Effect"
-    }
-    fn get_acronym(&self) -> &str {
-        "PPEF"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'noPrepayment', 'name': 'No Prepayment', 'acronym': 'N', 'description': 'Prepayment is not allowed under the agreement.\r'}, {'option': '1', 'identifier': 'prepaymentReducesRedemptionAmount', 'name': 'Prepayment Reduces Redemption Amount', 'acronym': 'A', 'description': 'Prepayment is allowed and reduces the redemption amount for the remaining period up to maturity.\r'}, {'option': '2', 'identifier': 'prepaymentReducesMaturity', 'name': 'Prepayment Reduces Maturity', 'acronym': 'M', 'description': 'Prepayment is allowed and reduces the maturity.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "N"
-    }
-    fn get_description(&self) -> &str {
-        "This attribute defines whether or not the right of prepayment exists and if yes, how prepayment affects the remaining principal redemption schedule of the contract"
-    }
-}

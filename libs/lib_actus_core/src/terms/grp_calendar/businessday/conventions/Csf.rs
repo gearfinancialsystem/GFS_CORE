@@ -38,20 +38,3 @@ impl CSF {
     }
 }
 
-impl TraitEnumOptionDescription for CSF {
-    fn get_option_rank(&self) -> &str {
-        "3"
-    }
-    fn get_identifier(&self) -> &str {
-        "calculateShiftFollowing"
-    }
-    fn get_name(&self) -> &str {
-        "Calculate-Shift Following"
-    }
-    fn get_acronym(&self) -> &str {
-        "CSF"
-    }
-    fn get_description(&self) -> &str {
-        "Calculate accruals etc. first then shift event dates. Strictly shift to the next following business day."
-    }
-}    

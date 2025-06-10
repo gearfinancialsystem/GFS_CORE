@@ -13,20 +13,3 @@ impl DF {
     }
 }
 
-impl TraitEnumOptionDescription for DF {
-    fn get_option_rank(&self) -> &str {
-        "3"
-    }
-    fn get_identifier(&self) -> &str {
-        "default"
-    }
-    fn get_name(&self) -> &str {
-        "Default"
-    }
-    fn get_acronym(&self) -> &str {
-        "DF"
-    }
-    fn get_description(&self) -> &str {
-        "Contract defaulted on payment obligations according to Delinquency Period."
-    }
-}

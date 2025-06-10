@@ -59,29 +59,3 @@ impl Default for ArrayFixedVariable {
 }
 
 
-impl TraitTermDescription for ArrayFixedVariable {
-    fn get_identifier(&self) -> &str {
-        "arrayFixedVariable"
-    }
-    fn get_group(&self) -> &str {
-        "Rate Reset"
-    }
-    fn get_name(&self) -> &str {
-        "Array Fixed Variable"
-    }
-    fn get_acronym(&self) -> &str {
-        "ARFIXVAR"
-    }
-    fn get_type(&self) -> &str {
-        "Enum[]"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'fixedRate', 'name': 'Fixed Rate', 'acronym': 'F', 'description': 'Rate spread represents a fixed rate.\r'}, {'option': '1', 'identifier': 'variableRate', 'name': 'Variable Rate', 'acronym': 'V', 'description': 'Rate spread represents the spread on top of a reference rate.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "For array-cont_type rate reset schedules, this attributes defines the meaning of ARRATE."
-    }
-}

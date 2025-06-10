@@ -56,30 +56,3 @@ impl Default for ArrayIncreaseDecrease {
     }
 }
 
-impl TraitTermDescription for ArrayIncreaseDecrease {
-    fn get_identifier(&self) -> &str {
-        "arrayIncreaseDecrease"
-    }
-    fn get_group(&self) -> &str {
-        "Notional Principal"
-    }
-    fn get_name(&self) -> &str {
-        "Array Increase Decrease"
-    }
-    fn get_acronym(&self) -> &str {
-        "ARINCDEC"
-    }
-    fn get_type(&self) -> &str {
-        "Enum[]"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'increase', 'name': 'Increase', 'acronym': 'INC', 'description': 'Notional is increased in this period.\r'}, {'option': '1', 'identifier': 'decrease', 'name': 'Decrease', 'acronym': 'DEC', 'description': 'Notional is decreased in this period.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Indicates whether a certain PRNXT element in ARPRNX increases the principal (NT) or decreases it.
-Applies only for ANX, NAX, LAX Maturity CTs. For all other Maturity CTs the first principal payment is always in the opposite direction of all other (following) payments."
-    }
-}

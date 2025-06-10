@@ -76,20 +76,3 @@ impl TraitDayCountConvention for E30360ISDA {
     }
 }
 
-impl TraitEnumOptionDescription for E30360ISDA {
-    fn get_option_rank(&self) -> &str {
-        "3"
-    }
-    fn get_identifier(&self) -> &str {
-        "thirtyEThreeSixtyISDA"
-    }
-    fn get_name(&self) -> &str {
-        "Thirty E Three Sixty ISDA"
-    }
-    fn get_acronym(&self) -> &str {
-        "30E360ISDA"
-    }
-    fn get_description(&self) -> &str {
-        "Year fractions accrue on the basis of 30 days per month and 360 days per year in the respective period (ISDA method)."
-    }
-}    

@@ -13,20 +13,3 @@ impl TON {
     }
 }
 
-impl TraitEnumOptionDescription for TON {
-    fn get_option_rank(&self) -> &str {
-        "7"
-    }
-    fn get_identifier(&self) -> &str {
-        "tons"
-    }
-    fn get_name(&self) -> &str {
-        "Tons"
-    }
-    fn get_acronym(&self) -> &str {
-        "TON"
-    }
-    fn get_description(&self) -> &str {
-        "Physical unit of the contract is Tons."
-    }
-}    

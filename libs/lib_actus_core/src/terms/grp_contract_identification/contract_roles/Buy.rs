@@ -16,20 +16,3 @@ impl BUY {
     }
 }
 
-impl TraitEnumOptionDescription for BUY {
-    fn get_option_rank(&self) -> &str {
-        "6"
-    }
-    fn get_identifier(&self) -> &str {
-        "buyer"
-    }
-    fn get_name(&self) -> &str {
-        "Buyer"
-    }
-    fn get_acronym(&self) -> &str {
-        "BUY"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator holds the right to buy the underlying / exercise the option."
-    }
-}    

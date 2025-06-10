@@ -27,20 +27,3 @@ impl NOS {
     }
 }
 
-impl TraitEnumOptionDescription for NOS {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "noShift"
-    }
-    fn get_name(&self) -> &str {
-        "No Shift"
-    }
-    fn get_acronym(&self) -> &str {
-        "NOS"
-    }
-    fn get_description(&self) -> &str {
-        "No shift applied to non-business days."
-    }
-}    

@@ -152,31 +152,3 @@ impl Default for ContractRole {
     }
 }
 
-impl TraitTermDescription for ContractRole {
-    fn get_identifier(&self) -> &str {
-        "contractRole"
-    }
-    fn get_group(&self) -> &str {
-        "Contract identification"
-    }
-    fn get_name(&self) -> &str {
-        "Contract Role"
-    }
-    fn get_acronym(&self) -> &str {
-        "CNTRL"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'realPositionAsset', 'name': 'Real Position Asset', 'acronym': 'RPA', 'description': 'Contract creator takes the asset or lender side.\r'}, {'option': '1', 'identifier': 'realPositionLiability', 'name': 'Real Position Liability', 'acronym': 'RPL', 'description': 'Contract creator takes the liability or borrower side. \r'}, {'option': '2', 'identifier': 'receiveFirstLegl', 'name': 'Receive First Leg', 'acronym': 'RFL', 'description': 'Contract creator receives the first leg. \r'}, {'option': '3', 'identifier': 'payFirstLeg', 'name': 'Pay First Leg', 'acronym': 'PFL', 'description': 'Contract creator pays the first leg.\r'}, {'option': '4', 'identifier': 'receiveFix', 'name': 'Receive Fix', 'acronym': 'RF', 'description': 'Contract creator receives the fixed leg.\r'}, {'option': '5', 'identifier': 'payFix', 'name': 'Pay Fix', 'acronym': 'PF', 'description': 'Contract creator pays the fixed leg.\r'}, {'option': '6', 'identifier': 'buyer', 'name': 'Buyer', 'acronym': 'BUY', 'description': 'Contract creator holds the right to buy the underlying / exercise the option. \r'}, {'option': '7', 'identifier': 'seller', 'name': 'Seller', 'acronym': 'SEL', 'description': 'Contract creator holds the obligation to sell the underlying / deliver the option. \r'}, {'option': '8', 'identifier': 'collateralPosition', 'name': 'Collateral Position', 'acronym': 'COL', 'description': 'Contract represents a collateral to an underlying instrument\r'}, {'option': '9', 'identifier': 'closeOutNetting', 'name': 'Close out Netting', 'acronym': 'CNO', 'description': 'Contract creator and counterparty agree on netting payment obligations of underlying instruments in case of default. \r'}, {'option': '10', 'identifier': 'underlying', 'name': 'Underlying', 'acronym': 'UDL', 'description': 'Contract represents the underlying to a composed contract. Role of the underlying is derived from the parent. \r'}, {'option': '11', 'identifier': 'underlyingPlus', 'name': 'Underlying Plus', 'acronym': 'UDLP', 'description': 'Contract represents the underlying to a composed contract. Role of the underlying is derived from the parent. When considered a standalone contract the underlying’s creator takes the asset side. \r'}, {'option': '12', 'identifier': 'underlyingMinus', 'name': 'Underlying Minus', 'acronym': 'UDLM', 'description': 'Contract represents the underlying to a composed contract. Role of the underlying is derived from the parent. When considered a standalone contract the underlying’s creator takes the liability side.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "CNTRL defines which position the CRID ( the creator of the contract record ) takes in a contract. For example, whether the contract is an asset or liability, a long or short position for the CRID. 
-Most contracts are simple on or off balance sheet positions which are assets, liabilities. Such contracts can also play a secondary cont_role as a collateral. 
-The attribute is highly significant since it determines the direction of all cash flows. The exact meaning is given with each CT in the ACTUS High Level Specification document."
-    }
-}    

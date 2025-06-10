@@ -13,20 +13,3 @@ impl INC {
     }
 }
 
-impl TraitEnumOptionDescription for INC {
-    fn get_option_rank(&self) -> &str {
-        "0"
-    }
-    fn get_identifier(&self) -> &str {
-        "increase"
-    }
-    fn get_name(&self) -> &str {
-        "Increase"
-    }
-    fn get_acronym(&self) -> &str {
-        "INC"
-    }
-    fn get_description(&self) -> &str {
-        "Notional is increased in this period."
-    }
-} 

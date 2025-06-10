@@ -16,20 +16,3 @@ impl COL {
     }
 }
 
-impl TraitEnumOptionDescription for COL {
-    fn get_option_rank(&self) -> &str {
-        "8"
-    }
-    fn get_identifier(&self) -> &str {
-        "collateralPosition"
-    }
-    fn get_name(&self) -> &str {
-        "Collateral Position"
-    }
-    fn get_acronym(&self) -> &str {
-        "COL"
-    }
-    fn get_description(&self) -> &str {
-        "Contract represents a collateral to an underlying instrument"
-    }
-}    

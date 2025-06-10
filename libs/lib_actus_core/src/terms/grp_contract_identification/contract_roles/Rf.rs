@@ -16,20 +16,3 @@ impl RF {
     }
 }
 
-impl TraitEnumOptionDescription for RF {
-    fn get_option_rank(&self) -> &str {
-        "4"
-    }
-    fn get_identifier(&self) -> &str {
-        "receiveFix"
-    }
-    fn get_name(&self) -> &str {
-        "Receive Fix"
-    }
-    fn get_acronym(&self) -> &str {
-        "RF"
-    }
-    fn get_description(&self) -> &str {
-        "Contract creator receives the fixed leg."
-    }
-}

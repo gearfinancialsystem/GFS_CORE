@@ -24,21 +24,4 @@ impl TraitBusinessDayCalendar for MF {
     }
 }
 
-impl TraitEnumOptionDescription for MF {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "mondayToFriday"
-    }
-    fn get_name(&self) -> &str {
-        "mondayToFriday"
-    }
-    fn get_acronym(&self) -> &str {
-        "MF"
-    }
 
-    fn get_description(&self) -> &str {
-        "Saturdays and Sundays are holidays\r"
-    }
-}

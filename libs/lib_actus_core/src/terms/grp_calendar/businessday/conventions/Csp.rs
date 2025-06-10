@@ -30,20 +30,4 @@ impl CSP {
     }
 }
 
-impl TraitEnumOptionDescription for CSP {
-    fn get_option_rank(&self) -> &str {
-        "7"
-    }
-    fn get_identifier(&self) -> &str {
-        "calculateShiftPreceding"
-    }
-    fn get_name(&self) -> &str {
-        "Calculate-Shift Preceding"
-    }
-    fn get_acronym(&self) -> &str {
-        "CSP"
-    }
-    fn get_description(&self) -> &str {
-        "Calculate accruals etc. first then shift event dates. Strictly shift to the most recent preceding business day."
-    }
-}
+

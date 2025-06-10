@@ -31,20 +31,3 @@ impl TraitDayCountConvention for E30360 {
     }
 }
 
-impl TraitEnumOptionDescription for E30360 {
-    fn get_option_rank(&self) -> &str {
-        "4"
-    }
-    fn get_identifier(&self) -> &str {
-        "thirtyEThreeSixty"
-    }
-    fn get_name(&self) -> &str {
-        "Thirty E Three Sixty"
-    }
-    fn get_acronym(&self) -> &str {
-        "30E360"
-    }
-    fn get_description(&self) -> &str {
-        "Year fractions accrue on the basis of 30 days per month and 360 days per year in the respective period."
-    }
-}  

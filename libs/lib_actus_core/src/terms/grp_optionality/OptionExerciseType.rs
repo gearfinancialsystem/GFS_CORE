@@ -65,30 +65,4 @@ impl Default for OptionExerciseType {
     }
 }
 
-impl TraitTermDescription for OptionExerciseType {
-    fn get_identifier(&self) -> &str {
-        "optionExerciseType"
-    }
-    fn get_group(&self) -> &str {
-        "Optionality"
-    }
-    fn get_name(&self) -> &str {
-        "Option Exercise Type"
-    }
-    fn get_acronym(&self) -> &str {
-        "OPXT"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'european', 'name': 'European', 'acronym': 'E', 'description': 'European-cont_type exercise.\r'}, {'option': '1', 'identifier': 'bermudan', 'name': 'Bermudan', 'acronym': 'B', 'description': 'Bermudan-cont_type exercise.\r'}, {'option': '2', 'identifier': 'american', 'name': 'American', 'acronym': 'A', 'description': 'American-cont_type exercise.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Defines whether the option is European (exercised at a specific date), American (exercised during a span of time) or Bermudan (exercised at certain points during a span of time)."
-    }
-}
 

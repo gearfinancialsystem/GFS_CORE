@@ -25,20 +25,3 @@ impl TraitDayCountConvention for A360 {
     }
 }
 
-impl TraitEnumOptionDescription for A360 {
-    fn get_option_rank(&self) -> &str {
-        "1"
-    }
-    fn get_identifier(&self) -> &str {
-        "actualThreeSixty"
-    }
-    fn get_name(&self) -> &str {
-        "Actual Three Sixty"
-    }
-    fn get_acronym(&self) -> &str {
-        "A360"
-    }
-    fn get_description(&self) -> &str {
-        "Year fractions accrue on the basis of the actual number of days per month and 360 days per year in the respective period."
-    }
-}

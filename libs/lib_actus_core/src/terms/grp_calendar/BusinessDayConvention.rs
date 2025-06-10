@@ -152,29 +152,3 @@ impl Default for BusinessDayConvention {
     }
 }
 
-impl TraitTermDescription for BusinessDayConvention {
-    fn get_identifier(&self) -> &str {
-        "businessDayConvention"
-    }
-    fn get_group(&self) -> &str {
-        "Calendar"
-    }
-    fn get_name(&self) -> &str {
-        "Business Day Convention"
-    }
-    fn get_acronym(&self) -> &str {
-        "BDC"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'noShift', 'name': 'No Shift', 'acronym': 'NOS', 'description': 'No shift applied to non-business days.\r'}, {'option': '1', 'identifier': 'shiftCalculateFollowing', 'name': 'Shift-Calculate Following', 'acronym': 'SCF', 'description': 'Shift event dates first then calculate accruals etc. Strictly shift to the next following business day.\r'}, {'option': '2', 'identifier': 'shiftCalculateModifiedFollowing', 'name': 'Shift-Calculate Modified-Following', 'acronym': 'SCMF', 'description': 'Shift event dates first then calculate accruals etc. Shift to the next following business day if this falls in the same month. Shift to the most recent preceding business day otherwise.\r'}, {'option': '3', 'identifier': 'calculateShiftFollowing', 'name': 'Calculate-Shift Following', 'acronym': 'CSF', 'description': 'Calculate accruals etc. first then shift event dates. Strictly shift to the next following business day.\r'}, {'option': '4', 'identifier': 'calculateShiftModifiedFollowing', 'name': 'Calculate-Shift Modified-Following', 'acronym': 'CSMF', 'description': 'Calculate accruals etc. first then shift event dates. Shift to the next following business day if this falls in the same month. Shift to the most recent preceding business day otherwise.\r'}, {'option': '5', 'identifier': 'shiftCalculatePreceding', 'name': 'Shift-Calculate Preceding', 'acronym': 'SCP', 'description': 'Shift event dates first then calculate accruals etc. Strictly shift to the most recent preceding business day.\r'}, {'option': '6', 'identifier': 'shiftCalculateModifiedPreceding', 'name': 'Shift-Calculate Modified-Preceding', 'acronym': 'SCMP', 'description': 'Shift event dates first then calculate accruals etc. Shift to the most recent preceding business day if this falls in the same month. Shift to the next following business day otherwise.\r'}, {'option': '7', 'identifier': 'calculateShiftPreceding', 'name': 'Calculate-Shift Preceding', 'acronym': 'CSP', 'description': 'Calculate accruals etc. first then shift event dates. Strictly shift to the most recent preceding business day.\r'}, {'option': '8', 'identifier': 'calculateShiftModifiedPreceding', 'name': 'Calculate-Shift Modified-Preceding', 'acronym': 'SCMP', 'description': 'Calculate accruals etc. first then shift event dates. Shift to the most recent preceding business day if this falls in the same month. Shift to the next following business day otherwise.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        "nos"
-    }
-    fn get_description(&self) -> &str {
-        "BDC's are linked to a calendar. Calendars have working and non-working days. A BDC value other than N means that cash flows cannot fall on non-working days, they must be shifted to the next business day (following) or the previous on (preceding). These two simple rules get refined twofold: - Following modified (preceding): Same like following (preceding), however if a cash flow gets shifted into a new month, then  it is shifted to preceding (following) business day. - Shift/calculate (SC) and calculate/shift (CS). Accrual, principal, and possibly other calculations are affected by this choice. In the case of SC first the dates are shifted and after the shift cash flows are calculated. In the case of CS it is the other way round. Attention: Does not affect non-cyclical dates such as PRD, MD, TD, IPCED since they can be set to the correct date directly."
-    }
-}    

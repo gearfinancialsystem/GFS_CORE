@@ -127,31 +127,5 @@ impl Default for DayCountConvention {
     }
 }
 
-impl TraitTermDescription for DayCountConvention {
-    fn get_identifier(&self) -> &str {
-        "dayCountConvention"
-    }
-    fn get_group(&self) -> &str {
-        "Interest"
-    }
-    fn get_name(&self) -> &str {
-        "Day Count Convention"
-    }
-    fn get_acronym(&self) -> &str {
-        "IPDC"
-    }
-    fn get_type(&self) -> &str {
-        "Enum"
-    }
-    fn get_allowed_values(&self) -> &str {
-        "[{'option': '0', 'identifier': 'actualActual', 'name': 'Actual/Actual', 'acronym': 'AA', 'description': 'Year fractions accrue on the basis of the actual number of days per month and per year in the respective period.\r'}, {'option': '1', 'identifier': 'actualThreeSixty', 'name': 'Actual Three Sixty', 'acronym': 'A360', 'description': 'Year fractions accrue on the basis of the actual number of days per month and 360 days per year in the respective period.\r'}, {'option': '2', 'identifier': 'actualThreeSixtyFive', 'name': 'Actual Three Sixty Five', 'acronym': 'A365', 'description': 'Year fractions accrue on the basis of the actual number of days per month and 365 days per year in the respective period.\r'}, {'option': '3', 'identifier': 'thirtyEThreeSixtyISDA', 'name': 'Thirty E Three Sixty ISDA', 'acronym': '30E360ISDA', 'description': 'Year fractions accrue on the basis of 30 days per month and 360 days per year in the respective period (ISDA method).\r'}, {'option': '4', 'identifier': 'thirtyEThreeSixty', 'name': 'Thirty E Three Sixty', 'acronym': '30E360', 'description': 'Year fractions accrue on the basis of 30 days per month and 360 days per year in the respective period.\r'}, {'option': '5', 'identifier': 'twentyEightEThreeThirtySix', 'name': 'Twenty Eight E Three Thirty Six', 'acronym': '28E336', 'description': 'Year fractions accrue on the basis of 28 days per month and 336 days per year in the respective period.'}]"
-    }
-    fn get_default_value(&self) -> &str {
-        ""
-    }
-    fn get_description(&self) -> &str {
-        "Method defining how days are counted between two dates. This finally defines the year fraction in accrual calculations."
-    }
-}    
 
 
