@@ -2,7 +2,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CycleUtils::CycleUtils;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
-use crate::traits::TraitCycleAdjuster::TraitCycleAjuster;
+use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 
 pub struct PeriodCycleAdjuster {
     pub period: IsoPeriod,
@@ -26,7 +26,7 @@ impl PeriodCycleAdjuster {
     }
 }
 
-impl TraitCycleAjuster for PeriodCycleAdjuster {
+impl TraitCycleAdjuster for PeriodCycleAdjuster {
     fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
         time + self.period.clone()
     }

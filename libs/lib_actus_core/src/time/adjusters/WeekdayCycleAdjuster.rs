@@ -2,7 +2,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CycleUtils::CycleUtils;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
-use crate::traits::TraitCycleAdjuster::TraitCycleAjuster;
+use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use chrono::Weekday;
 
 pub struct WeekdayCycleAdjuster {
@@ -28,12 +28,12 @@ impl WeekdayCycleAdjuster {
     }
 }
 
-impl TraitCycleAjuster for WeekdayCycleAdjuster {
+impl TraitCycleAdjuster for WeekdayCycleAdjuster {
     fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
-        time + self.period
+        time + self.period.clone()
     }
 
     fn minus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
-        time - self.period
+        time - self.period.clone()
     }
 }

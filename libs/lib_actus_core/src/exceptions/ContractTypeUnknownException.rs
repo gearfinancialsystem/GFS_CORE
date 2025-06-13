@@ -1,4 +1,5 @@
 use std::fmt::{Debug, Display};
+use::std::error::Error;
 
 #[derive(Debug)]
 pub struct ContractTypeUnknownException;
@@ -9,4 +10,4 @@ impl Display for ContractTypeUnknownException {
     }
 }
 
-impl std::error::Error for ContractTypeUnknownException {}
+impl Error for ContractTypeUnknownException {}

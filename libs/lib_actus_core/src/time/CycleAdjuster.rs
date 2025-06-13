@@ -1,31 +1,32 @@
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
-use crate::traits::TraitCycleAdjuster::TraitCycleAjuster;
-use crate::time::adjusters::{PeriodCycleAdjuster, WeekdayCycleAdjuster};
+use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
+use crate::time::adjusters::{PeriodCycleAdjuster::PeriodCycleAdjuster,
+                             WeekdayCycleAdjuster::WeekdayCycleAdjuster};
 
 
 struct CycleAdjuster {
-    adjuster: Box<dyn TraitCycleAjuster>,
+    adjuster: Box<dyn TraitCycleAdjuster>,
 }
 
 impl CycleAdjuster {
-    fn new(cycle: &String) -> Self {
+    pub fn new(cycle: &String) -> Self {
         if CycleUtils::is_period(cycle) {
             CycleAdjuster {
-                adjuster: Box::new(PeriodCycleAdjuster::new(cycle)),
+                adjuster: Box::new(PeriodCycleAdjuster::new(cycle).unwrap()),
             }
         } else {
             CycleAdjuster {
-                adjuster: Box::new(WeekdayCycleAdjuster::new(cycle)),
+                adjuster: Box::new(WeekdayCycleAdjuster::new(cycle).unwrap()),
             }
         }
     }
 
-    fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
+    pub fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
         self.adjuster.plus_cycle(time)
     }
 
-    fn minus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
+    pub fn minus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
         self.adjuster.minus_cycle(time)
     }
 }
