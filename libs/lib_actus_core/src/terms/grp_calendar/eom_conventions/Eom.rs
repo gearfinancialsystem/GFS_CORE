@@ -1,5 +1,6 @@
 
-use chrono::NaiveDateTime;
+use chrono::{DurationRound, NaiveDateTime};
+use chrono::NaiveDate;
 use chrono::{Datelike, Duration, Timelike};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
@@ -24,21 +25,18 @@ impl TraitEndOfMonthConvention for EOM {
 
         // Déterminer le premier jour du mois suivant
         let first_day_next_month = if month == 12 {
-            NaiveDateTime::from_ymd_opt(year + 1, 1, 1).unwrap()
+            NaiveDate::from_ymd_opt(year + 1, 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap()
         } else {
-            NaiveDateTime::from_ymd_opt(year, month + 1, 1).unwrap()
+            NaiveDate::from_ymd_opt(year, month + 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap()
         };
 
         // Revenir d'un jour pour obtenir le dernier jour du mois actuel
         let last_day = first_day_next_month - Duration::days(1);
 
         // Créer un `NaiveDateTime` avec la même heure que l'entrée
-        let shifted_datetime = last_day.and_hms_opt(
-            datetime.hour(), 
-            datetime.minute(), 
-            datetime.second());
+        let shifted_datetime = last_day;
 
-        shifted_datetime.unwrap_or(last_day)
+        shifted_datetime // .unwrap_or(last_day)
     }
 }
 
