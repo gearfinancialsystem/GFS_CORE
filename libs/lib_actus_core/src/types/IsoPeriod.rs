@@ -24,8 +24,9 @@ impl IsoPeriod {
     pub fn new(years: i32, months: i32, days: i32) -> Self {
         IsoPeriod { years, months, days }
     }
+
     // Convert a IsoPeriod to an IsoDateTime by adding it to a reference NaiveDateTime
-    pub fn to_iso_datetime(&self, reference: NaiveDateTime) -> Option<NaiveDateTime> {
+    pub fn to_iso_datetime(&self, reference: IsoDatetime) -> Option<IsoDatetime> {
         // Add years and months to the date part
         let new_date = reference.date()
             .with_year(reference.year() + self.years)?
@@ -77,7 +78,7 @@ impl IsoPeriod {
         IsoPeriod::new(amount.years, amount.months, amount.days)
     }
 
-    // Gets the value of the requested unit
+    // Gets the value of the requested unitx
     pub fn get(&self, unit: &str) -> Option<i32> {
         match unit {
             "years" => Some(self.years),
@@ -191,6 +192,7 @@ impl IsoPeriod {
             days: self.days,
         }
     }
+
     // Obtains a IsoPeriod representing a number of years, months, and days
     pub fn of(years: i32, months: i32, days: i32) -> Self {
         IsoPeriod { years, months, days }
@@ -218,17 +220,74 @@ impl IsoPeriod {
 
     // Obtains a IsoPeriod from a text string such as PnYnMnD
     pub fn parse(text: &str) -> Option<Self> {
-        let re = Regex::new(r"^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?$").unwrap();
+        let re = Regex::new(r"^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$").unwrap();
         if let Some(caps) = re.captures(text) {
             let years = caps.get(1).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
             let months = caps.get(2).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
-            let days = caps.get(3).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
+            let weeks = caps.get(3).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
+            let mut days = caps.get(4).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
+            days = weeks * 7 + days;
 
             Some(IsoPeriod { years, months, days })
         } else {
             None
         }
     }
+    // pub fn parse(text: &str) -> Option<Self> {
+    //     let re = match Regex::new(r"^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$") {
+    //         Ok(re) => re,
+    //         Err(e) => {
+    //             println!("Failed to create regex: {:?}", e);
+    //             panic!("Regex compilation failed");
+    //         }
+    //     };
+    //     println!("okok");
+    //     let text_upper = text.to_uppercase();
+    //     let caps = re.captures(&text_upper)?;
+    //
+    //     let global_sign = if let Some(sign) = caps.get(1) {
+    //         if sign.as_str() == "-" { -1 } else { 1 }
+    //     } else {
+    //         1
+    //     };
+    //
+    //     let parse_number = |s: Option<&str>| -> Option<i32> {
+    //         s.and_then(|s| {
+    //             let s = s; //.as_str();
+    //             if s.is_empty() {
+    //                 Some(0)
+    //             } else {
+    //                 s.parse::<i32>().ok().map(|value| {
+    //                     if s.starts_with('+') || s.starts_with('-') {
+    //                         value
+    //                     } else {
+    //                         value * global_sign
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     };
+    //
+    //     let years = parse_number(caps.get(2).map(|m| m.as_str()))?;
+    //     let months = parse_number(caps.get(3).map(|m| m.as_str()))?;
+    //     let weeks = parse_number(caps.get(4).map(|m| m.as_str()))?;
+    //     let days_initial = parse_number(caps.get(5).map(|m| m.as_str()))?;
+    //
+    //     // Vérifier qu'au moins une section était présente
+    //     let has_any_section = caps.get(2).is_some() || caps.get(3).is_some() || caps.get(4).is_some() || caps.get(5).is_some();
+    //     if !has_any_section {
+    //         return None;
+    //     }
+    //
+    //     // Vérifier que semaines ne sont pas mélangées avec autres unités
+    //     if weeks != 0 && (years != 0 || months != 0 || days_initial != 0) {
+    //         return None;
+    //     }
+    //
+    //     let days = days_initial + weeks * 7;
+    //
+    //     Some(IsoPeriod { years, months, days })
+    // }
 
 
     // Returns a copy of this IsoPeriod with the specified IsoPeriod added

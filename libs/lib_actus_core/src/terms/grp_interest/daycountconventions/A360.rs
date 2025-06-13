@@ -4,7 +4,7 @@ use chrono::{Datelike, Duration};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct A360;
 impl A360 {
     pub fn new() -> Self {

@@ -1,7 +1,7 @@
 use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 
 pub struct E;
 

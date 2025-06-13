@@ -15,7 +15,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 /// - `d' < d` if `d` is a non-business day
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Preceeding {
     pub calendar: Rc<dyn TraitBusinessDayCalendar>,
 }

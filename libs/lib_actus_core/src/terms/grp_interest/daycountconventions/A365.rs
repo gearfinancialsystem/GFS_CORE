@@ -1,7 +1,7 @@
 use crate::types::isoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct A365;
 impl A365 {
     pub fn new() -> Self {

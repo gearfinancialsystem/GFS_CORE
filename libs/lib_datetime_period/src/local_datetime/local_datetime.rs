@@ -164,7 +164,7 @@ impl IsoDateTime {
         )
     }
 
-    // Checks if the specified unit is supported.
+    // Checks if the specified unitx is supported.
     // This is a simplified version and checks only basic units.
     pub fn is_supported_unit(&self, unit: &str) -> bool {
         matches!(

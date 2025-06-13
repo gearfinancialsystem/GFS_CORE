@@ -20,5 +20,11 @@ for term in d['terms'].keys():
         print("group " + d['terms'][term]['group'] + " - " + term)
 
 
+d = json.load(open("documentation/actus-tests-pam.json", 'r'))
 
+types_lst = []
+for k in d.keys():
+    types_lst.extend(d[k]['terms'].keys())
+
+print(set(types_lst))
 

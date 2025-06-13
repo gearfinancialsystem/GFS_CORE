@@ -44,13 +44,13 @@ impl CycleUtils {
         let weekday_part = cycle.split('L').next().unwrap();
         let weekday_str = &weekday_part[1..4]; // Assuming the format is like "1MONL"
         match weekday_str {
-            "MON" => Ok(Weekday::Mon),
-            "TUE" => Ok(Weekday::Tue),
-            "WED" => Ok(Weekday::Wed),
-            "THU" => Ok(Weekday::Thu),
-            "FRI" => Ok(Weekday::Fri),
-            "SAT" => Ok(Weekday::Sat),
-            "SUN" => Ok(Weekday::Sun),
+            "Mon" => Ok(Weekday::Mon),
+            "Tue" => Ok(Weekday::Tue),
+            "Wed" => Ok(Weekday::Wed),
+            "Thu" => Ok(Weekday::Thu),
+            "Fri" => Ok(Weekday::Fri),
+            "Sat" => Ok(Weekday::Sat),
+            "Sun" => Ok(Weekday::Sun),
             _ => Err(AttributeConversionException),
         }
     }

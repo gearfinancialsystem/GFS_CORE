@@ -3,7 +3,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use chrono::{Datelike, NaiveDate};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AAISDA;
 
 impl AAISDA {

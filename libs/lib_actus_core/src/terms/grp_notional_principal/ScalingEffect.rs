@@ -8,7 +8,7 @@ use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum ScalingEffect {
     OOO(OOO),
     IOO(IOO),
@@ -40,7 +40,7 @@ impl ScalingEffect {
         ScalingEffect::INO(INO::new())
     }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
@@ -48,7 +48,7 @@ impl ScalingEffect {
                 ScalingEffect::from_str(s).ok()
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
+            // .unwrap_or_default()
     }
 }
 

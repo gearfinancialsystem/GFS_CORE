@@ -21,7 +21,7 @@ use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayConvention {
     NOS(NOS),
     SCF(SCF),

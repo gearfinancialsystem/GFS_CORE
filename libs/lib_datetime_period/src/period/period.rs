@@ -71,7 +71,7 @@ impl IsoPeriod {
         IsoPeriod::new(amount.years, amount.months, amount.days)
     }
 
-    // Gets the value of the requested unit
+    // Gets the value of the requested unitx
     pub fn get(&self, unit: &str) -> Option<i32> {
         match unit {
             "years" => Some(self.years),

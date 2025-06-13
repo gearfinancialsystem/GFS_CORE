@@ -5,8 +5,8 @@ use crate::time::adjusters::{PeriodCycleAdjuster::PeriodCycleAdjuster,
                              WeekdayCycleAdjuster::WeekdayCycleAdjuster};
 
 
-struct CycleAdjuster {
-    adjuster: Box<dyn TraitCycleAdjuster>,
+pub struct CycleAdjuster {
+    pub adjuster: Box<dyn TraitCycleAdjuster>,
 }
 
 impl CycleAdjuster {

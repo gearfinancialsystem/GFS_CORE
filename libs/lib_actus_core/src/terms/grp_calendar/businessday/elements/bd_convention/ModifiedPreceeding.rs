@@ -16,7 +16,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 /// - `d' < d` if `d` is a non-business day and the next preceding business day is in the same month as `d`
 /// - `d' > d` if `d` is a non-business day and the next preceding business day is not in the same month as `d`
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifiedPreceeding {
     pub calendar: Rc<dyn TraitBusinessDayCalendar>,
 }

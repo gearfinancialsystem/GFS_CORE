@@ -5,9 +5,10 @@ use chrono::NaiveDateTime;
 use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CSP {
     pub scConvention: CalcShift,
     pub bdConvention: Preceeding

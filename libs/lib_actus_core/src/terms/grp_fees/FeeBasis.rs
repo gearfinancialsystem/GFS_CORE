@@ -5,7 +5,7 @@ use crate::terms::grp_margining::ClearingHouse::ClearingHouse;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FeeBasis {
     A(A),
     N(N),
@@ -26,7 +26,7 @@ impl FeeBasis {
     pub fn new_N() -> Self {
         Self::N(N::new())
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
@@ -34,7 +34,7 @@ impl FeeBasis {
                 Self::from_str(s).ok()
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
+            //.unwrap_or_default()
     }
 }
 

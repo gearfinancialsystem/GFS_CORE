@@ -2,7 +2,7 @@ use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct A336;
 impl A336 {
     pub fn new() -> Self {

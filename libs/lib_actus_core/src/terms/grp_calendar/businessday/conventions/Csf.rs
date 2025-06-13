@@ -5,9 +5,10 @@ use crate::terms::grp_calendar::businessday::elements::bd_convention::Following:
 use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CSF {
     pub scConvention: CalcShift,
     pub bdConvention: Following,

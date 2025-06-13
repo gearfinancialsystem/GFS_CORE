@@ -7,7 +7,7 @@ use chrono::Duration;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct B252 {
     pub calendar: Rc<dyn TraitBusinessDayCalendar>,
 }

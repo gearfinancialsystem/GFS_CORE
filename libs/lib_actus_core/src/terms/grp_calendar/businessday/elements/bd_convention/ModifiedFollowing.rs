@@ -19,7 +19,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 /// - `d' < d` if `d` is a non-business day and the next following business day is not in the same month as `d`
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifiedFollowing {
     pub calendar: Rc<dyn TraitBusinessDayCalendar>,
 }

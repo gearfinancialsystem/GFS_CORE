@@ -5,9 +5,12 @@
 // doivent être implémentés pour un type concret, et un alias de type n'est pas considéré
 // comme un type distinct du type original.
 
+use std::collections::HashMap;
 use std::ops::Add;
 use std::ops::Sub;
-use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike};
+use std::rc::Rc;
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Weekday, Duration};
+use crate::terms::grp_counterparty::seniority::S::S;
 use crate::types::IsoPeriod::IsoPeriod;
 
 
@@ -19,6 +22,9 @@ pub type IsoDatetime = NaiveDateTime;
 pub trait traitNaiveDateTimeExtension {
     fn double(&self) -> Self;
     fn is_last_day_of_month(&self) -> bool;
+    fn provide_box(sm: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>>;
+    fn provide_rc(sm: &HashMap<String, String>, key: &str) -> Option<Rc<NaiveDateTime>>;
+    fn provide_box_vec(sm: &HashMap<String, String>, key: &str) -> Option<Box<Vec<NaiveDateTime>>>;
 }
 
 impl traitNaiveDateTimeExtension for NaiveDateTime {
@@ -44,11 +50,28 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
         }
 
     }
+    fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>> {
+        string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok()).map(Box::new)
+    }
+    fn provide_box_vec(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Vec<NaiveDateTime>>> {
+        string_map.get(key).and_then(|s| {
+            let dates: Vec<NaiveDateTime> = s.split(',')
+                .map(|date_str| date_str.trim())
+                .filter_map(|date_str| date_str.parse::<NaiveDateTime>().ok())
+                .collect();
+            if dates.is_empty() {
+                None
+            } else {
+                Some(Box::new(dates))
+            }
+        })
+    }
+    fn provide_rc(string_map: &HashMap<String, String>, key: &str) -> Option<Rc<Self>> {
+
+        string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok()).map(|b| Rc::new(b))
+    }
+
 }
-
-
-
-
 
 impl Add<IsoPeriod> for IsoDatetime {
     type Output = IsoDatetime;
@@ -70,4 +93,12 @@ impl Sub<IsoPeriod> for IsoDatetime {
             .checked_sub_months(Months::new(other.months as u32)).unwrap()
             .checked_sub_months(Months::new((other.years * 12) as u32)).unwrap()
     }
+}
+
+
+#[cfg(test)]
+mod tests_period_cycle_adjuster {
+    use crate::time::adjusters::PeriodCycleAdjuster::PeriodCycleAdjuster;
+    use crate::types::isoDatetime::IsoDatetime;
+    use super::*;
 }

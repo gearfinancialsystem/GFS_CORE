@@ -5,6 +5,7 @@ use std::process::Termination;
 use std::str::FromStr;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
+use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

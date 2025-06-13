@@ -7,13 +7,13 @@ use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360ISDA {
-    pub maturity_date: Rc<IsoDatetime>,
+    pub maturity_date: IsoDatetime,
 }
 
 impl E30360ISDA {
-    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new(maturity_date: IsoDatetime) -> Self {
         E30360ISDA {maturity_date}
     }
 }
@@ -49,7 +49,7 @@ impl TraitDayCountConvention for E30360ISDA {
         let mut d2 = end_time.day();
         // Vérification du cas : si end_time == maturity_date et c'est un mois de février => pas d'ajustement
         let is_february = end_time.month() == 2;
-        if let maturity = *self.maturity_date {
+        if let maturity = self.maturity_date {
             // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
             if end_time == maturity && is_february {
                 // pas d'ajustement, on laisse d2

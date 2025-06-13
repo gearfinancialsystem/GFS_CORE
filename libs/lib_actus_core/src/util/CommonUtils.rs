@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use iso8601_duration::Duration;
 // use crate::terms::grp_settlement::DeliverySettlement::S;
 
 
@@ -22,9 +21,7 @@ impl CommonUtils {
         string_map.get(key).cloned().map(Box::new)
     }
 
-    pub fn provide_box_duration(string_map: &HashMap<String, String>, key: &str) -> Option<Box<iso8601_duration::Duration>> {
-        string_map.get(key).and_then(|s| s.parse::<Duration>().ok()).map(Box::new)
-    }
+
     
     // pub fn is_none(value: &Option<AnyBox>) -> bool {
     //     match value {

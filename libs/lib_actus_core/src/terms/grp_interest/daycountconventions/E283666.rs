@@ -6,13 +6,13 @@ use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E283666 {
-    pub maturity_date: Rc<IsoDatetime>,
+    pub maturity_date: IsoDatetime,
 }
 
 impl E283666 {
-    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new(maturity_date: IsoDatetime) -> Self {
         E283666 {maturity_date}
     }
 }
@@ -48,7 +48,7 @@ impl TraitDayCountConvention for E283666 {
         // }
         //
         // En version adaptée:
-        if !(end_time == *self.maturity_date || end_time.month() == 2)
+        if !(end_time == self.maturity_date || end_time.month() == 2)
             && end_time.is_last_day_of_month()
         {
             d2 = 28;

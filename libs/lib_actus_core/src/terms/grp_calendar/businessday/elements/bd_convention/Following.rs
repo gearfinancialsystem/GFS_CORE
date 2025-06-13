@@ -6,7 +6,7 @@ use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Following {
     pub calendar: Rc<dyn TraitBusinessDayCalendar>,
 }

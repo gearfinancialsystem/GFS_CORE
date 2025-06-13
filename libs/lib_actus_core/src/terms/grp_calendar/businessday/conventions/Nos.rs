@@ -2,9 +2,10 @@ use chrono::NaiveDateTime;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Same::Same;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NOS {
     pub scConvention: ShiftCalc,
     pub bdConvention: Same

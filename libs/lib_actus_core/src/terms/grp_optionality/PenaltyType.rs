@@ -7,7 +7,7 @@ use crate::terms::grp_optionality::penalty_type::R::R;
 use crate::terms::grp_optionality::penalty_type::I::I;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PenaltyType {
     N(N),
     A(A),
@@ -38,7 +38,7 @@ impl PenaltyType {
     pub fn new_I() -> Self {
         PenaltyType::I(I::new())
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
@@ -46,7 +46,7 @@ impl PenaltyType {
                 PenaltyType::from_str(s).ok()
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
+            //.unwrap_or_default()
     }
 }
 

@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Same;
 
 impl Same {

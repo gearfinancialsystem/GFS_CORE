@@ -3,7 +3,7 @@ use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360;
 impl E30360 {
     pub fn new() -> Self {

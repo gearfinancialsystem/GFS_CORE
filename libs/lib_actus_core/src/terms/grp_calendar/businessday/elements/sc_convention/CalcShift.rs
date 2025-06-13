@@ -1,8 +1,8 @@
-use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CalcShift;
 
 impl CalcShift {
@@ -14,7 +14,7 @@ impl CalcShift {
 
 impl TraitShiftCalcConvention for CalcShift {
     /// Returns the `time` unshifted
-    fn shift(&self, time: &NaiveDateTime, _convention: &dyn TraitBusinessDayConvention) -> NaiveDateTime {
+    fn shift(&self, time: &IsoDatetime, _convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
         *time
     }
     

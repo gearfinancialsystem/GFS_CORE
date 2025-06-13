@@ -20,7 +20,7 @@ use crate::terms::grp_interest::daycountconventions::B252::B252;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum DayCountConvention {
     AAISDA(AAISDA),
     A360(A360),
@@ -46,7 +46,7 @@ impl DayCountConvention {
     fn new_A336() -> Self {
         DayCountConvention::A336(A336::new())
     }
-    fn new_E30360ISDA(maturity_date: Rc<NaiveDateTime>) -> Self {
+    fn new_E30360ISDA(maturity_date: NaiveDateTime) -> Self {
         DayCountConvention::E30360ISDA(E30360ISDA::new(maturity_date))
     }
     fn new_E30360() -> Self {
@@ -55,7 +55,7 @@ impl DayCountConvention {
     fn new_B252(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
         DayCountConvention::B252(B252::new(calendar))
     }
-    fn new_E283666(maturity_date: Rc<NaiveDateTime>) -> Self {
+    fn new_E283666(maturity_date: NaiveDateTime) -> Self {
         DayCountConvention::E283666(E283666::new(maturity_date))
     }
 
@@ -89,7 +89,7 @@ impl DayCountConvention {
 
     pub fn parse ( // a la place de FromStr, car j'ai besoin de plus de parametre
         s: &str,
-        maturity_date: Rc<NaiveDateTime>,
+        maturity_date: NaiveDateTime,
         calendar: Rc<dyn TraitBusinessDayCalendar>,
     ) -> Result<DayCountConvention, ParseError> {
         match s.to_uppercase().as_str() {
@@ -108,13 +108,13 @@ impl DayCountConvention {
     }
     pub fn provide_box(string_map: &HashMap<String, String>,
                        key: &str,
-                       NaiveDateTime: Rc<NaiveDateTime>,
+                       ndt: NaiveDateTime,
                        calendar_trait:Rc<dyn TraitBusinessDayCalendar> ) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
             .and_then(|s| {
-                DayCountConvention::parse(s, NaiveDateTime, calendar_trait).ok()
+                DayCountConvention::parse(s, ndt, calendar_trait).ok()
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
