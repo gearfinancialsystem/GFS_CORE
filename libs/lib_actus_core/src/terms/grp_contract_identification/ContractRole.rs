@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_contract_identification::contract_roles::Rpa::RPA;
 use crate::terms::grp_contract_identification::contract_roles::Rpl::RPL;
 use crate::terms::grp_contract_identification::contract_roles::Rfl::RFL;

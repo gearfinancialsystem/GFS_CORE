@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;

@@ -7,7 +7,7 @@ use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::seniority::J::J;
 use crate::terms::grp_counterparty::seniority::S::S;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(PartialEq, Eq, Debug)]

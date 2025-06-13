@@ -6,7 +6,7 @@ use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(PartialEq, Eq, Debug)]

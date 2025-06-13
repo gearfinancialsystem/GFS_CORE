@@ -21,7 +21,7 @@ use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
 use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(Debug, Eq, PartialEq)]

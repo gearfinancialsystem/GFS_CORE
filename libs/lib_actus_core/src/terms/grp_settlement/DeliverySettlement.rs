@@ -2,9 +2,7 @@ use std::{fmt, str::FromStr};
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
-
-
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(Debug, Eq, PartialEq)]

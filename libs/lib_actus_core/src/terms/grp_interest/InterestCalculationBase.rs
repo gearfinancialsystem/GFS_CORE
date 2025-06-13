@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::interestcalculationbase::Nt::NT;
 use crate::terms::grp_interest::interestcalculationbase::Ntied::NTIED;
 use crate::terms::grp_interest::interestcalculationbase::Ntl::NTL;

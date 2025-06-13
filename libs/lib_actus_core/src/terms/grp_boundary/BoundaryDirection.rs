@@ -4,7 +4,7 @@ use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
 use crate::terms::grp_boundary::boundary_direction::INCR::INCR;
 use crate::terms::grp_counterparty::Seniority::Seniority;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 

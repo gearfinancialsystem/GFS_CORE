@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
 use crate::traits::TraitTermDescription::TraitTermDescription;

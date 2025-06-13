@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
 use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::E::E;

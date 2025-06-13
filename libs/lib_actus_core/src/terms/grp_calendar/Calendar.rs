@@ -3,7 +3,7 @@ use std::str::FromStr;
 use std::rc::Rc;
 use chrono::NaiveDateTime;
 
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;

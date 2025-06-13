@@ -5,7 +5,7 @@ use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 

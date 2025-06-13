@@ -5,7 +5,7 @@ use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum GuaranteedExposure {

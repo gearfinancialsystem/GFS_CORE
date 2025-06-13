@@ -3,7 +3,7 @@ use std::str::FromStr;
 use std::rc::Rc;
 use chrono::NaiveDateTime;
 
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 // Import des différentes conventions
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;

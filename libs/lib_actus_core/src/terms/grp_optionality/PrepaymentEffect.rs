@@ -5,7 +5,7 @@ use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
 use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(PartialEq, Eq)]

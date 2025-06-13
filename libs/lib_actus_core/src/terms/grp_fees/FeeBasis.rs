@@ -3,7 +3,7 @@ use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_fees::fee_basis::N::N;
 use crate::terms::grp_margining::ClearingHouse::ClearingHouse;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum FeeBasis {

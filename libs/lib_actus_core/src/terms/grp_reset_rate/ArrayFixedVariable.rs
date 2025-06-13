@@ -6,7 +6,7 @@ use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ArrayFixedVariable {

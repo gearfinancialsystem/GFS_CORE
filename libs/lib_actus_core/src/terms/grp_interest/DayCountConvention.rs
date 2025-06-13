@@ -8,7 +8,7 @@ use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
 use chrono::Duration;
 use chrono::{Datelike, Timelike};
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_interest::daycountconventions::A336::A336;
 use crate::terms::grp_interest::daycountconventions::A360::A360;

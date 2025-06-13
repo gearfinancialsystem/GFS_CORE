@@ -4,7 +4,7 @@ use crate::terms::grp_margining::clearing_house::N::N;
 use crate::terms::grp_margining::clearing_house::Y::Y;
 use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(PartialEq, Eq)]

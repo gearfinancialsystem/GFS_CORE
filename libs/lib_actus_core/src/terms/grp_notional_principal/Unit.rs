@@ -13,7 +13,7 @@ use crate::terms::grp_notional_principal::unit::STN::STN;
 use crate::terms::grp_notional_principal::unit::TON::TON;
 use crate::terms::grp_notional_principal::unit::TRO::TRO;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 pub enum Unit {
     BRL(BRL),

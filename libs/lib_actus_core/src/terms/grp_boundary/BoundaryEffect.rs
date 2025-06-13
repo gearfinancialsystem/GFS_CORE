@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::util::ParseError::ParseError;
+use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
 use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
