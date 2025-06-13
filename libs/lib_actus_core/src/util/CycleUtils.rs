@@ -1,65 +1,70 @@
-use chrono::Duration;
-use humantime::parse_duration;
-use chrono::Weekday::{Mon, Tue, Wed, Thu, Fri, Sat, Sun};
-use crate::AttributeConversionException::AttributeConversionException;
+use crate::types::IsoPeriod::IsoPeriod;
+use crate::types::isoDatetime::IsoDatetime;
+// Define a custom error type for attribute conversion errors
+use crate::exceptions::AttributeConversionException::AttributeConversionException;
+use chrono::Weekday;
 
 
+// Constants for stub types
+const LONG_STUB: char = '0';
+const SHORT_STUB: char = '1';
 pub struct CycleUtils;
 
 impl CycleUtils {
-    /// A period-based cycle starts with character 'P'
-    pub fn is_period(cycle: &str) -> bool {
-        cycle.chars().next() == Some('P')
+    /**
+     * Checks if a cycle string starts with 'P', indicating a period-based cycle.
+     */
+    pub fn is_period(cycle: &String) -> bool {
+        cycle.starts_with('P')
     }
 
-    /// Parses a period from a cycle string
-    pub fn parse_period(cycle: &str) -> Result<Duration, AttributeConversionException> {
-        // Extract the period string by splitting before the 'L' character
-        let period_str = cycle.split('L').next().ok_or(AttributeConversionException)?;
-        
-        // Parse the period duration (e.g., "P1Y" for one year)
-        match parse_duration(period_str) {
-            Ok(duration) => Ok(Duration::seconds(duration.as_secs() as i64)),
-            Err(_) => Err(AttributeConversionException),
+    /**
+     * Parses a period from a cycle string.
+     */
+    pub fn parse_period(cycle: &String) -> Result<IsoPeriod, AttributeConversionException> {
+        let period_part = cycle.split('L').next().unwrap();
+        match IsoPeriod::parse(period_part) {
+            Some(period) => Ok(period),
+            None => Err(AttributeConversionException),
         }
     }
 
-    /// Parses the position as an integer from the first character of the cycle string
-    pub fn parse_position(cycle: &str) -> Result<i32, AttributeConversionException> {
-        cycle.chars().next()
-            .and_then(|c| c.to_digit(10))
-            .map(|n| n as i32)
-            .ok_or(AttributeConversionException)
+    /**
+     * Parses the position from the cycle string.
+     */
+    pub fn parse_position(cycle: &String) -> Result<u32, AttributeConversionException> {
+        let position_char = cycle.chars().next().ok_or(AttributeConversionException)?;
+        position_char.to_digit(10).ok_or(AttributeConversionException)
     }
 
-    /// Parses a weekday from a cycle string
-    pub fn parse_weekday(cycle: &str) -> Result<chrono::Weekday, AttributeConversionException> {
-        let weekday_str = &cycle[1..].split('L').next().ok_or(AttributeConversionException)?;
+    /**
+     * Parses the weekday from the cycle string.
+     */
+    pub fn parse_weekday(cycle: &String) -> Result<Weekday, AttributeConversionException> {
+        let weekday_part = cycle.split('L').next().unwrap();
+        let weekday_str = &weekday_part[1..4]; // Assuming the format is like "1MONL"
         match weekday_str {
-            &"Mon" => Ok(Mon),
-            &"Tue" => Ok(Tue),
-            &"Wed" => Ok(Wed),
-            &"Thu" => Ok(Thu),
-            &"Fri" => Ok(Fri),
-            &"Sat" => Ok(Sat),
-            &"Sun" => Ok(Sun),
+            "MON" => Ok(Weekday::Mon),
+            "TUE" => Ok(Weekday::Tue),
+            "WED" => Ok(Weekday::Wed),
+            "THU" => Ok(Weekday::Thu),
+            "FRI" => Ok(Weekday::Fri),
+            "SAT" => Ok(Weekday::Sat),
+            "SUN" => Ok(Weekday::Sun),
             _ => Err(AttributeConversionException),
         }
     }
 
-    /// Parses the stub character from the cycle string
-    pub fn parse_stub(cycle: &str) -> Result<char, AttributeConversionException> {
-        let stub_str = cycle.split('L').nth(1).ok_or(AttributeConversionException)?;
-        let stub = stub_str.chars().next().ok_or(AttributeConversionException)?;
-        
-        // Assuming LongStub and ShortStub are predefined constants
-        if stub == 'L' || stub == 'S' {
+    /**
+     * Parses the stub from the cycle string.
+     */
+    pub fn parse_stub(cycle: &String) -> Result<char, AttributeConversionException> {
+        let stub_part = cycle.split('L').nth(1).ok_or(AttributeConversionException)?;
+        let stub = stub_part.chars().next().ok_or(AttributeConversionException)?;
+        if stub == LONG_STUB || stub == SHORT_STUB {
             Ok(stub)
         } else {
             Err(AttributeConversionException)
         }
     }
-
 }
-
-
