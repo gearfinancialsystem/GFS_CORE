@@ -1,18 +1,19 @@
 use std::rc::Rc;
 
-use chrono::NaiveDateTime;
-use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
+use crate::types::isoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
+use crate::types::isoDatetime::traitNaiveDateTimeExtension;
+
 #[derive(PartialEq, Eq, Debug)]
 pub struct E30360ISDA {
-    pub maturity_date: Rc<NaiveDateTime>,
+    pub maturity_date: Rc<IsoDatetime>,
 }
 
 impl E30360ISDA {
-    pub fn new(maturity_date: Rc<NaiveDateTime>) -> Self {
+    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
         E30360ISDA {maturity_date}
     }
 }
@@ -37,7 +38,7 @@ impl TraitDayCountConvention for E30360ISDA {
     //         // (mais on préfère la comparaison de mois)
     // }
 
-    fn day_count(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         // d1
         let mut d1 = start_time.day();
         if start_time.is_last_day_of_month() {
@@ -71,7 +72,7 @@ impl TraitDayCountConvention for E30360ISDA {
     }
 
     /// Calcule la fraction d'année (dayCount / 360.0)
-    fn day_count_fraction(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         self.day_count(start_time, end_time) / 360.0
     }
 }

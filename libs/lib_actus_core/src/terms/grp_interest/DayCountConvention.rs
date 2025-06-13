@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use crate::terms::grp_calendar::{calendars, Calendar::Calendar};
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
+use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 use chrono::Duration;
 use chrono::{Datelike, Timelike};

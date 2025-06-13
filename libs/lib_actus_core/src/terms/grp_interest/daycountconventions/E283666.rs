@@ -1,18 +1,18 @@
 use std::rc::Rc;
 
-use chrono::NaiveDateTime;
-use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
+use crate::types::isoDatetime::IsoDatetime;
+use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 #[derive(PartialEq, Eq, Debug)]
 pub struct E283666 {
-    pub maturity_date: Rc<NaiveDateTime>,
+    pub maturity_date: Rc<IsoDatetime>,
 }
 
 impl E283666 {
-    pub fn new(maturity_date: Rc<NaiveDateTime>) -> Self {
+    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
         E283666 {maturity_date}
     }
 }
@@ -30,7 +30,7 @@ impl TraitDayCountConvention for E283666 {
     // }
 
     /// Calcule le nombre de jours, selon la convention 28/336
-    fn day_count(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         // Ajustement de d1
         let mut d1 = start_time.day();
         if start_time.is_last_day_of_month() {
@@ -64,7 +64,7 @@ impl TraitDayCountConvention for E283666 {
     }
 
     /// Calcule la fraction (days / 336.0)
-    fn day_count_fraction(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         self.day_count(start_time, end_time) / 336.0
     }
 }

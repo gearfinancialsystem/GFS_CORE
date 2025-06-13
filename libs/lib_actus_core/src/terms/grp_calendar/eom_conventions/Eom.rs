@@ -2,7 +2,6 @@
 use chrono::NaiveDateTime;
 use chrono::{Datelike, Duration, Timelike};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct EOM;

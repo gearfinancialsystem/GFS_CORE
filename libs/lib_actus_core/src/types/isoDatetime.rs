@@ -7,22 +7,48 @@
 
 use std::ops::Add;
 use std::ops::Sub;
-use chrono::{Days, Months, NaiveDateTime};
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike};
 use crate::types::IsoPeriod::IsoPeriod;
+
 
 // Définition d'un alias de type
 pub type IsoDatetime = NaiveDateTime;
 
 // Implémentation d'un trait pour le type original (u32 dans ce cas)
-trait traitNaiveDateTimeExtension {
+
+pub trait traitNaiveDateTimeExtension {
     fn double(&self) -> Self;
+    fn is_last_day_of_month(&self) -> bool;
 }
 
 impl traitNaiveDateTimeExtension for NaiveDateTime {
     fn double(&self) -> Self {
         *self
     }
+    fn is_last_day_of_month(&self) -> bool {
+        // Add one day to the given date
+        let first_day_of_next_month = {
+            if self.date().month() == 12 {
+                NaiveDate::from_ymd_opt((self.date().year() + 1) as i32, 1, 1).unwrap()
+            }
+            else {
+                NaiveDate::from_ymd_opt(self.date().year() as i32, self.date().month() + 1, 1).unwrap()
+            }
+        };
+        let last_day_of_month = first_day_of_next_month.pred().day();
+        if last_day_of_month == self.day() {
+            true
+        }
+        else {
+            false
+        }
+
+    }
 }
+
+
+
+
 
 impl Add<IsoPeriod> for IsoDatetime {
     type Output = IsoDatetime;

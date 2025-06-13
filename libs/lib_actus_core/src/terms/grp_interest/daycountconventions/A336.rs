@@ -1,4 +1,5 @@
-use chrono::NaiveDateTime;
+use crate::types::isoDatetime::traitNaiveDateTimeExtension;
+use crate::types::isoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(PartialEq, Eq, Debug)]
@@ -11,12 +12,12 @@ impl A336 {
 
 impl TraitDayCountConvention for A336 {
     /// Calculates the number of days between two dates
-    fn day_count(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         (end_time - start_time).num_days() as f64
     }
 
     /// Calculates the day count fraction between two dates using the A/336 convention
-    fn day_count_fraction(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         Self::day_count(&self, start_time, end_time) as f64 / 336.0
     }
 }

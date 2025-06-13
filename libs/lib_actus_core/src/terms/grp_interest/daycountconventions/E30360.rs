@@ -1,5 +1,4 @@
-use chrono::NaiveDateTime;
-use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
+use crate::types::isoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
@@ -14,7 +13,7 @@ impl E30360 {
 
 impl TraitDayCountConvention for E30360 {
     /// Calculates the number of days between two dates using the ISDA 30E/360 convention
-    fn day_count(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         let d1 = if start_time.day() == 31 { 30.0 } else { start_time.day() as f64 };
         let d2 = if end_time.day() == 31 { 30.0 } else { end_time.day() as f64 };
 
@@ -26,7 +25,7 @@ impl TraitDayCountConvention for E30360 {
     }
 
     /// Calculates the day count fraction based on the ISDA 30E/360 convention
-    fn day_count_fraction(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         Self::day_count(&self, start_time, end_time) / 360.0
     }
 }

@@ -1,9 +1,8 @@
 use std::ptr;
 use std::rc::Rc;
 
-use chrono::NaiveDateTime;
+use crate::types::isoDatetime::IsoDatetime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitDayCountConvention::TraitDayCountConvention;
 use chrono::Duration;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
@@ -33,7 +32,7 @@ impl B252 {
 impl TraitDayCountConvention for B252 {
 
     /// Calculates the number of business days between two dates
-    fn day_count(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         let mut date = start_time;
         let mut days_count = 0;
 
@@ -48,7 +47,7 @@ impl TraitDayCountConvention for B252 {
     }
 
     /// Calculates the day count fraction based on the Business-252 convention
-    fn day_count_fraction(&self, start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         self.day_count(start_time, end_time) as f64 / 252.0
     }
 }
