@@ -1,0 +1,3 @@
+-> IsoDateTime correspond au Naivedatetime de chrono
+-> 
+-> IsoCycle est un string, il y a des methodes associés pour les convertir en period ect ...
