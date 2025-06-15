@@ -1,5 +1,6 @@
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::ModifiedPreceeding::ModifiedPreceeding;
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 use chrono::NaiveDateTime;
 use std::rc::Rc;
@@ -14,7 +15,7 @@ pub struct CSMP {
 }
 
 impl CSMP {
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         return CSMP {    scConvention: CalcShift, 
                         bdConvention: ModifiedPreceeding::new(calendar)};
     }

@@ -4,6 +4,7 @@ use std::rc::Rc;
 use crate::terms::grp_calendar::{calendars, Calendar::Calendar};
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
 use chrono::Duration;
 use chrono::{Datelike, Timelike};
@@ -46,20 +47,20 @@ impl DayCountConvention {
     fn new_A336() -> Self {
         DayCountConvention::A336(A336::new())
     }
-    fn new_E30360ISDA(maturity_date: NaiveDateTime) -> Self {
+    fn new_E30360ISDA(maturity_date: Rc<IsoDatetime>) -> Self {
         DayCountConvention::E30360ISDA(E30360ISDA::new(maturity_date))
     }
     fn new_E30360() -> Self {
         DayCountConvention::E30360(E30360::new())
     }
-    fn new_B252(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    fn new_B252(calendar: Rc<Calendar>) -> Self {
         DayCountConvention::B252(B252::new(calendar))
     }
-    fn new_E283666(maturity_date: NaiveDateTime) -> Self {
+    fn new_E283666(maturity_date: Rc<IsoDatetime>) -> Self {
         DayCountConvention::E283666(E283666::new(maturity_date))
     }
 
-    pub fn day_count(&self,start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    pub fn day_count(&self,start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         match self {
             DayCountConvention::AAISDA(AAISDA) => AAISDA.day_count(start_time, end_time),
             DayCountConvention::A360(A360) => A360.day_count(start_time, end_time),
@@ -89,8 +90,8 @@ impl DayCountConvention {
 
     pub fn parse ( // a la place de FromStr, car j'ai besoin de plus de parametre
         s: &str,
-        maturity_date: NaiveDateTime,
-        calendar: Rc<dyn TraitBusinessDayCalendar>,
+        maturity_date: Rc<IsoDatetime>,
+        calendar: Rc<Calendar>,
     ) -> Result<DayCountConvention, ParseError> {
         match s.to_uppercase().as_str() {
             "AAISDA"     => Ok(DayCountConvention::new_AAISDA()),
@@ -108,8 +109,8 @@ impl DayCountConvention {
     }
     pub fn provide_box(string_map: &HashMap<String, String>,
                        key: &str,
-                       ndt: NaiveDateTime,
-                       calendar_trait:Rc<dyn TraitBusinessDayCalendar> ) -> Option<Box<Self>> {
+                       ndt: Rc<IsoDatetime>,
+                       calendar_trait:Rc<Calendar> ) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)

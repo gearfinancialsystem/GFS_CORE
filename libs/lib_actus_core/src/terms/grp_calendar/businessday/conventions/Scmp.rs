@@ -1,21 +1,24 @@
+use std::rc::Rc;
+
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::ModifiedPreceeding::ModifiedPreceeding;
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 use chrono::NaiveDateTime;
-use std::rc::Rc;
+
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SCMP {
+pub struct SCMP{
     pub scConvention: ShiftCalc,
     pub bdConvention: ModifiedPreceeding
 }
 
 impl SCMP {
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         return SCMP {    scConvention: ShiftCalc, 
                         bdConvention: ModifiedPreceeding::new(calendar)};
     }

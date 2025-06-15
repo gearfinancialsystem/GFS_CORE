@@ -1,12 +1,13 @@
+use std::rc::Rc;
+
 use chrono::NaiveDateTime;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
-
-use std::rc::Rc;
+use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CSF {
@@ -16,7 +17,7 @@ pub struct CSF {
 
 impl CSF {
     /// Construit un `CSF` en prenant possession du calendrier (boxed).
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         CSF {
             scConvention: CalcShift,
             bdConvention: Following::new(calendar),

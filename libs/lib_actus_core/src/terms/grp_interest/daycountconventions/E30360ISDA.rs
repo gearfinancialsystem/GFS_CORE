@@ -3,17 +3,17 @@ use std::rc::Rc;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360ISDA {
-    pub maturity_date: IsoDatetime,
+    pub maturity_date: Rc<IsoDatetime>,
 }
 
 impl E30360ISDA {
-    pub fn new(maturity_date: IsoDatetime) -> Self {
+    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
         E30360ISDA {maturity_date}
     }
 }
@@ -49,7 +49,7 @@ impl TraitDayCountConvention for E30360ISDA {
         let mut d2 = end_time.day();
         // Vérification du cas : si end_time == maturity_date et c'est un mois de février => pas d'ajustement
         let is_february = end_time.month() == 2;
-        if let maturity = self.maturity_date {
+        if let maturity = *self.maturity_date {
             // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
             if end_time == maturity && is_february {
                 // pas d'ajustement, on laisse d2

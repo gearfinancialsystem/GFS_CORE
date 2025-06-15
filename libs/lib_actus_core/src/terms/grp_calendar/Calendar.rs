@@ -8,7 +8,6 @@ use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -42,6 +41,16 @@ impl Calendar {
             })
             .map(|b| Rc::new(b)) // On stocke la convention dans une Box
             // .unwrap_or_default()
+    }
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
+        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
+        string_map
+            .get(key)
+            .and_then(|s| {
+                Self::from_str(s).ok()
+            })
+            .map(|b| Box::new(b)) // On stocke la convention dans une Box
+            //.unwrap_or_default()
     }
 }
 

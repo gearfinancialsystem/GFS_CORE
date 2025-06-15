@@ -1,12 +1,14 @@
+use std::rc::Rc;
+
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Preceeding::Preceeding;
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 use chrono::NaiveDateTime;
-use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SCP {
@@ -15,7 +17,7 @@ pub struct SCP {
 }
 
 impl SCP {
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         return SCP {    scConvention: ShiftCalc, 
                         bdConvention: Preceeding::new(calendar)};
     }

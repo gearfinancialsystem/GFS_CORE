@@ -9,7 +9,7 @@ use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, Debug)]
 pub struct B252 {
-    pub calendar: Rc<dyn TraitBusinessDayCalendar>,
+    pub calendar: Rc<Calendar>,
 }
 
 impl PartialEq for B252 {
@@ -22,7 +22,7 @@ impl PartialEq for B252 {
 impl Eq for B252 {}
 
 impl B252 {
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         B252 {calendar}
     }
 }

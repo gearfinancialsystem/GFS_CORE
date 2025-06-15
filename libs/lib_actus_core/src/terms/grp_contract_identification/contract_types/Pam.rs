@@ -1,7 +1,8 @@
 use std::collections::HashMap;
-use crate::util::CommonUtils::CommonUtils;
 use std::rc::Rc;
-use chrono::NaiveDateTime;
+use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
+use crate::util::CommonUtils::CommonUtils;
+
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
@@ -13,7 +14,6 @@ use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
 use crate::terms::grp_optionality::PenaltyType::PenaltyType;
 use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 
 // use crate::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
@@ -75,7 +75,7 @@ pub struct PAM {
     pub fixingPeriod: Option<Box<IsoDatetime>>,
     pub nextResetRate: Option<Box<f64>>,
     pub rateMultiplier: Option<Box<f64>>, // obligatoire
-    pub maturityDate: Option<Box<IsoDatetime>>, // obligatoire
+    pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
 }
 
 impl Default for PAM {
@@ -151,9 +151,35 @@ impl PAM {
     pub fn parse_from_dict(&mut self, sm: &HashMap<String, String>) {
 
         //let mut cm = PAM::default();
-
+        self.maturityDate = IsoDatetime::provide_rc(sm, "maturityDate");
         self.calendar = Calendar::provide_rc(sm, "calendar");
-        self.businessDayConvention = BusinessDayConvention::provide_box(sm, "businessDayConvention", self.calendar.clone().unwrap());
+
+        if let Some(calendar) = &self.calendar {
+            // Clone seulement l'Rc, pas le calendrier lui-même
+            let calendar_clone = Rc::clone(calendar);
+            self.businessDayConvention = BusinessDayConvention::provide_box(
+                sm,
+                "businessDayConvention",
+                calendar_clone
+            );
+        }
+
+        // Clonez simplement les Rc existantes
+        if let (Some(maturity_date), Some(calendar)) = (&self.maturityDate, &self.calendar) {
+            self.dayCountConvention = DayCountConvention::provide_box(
+                sm,
+                "dayCountConvention",
+                Rc::clone(maturity_date),
+                Rc::clone(calendar)
+            );
+        }
+        // self.dayCountConvention = DayCountConvention::provide_box(&sm, "dayCountConvention",
+        //         *self.maturityDate.clone().unwrap(),
+        //         Calendar::provide_rc(&sm, "calendar").unwrap());
+
+        
+
+
         self.endOfMonthConvention = EndOfMonthConvention::provide_box(sm, "endOfMonthConvention");
         self.contractType = CommonUtils::provide_box_string(sm, "contractType");
         self.contractID = CommonUtils::provide_box_string(sm, "contractID");
@@ -169,10 +195,7 @@ impl PAM {
         self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide_box_vec(sm, "cycleAnchorDateOfInterestPayment");
         self.cycleOfInterestPayment = CommonUtils::provide_box_string(sm, "cycleOfInterestPayment");
         self.nominalInterestRate = CommonUtils::provide_box_f64(sm, "nominalInterestRate");
-        self.maturityDate = IsoDatetime::provide_box(sm, "maturityDate");
-        self.dayCountConvention = DayCountConvention::provide_box(&sm, "dayCountConvention",
-                *self.maturityDate.clone().unwrap(),
-                Calendar::provide_rc(&sm, "calendar").unwrap());
+
         self.accruedInterest = CommonUtils::provide_box_f64(sm, "accruedInterest");// obligatoire
         self.capitalizationEndDate = IsoDatetime::provide_box(sm, "capitalizationEndDate");
         self.cyclePointOfInterestPayment = CyclePointOfInterestPayment::provide_box(sm, "cyclePointOfInterestPayment");

@@ -21,7 +21,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 
 #[derive(Clone, Debug)]
 pub struct ModifiedFollowing {
-    pub calendar: Rc<dyn TraitBusinessDayCalendar>,
+    pub calendar: Rc<Calendar>,
 }
 
 impl PartialEq for ModifiedFollowing {
@@ -39,7 +39,7 @@ impl ModifiedFollowing {
     /// # Arguments
     ///
     /// * `calendar` - The `BusinessDayCalendarProvider` to be used
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         ModifiedFollowing { calendar }
     }
 }

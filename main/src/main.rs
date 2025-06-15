@@ -5,6 +5,7 @@ use lib_actus_core::time::adjusters::{WeekdayCycleAdjuster::WeekdayCycleAdjuster
 use lib_actus_core::time::CycleAdjuster::CycleAdjuster;
 use lib_actus_core::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
+use lib_actus_core::attributes::ContractModel::ContractModel;
 
 fn main() {
     let mut dico: HashMap<String, String> = HashMap::new();
@@ -25,8 +26,9 @@ fn main() {
     dico.insert("premiumDiscountAtIED".to_string(),"-200".to_string());
     dico.insert("rateMultiplier".to_string(),"1.0".to_string());
     dico.insert("contractRole".to_string(),"RPA".to_string());
-    
-    let dic_parsed = ContractModel::parse(&dico);
+
+    let dic_parsed = ContractModel::new(&dico);
+    println!("ok");
 }
 
 

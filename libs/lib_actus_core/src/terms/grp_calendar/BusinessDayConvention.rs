@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::str::FromStr;
 use std::rc::Rc;
 use chrono::NaiveDateTime;
 
@@ -16,10 +15,8 @@ use crate::terms::grp_calendar::businessday::conventions::Scmp::SCMP;
 use crate::terms::grp_calendar::businessday::conventions::Csp::CSP;
 use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 
-use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
-use crate::traits::TraitTermDescription::TraitTermDescription;
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayConvention {
@@ -39,35 +36,35 @@ impl BusinessDayConvention {
         BusinessDayConvention::NOS(NOS::new())
     }
 
-    pub fn new_SCF(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_SCF(calendar: Rc<Calendar>) -> Self {
         Self::SCF(SCF::new(calendar))
     }
 
-    pub fn new_SCMF(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_SCMF(calendar: Rc<Calendar>) -> Self {
         Self::SCMF(SCMF::new(calendar))
     }
 
-    pub fn new_CSF(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_CSF(calendar: Rc<Calendar>) -> Self {
         Self::CSF(CSF::new(calendar))
     }
 
-    pub fn new_CSMF(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_CSMF(calendar: Rc<Calendar>) -> Self {
         Self::CSMF(CSMF::new(calendar))
     }
 
-    pub fn new_SCP(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_SCP(calendar: Rc<Calendar>) -> Self {
         Self::SCP(SCP::new(calendar))
     }
 
-    pub fn new_SCMP(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_SCMP(calendar: Rc<Calendar>) -> Self {
         Self::SCMP(SCMP::new(calendar))
     }
 
-    pub fn new_CSP(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_CSP(calendar: Rc<Calendar>) -> Self {
         Self::CSP(CSP::new(calendar))
     }
 
-    pub fn new_CSMP(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new_CSMP(calendar: Rc<Calendar>) -> Self {
         Self::CSMP(CSMP::new(calendar))
     }
 
@@ -114,7 +111,7 @@ impl BusinessDayConvention {
     }
     
     /// Fonction de parsing qui prend en paramètre le calendrier (boxed)
-    pub fn parse(s: &str, calendar: Rc<dyn TraitBusinessDayCalendar>) -> Result<BusinessDayConvention, ParseError> {
+    pub fn parse(s: &str, calendar: Rc<Calendar>) -> Result<BusinessDayConvention, ParseError> {
         match s.to_uppercase().as_str() {
             ""      => Ok(Self::default()),
             "NOS"   => Ok(Self::new_NOS()),
@@ -130,7 +127,7 @@ impl BusinessDayConvention {
         }
     }    
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str, calendar_trait:Rc<dyn TraitBusinessDayCalendar> ) -> Option<Box<Self>> {
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str, calendar_trait: Rc<Calendar> ) -> Option<Box<Self>> {
         // Exemple 2 : parse de BusinessDayConvention en se basant sur le Calendar.
         // On crée une variable intermédiaire annotée pour convertir le Rc<Calendar>
         // en Rc<dyn TraitBusinessDayCalendar> (puisque Calendar implémente TraitBusinessDayCalendar).

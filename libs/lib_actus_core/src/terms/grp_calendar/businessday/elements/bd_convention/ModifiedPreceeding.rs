@@ -3,6 +3,7 @@ use chrono::NaiveDateTime;
 use chrono::{Datelike, Duration};
 use std::ptr;
 use std::rc::Rc;
+use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 
@@ -18,7 +19,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 
 #[derive(Clone, Debug)]
 pub struct ModifiedPreceeding {
-    pub calendar: Rc<dyn TraitBusinessDayCalendar>,
+    pub calendar: Rc<Calendar>,
 }
 
 impl PartialEq for ModifiedPreceeding {
@@ -31,7 +32,7 @@ impl PartialEq for ModifiedPreceeding {
 impl Eq for ModifiedPreceeding {}
 
 impl ModifiedPreceeding {
-    pub fn new(calendar: Rc<dyn TraitBusinessDayCalendar>) -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         ModifiedPreceeding { calendar }
     }
 }
