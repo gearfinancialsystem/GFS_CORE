@@ -1,13 +1,8 @@
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use chrono::NaiveDateTime;
-
-
-
+use crate::types::isoDatetime::IsoDatetime;
 
 pub trait TraitPayOffFunction {
     /// Evaluate the function.
@@ -22,7 +17,7 @@ pub trait TraitPayOffFunction {
     /// Returns the payoff amount as a `f64`.
     fn eval(
         &self,
-        time: NaiveDateTime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,

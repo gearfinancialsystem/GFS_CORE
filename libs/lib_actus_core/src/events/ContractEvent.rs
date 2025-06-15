@@ -12,14 +12,15 @@ pub type EventTime = IsoDatetime;
 pub type ScheduleTime = IsoDatetime;
 
 use std::hash::{Hash, Hasher};
+use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone)]
 pub struct ContractEvent {
-    pub contractID: ContractID,
-    pub currency: Currency,
-    pub eventTime: IsoDatetime,
+    pub contractID: Option<String>,
+    pub currency: Option<String>,
+    pub eventTime: Option<IsoDatetime>,
     pub eventType: EventType,
-    pub payoff: Rc<dyn PayOffFunctionTrait>,
+    pub payoff: Rc<dyn TraitPayOffFunction>,
     pub scheduleTime: IsoDatetime,
     pub state: Rc<dyn StateTransitionFunctionTrait>,
 }
