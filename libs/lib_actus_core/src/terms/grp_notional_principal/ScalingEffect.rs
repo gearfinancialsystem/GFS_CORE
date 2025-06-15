@@ -50,6 +50,16 @@ impl ScalingEffect {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             // .unwrap_or_default()
     }
+    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
+        string_map
+            .get(key)
+            .and_then(|s| {
+                ScalingEffect::from_str(s).ok()
+            })
+            .map(|b| b) // On stocke la convention dans une Box
+        // .unwrap_or_default()
+    }
 }
 
 impl FromStr for ScalingEffect {

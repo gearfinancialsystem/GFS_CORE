@@ -13,6 +13,7 @@ pub trait TraitContractModel {
     /// # Panics
     /// This method will panic if the attribute is not found.
     fn cm(&self) -> String;
+
     
     //fn get_as(&self, name: &str) -> Option<&dyn Any>;
 }

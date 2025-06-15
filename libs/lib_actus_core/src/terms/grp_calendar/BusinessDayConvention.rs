@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::str::FromStr;
 use chrono::NaiveDateTime;
 
 use crate::exceptions::ParseError::ParseError;
@@ -18,6 +19,7 @@ use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::terms::grp_calendar::Calendar::Calendar;
 
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayConvention {
     NOS(NOS),
@@ -32,8 +34,8 @@ pub enum BusinessDayConvention {
 }
 
 impl BusinessDayConvention {
-    pub fn new_NOS() -> Self {
-        BusinessDayConvention::NOS(NOS::new())
+    pub fn new_NOS(calendar: Rc<Calendar>) -> Self {
+        Self::NOS(NOS::new(calendar))
     }
 
     pub fn new_SCF(calendar: Rc<Calendar>) -> Self {
@@ -109,12 +111,17 @@ impl BusinessDayConvention {
             Self::CSMP(v)  => v.shift_sc(date, convention),
         }
     }
-    
+
+    pub fn default_with_calendar(calendar: Rc<Calendar>) -> Self {
+        // le calendrier doit forcément pré-exister au BusinessDayConvention
+        Self::new_NOS(calendar)
+    }
+
     /// Fonction de parsing qui prend en paramètre le calendrier (boxed)
     pub fn parse(s: &str, calendar: Rc<Calendar>) -> Result<BusinessDayConvention, ParseError> {
         match s.to_uppercase().as_str() {
-            ""      => Ok(Self::default()),
-            "NOS"   => Ok(Self::new_NOS()),
+            ""      => Ok(Self::default_with_calendar(calendar)),
+            "NOS"   => Ok(Self::new_NOS(calendar)),
             "SCF"   => Ok(Self::new_SCF(calendar)),
             "SCMF"  => Ok(Self::new_SCMF(calendar)),
             "CSF"   => Ok(Self::new_CSF(calendar)),
@@ -127,25 +134,38 @@ impl BusinessDayConvention {
         }
     }    
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str, calendar_trait: Rc<Calendar> ) -> Option<Box<Self>> {
-        // Exemple 2 : parse de BusinessDayConvention en se basant sur le Calendar.
-        // On crée une variable intermédiaire annotée pour convertir le Rc<Calendar>
-        // en Rc<dyn TraitBusinessDayCalendar> (puisque Calendar implémente TraitBusinessDayCalendar).
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::parse(s, calendar_trait).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            //.unwrap_or_default()
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str, calendar: Rc<Calendar> ) -> Option<Box<Self>> {
+        match string_map.get(key) {
+            None => Some(Box::new(Self::default_with_calendar(calendar))),
+            Some(s) => {
+                match Self::parse(s, calendar) {
+
+                    Ok(bdc) => {
+                        println!("{:?}", bdc);
+                        Some(Box::new(bdc))
+
+                    },
+                    Err(_) => None,
+                }
+            }
+        }
+    }
+    pub fn provide(string_map: &HashMap<String, String>, key: &str, calendar: Rc<Calendar> ) -> Option<Self> {
+        match string_map.get(key) {
+            None => Some(Self::default_with_calendar(calendar)),
+            Some(s) => {
+                match Self::parse(s, calendar) {
+
+                    Ok(bdc) => {
+                        println!("{:?}", bdc);
+                        Some(bdc)
+
+                    },
+                    Err(_) => None,
+                }
+            }
+        }
     }
 
-}
-
-impl Default for BusinessDayConvention {
-    fn default() -> Self {
-        // Par défaut, on utilise un calendrier NC.
-        Self::new_NOS()
-    }
 }
 

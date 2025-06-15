@@ -1,0 +1,52 @@
+use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
+use crate::contracts::ContractModel::ContractModel;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::subtypes::IsoDatetime::IsoDatetime;
+use crate::states::StateSpace::StateSpace;
+use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+
+
+#[allow(non_camel_case_types)]
+pub struct STF_IPCI_PAM;
+
+impl StateTransitionFunctionTrait for STF_IPCI_PAM {
+    fn eval(
+        &self,
+        time: IsoDatetime, 
+        states: &StateSpace,
+        model: &ContractModel,
+        risk_factor_model: &RiskFactorModel,
+        day_counter: &DayCountConvention,
+        time_adjuster: &BusinessDayConvention,
+    ) -> StateSpace {
+
+        let mut new_states: StateSpace = states.copy_state_space(); 
+
+        // Calculate time from the last event
+        let time_from_last_event = day_counter.day_count_fraction(
+            time_adjuster.shift_bd(&states.statusDate),
+            time_adjuster.shift_bd(&time),
+        );
+
+        // Modify the value inside the Option<Box<f64>>
+        // Capitalize interest by adding accrued interest to the principal
+        if let Some(value) = new_states.notionalPrincipal.as_deref_mut() {
+            *value += states.accruedInterest.as_deref().unwrap() + (states.nominalInterestRate * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event); // Dereference just once due to as_deref_mut
+        }
+
+
+        new_states.accruedInterest = Some(Box::new(0.0));
+
+        // Update fee accrued
+        if let Some(value) = new_states.feeAccrued.as_deref_mut() {
+            *value += model.FeeRate.unwrap() * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event; // Dereference just once due to as_deref_mut
+        }
+
+        // Update the status date
+        new_states.statusDate = time;
+
+        // Return a copy of the updated state space
+        new_states
+    }
+}

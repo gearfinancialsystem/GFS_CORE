@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::ops::Deref;
 // use lib1::hello_from_lib1;
 // use lib2::hello_from_lib2;
 use lib_actus_core::time::adjusters::{WeekdayCycleAdjuster::WeekdayCycleAdjuster, PeriodCycleAdjuster::PeriodCycleAdjuster};
@@ -6,6 +7,7 @@ use lib_actus_core::time::CycleAdjuster::CycleAdjuster;
 use lib_actus_core::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Pam;
 
 fn main() {
     let mut dico: HashMap<String, String> = HashMap::new();
@@ -27,8 +29,24 @@ fn main() {
     dico.insert("rateMultiplier".to_string(),"1.0".to_string());
     dico.insert("contractRole".to_string(),"RPA".to_string());
 
-    let dic_parsed = ContractModel::new(&dico);
+    let mut dic_parsed = Pam::PAM::default();
+    dic_parsed.parse_from_dict(&dico);
+
+    let contract_model = Box::new(ContractModel::new(&dico));
+
+    match *contract_model {
+        Ok(cm) => {
+            // Access my_struct.field here
+            //*cm.maturityDate
+
+        }
+        Err(e) => {
+            // Handle error
+        }
+    }
     println!("ok");
+
+
 }
 
 

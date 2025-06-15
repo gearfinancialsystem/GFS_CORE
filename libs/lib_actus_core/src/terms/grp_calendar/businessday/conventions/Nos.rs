@@ -1,6 +1,8 @@
+use std::rc::Rc;
 use chrono::NaiveDateTime;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Same::Same;
+use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
@@ -12,7 +14,7 @@ pub struct NOS {
 }
 
 impl NOS {
-    pub fn new() -> Self {
+    pub fn new(calendar: Rc<Calendar>) -> Self {
         return NOS { scConvention: ShiftCalc, bdConvention: Same};
     }
     pub fn type_str(&self) -> String {

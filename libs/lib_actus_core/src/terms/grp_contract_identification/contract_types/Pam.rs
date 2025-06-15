@@ -22,59 +22,59 @@ use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct PAM {
     pub calendar: Option<Rc<Calendar>>,
-    pub businessDayConvention: Option<Box<BusinessDayConvention>>,
-    pub endOfMonthConvention: Option<Box<EndOfMonthConvention>>,
-    pub contractType: Option<Box<String>>, // obligatoire
-    pub contractID: Option<Box<String>>,
-    pub statusDate: Option<Box<IsoDatetime>>,
-    pub contractRole: Option<Box<ContractRole>>,
-    pub counterpartyID: Option<Box<String>>,
-    pub marketObjectCode: Option<Box<String>>,
-    pub cycleAnchorDateOfFee: Option<Box<IsoDatetime>>,
-    pub cycleOfFee: Option<Box<String>>,
-    pub feeBasis: Option<Box<FeeBasis>>,
-    pub feeRate: Option<Box<f64>>,
-    pub feeAccrued: Option<Box<f64>>,
-    pub cycleAnchorDateOfInterestPayment: Option<Box<Vec<IsoDatetime>>>,
-    pub cycleOfInterestPayment: Option<Box<String>>,
-    pub nominalInterestRate: Option<Box<f64>>,
-    pub dayCountConvention: Option<Box<DayCountConvention>>,
-    pub accruedInterest: Option<Box<f64>>, // obligatoire
-    pub capitalizationEndDate: Option<Box<IsoDatetime>>,
-    pub cyclePointOfInterestPayment: Option<Box<CyclePointOfInterestPayment>>,
-    pub currency: Option<Box<String>>, // obligatoire
-    pub initialExchangeDate: Option<Box<IsoDatetime>>,
-    pub premiumDiscountAtIED: Option<Box<f64>>,
-    pub notionalPrincipal: Option<Box<f64>>,
-    pub purchaseDate: Option<Box<IsoDatetime>>,
-    pub priceAtPurchaseDate: Option<Box<f64>>,
-    pub terminationDate: Option<Box<IsoDatetime>>,
-    pub priceAtTerminationDate: Option<Box<f64>>,
-    pub marketObjectCodeOfScalingIndex: Option<Box<String>>,
-    pub scalingIndexAtContractDealDate: Option<Box<f64>>,
-    pub notionalScalingMultiplier: Option<Box<f64>>,
-    pub interestScalingMultiplier: Option<Box<f64>>,
-    pub cycleAnchorDateOfScalingIndex: Option<Box<IsoDatetime>>,
-    pub cycleOfScalingIndex: Option<Box<String>>,
-    pub scalingEffect: Option<Box<ScalingEffect>>,
+    pub businessDayConvention: Option<BusinessDayConvention>,
+    pub endOfMonthConvention: Option<EndOfMonthConvention>,
+    pub contractType: Option<String>, // obligatoire
+    pub contractID: Option<String>,
+    pub statusDate: Option<IsoDatetime>,
+    pub contractRole: Option<ContractRole>,
+    pub counterpartyID: Option<String>,
+    pub marketObjectCode: Option<String>,
+    pub cycleAnchorDateOfFee: Option<IsoDatetime>,
+    pub cycleOfFee: Option<String>,
+    pub feeBasis: Option<FeeBasis>,
+    pub feeRate: Option<f64>,
+    pub feeAccrued: Option<f64>,
+    pub cycleAnchorDateOfInterestPayment: Option<Vec<IsoDatetime>>,
+    pub cycleOfInterestPayment: Option<String>,
+    pub nominalInterestRate: Option<f64>,
+    pub dayCountConvention: Option<DayCountConvention>,
+    pub accruedInterest: Option<f64>, // obligatoire
+    pub capitalizationEndDate: Option<IsoDatetime>,
+    pub cyclePointOfInterestPayment: Option<CyclePointOfInterestPayment>,
+    pub currency: Option<String>, // obligatoire
+    pub initialExchangeDate: Option<IsoDatetime>,
+    pub premiumDiscountAtIED: Option<f64>,
+    pub notionalPrincipal: Option<f64>,
+    pub purchaseDate: Option<IsoDatetime>,
+    pub priceAtPurchaseDate: Option<f64>,
+    pub terminationDate: Option<IsoDatetime>,
+    pub priceAtTerminationDate: Option<f64>,
+    pub marketObjectCodeOfScalingIndex: Option<String>,
+    pub scalingIndexAtContractDealDate: Option<f64>,
+    pub notionalScalingMultiplier: Option<f64>,
+    pub interestScalingMultiplier: Option<f64>,
+    pub cycleAnchorDateOfScalingIndex: Option<IsoDatetime>,
+    pub cycleOfScalingIndex: Option<String>,
+    pub scalingEffect: Option<ScalingEffect>,
     // TODO: review prepayment mechanism and attributes
-    pub cycleAnchorDateOfOptionality: Option<Box<IsoDatetime>>,
-    pub cycleOfOptionality: Option<Box<String>>,
-    pub penaltyType: Option<Box<PenaltyType>>,
-    pub penaltyRate: Option<Box<f64>>,
-    pub objectCodeOfPrepaymentModel: Option<Box<String>>,
-    pub cycleAnchorDateOfRateReset: Option<Box<Vec<IsoDatetime>>>,
-    pub cycleOfRateReset: Option<Box<String>>,
-    pub rateSpread: Option<Box<f64>>,
-    pub marketObjectCodeOfRateReset: Option<Box<String>>,
-    pub lifeCap: Option<Box<f64>>,
-    pub lifeFloor: Option<Box<f64>>,
-    pub periodCap: Option<Box<f64>>,
-    pub periodFloor: Option<Box<f64>>,
-    pub cyclePointOfRateReset: Option<Box<CyclePointOfRateReset>>,
-    pub fixingPeriod: Option<Box<IsoDatetime>>,
-    pub nextResetRate: Option<Box<f64>>,
-    pub rateMultiplier: Option<Box<f64>>, // obligatoire
+    pub cycleAnchorDateOfOptionality: Option<IsoDatetime>,
+    pub cycleOfOptionality: Option<String>,
+    pub penaltyType: Option<PenaltyType>,
+    pub penaltyRate: Option<f64>,
+    pub objectCodeOfPrepaymentModel: Option<String>,
+    pub cycleAnchorDateOfRateReset: Option<Vec<IsoDatetime>>,
+    pub cycleOfRateReset: Option<String>,
+    pub rateSpread: Option<f64>,
+    pub marketObjectCodeOfRateReset: Option<String>,
+    pub lifeCap: Option<f64>,
+    pub lifeFloor: Option<f64>,
+    pub periodCap: Option<f64>,
+    pub periodFloor: Option<f64>,
+    pub cyclePointOfRateReset: Option<CyclePointOfRateReset>,
+    pub fixingPeriod: Option<IsoDatetime>,
+    pub nextResetRate: Option<f64>,
+    pub rateMultiplier: Option<f64>, // obligatoire
     pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
 }
 
@@ -145,6 +145,7 @@ impl TraitContractModel for PAM {
     fn cm(&self) -> String {
         "PAM".to_string()
     }
+
 }
 
 impl PAM {
@@ -157,7 +158,7 @@ impl PAM {
         if let Some(calendar) = &self.calendar {
             // Clone seulement l'Rc, pas le calendrier lui-même
             let calendar_clone = Rc::clone(calendar);
-            self.businessDayConvention = BusinessDayConvention::provide_box(
+            self.businessDayConvention = BusinessDayConvention::provide(
                 sm,
                 "businessDayConvention",
                 calendar_clone
@@ -166,7 +167,7 @@ impl PAM {
 
         // Clonez simplement les Rc existantes
         if let (Some(maturity_date), Some(calendar)) = (&self.maturityDate, &self.calendar) {
-            self.dayCountConvention = DayCountConvention::provide_box(
+            self.dayCountConvention = DayCountConvention::provide(
                 sm,
                 "dayCountConvention",
                 Rc::clone(maturity_date),
@@ -180,58 +181,58 @@ impl PAM {
         
 
 
-        self.endOfMonthConvention = EndOfMonthConvention::provide_box(sm, "endOfMonthConvention");
-        self.contractType = CommonUtils::provide_box_string(sm, "contractType");
-        self.contractID = CommonUtils::provide_box_string(sm, "contractID");
-        self.statusDate = IsoDatetime::provide_box(sm, "statusDate");
-        self.contractRole = ContractRole::provide_box(sm, "contractRole");
-        self.counterpartyID = CommonUtils::provide_box_string(sm, "counterpartyID");
-        self.marketObjectCode = CommonUtils::provide_box_string(sm, "marketObjectCode");
-        self.cycleAnchorDateOfFee = IsoDatetime::provide_box(sm, "cycleAnchorDateOfFee");
-        self.cycleOfFee = CommonUtils::provide_box_string(sm, "cycleOfFee");
-        self.feeBasis = FeeBasis::provide_box(sm, "feeBasis");
-        self.feeRate = CommonUtils::provide_box_f64(sm, "feeRate");
-        self.feeAccrued = CommonUtils::provide_box_f64(sm, "feeAccrued");
-        self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide_box_vec(sm, "cycleAnchorDateOfInterestPayment");
-        self.cycleOfInterestPayment = CommonUtils::provide_box_string(sm, "cycleOfInterestPayment");
-        self.nominalInterestRate = CommonUtils::provide_box_f64(sm, "nominalInterestRate");
+        self.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
+        self.contractType = CommonUtils::provide_string(sm, "contractType");
+        self.contractID = CommonUtils::provide_string(sm, "contractID");
+        self.statusDate = IsoDatetime::provide(sm, "statusDate");
+        self.contractRole = ContractRole::provide(sm, "contractRole");
+        self.counterpartyID = CommonUtils::provide_string(sm, "counterpartyID");
+        self.marketObjectCode = CommonUtils::provide_string(sm, "marketObjectCode");
+        self.cycleAnchorDateOfFee = IsoDatetime::provide(sm, "cycleAnchorDateOfFee");
+        self.cycleOfFee = CommonUtils::provide_string(sm, "cycleOfFee");
+        self.feeBasis = FeeBasis::provide(sm, "feeBasis");
+        self.feeRate = CommonUtils::provide_f64(sm, "feeRate");
+        self.feeAccrued = CommonUtils::provide_f64(sm, "feeAccrued");
+        self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide_vec(sm, "cycleAnchorDateOfInterestPayment");
+        self.cycleOfInterestPayment = CommonUtils::provide_string(sm, "cycleOfInterestPayment");
+        self.nominalInterestRate = CommonUtils::provide_f64(sm, "nominalInterestRate");
 
-        self.accruedInterest = CommonUtils::provide_box_f64(sm, "accruedInterest");// obligatoire
-        self.capitalizationEndDate = IsoDatetime::provide_box(sm, "capitalizationEndDate");
-        self.cyclePointOfInterestPayment = CyclePointOfInterestPayment::provide_box(sm, "cyclePointOfInterestPayment");
-        self.currency = CommonUtils::provide_box_string(sm, "currency"); // obligatoire
-        self.initialExchangeDate = IsoDatetime::provide_box(sm, "initialExchangeDate");
-        self.premiumDiscountAtIED = CommonUtils::provide_box_f64(sm, "premiumDiscountAtIED");
-        self.notionalPrincipal = CommonUtils::provide_box_f64(sm, "notionalPrincipal");
-        self.purchaseDate = IsoDatetime::provide_box(sm, "purchaseDate");
-        self.priceAtPurchaseDate = CommonUtils::provide_box_f64(sm, "priceAtPurchaseDate");
-        self.terminationDate = IsoDatetime::provide_box(sm, "terminationDate");
-        self.priceAtTerminationDate = CommonUtils::provide_box_f64(sm, "priceAtTerminationDate");
-        self.marketObjectCodeOfScalingIndex = CommonUtils::provide_box_string(sm, "marketObjectCodeOfScalingIndex");
-        self.scalingIndexAtContractDealDate = CommonUtils::provide_box_f64(sm, "scalingIndexAtContractDealDate");
-        self.notionalScalingMultiplier = CommonUtils::provide_box_f64(sm, "notionalScalingMultiplier");
-        self.interestScalingMultiplier = CommonUtils::provide_box_f64(sm, "interestScalingMultiplier");
-        self.cycleAnchorDateOfScalingIndex = IsoDatetime::provide_box(sm, "cycleAnchorDateOfScalingIndex");
-        self.cycleOfScalingIndex = CommonUtils::provide_box_string(sm, "cycleOfScalingIndex");
-        self.scalingEffect = ScalingEffect::provide_box(sm, "scalingEffect");
+        self.accruedInterest = CommonUtils::provide_f64(sm, "accruedInterest");// obligatoire
+        self.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
+        self.cyclePointOfInterestPayment = CyclePointOfInterestPayment::provide(sm, "cyclePointOfInterestPayment");
+        self.currency = CommonUtils::provide_string(sm, "currency"); // obligatoire
+        self.initialExchangeDate = IsoDatetime::provide(sm, "initialExchangeDate");
+        self.premiumDiscountAtIED = CommonUtils::provide_f64(sm, "premiumDiscountAtIED");
+        self.notionalPrincipal = CommonUtils::provide_f64(sm, "notionalPrincipal");
+        self.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
+        self.priceAtPurchaseDate = CommonUtils::provide_f64(sm, "priceAtPurchaseDate");
+        self.terminationDate = IsoDatetime::provide(sm, "terminationDate");
+        self.priceAtTerminationDate = CommonUtils::provide_f64(sm, "priceAtTerminationDate");
+        self.marketObjectCodeOfScalingIndex = CommonUtils::provide_string(sm, "marketObjectCodeOfScalingIndex");
+        self.scalingIndexAtContractDealDate = CommonUtils::provide_f64(sm, "scalingIndexAtContractDealDate");
+        self.notionalScalingMultiplier = CommonUtils::provide_f64(sm, "notionalScalingMultiplier");
+        self.interestScalingMultiplier = CommonUtils::provide_f64(sm, "interestScalingMultiplier");
+        self.cycleAnchorDateOfScalingIndex = IsoDatetime::provide(sm, "cycleAnchorDateOfScalingIndex");
+        self.cycleOfScalingIndex = CommonUtils::provide_string(sm, "cycleOfScalingIndex");
+        self.scalingEffect = ScalingEffect::provide(sm, "scalingEffect");
         // TODO: review prepayment mechanism and attributes
-        self.cycleAnchorDateOfOptionality = IsoDatetime::provide_box(sm, "cycleAnchorDateOfOptionality");
-        self.cycleOfOptionality = CommonUtils::provide_box_string(sm, "cycleOfOptionality");
-        self.penaltyType = PenaltyType::provide_box(sm, "penaltyType");
-        self.penaltyRate = CommonUtils::provide_box_f64(sm, "penaltyRate");
-        self.objectCodeOfPrepaymentModel = CommonUtils::provide_box_string(sm, "objectCodeOfPrepaymentModel");
-        self.cycleAnchorDateOfRateReset = IsoDatetime::provide_box_vec(sm, "cycleAnchorDateOfRateReset");
-        self.cycleOfRateReset = CommonUtils::provide_box_string(sm, "cycleOfRateReset");
-        self.rateSpread = CommonUtils::provide_box_f64(sm, "rateSpread");
-        self.marketObjectCodeOfRateReset = CommonUtils::provide_box_string(sm, "marketObjectCodeOfRateReset");
-        self.lifeCap = CommonUtils::provide_box_f64(sm, "lifeCap");
-        self.lifeFloor = CommonUtils::provide_box_f64(sm, "lifeFloor");
-        self.periodCap = CommonUtils::provide_box_f64(sm, "periodCap");
-        self.periodFloor = CommonUtils::provide_box_f64(sm, "periodFloor");
-        self.cyclePointOfRateReset = CyclePointOfRateReset::provide_box(sm, "cyclePointOfRateReset");
-        self.fixingPeriod = IsoDatetime::provide_box(sm, "fixingPeriod");
-        self.nextResetRate = CommonUtils::provide_box_f64(sm, "nextResetRate");
-        self.rateMultiplier = CommonUtils::provide_box_f64(sm, "rateMultiplier"); // obligatoire
+        self.cycleAnchorDateOfOptionality = IsoDatetime::provide(sm, "cycleAnchorDateOfOptionality");
+        self.cycleOfOptionality = CommonUtils::provide_string(sm, "cycleOfOptionality");
+        self.penaltyType = PenaltyType::provide(sm, "penaltyType");
+        self.penaltyRate = CommonUtils::provide_f64(sm, "penaltyRate");
+        self.objectCodeOfPrepaymentModel = CommonUtils::provide_string(sm, "objectCodeOfPrepaymentModel");
+        self.cycleAnchorDateOfRateReset = IsoDatetime::provide_vec(sm, "cycleAnchorDateOfRateReset");
+        self.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
+        self.rateSpread = CommonUtils::provide_f64(sm, "rateSpread");
+        self.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
+        self.lifeCap = CommonUtils::provide_f64(sm, "lifeCap");
+        self.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
+        self.periodCap = CommonUtils::provide_f64(sm, "periodCap");
+        self.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
+        self.cyclePointOfRateReset = CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset");
+        self.fixingPeriod = IsoDatetime::provide(sm, "fixingPeriod");
+        self.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
+        self.rateMultiplier = CommonUtils::provide_f64(sm, "rateMultiplier"); // obligatoire
         
     }
 

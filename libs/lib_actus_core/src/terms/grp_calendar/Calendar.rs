@@ -33,24 +33,26 @@ impl Calendar {
     }
 
     pub fn provide_rc(string_map: &HashMap<String, String>, key: &str) -> Option<Rc<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Rc::new(b)) // On stocke la convention dans une Box
-            // .unwrap_or_default()
+        match string_map.get(key) {
+            None => Some(Rc::new(Calendar::default())), // Clé absente → valeur par défaut
+            Some(s) => {
+                match Self::from_str(s) {
+                    Ok(calendar) => Some(Rc::new(calendar)),
+                    Err(_) => None, // Valeur présente mais invalide
+                }
+            }
+        }
     }
     pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            //.unwrap_or_default()
+        match string_map.get(key) {
+            None => Some(Box::new(Calendar::default())), // Clé absente → valeur par défaut
+            Some(s) => {
+                match Self::from_str(s) {
+                    Ok(calendar) => Some(Box::new(calendar)),
+                    Err(_) => None, // Valeur présente mais invalide
+                }
+            }
+        }
     }
 }
 
@@ -69,9 +71,9 @@ impl FromStr for Calendar {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "" => Ok(Calendar::default()),
-            "NC" => Ok(Calendar::new_NC()),
-            "MF" => Ok(Calendar::new_MF()),
+            "" => Ok(Self::default()),
+            "NC" => Ok(Self::new_NC()),
+            "MF" => Ok(Self::new_MF()),
             _ => Err(ParseError {
                 message: format!("Invalid Calendar cont_type: {}", s),
             }),
