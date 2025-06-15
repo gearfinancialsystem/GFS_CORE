@@ -1,17 +1,13 @@
 use std::fmt;
 use std::rc::Rc;
 
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::event::EventType::EventType;
-use crate::traits::PayOffFunctionTrait::PayOffFunctionTrait;
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
-
 pub type EventTime = IsoDatetime;
 pub type ScheduleTime = IsoDatetime;
 
 use std::hash::{Hash, Hasher};
+use crate::events::EventType::EventType;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone)]
@@ -21,8 +17,8 @@ pub struct ContractEvent {
     pub eventTime: Option<IsoDatetime>,
     pub eventType: EventType,
     pub payoff: Rc<dyn TraitPayOffFunction>,
-    pub scheduleTime: IsoDatetime,
-    pub state: Rc<dyn StateTransitionFunctionTrait>,
+    pub scheduleTime: Option<IsoDatetime>,
+    pub state: Rc<dyn TraitStateTransitionFunction>,
 }
 
 

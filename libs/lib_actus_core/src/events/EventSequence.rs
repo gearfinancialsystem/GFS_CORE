@@ -1,4 +1,4 @@
-use crate::event::EventType::EventType;
+use crate::events::EventType::EventType;
 pub struct EventSequence;
 
 impl EventSequence {

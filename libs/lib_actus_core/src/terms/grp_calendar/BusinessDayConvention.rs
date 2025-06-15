@@ -18,7 +18,7 @@ use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::terms::grp_calendar::Calendar::Calendar;
-
+use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayConvention {
@@ -84,7 +84,7 @@ impl BusinessDayConvention {
         }
     }
 
-    pub fn shift_bd(&self, date: &NaiveDateTime) -> NaiveDateTime {
+    pub fn shift_bd(&self, date: &IsoDatetime) -> IsoDatetime {
         match self {
             Self::NOS(v)   => v.shift_bd(date),
             Self::SCF(v)   => v.shift_bd(date),
@@ -98,7 +98,7 @@ impl BusinessDayConvention {
         }
     }
 
-    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayConvention) -> NaiveDateTime {
+    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
         match self {
             Self::NOS(v)   => v.shift_sc(date, convention),
             Self::SCF(v)   => v.shift_sc(date, convention),

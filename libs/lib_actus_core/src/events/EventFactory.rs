@@ -1,21 +1,11 @@
-// License and package information
-// Copyright (C) 2016 - present by ACTUS Financial Research Foundation
-// Please see distribution for license.
-
-use chrono::{DateTime, Utc};
 use std::collections::HashSet;
 use std::rc::Rc;
-
-
-use crate::event::ContractEvent::ContractEvent;
-
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::traits::PayOffFunctionTrait::PayOffFunctionTrait;
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventType::EventType;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
-use crate::event::EventType::EventType;
-use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct EventFactory;
 
@@ -23,16 +13,16 @@ impl EventFactory {
 
     /// Create a single `ContractEvent`
     pub fn create_event(
-        schedule_time: IsoDatetime,
+        schedule_time: Option<IsoDatetime>,
         event_type: EventType,
-        currency: Option<Currency>,
-        pay_off: Rc<dyn PayOffFunctionTrait>,
-        state_trans: Rc<dyn StateTransitionFunctionTrait>,
-        contract_id: ContractID,
+        currency: Option<String>,
+        pay_off: Rc<dyn TraitPayOffFunction>,
+        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        contract_id: Option<String>,
     ) -> ContractEvent {
         ContractEvent {
             contractID: contract_id,
-            currency: currency.unwrap(),
+            currency: currency,
             eventTime: schedule_time,
             eventType: event_type,
             payoff: pay_off,
@@ -45,15 +35,15 @@ impl EventFactory {
 
     /// Create a single `ContractEvent` with adjusted event time based on a business day convention
     pub fn create_event_with_convention(
-        schedule_time: IsoDatetime,
+        schedule_time: Option<IsoDatetime>,
         event_type: EventType,
-        currency: String,
-        pay_off: Rc<dyn PayOffFunctionTrait>,
-        state_trans: Rc<dyn StateTransitionFunctionTrait>,
+        currency: Option<String>,
+        pay_off: Rc<dyn TraitPayOffFunction>,
+        state_trans: Rc<dyn TraitStateTransitionFunction>,
         convention: &BusinessDayConvention,
-        contract_id: ContractID,
+        contract_id: Option<String>,
     ) -> ContractEvent {
-        let adjusted_time = convention.shift_bd(&schedule_time);
+        let adjusted_time = Some(convention.shift_bd(&schedule_time.unwrap()));
         ContractEvent {
             contractID: contract_id,
             currency: currency,
@@ -70,10 +60,10 @@ impl EventFactory {
     pub fn create_events(
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
-        currency: String,
-        pay_off: Rc<dyn PayOffFunctionTrait>,
-        state_trans: Rc<dyn StateTransitionFunctionTrait>,
-        contract_id: ContractID,
+        currency: Option<String>,
+        pay_off: Rc<dyn TraitPayOffFunction>,
+        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        contract_id: Option<String>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
@@ -81,10 +71,10 @@ impl EventFactory {
                 ContractEvent {
                     contractID: contract_id.clone(),
                     currency: currency.clone(),
-                    eventTime: time,
+                    eventTime: Some(time),
                     eventType: event_type,
                     payoff: pay_off.clone(),
-                    scheduleTime: time,
+                    scheduleTime: Some(time),
                     state: state_trans.clone(),
                 }
             })
@@ -104,11 +94,11 @@ impl EventFactory {
     pub fn create_events_with_convention(
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
-        currency: String,
-        pay_off: Rc<dyn PayOffFunctionTrait>,
-        state_trans: Rc<dyn StateTransitionFunctionTrait>,
+        currency: Option<String>,
+        pay_off: Rc<dyn TraitPayOffFunction>,
+        state_trans: Rc<dyn TraitStateTransitionFunction>,
         convention: &BusinessDayConvention,
-        contract_id: ContractID,
+        contract_id: Option<String>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
@@ -117,10 +107,10 @@ impl EventFactory {
                 ContractEvent {
                     contractID: contract_id.clone(),
                     currency: currency.clone(),
-                    eventTime: adjusted_time,
+                    eventTime: Some(adjusted_time),
                     eventType: event_type,
                     payoff: pay_off.clone(),
-                    scheduleTime: time,
+                    scheduleTime: Some(time),
                     state: state_trans.clone()
                 }
             })

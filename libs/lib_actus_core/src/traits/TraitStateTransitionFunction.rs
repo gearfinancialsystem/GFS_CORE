@@ -1,10 +1,9 @@
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use chrono::NaiveDateTime;
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 
 #[allow(non_snake_case)]
 pub trait TraitStateTransitionFunction {

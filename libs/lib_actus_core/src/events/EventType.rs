@@ -1,9 +1,5 @@
 use std::str::FromStr;
-
-use crate::util::ParseError::ParseError;
-
-
-
+use crate::exceptions::ParseError::ParseError;
 #[derive(PartialEq, Eq, Debug, Clone, Copy, Hash)]
 pub enum EventType {
     AD,
