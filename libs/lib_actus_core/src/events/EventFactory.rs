@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::rc::Rc;
+use chrono::DurationRound;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
@@ -16,20 +17,19 @@ impl EventFactory {
         schedule_time: Option<IsoDatetime>,
         event_type: EventType,
         currency: Option<String>,
-        pay_off: Rc<dyn TraitPayOffFunction>,
-        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
+        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         contract_id: Option<String>,
     ) -> ContractEvent {
-        ContractEvent {
-            contractID: contract_id,
-            currency: currency,
-            eventTime: schedule_time,
-            eventType: event_type,
-            payoff: pay_off,
-            scheduleTime: schedule_time,
-            state: state_trans
-        }
-        
+        ContractEvent::new(
+            schedule_time,
+            schedule_time,
+            event_type,
+            currency,
+            pay_off,
+            state_trans,
+            contract_id,
+        )
     }
 
 
@@ -38,21 +38,21 @@ impl EventFactory {
         schedule_time: Option<IsoDatetime>,
         event_type: EventType,
         currency: Option<String>,
-        pay_off: Rc<dyn TraitPayOffFunction>,
-        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
+        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         convention: &BusinessDayConvention,
         contract_id: Option<String>,
     ) -> ContractEvent {
         let adjusted_time = Some(convention.shift_bd(&schedule_time.unwrap()));
-        ContractEvent {
-            contractID: contract_id,
-            currency: currency,
-            eventTime: adjusted_time,
-            eventType: event_type,
-            payoff: pay_off,
-            scheduleTime: schedule_time,
-            state: state_trans
-        }
+        ContractEvent::new(
+            schedule_time,
+            Some(convention.shift_bd(&schedule_time.unwrap())),
+            event_type,
+            currency,
+            pay_off,
+            state_trans,
+            contract_id,
+        )
 
     }
 
@@ -61,24 +61,23 @@ impl EventFactory {
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
         currency: Option<String>,
-        pay_off: Rc<dyn TraitPayOffFunction>,
-        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
+        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         contract_id: Option<String>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
             .map(|&time| {
-                ContractEvent {
-                    contractID: contract_id.clone(),
-                    currency: currency.clone(),
-                    eventTime: Some(time),
-                    eventType: event_type,
-                    payoff: pay_off.clone(),
-                    scheduleTime: Some(time),
-                    state: state_trans.clone(),
-                }
-            })
-            .collect()
+                ContractEvent::new(
+                    Some(time),
+                    Some(time),
+                    event_type.clone(),
+                    currency.clone(),
+                    pay_off.clone(),
+                    state_trans.clone(),
+                    contract_id.clone(),
+                )
+            }).collect()
     }
 
     /// Create a series of `ContractEvent`s from an unordered schedule of times with business day convention adjustments
@@ -95,8 +94,8 @@ impl EventFactory {
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
         currency: Option<String>,
-        pay_off: Rc<dyn TraitPayOffFunction>,
-        state_trans: Rc<dyn TraitStateTransitionFunction>,
+        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
+        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         convention: &BusinessDayConvention,
         contract_id: Option<String>,
     ) -> HashSet<ContractEvent> {
@@ -104,15 +103,15 @@ impl EventFactory {
             .iter()
             .map(|&time| {
                 let adjusted_time = convention.shift_bd(&time);
-                ContractEvent {
-                    contractID: contract_id.clone(),
-                    currency: currency.clone(),
-                    eventTime: Some(adjusted_time),
-                    eventType: event_type,
-                    payoff: pay_off.clone(),
-                    scheduleTime: Some(time),
-                    state: state_trans.clone()
-                }
+                ContractEvent::new(
+                    Some(time),
+                    Some(convention.shift_bd(&time)),
+                    event_type.clone(),
+                    currency.clone(),
+                    pay_off.clone(),
+                    state_trans.clone(),
+                    contract_id.clone(),
+                )
             })
             .collect()
     }

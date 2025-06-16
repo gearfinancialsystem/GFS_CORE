@@ -7,6 +7,7 @@ use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -63,7 +64,7 @@ pub struct PAM {
     pub penaltyType: Option<PenaltyType>,
     pub penaltyRate: Option<f64>,
     pub objectCodeOfPrepaymentModel: Option<String>,
-    pub cycleAnchorDateOfRateReset: Option<Vec<IsoDatetime>>,
+    pub cycleAnchorDateOfRateReset: Option<IsoDatetime>,
     pub cycleOfRateReset: Option<String>,
     pub rateSpread: Option<f64>,
     pub marketObjectCodeOfRateReset: Option<String>,
@@ -76,6 +77,7 @@ pub struct PAM {
     pub nextResetRate: Option<f64>,
     pub rateMultiplier: Option<f64>, // obligatoire
     pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
+    pub contractPerformance: Option<ContractPerformance>,
 }
 
 impl Default for PAM {
@@ -135,6 +137,7 @@ impl Default for PAM {
             nextResetRate: None,
             rateMultiplier: None,
             maturityDate: None,
+            contractPerformance: None
         }
     }
 
@@ -221,7 +224,7 @@ impl PAM {
         self.penaltyType = PenaltyType::provide(sm, "penaltyType");
         self.penaltyRate = CommonUtils::provide_f64(sm, "penaltyRate");
         self.objectCodeOfPrepaymentModel = CommonUtils::provide_string(sm, "objectCodeOfPrepaymentModel");
-        self.cycleAnchorDateOfRateReset = IsoDatetime::provide_vec(sm, "cycleAnchorDateOfRateReset");
+        self.cycleAnchorDateOfRateReset = IsoDatetime::provide(sm, "cycleAnchorDateOfRateReset");
         self.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
         self.rateSpread = CommonUtils::provide_f64(sm, "rateSpread");
         self.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
@@ -233,7 +236,7 @@ impl PAM {
         self.fixingPeriod = IsoDatetime::provide(sm, "fixingPeriod");
         self.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
         self.rateMultiplier = CommonUtils::provide_f64(sm, "rateMultiplier"); // obligatoire
-        
+        self.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
     }
 
 }

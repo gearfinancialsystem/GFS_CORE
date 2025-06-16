@@ -10,7 +10,7 @@ use crate::terms::grp_counterparty::contract_performance::Ma::MA;
 use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ContractPerformance {
     PF(PF),
     DL(DL),
@@ -50,7 +50,7 @@ impl ContractPerformance {
         Self::TE(TE::new())
     }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
+    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
@@ -58,7 +58,17 @@ impl ContractPerformance {
                 Self::from_str(s).ok()
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
+            //.unwrap_or_default()
+    }
+    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
+        string_map
+            .get(key)
+            .and_then(|s| {
+                Self::from_str(s).ok()
+            })
+            .map(|b| b) // On stocke la convention dans une Box
+            //.unwrap_or_default()
     }
 }
 

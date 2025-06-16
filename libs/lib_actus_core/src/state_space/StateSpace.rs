@@ -6,7 +6,7 @@ use crate::types::isoDatetime::IsoDatetime;
 pub type BoundaryLeg1ActiveFlag = bool;
 pub type BoundaryLeg2ActiveFlag = bool;
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, PartialOrd)]
 pub struct StateSpace {
     pub accruedInterest: Option<f64>,
     pub accruedInterest2: Option<f64>,
@@ -30,6 +30,7 @@ pub struct StateSpace {
     pub boundaryMonitoringFlag: Option<bool>,
     pub boundaryLeg1ActiveFlag: Option<bool>,
     pub boundaryLeg2ActiveFlag: Option<bool>,
+    pub lastInterestPeriod: Option<f64>
 }
 
 impl StateSpace {
@@ -58,6 +59,7 @@ impl StateSpace {
             boundaryMonitoringFlag: original.boundaryMonitoringFlag,
             boundaryLeg1ActiveFlag: original.boundaryLeg1ActiveFlag,
             boundaryLeg2ActiveFlag: original.boundaryLeg2ActiveFlag,
+            lastInterestPeriod: original.lastInterestPeriod,
         }
     }
 }
@@ -86,6 +88,7 @@ impl Default for StateSpace {
             boundaryMonitoringFlag: Some(false),
             boundaryLeg1ActiveFlag: Some(false),
             boundaryLeg2ActiveFlag: Some(false),
+            lastInterestPeriod: Some(0.0)
         }
     }
 }

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Converted from the Java implementation of PrincipalAtMaturity in org.actus.contracts
 
+use std::collections::HashSet;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use std::error::Error;
-
-
+use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
@@ -38,7 +38,7 @@ STF_FP_PAM::STF_FP_PAM,
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::algorithmic::ScheduleFactory::ScheduleFactory;
+use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::util::CommonUtils::CommonUtils;
 use crate::attributes::ContractModel::ContractModel;
 
@@ -54,142 +54,147 @@ impl PrincipalAtMaturity {
         let mut events: Vec<ContractEvent> = Vec::new();
 
         // Initial exchange (IED)
-        events.push(EventFactory::create_event(
-            *model.initialExchangeDate,
-            EventType::IED,
-            *model.Currency,
-            POF_IED_PAM,
-            STF_IED_PAM,
-            *model.ContractID,
-        ));
+        events.push(
+            EventFactory::create_event(
+                model.initialExchangeDate,
+                EventType::IED,
+                model.currency.clone(),
+                Some(Rc::new(POF_IED_PAM)),
+                Some(Rc::new(STF_IED_PAM)),
+                model.contractID.clone(),
+            )
+        );
 
         // Principal redemption (MD)
+        let mat =
         events.push(EventFactory::create_event(
-            model.MaturityDate,
+            model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
-            model.Currency,
-            POF_MD_PAM,
-            STF_MD_PAM,
-            model.ContractID,
+            model.currency.clone(),
+            Some(Rc::new(POF_MD_PAM)),
+            Some(Rc::new(STF_MD_PAM)),
+            model.contractID.clone(),
         ));
 
         // Purchase (PRD)
-        if !CommonUtils::is_null(&model.PurchaseDate) {
+        if !&model.purchaseDate.is_none() {
             events.push(EventFactory::create_event(
-                model.PurchaseDate,
+                model.purchaseDate,
                 EventType::PRD,
-                model.Currency,
-                POF_PRD_PAM,
-                STF_PRD_PAM,
-                model.ContractID,
+                model.currency.clone(),
+                Some(Rc::new(POF_PRD_PAM)),
+                Some(Rc::new(STF_PRD_PAM)),
+                model.contractID.clone(),
             ));
         }
 
         // Interest payment related events
-        if !CommonUtils::is_null(model.NominalInterestRate)
-            && (!CommonUtils::is_null(model.CycleOfInterestPayment)
-                || !CommonUtils::is_null(model.CycleAnchorDateOfInterestPayment))
+        if !model.nominalInterestRate.is_none()
+            && (!model.cycleOfInterestPayment.is_none()
+                || !model.cycleAnchorDateOfInterestPayment.is_none())
         {
             // Generate raw interest payment events (IP)
             let mut interest_events = EventFactory::create_events_with_convention(
-                ScheduleFactory::create_schedule(
-                    model.CycleAnchorDateOfInterestPayment,
-                    model.MaturityDate,
-                    model.CycleOfInterestPayment,
-                    model.EndOfMonthConvention,
+                &ScheduleFactory::create_schedule(
+                    model.cycleAnchorDateOfInterestPayment.clone(),
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
+                    model.cycleOfInterestPayment.clone(),
+                    model.endOfMonthConvention.unwrap(),
                     true,
-                )?,
+                ),
                 EventType::IP,
-                model.Currency,
-                POF_IP_PAM,
-                STF_IP_PAM,
-                &model.BusinessDayConvention,
-                model.ContractID,
+                model.currency.clone(),
+                Some(Rc::new(POF_IP_PAM)),
+                Some(Rc::new(STF_IP_PAM)),
+                &model.businessDayConvention.clone().unwrap(),
+                model.contractID.clone(),
             );
 
             // Adapt if interest capitalization is set
-            if !CommonUtils::is_null(model.CapitalizationEndDate) {
+            if !model.capitalizationEndDate.is_none() {
                 // Remove IP events at IPCED and add IPCI event instead
                 let capitalization_end = EventFactory::create_event_with_convention(
-                    *model.CapitalizationEndDate,
+                    model.capitalizationEndDate,
                     EventType::IPCI,
-                    model.Currency,
-                    POF_IPCI_PAM,
-                    STF_IPCI_PAM,
-                    &model.BusinessDayConvention,
-                    model.ContractID,
+                    model.currency.clone(),
+                    Some(Rc::new(POF_IPCI_PAM)),
+                    Some(Rc::new(STF_IPCI_PAM)),
+                    &model.businessDayConvention.clone().unwrap(),
+                    model.contractID.clone(),
                 );
 
                 // Remove IP events that occur at capitalization end date
                 interest_events.retain(|e| {
-                    !(e.event_type() == EventType::IP && e.event_time() == capitalization_end.event_time())
+                    !(e.eventType == EventType::IP && e.eventTime == Some(capitalization_end.get_event_time()))
                 });
 
                 // Add capitalization end event
-                interest_events.push(capitalization_end.clone());
-
+                interest_events.insert(capitalization_end.clone());
+                let mut vec: Vec<_> = interest_events.clone().into_iter().collect();
                 // Change events with time <= IPCED and cont_type IP to IPCI
-                for e in interest_events.iter_mut() {
-                    if e.event_type() == EventType::IP
-                        && e.event_time() <= capitalization_end.event_time()
+                for e in vec.iter_mut() {
+                    if e.get_eventType() == EventType::IP
+                        && e.get_event_time() <= capitalization_end.get_event_time()
                     {
-                        e.set_event_type(EventType::IPCI);
-                        e.set_f_payoff(POF_IPCI_PAM);
-                        e.set_f_state_trans(STF_IPCI_PAM);
+                        e.chg_eventType(EventType::IPCI);
+                        e.set_f_pay_off(Some(Rc::new(POF_IPCI_PAM)));
+                        e.set_f_state_trans(Some(Rc::new(STF_IPCI_PAM)));
                     }
                 }
+                interest_events = vec.into_iter().collect();
             }
 
             events.extend(interest_events);
-        } else if !CommonUtils::is_null(model.CapitalizationEndDate) {
+        } else if !model.capitalizationEndDate.is_none() {
             // If no interest schedule set but capitalization end date, add single IPCI event
             events.push(EventFactory::create_event_with_convention(
-                model.CapitalizationEndDate,
+                model.capitalizationEndDate,
                 EventType::IPCI,
-                model.Currency,
-                POF_IPCI_PAM,
-                STF_IPCI_PAM,
-                &model.BusinessDayConvention,
-                model.ContractID,
+                model.currency.clone(),
+                Some(Rc::new(POF_IPCI_PAM)),
+                Some(Rc::new(STF_IPCI_PAM)),
+                &model.businessDayConvention.clone().unwrap(),
+                model.contractID.clone(),
             ));
         }
 
         // Rate reset events (RR)
-        let mut rate_reset_events = EventFactory::create_event_with_convention(
-            ScheduleFactory::create_schedule(
-                model.CycleAnchorDateOfRateReset,
-                model.MaturityDate,
-                model.CycleOfRateReset,
-                model.EndOfMonthConvention,
+        let mut rate_reset_events = EventFactory::create_events_with_convention(
+            &ScheduleFactory::create_schedule(
+                model.cycleAnchorDateOfRateReset.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
+                model.cycleOfRateReset.clone(),
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
-            )?,
+            ),
             EventType::RR,
-            model.Currency,
-            POF_RR_PAM,
-            STF_RR_PAM,
-            &model.BusinessDayConvention,
-            model.ContractID,
-        )?;
+            model.currency.clone(),
+            Some(Rc::new(POF_RR_PAM)),
+            Some(Rc::new(STF_RR_PAM)),
+            &model.businessDayConvention.clone().unwrap(),
+            model.contractID.clone(),
+        );
 
         // Adapt fixed rate reset event
-        if !CommonUtils::is_null(model.NextResetRate) {
-            let status_date = model.StatusDate;
+        if !model.nextResetRate.is_none() {
+            let status_date = model.statusDate;
             let status_event = EventFactory::create_event(
                 status_date,
                 EventType::AD,
-                model.Currency,
+                model.currency.clone(),
                 None,
                 None,
-                model.ContractID,
+                model.contractID.clone(),
             );
-            rate_reset_events.sort();
-            if let Some(fixed_event) = rate_reset_events
+            let mut vec: Vec<_> = rate_reset_events.clone().into_iter().collect();
+
+            if let Some(fixed_event) = vec
                 .iter_mut()
                 .filter(|e| **e > status_event)
                 .next()
             {
-                fixed_event.set_f_state_trans(STF_RRF_PAM);
-                fixed_event.set_event_type(EventType::RRF);
+                fixed_event.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
+                fixed_event.chg_eventType(EventType::RRF);
             }
         }
 
@@ -197,57 +202,57 @@ impl PrincipalAtMaturity {
         events.extend(rate_reset_events);
 
         // Fee payment events (FP), if specified
-        if !CommonUtils::is_null(model.CycleOfFee) {
+        if !model.cycleOfFee.is_none() {
             let fee_events = EventFactory::create_event_with_convention(
                 ScheduleFactory::create_schedule(
-                    model.CycleAnchorDateOfFee,
-                    model.MaturityDate,
-                    model.CycleOfFee,
-                    model.EndOfMonthConvention,
+                    model.cycleAnchorDateOfFee,
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
+                    model.cycleOfFee.clone(),
+                    model.endOfMonthConvention,
                     true,
-                )?,
+                ),
                 EventType::FP,
-                model.Currency,
-                POF_FP_PAM,
-                STF_FP_PAM,
-                &model.BusinessDayConvention,
-                model.ContractID,
-            )?;
+                model.currency.clone(),
+                Rc::new(POF_FP_PAM),
+                        Rc::new(STF_FP_PAM),
+                &model.businessDayConvention,
+                model.contractID.clone(),
+            );
             events.extend(fee_events);
         }
 
         // Scaling events (SC), if specified
-        let scaling_effect: String = model.ScalingEffect.to_string();
-        if !CommonUtils::is_null(&scaling_effect)
-            && (scaling_effect.contains('I') || scaling_effect.contains('N'))
+        let scaling_effect = model.scalingEffect.clone();
+        let scaling_effect_str = scaling_effect.unwrap().to_string();
+        if !&scaling_effect.is_none() && (scaling_effect_str.contains('I') || scaling_effect_str.contains('N'))
         {
             let scaling_events = EventFactory::create_event_with_convention(
                 ScheduleFactory::create_schedule(
-                    model.CycleAnchorDateOfScalingIndex,
-                    model.MaturityDate,
-                    model.CycleOfScalingIndex,
-                    model.EndOfMonthConvention,
+                    model.cycleAnchorDateOfScalingIndex,
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
+                    model.cycleOfScalingIndex.clone(),
+                    model.endOfMonthConvention,
                     false,
-                )?,
+                ),
                 EventType::SC,
-                model.Currency,
-                POF_SC_PAM,
-                STF_SC_PAM,
-                &model.BusinessDayConvention,
-                model.ContractID,
-            )?;
+                model.currency.clone(),
+                Some(Rc::new(POF_SC_PAM)),
+                Some(Rc::new(STF_SC_PAM)),
+                &model.businessDayConvention.clone().unwrap(),
+                model.contractID.clone(),
+            );
             events.extend(scaling_events);
         }
 
         // Termination event (TD)
-        if !CommonUtils::is_null(model.TerminationDate) {
+        if !model.terminationDate.is_none() {
             let termination = EventFactory::create_event(
-                model.TerminationDate,
+                model.terminationDate,
                 EventType::TD,
-                model.Currency,
-                POF_TD_PAM,
-                STF_TD_PAM,
-                model.ContractID,
+                model.currency.clone(),
+                Some(Rc::new(POF_TD_PAM)),
+                Some(Rc::new(STF_TD_PAM)),
+                model.contractID.clone(),
             );
 
             // Remove all events occurring after termination date
@@ -256,14 +261,14 @@ impl PrincipalAtMaturity {
         }
 
         // Remove all pre-status date events
-        let status_date = model.StatusDate;
+        let status_date = model.statusDate;
         let status_event = EventFactory::create_event(
             status_date,
             EventType::AD,
-            model.Currency,
+            model.currency.clone(),
             None,
             None,
-            model.ContractID,
+            model.contractID.clone(),
         );
         events.retain(|e| e >= &status_event);
 
@@ -271,10 +276,10 @@ impl PrincipalAtMaturity {
         let to_event = EventFactory::create_event(
             to,
             EventType::AD,
-            model.Currency,
+            model.currency.clone(),
             None,
             None,
-            model.ContractID,
+            model.contractID.clone(),
         );
         events.retain(|e| e <= &to_event);
 
@@ -291,7 +296,7 @@ impl PrincipalAtMaturity {
         observer: &RiskFactorModel,
     ) -> Vec<ContractEvent> {
         // Initialize state space per status date
-        let mut states = Self::init_StateSpace(model)?;
+        let mut states = Self::init_StateSpace(model);
 
         // Sort events according to their time sequence
         events.sort();
@@ -302,24 +307,24 @@ impl PrincipalAtMaturity {
                 &mut states,
                 model,
                 observer,
-                model.DayCountConvention,
-                model.BusinessDayConvention,
+                &model.dayCountConvention.clone().unwrap(),
+                &model.businessDayConvention.clone().unwrap(),
             );
         }
 
         // Remove pre-purchase events if purchase date is set
-        if !CommonUtils::is_null(model.PurchaseDate) {
-            let purchase_date = model.PurchaseDate;
+        if !model.purchaseDate.is_none() {
+            let purchase_date = model.purchaseDate;
             let purchase_event = EventFactory::create_event(
                 purchase_date,
                 EventType::PRD,
-                model.Currency,
+                model.currency.clone(),
                 None,
                 None,
-                model.ContractID,
+                model.contractID.clone(),
             );
             events.retain(|e| {
-                e.event_type() == EventType::AD || e >= &purchase_event
+                e.get_eventType() == EventType::AD || e >= &purchase_event
             });
         }
 
@@ -331,59 +336,77 @@ impl PrincipalAtMaturity {
     fn init_StateSpace(
         model: &ContractModel,
     ) -> StateSpace {
-        let mut states = StateSpace::new();
-        
+        let mut states = StateSpace::default();
 
-        states.notional_scaling_multiplier = model.NotionalScalingMultiplier;
-        states.interest_scaling_multiplier = model.InterestScalingMultiplier;
-        states.contract_performance = model.ContractPerformance;
-        states.status_date = model.StatusDate;
+        states.notionalScalingMultiplier = model.notionalScalingMultiplier;
+        states.interestScalingMultiplier = model.interestScalingMultiplier;
+        states.contractPerformance = model.contractPerformance;
+        states.statusDate = model.statusDate;
 
-        let initial_exchange_date: IsoDatetime = model.InitialExchangeDate;
-        if initial_exchange_date > states.status_date {
-            states.notional_principal = 0.0;
-            states.nominal_interest_rate = 0.0;
+        let initial_exchange_date: IsoDatetime = model.initialExchangeDate.unwrap();
+        if initial_exchange_date > states.statusDate.unwrap() {
+            states.notionalPrincipal = Some(0.0);
+            states.nominalInterestRate = Some(0.0);
         } else {
-            let role_sign = model.ContractRole.role_sign();
-            states.notional_principal = role_sign * model.NotionalPrincipal;
-            states.nominal_interest_rate = model.NominalInterestRate;
+            //let role_sign = model.contractRole.role_sign();
+
+            // let role_sign = match (&model.contractRole) {
+            //     (Some(a)) => a.role_sign(),
+            //     (a_x) => 1.0, // to check
+            // };
+            let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            states.nominalInterestRate = model.nominalInterestRate;
         }
 
         // Initialize accrued interest
-        if CommonUtils::is_null(model.NominalInterestRate) {
-            states.accrued_interest = 0.0;
-        } else if !CommonUtils::is_null(model.AccruedInterest) {
-            states.accrued_interest = model.AccruedInterest;
+        if model.nominalInterestRate.is_none() {
+            states.accruedInterest =  Some(0.0);
+        } else if !model.accruedInterest.is_none() {
+            states.accruedInterest = model.accruedInterest;
         } else {
-            let day_counter = model.DayCountConvention;
-            let time_adjuster = model.BusinessDayConvention;
-            let mut ip_schedule = ScheduleFactory::create_schedule(
-                model.CycleAnchorDateOfInterestPayment,
-                model.MaturityDate,
-                model.CycleOfInterestPayment,
-                model.EndOfMonthConvention,
+            let day_counter = model.dayCountConvention.as_ref().unwrap();
+            let time_adjuster = model.businessDayConvention.as_ref().unwrap();
+
+
+            let mut ip_schedule: Vec<IsoDatetime> = ScheduleFactory::create_schedule(
+                model.cycleAnchorDateOfInterestPayment,
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
+                model.cycleOfInterestPayment.clone(),
+                model.endOfMonthConvention.unwrap(),
                 true,
-            )?;
+            ).into_iter().collect();
 
             ip_schedule.sort();
-            let dates_earlier_than_status: Vec<&NaiveDateTime> = ip_schedule
+            // List<LocalDateTime> dateEarlierThanT0 = ipSchedule.stream().filter(time -> time.isBefore(states.statusDate)).collect(Collectors.toList());
+
+            let date_earlier_than_t0: Vec<&IsoDatetime> = ip_schedule
                 .iter()
-                .filter(|&&date| date < states.status_date)
+                .filter(|&&date| date < states.statusDate.unwrap())
                 .collect();
 
-            if let Some(&t_minus) = dates_earlier_than_status.last() {
-                let adjusted_t_minus = time_adjuster.shift_calc_time(t_minus);
-                let adjusted_status_date = time_adjuster.shift_calc_time(states.status_date);
-                let day_fraction = day_counter.day_count_fraction(adjusted_t_minus, adjusted_status_date);
-                states.accrued_interest = day_fraction * states.notional_principal * states.nominal_interest_rate;
-            }
+            // tMinus = dateEarlierThanT0.get(dateEarlierThanT0.size() -1);
+            let t_minus = date_earlier_than_t0.last();
+
+            states.accruedInterest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
+                                                                    time_adjuster.shift_bd(&states.statusDate.unwrap()))
+                * states.notionalPrincipal.unwrap()
+                * states.nominalInterestRate.unwrap());
+
+
+            // if let Some(&t_minus) = date_earlier_than_t0.last() {
+            //     let adjusted_t_minus = time_adjuster.shift_calc_time(t_minus);
+            //     let adjusted_status_date = time_adjuster.shift_calc_time(states.statusDate);
+            //     let day_fraction = day_counter.day_count_fraction(adjusted_t_minus, adjusted_status_date);
+            //     states.accruedInterest = day_fraction * states.notionalPrincipal * states.nominalInterestRate;
+            // }
         }
 
         // Initialize fee accrued
-        if CommonUtils::is_null(model.FeeRate) {
-            states.fee_accrued = 0.0;
-        } else if !CommonUtils::is_null(model.FeeAccrued) {
-            states.fee_accrued = model.FeeAccrued;
+        if model.feeRate.is_none() {
+            states.feeAccrued = Some(0.0);
+        } else if !model.feeAccrued.is_none() {
+            states.feeAccrued = model.feeAccrued;
         }
         // TODO: Implement last two possible initializations if needed
 

@@ -8,7 +8,7 @@ impl EventSequence {
     }
 
     /// Returns the time offset according to the event sequence for a particular event cont_type
-    pub fn time_offset(event_typex: EventType) -> i32 {
+    pub fn time_offset(event_typex: EventType) -> i64 {
         match event_typex {
             EventType::IED => 20,
             EventType::PR => 30,
