@@ -8,7 +8,7 @@ use crate::types::isoDatetime::IsoDatetime;
 /// to a `BusinessDayConvention`, the time is shifted first and calculations
 /// are performed thereafter. Hence, calculations are based on the shifted time as well.
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Copy)]
 pub struct ShiftCalc;
 
 impl ShiftCalc {

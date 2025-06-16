@@ -8,7 +8,7 @@ use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum EndOfMonthConvention {
     SD(SD),
     EOM(EOM)

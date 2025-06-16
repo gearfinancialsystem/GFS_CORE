@@ -4,7 +4,7 @@ use chrono::NaiveDate;
 use chrono::{Datelike, Duration, Timelike};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub struct EOM;
 
 impl EOM {

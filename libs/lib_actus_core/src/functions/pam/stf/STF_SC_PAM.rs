@@ -1,62 +1,123 @@
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
 use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
 use crate::terms::grp_notional_principal::ScalingEffect;
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_SC_PAM;
 
-impl StateTransitionFunctionTrait for STF_SC_PAM {
+impl TraitStateTransitionFunction for STF_SC_PAM {
     fn eval(
         &self,
-        time: IsoDatetime, 
-        states: &StateSpace,
+        time: &IsoDatetime,
+        states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
-    ) -> StateSpace {
-
-        let mut new_states: StateSpace = states.copy_state_space();
+    ) { // ->StateSpace
+        // let mut new_state = StateSpace::copy_state_space(states);
+        // let mut new_states: StateSpace = StateSpace::copy_state_space(states);
         // Calculate time from the last event
-        let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate),
+        let timeFromLastEvent = day_counter.day_count_fraction(
+            time_adjuster.shift_bd(&states.statusDate.unwrap()),
             time_adjuster.shift_bd(&time),
         );
 
-        // Update accrued interest and fee accrued
-        if let Some(value) = new_states.accruedInterest.as_deref_mut() {
-            *value += states.nominalInterestRate * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event; // Dereference just once due to as_deref_mut
-        }
+        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal) {
+            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
+            (accrued_interest, _, _) => accrued_interest,
+        };
 
-        if let Some(value) = new_states.feeAccrued.as_deref_mut() {
-            *value += model.FeeRate.unwrap() * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event; // Dereference just once due to as_deref_mut
-        }
-        
-        // Calculate scaling multiplier
-        let scaling_index = &model.ScalingIndexAtContractDealDate;
-        let scaling_multiplier = 1.0; // risk_factor_model.state_at(model.MarketObjectCodeOfScalingIndex, &time, states, model) / scaling_index;
 
-        // Apply scaling effect to interest or notional scaling multipliers
-        let scaling_effect = &model.ScalingEffect;
-        if *scaling_effect.as_ref() == ScalingEffect::ScalingEffect::INO(INO) || *scaling_effect.as_ref() == ScalingEffect::ScalingEffect::IOO(IOO) {
-            new_states.interestScalingMultiplier = scaling_multiplier;
-        }
-        if *scaling_effect.as_ref() == ScalingEffect::ScalingEffect::INO(INO) || *scaling_effect.as_ref() == ScalingEffect::ScalingEffect::ONO(ONO) {
-            new_states.notionalScalingMultiplier = scaling_multiplier;
-        }
 
-        // Update the status date
-        new_states.statusDate = time;
+        // new_state.accruedInterest = Some(new_state.accruedInterest.unwrap() + (new_state.nominalInterestRate.unwrap() * new_state.notionalPrincipal.unwrap() * timeFromLastEvent));
+        // new_state.accruedInterest = match (new_state.accruedInterest, new_state.nominalInterestRate, new_state.notionalPrincipal) {
+        //     (Some(accrued), Some(rate), Some(principal)) => {
+        //         Some(accrued + (rate * principal * timeFromLastEvent))
+        //     }
+        //     (accrued, _, _) => accrued, // garde l'ancienne valeur si le calcul n'est pas possible
+        // };
 
-        // Return a copy of the updated state space
-        new_states
+        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
+            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
+            (fee_accrued, _, _) => fee_accrued,
+        };
+
+        // new_state.feeAccrued = match (new_state.feeAccrued, model.feeRate, new_state.notionalPrincipal) {
+        //     (Some(fee), Some(rate), Some(principal)) => {
+        //         Some(fee + (rate * principal * timeFromLastEvent))
+        //     }
+        //     (fee, _, _) => fee, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
+        // };
+        //
+
+        // // new_state.feeAccrued = Some(new_state.feeAccrued.unwrap() + (model.feeRate.unwrap() * new_state.notionalPrincipal.unwrap() * timeFromLastEvent));
+        let scalingMultiplier = 1.0; // a corriger !!!
+        states.interestScalingMultiplier = match (states.interestScalingMultiplier, scalingMultiplier) {
+            (Some(a), b) => {
+                if a.to_string().contains("I") {
+                    Some(b)
+                }
+                else {
+                    None
+                }
+            },
+            (a, _) => a,
+        };
+
+        states.notionalScalingMultiplier = match (states.notionalScalingMultiplier, scalingMultiplier) {
+            (Some(a), b) => {
+                if a.to_string().contains("N") {
+                    Some(b)
+                }
+                else {
+                    None
+                }
+            },
+            (a, _) => a,
+        };
+
+
+        states.statusDate = Some(*time);
+        //
+        // new_state.interestScalingMultiplier = match (new_state.interestScalingMultiplier, scalingMultiplier) {
+        //     (Some(iScale), scalingMultiplier) => {
+        //         if iScale.to_string().contains("I") {
+        //             Some(iScale + scalingMultiplier)
+        //         } else {
+        //             None
+        //         }
+        //     }
+        //     (iScale, _) => iScale, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
+        // };
+        // new_state.notionalScalingMultiplier = match (new_state.notionalScalingMultiplier, scalingMultiplier) {
+        //     (Some(iScale), scalingMultiplier) => {
+        //         if iScale.to_string().contains("N") {
+        //             Some(iScale + scalingMultiplier)
+        //         } else {
+        //             None
+        //         }
+        //     }
+        //     (iScale, _) => iScale, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
+        // };
+        //
+        // new_state.statusDate = match (new_state.statusDate) {
+        //     (Some(stdate)) => {
+        //         Some(stdate)
+        //     }
+        //     (stdate) => stdate, // garde l'ancienne valeur si le calcul n'est pas possible
+        // };
+        //
+        // // Return a copy of the updated state space
+        // new_state
+
     }
 }

@@ -1,43 +1,42 @@
-use std::any::Any;
-use std::ops::Deref;
-use crate::{contracts::ContractModel::ContractModel, 
-            terms::grp_fees::FeeBasis};
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::PayOffFunctionTrait::PayOffFunctionTrait;
-
-
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::types::isoDatetime::IsoDatetime;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
 #[allow(non_camel_case_types)]
 pub struct POF_FP_PAM;
 
-impl PayOffFunctionTrait for POF_FP_PAM {
+impl TraitPayOffFunction for POF_FP_PAM {
     fn eval(
         &self,
-        time: IsoDatetime, 
+        time: &IsoDatetime, 
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-        let a = model;
-   
-        
-        if *model.FeeBasis == FeeBasis::FeeBasis::A(A) {
-            1.0           // implémenter settlement_currency_fx_rate dans common util
-            * model.ContractRole.role_sign() 
-            * model.FeeRate.unwrap()
+        match &model.feeBasis {
+            Some(fee_basis) => {
+                if *fee_basis == FeeBasis::A(A) {
+                    let role_sign = model.contractRole.as_ref()
+                        .map_or(0.0, |role| role.role_sign());
+                    let fee_rate = model.feeRate.unwrap_or(0.0);
+                    1.0 * role_sign * fee_rate
+                } else {
+                    let fee_accrued = states.feeAccrued.unwrap_or(0.0);
+                    let fee_rate = model.feeRate.unwrap_or(0.0);
+                    let notional_principal = states.notionalPrincipal.unwrap_or(0.0);
+                    1.0 * fee_accrued * fee_rate * notional_principal
+                }
+            }
+            None => 0.0,
         }
-        else {
-            1.0                  // implémenter settlement_currency_fx_rate dans common util
-            * (states.feeAccrued.as_deref().unwrap()) // + day_counter.day_count_fraction(time_adjuster.shift_sc(&states.statusDate, ), end_time))
-            * model.FeeRate.unwrap()
-            * states.notionalPrincipal.as_deref().unwrap()
-        }
-
     }
+
 }
+

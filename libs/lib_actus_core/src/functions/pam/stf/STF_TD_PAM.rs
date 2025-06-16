@@ -1,34 +1,33 @@
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_TD_PAM;
 
-impl StateTransitionFunctionTrait for STF_TD_PAM {
+impl TraitStateTransitionFunction for STF_TD_PAM {
     fn eval(
         &self,
-        time: IsoDatetime, 
-        states: &StateSpace,
+        time: &IsoDatetime,
+        states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
-    )  -> StateSpace {
+    )  {
 
-        let mut new_states: StateSpace = states.copy_state_space();
+        // let mut new_states = StateSpace::copy_state_space(states);
+
         // Update state space
-        new_states.notionalPrincipal = Some(Box::new(0.0));
-        new_states.accruedInterest = Some(Box::new(0.0));
-        new_states.feeAccrued = Some(Box::new(0.0));
-        new_states.statusDate = time;
+        states.notionalPrincipal = Some(0.0);
+        states.accruedInterest = Some(0.0);
+        states.feeAccrued = Some(0.0);
+        states.statusDate = Some(*time);
 
         // Return a copy of the updated state space
-        new_states
     }
 }

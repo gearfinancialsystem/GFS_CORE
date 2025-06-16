@@ -1,49 +1,47 @@
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_RRF_PAM;
 
-impl StateTransitionFunctionTrait for STF_RRF_PAM {
+impl TraitStateTransitionFunction for STF_RRF_PAM {
     fn eval(
         &self,
-        time: IsoDatetime, 
-        states: &StateSpace,
+        time: &IsoDatetime, 
+        states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
-    ) -> StateSpace {
-        let mut new_states: StateSpace = states.copy_state_space();
+    ) {
+
+        // let mut new_states: StateSpace = states.copy_state_space();
         // Calculate time from the last event
-        let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate),
+        let timeFromLastEvent = day_counter.day_count_fraction(
+            time_adjuster.shift_bd(&states.statusDate.unwrap()),
             time_adjuster.shift_bd(&time),
         );
 
-        // Update accrued interest and fee accrued
-        if let Some(value) = new_states.accruedInterest.as_deref_mut() {
-            *value += states.nominalInterestRate * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event; // Dereference just once due to as_deref_mut
-        }
-        
-        if let Some(value) = new_states.feeAccrued.as_deref_mut() {
-            *value += model.FeeRate.unwrap() * states.notionalPrincipal.as_deref().unwrap() * time_from_last_event; // Dereference just once due to as_deref_mut
-        }
+        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal) {
+            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
+            (accrued_interest, _, _) => accrued_interest,
+        };
+
+        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
+            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
+            (fee_accrued, _, _) => fee_accrued,
+        };
 
         // Set the nominal interest rate to the next reset rate
         
-        new_states.nominalInterestRate = model.NextResetRate.unwrap();
-        
+        states.nominalInterestRate = model.nextResetRate;
+        states.statusDate = Some(*time)
 
-        // Update the status date
-        new_states.statusDate = time;
 
-        // Return a copy of the updated state space
-        new_states
     }
 }

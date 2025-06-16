@@ -2,7 +2,7 @@ use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Copy)]
 pub struct CalcShift;
 
 impl CalcShift {

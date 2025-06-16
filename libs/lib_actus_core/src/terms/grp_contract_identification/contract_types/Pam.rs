@@ -35,7 +35,7 @@ pub struct PAM {
     pub feeBasis: Option<FeeBasis>,
     pub feeRate: Option<f64>,
     pub feeAccrued: Option<f64>,
-    pub cycleAnchorDateOfInterestPayment: Option<Vec<IsoDatetime>>,
+    pub cycleAnchorDateOfInterestPayment: Option<IsoDatetime>,
     pub cycleOfInterestPayment: Option<String>,
     pub nominalInterestRate: Option<f64>,
     pub dayCountConvention: Option<DayCountConvention>,
@@ -193,7 +193,7 @@ impl PAM {
         self.feeBasis = FeeBasis::provide(sm, "feeBasis");
         self.feeRate = CommonUtils::provide_f64(sm, "feeRate");
         self.feeAccrued = CommonUtils::provide_f64(sm, "feeAccrued");
-        self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide_vec(sm, "cycleAnchorDateOfInterestPayment");
+        self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment");
         self.cycleOfInterestPayment = CommonUtils::provide_string(sm, "cycleOfInterestPayment");
         self.nominalInterestRate = CommonUtils::provide_f64(sm, "nominalInterestRate");
 

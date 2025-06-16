@@ -4,7 +4,7 @@ use chrono::{Datelike, Duration, Timelike};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub struct SD;
 
 impl SD {

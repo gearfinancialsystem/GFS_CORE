@@ -18,11 +18,11 @@ pub trait TraitStateTransitionFunction {
     
     fn eval(
         &self,
-        time: NaiveDateTime,
-        states: &StateSpace,
+        time: &NaiveDateTime,
+        states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
-    ) -> StateSpace;
+    ) ; // -> StateSpace
 }

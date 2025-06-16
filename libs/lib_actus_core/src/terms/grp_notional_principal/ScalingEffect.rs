@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 
@@ -62,6 +63,17 @@ impl ScalingEffect {
     }
 }
 
+impl fmt::Display for ScalingEffect {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ScalingEffect::OOO(_) => write!(f, "OOO"),
+            ScalingEffect::IOO(_) => write!(f, "IOO"),
+            ScalingEffect::ONO(_) => write!(f, "ONO"),
+            ScalingEffect::INO(_) => write!(f, "INO"),
+            ScalingEffect::None => write!(f, "None"),
+        }
+    }
+}
 impl FromStr for ScalingEffect {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {

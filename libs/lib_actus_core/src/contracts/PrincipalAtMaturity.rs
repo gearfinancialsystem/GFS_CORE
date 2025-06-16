@@ -4,14 +4,12 @@
 use chrono::{DateTime, NaiveDateTime, Utc};
 use std::error::Error;
 
-use crate::contracts::ContractModel::ContractModel;
 
-
-use crate::event::ContractEvent::ContractEvent;
-use crate::event::EventFactory::EventFactory;
-use crate::event::EventType::EventType;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
 // use crate::externals::RiskFactorModelProvider::RiskFactorModelProvider;
-use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
 
 use crate::functions::pam::pof::{
     POF_FP_PAM::POF_FP_PAM,
@@ -38,11 +36,11 @@ STF_FP_PAM::STF_FP_PAM,
     STF_TD_PAM::STF_TD_PAM,
 };
 
-use crate::states::StateSpace::StateSpace;
-use crate::subtypes::IsoDatetime::IsoDatetime;
+use crate::state_space::StateSpace::StateSpace;
+use crate::types::isoDatetime::IsoDatetime;
 use crate::algorithmic::ScheduleFactory::ScheduleFactory;
-
 use crate::util::CommonUtils::CommonUtils;
+use crate::attributes::ContractModel::ContractModel;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct PrincipalAtMaturity;
@@ -50,14 +48,14 @@ pub struct PrincipalAtMaturity;
 impl PrincipalAtMaturity {
     /// Compute next events within the period up to `to` date based on the contract model
     pub fn schedule(
-        to: IsoDatetime,
+        to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events: Vec<ContractEvent> = Vec::new();
 
         // Initial exchange (IED)
         events.push(EventFactory::create_event(
-            *model.InitialExchangeDate,
+            *model.initialExchangeDate,
             EventType::IED,
             *model.Currency,
             POF_IED_PAM,

@@ -1,50 +1,51 @@
-use crate::traits::StateTransitionFunctionTrait::StateTransitionFunctionTrait;
-use crate::contracts::ContractModel::ContractModel;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::subtypes::IsoDatetime::IsoDatetime;
-use crate::states::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_fees::fee_basis::N::N;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
+
 #[allow(non_camel_case_types)]
 pub struct STF_IP_PAM;
 
-impl StateTransitionFunctionTrait for STF_IP_PAM {
+impl TraitStateTransitionFunction for STF_IP_PAM {
     fn eval(
         &self,
-        time: IsoDatetime, 
-        states: &StateSpace,
+        time: &IsoDatetime, 
+        states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
-    ) -> StateSpace {
+    ) {
         // Reset accrued interest
-        let mut new_states: StateSpace = states.copy_state_space(); 
-        
-        new_states.accruedInterest = Some(Box::new(0.0));
+        //let mut new_states: StateSpace = states.copy_state_space(); 
+
+        states.accruedInterest = Some(0.0);
 
         // Update fee-accrued
-        if *model.FeeBasis == FeeBasis::N(N) {
-            let time_fraction = day_counter.day_count_fraction(
-                time_adjuster.shift_bd(&states.statusDate),
-                time_adjuster.shift_bd(&time),
-            );
 
-            // Modify the value inside the Option<Box<f64>>
-            if let Some(value) = new_states.feeAccrued.as_deref_mut() {
-                *value += time_fraction * model.FeeRate.unwrap() * states.notionalPrincipal.as_deref().unwrap(); // Dereference just once due to as_deref_mut
+        if let Some(fee_basis) = &model.feeBasis {
+            if *fee_basis == FeeBasis::N(N) {
+                let time_fraction = day_counter.day_count_fraction(
+                    time_adjuster.shift_bd(&states.statusDate.unwrap()),
+                    time_adjuster.shift_bd(&time),
+                );
+
+
+                states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
+                    (Some(a), Some(b), Some(c)) => Some(a + (b * c)),
+                    (feeAccrued, _, _) => feeAccrued,
+                };
             }
-        
-        } 
-        // Further processing for FeeBasis cases that aren't "N"
-        // Commented out: If additional logic is needed, it can be expanded here
+            // Further processing for FeeBasis cases that aren't "N"
+            // Commented out: If additional logic is needed, it can be expanded here
 
-        // Update the status date
-        new_states.statusDate = time;
-
-        // Return a copy of the updated state space
-        new_states
+            // Update the status date
+            states.statusDate = Some(*time);
+        }
     }
 }
