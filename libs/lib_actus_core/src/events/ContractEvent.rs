@@ -18,6 +18,17 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
+
+// 
+// Lorsque vous appelez sorted() sur une liste de ContractEvent, la méthode utilise l'ordre naturel défini par l'interface Comparable<ContractEvent>, qui est implémentée par la classe ContractEvent. Plus précisément, le tri est effectué en utilisant la méthode compareTo de la classe ContractEvent, qui compare les événements basés sur leur epochOffset.
+// 
+// Ainsi, les événements sont triés dans l'ordre croissant de leur epochOffset, ce qui correspond à un ordre chronologique basé sur le temps de l'événement et un décalage spécifique au type d'événement.
+// 
+// Réponse finale :
+// 
+// La méthode sorted() utilise l'ordre naturel défini par la méthode compareTo de la classe ContractEvent. Les événements sont triés selon leur epochOffset, qui est basé sur le temps de l'événement et un décalage spécifique au type d'événement.
+// 
+
 #[derive(Clone)]
 pub struct ContractEvent {
     pub epochOffset: Option<i64>,
@@ -231,6 +242,20 @@ impl fmt::Debug for ContractEvent {
             .field("scheduleTime", &self.scheduleTime)
             .field("state", &"<dyn StateTransitionFunctionTrait>")
             .finish()
+    }
+}
+
+// Implémentation des traits pour la comparaison
+use std::cmp::Ordering;
+impl PartialOrd for ContractEvent {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for ContractEvent {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.epochOffset.cmp(&other.epochOffset)
     }
 }
 

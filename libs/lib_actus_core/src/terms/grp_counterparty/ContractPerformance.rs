@@ -10,7 +10,7 @@ use crate::terms::grp_counterparty::contract_performance::Ma::MA;
 use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::traits::TraitTermDescription::TraitTermDescription;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContractPerformance {
     PF(PF),
     DL(DL),

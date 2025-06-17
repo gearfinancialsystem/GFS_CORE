@@ -58,10 +58,10 @@ impl PrincipalAtMaturity {
             EventFactory::create_event(
                 model.initialExchangeDate,
                 EventType::IED,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_IED_PAM)),
                 Some(Rc::new(STF_IED_PAM)),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             )
         );
 
@@ -70,10 +70,10 @@ impl PrincipalAtMaturity {
         events.push(EventFactory::create_event(
             model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
-            model.currency.clone(),
+            model.currency.as_ref(),
             Some(Rc::new(POF_MD_PAM)),
             Some(Rc::new(STF_MD_PAM)),
-            model.contractID.clone(),
+            model.contractID.as_ref(),
         ));
 
         // Purchase (PRD)
@@ -81,10 +81,10 @@ impl PrincipalAtMaturity {
             events.push(EventFactory::create_event(
                 model.purchaseDate,
                 EventType::PRD,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_PRD_PAM)),
                 Some(Rc::new(STF_PRD_PAM)),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             ));
         }
 
@@ -103,11 +103,11 @@ impl PrincipalAtMaturity {
                     true,
                 ),
                 EventType::IP,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_IP_PAM)),
                 Some(Rc::new(STF_IP_PAM)),
                 &model.businessDayConvention.clone().unwrap(),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             );
 
             // Adapt if interest capitalization is set
@@ -116,11 +116,11 @@ impl PrincipalAtMaturity {
                 let capitalization_end = EventFactory::create_event_with_convention(
                     model.capitalizationEndDate,
                     EventType::IPCI,
-                    model.currency.clone(),
+                    model.currency.as_ref(),
                     Some(Rc::new(POF_IPCI_PAM)),
                     Some(Rc::new(STF_IPCI_PAM)),
                     &model.businessDayConvention.clone().unwrap(),
-                    model.contractID.clone(),
+                    model.contractID.as_ref(),
                 );
 
                 // Remove IP events that occur at capitalization end date
@@ -150,11 +150,11 @@ impl PrincipalAtMaturity {
             events.push(EventFactory::create_event_with_convention(
                 model.capitalizationEndDate,
                 EventType::IPCI,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_IPCI_PAM)),
                 Some(Rc::new(STF_IPCI_PAM)),
                 &model.businessDayConvention.clone().unwrap(),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             ));
         }
 
@@ -168,34 +168,34 @@ impl PrincipalAtMaturity {
                 false,
             ),
             EventType::RR,
-            model.currency.clone(),
+            model.currency.as_ref(),
             Some(Rc::new(POF_RR_PAM)),
             Some(Rc::new(STF_RR_PAM)),
             &model.businessDayConvention.clone().unwrap(),
-            model.contractID.clone(),
+            model.contractID.as_ref(),
         );
 
         // Adapt fixed rate reset event
         if !model.nextResetRate.is_none() {
-            let status_date = model.statusDate;
             let status_event = EventFactory::create_event(
-                status_date,
+                model.statusDate,
                 EventType::AD,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 None,
                 None,
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             );
             let mut vec: Vec<_> = rate_reset_events.clone().into_iter().collect();
+            vec.sort();
+            let fixed_event = vec.iter_mut().filter(|e| e.compare_to(&status_event)  == 1 ).next();
 
-            if let Some(fixed_event) = vec
-                .iter_mut()
-                .filter(|e| **e > status_event)
-                .next()
-            {
-                fixed_event.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
-                fixed_event.chg_eventType(EventType::RRF);
+            if let Some(fixed_event_val) = fixed_event {
+                fixed_event_val.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
+                fixed_event_val.chg_eventType(EventType::RRF);
+                rate_reset_events.insert(fixed_event_val.clone());
             }
+
+
         }
 
         // Add all rate reset events
@@ -203,43 +203,42 @@ impl PrincipalAtMaturity {
 
         // Fee payment events (FP), if specified
         if !model.cycleOfFee.is_none() {
-            let fee_events = EventFactory::create_event_with_convention(
-                ScheduleFactory::create_schedule(
+            let fee_events = EventFactory::create_events_with_convention(
+                &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
                     model.maturityDate.clone().map(|rc| (*rc).clone()),
                     model.cycleOfFee.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.unwrap(),
                     true,
                 ),
                 EventType::FP,
-                model.currency.clone(),
-                Rc::new(POF_FP_PAM),
-                        Rc::new(STF_FP_PAM),
-                &model.businessDayConvention,
-                model.contractID.clone(),
+                model.currency.as_ref(),
+                Some(Rc::new(POF_FP_PAM)),
+                Some(Rc::new(STF_FP_PAM)),
+                &model.businessDayConvention.clone().unwrap(),
+                model.contractID.as_ref(),
             );
             events.extend(fee_events);
         }
 
         // Scaling events (SC), if specified
-        let scaling_effect = model.scalingEffect.clone();
-        let scaling_effect_str = scaling_effect.unwrap().to_string();
-        if !&scaling_effect.is_none() && (scaling_effect_str.contains('I') || scaling_effect_str.contains('N'))
+
+        if !&model.scalingEffect.is_none() && (model.scalingEffect.clone().unwrap().to_string().contains('I') || model.scalingEffect.clone().unwrap().to_string().contains('N'))
         {
-            let scaling_events = EventFactory::create_event_with_convention(
-                ScheduleFactory::create_schedule(
+            let scaling_events = EventFactory::create_events_with_convention(
+                &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfScalingIndex,
                     model.maturityDate.clone().map(|rc| (*rc).clone()),
                     model.cycleOfScalingIndex.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.unwrap(),
                     false,
                 ),
                 EventType::SC,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_SC_PAM)),
                 Some(Rc::new(STF_SC_PAM)),
                 &model.businessDayConvention.clone().unwrap(),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             );
             events.extend(scaling_events);
         }
@@ -249,10 +248,10 @@ impl PrincipalAtMaturity {
             let termination = EventFactory::create_event(
                 model.terminationDate,
                 EventType::TD,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 Some(Rc::new(POF_TD_PAM)),
                 Some(Rc::new(STF_TD_PAM)),
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             );
 
             // Remove all events occurring after termination date
@@ -265,21 +264,21 @@ impl PrincipalAtMaturity {
         let status_event = EventFactory::create_event(
             status_date,
             EventType::AD,
-            model.currency.clone(),
+            model.currency.as_ref(),
             None,
             None,
-            model.contractID.clone(),
+            model.contractID.as_ref(),
         );
         events.retain(|e| e >= &status_event);
 
         // Remove all events after the `to` date
         let to_event = EventFactory::create_event(
-            to,
+            Some(to.clone()),
             EventType::AD,
-            model.currency.clone(),
+            model.currency.as_ref(),
             None,
             None,
-            model.contractID.clone(),
+            model.contractID.as_ref(),
         );
         events.retain(|e| e <= &to_event);
 
@@ -318,10 +317,10 @@ impl PrincipalAtMaturity {
             let purchase_event = EventFactory::create_event(
                 purchase_date,
                 EventType::PRD,
-                model.currency.clone(),
+                model.currency.as_ref(),
                 None,
                 None,
-                model.contractID.clone(),
+                model.contractID.as_ref(),
             );
             events.retain(|e| {
                 e.get_eventType() == EventType::AD || e >= &purchase_event
@@ -329,7 +328,7 @@ impl PrincipalAtMaturity {
         }
 
         // Return evaluated events
-        events
+        events.clone()
     }
 
     /// Initialize the StateSpace according to the model attributes

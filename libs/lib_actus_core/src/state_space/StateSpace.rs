@@ -6,7 +6,7 @@ use crate::types::isoDatetime::IsoDatetime;
 pub type BoundaryLeg1ActiveFlag = bool;
 pub type BoundaryLeg2ActiveFlag = bool;
 
-#[derive(Clone, PartialEq, Debug, PartialOrd)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct StateSpace {
     pub accruedInterest: Option<f64>,
     pub accruedInterest2: Option<f64>,
