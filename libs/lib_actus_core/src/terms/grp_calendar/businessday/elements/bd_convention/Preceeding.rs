@@ -1,11 +1,11 @@
 
 use std::ptr;
-use chrono::NaiveDateTime;
 use chrono::Duration;
 use std::rc::Rc;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
 /// Implementation of the Preceding business day convention
 ///
@@ -46,7 +46,7 @@ impl TraitBusinessDayConvention for Preceeding {
     /// # Returns
     ///
     /// * The shifted date (a business day)
-    fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime {
+    fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         let mut shifted_date = *date;
         // Move backward to the previous business day
         while !self.calendar.is_business_day(&shifted_date) {

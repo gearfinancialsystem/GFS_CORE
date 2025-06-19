@@ -1,4 +1,3 @@
-use std::fmt;
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::types::isoDatetime::IsoDatetime;

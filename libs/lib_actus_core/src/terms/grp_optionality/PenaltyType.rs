@@ -5,7 +5,6 @@ use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;
 use crate::terms::grp_optionality::penalty_type::I::I;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::util::CommonUtils::CommonUtils as cu;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PenaltyType {

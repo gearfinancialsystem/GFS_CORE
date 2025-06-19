@@ -1,10 +1,10 @@
 use crate::exceptions::ParseError::ParseError;
-use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum EndOfMonthConvention {
@@ -20,7 +20,7 @@ impl EndOfMonthConvention {
         }
     }
 
-    pub fn shift(&self, date: NaiveDateTime) -> NaiveDateTime {
+    pub fn shift(&self, date: IsoDatetime) -> IsoDatetime {
         match self {
             EndOfMonthConvention::SD(SD) => SD.shift(&date),
             EndOfMonthConvention::EOM(EOM) => EOM.shift(&date)

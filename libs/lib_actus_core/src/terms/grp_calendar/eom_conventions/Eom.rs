@@ -1,7 +1,6 @@
 use crate::types::isoDatetime::IsoDatetime;
 
-use chrono::NaiveDate;
-use chrono::{Datelike, Duration};
+use chrono::{Datelike, Duration, NaiveDate};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]

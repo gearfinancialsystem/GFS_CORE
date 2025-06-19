@@ -1,6 +1,5 @@
-
-use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
+use crate::types::isoDatetime::IsoDatetime;
 
 /// No holiday calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -16,7 +15,7 @@ impl NC {
 }
 
 impl TraitBusinessDayCalendar for NC {
-    fn is_business_day(&self, _date: &NaiveDateTime) -> bool {
+    fn is_business_day(&self, _date: &IsoDatetime) -> bool {
         true
     }
 }

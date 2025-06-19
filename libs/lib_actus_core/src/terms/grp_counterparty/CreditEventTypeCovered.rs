@@ -3,8 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

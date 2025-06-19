@@ -2,14 +2,13 @@
 // le period de java travaille avec Jour, mois, année et n'a pas d'équivalent en rust ;
 use chrono::{Months, NaiveDateTime};
 use std::hash::{Hash, Hasher};
-use chrono::{Datelike, IsoWeek, NaiveDate, Duration, Weekday};
+use chrono::{Datelike, NaiveDate, Duration};
 use regex::Regex;
 use std::fmt;
 use std::ops::Add;
 use std::ops::Sub;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Days;
-use chrono::Month;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IsoPeriod {

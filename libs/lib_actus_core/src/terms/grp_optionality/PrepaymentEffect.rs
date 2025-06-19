@@ -3,8 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_optionality::prepayment_effect::A::A;
 use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 
@@ -18,7 +16,7 @@ pub enum PrepaymentEffect {
 impl PrepaymentEffect {
     pub fn description(&self) -> String {
         match self {
-            PrepaymentEffect::N(F) => N.type_str(),
+            PrepaymentEffect::N(N) => N.type_str(),
             PrepaymentEffect::A(A) => A.type_str(),
             PrepaymentEffect::M(M) => M.type_str(),
         }

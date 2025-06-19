@@ -3,8 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 #[derive(PartialEq, Eq, Debug)]

@@ -7,7 +7,6 @@ Peut-on éviter les lifetimes et dyns ??
 voici les code : 
 code 1 :
 use std::str::FromStr;
-use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::util::ParseError::ParseError;
 

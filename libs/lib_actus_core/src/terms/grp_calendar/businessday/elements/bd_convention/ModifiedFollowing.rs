@@ -1,12 +1,10 @@
-
-use chrono::NaiveDateTime;
-
 use crate::terms::grp_calendar::Calendar::Calendar;
 use chrono::{Datelike, Duration};
 use std::ptr;
 use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
 /// Implementation of the Modified Following business day convention
 ///
@@ -56,7 +54,7 @@ impl TraitBusinessDayConvention for ModifiedFollowing {
     /// # Returns
     ///
     /// * The shifted date (a business day)
-    fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime {
+    fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         let mut shifted_date = *date;
         while !self.calendar.is_business_day(&shifted_date) {
             shifted_date += Duration::days(1);

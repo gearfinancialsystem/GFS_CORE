@@ -1,5 +1,4 @@
 use crate::types::IsoPeriod::IsoPeriod;
-use crate::types::isoDatetime::IsoDatetime;
 // Define a custom error type for attribute conversion errors
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use chrono::Weekday;

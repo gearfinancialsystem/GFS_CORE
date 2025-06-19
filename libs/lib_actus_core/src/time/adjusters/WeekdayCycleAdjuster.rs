@@ -1,5 +1,4 @@
 use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
-use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CycleUtils::CycleUtils;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;

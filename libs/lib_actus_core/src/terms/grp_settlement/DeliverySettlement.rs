@@ -1,4 +1,4 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;

@@ -12,7 +12,6 @@ use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
-use crate::terms::grp_counterparty::seniority::S::S;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;

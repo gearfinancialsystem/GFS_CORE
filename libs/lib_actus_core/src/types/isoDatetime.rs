@@ -1,23 +1,11 @@
-// l'objectif est d'utiliser des 'extension traits' pour NaiveDateTime
-
-// En Rust, vous pouvez créer un alias de type en utilisant le mot-clé type. Cependant,
-// vous ne pouvez pas directement implémenter un trait pour un alias de type. Les traits
-// doivent être implémentés pour un type concret, et un alias de type n'est pas considéré
-// comme un type distinct du type original.
-
 use std::collections::HashMap;
 use std::ops::Add;
 use std::ops::Sub;
 use std::rc::Rc;
-use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Weekday, Duration};
-use crate::terms::grp_counterparty::seniority::S::S;
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike};
 use crate::types::IsoPeriod::IsoPeriod;
 
-
-// Définition d'un alias de type
 pub type IsoDatetime = NaiveDateTime;
-
-// Implémentation d'un trait pour le type original (u32 dans ce cas)
 
 pub trait traitNaiveDateTimeExtension {
     fn double(&self) -> Self;

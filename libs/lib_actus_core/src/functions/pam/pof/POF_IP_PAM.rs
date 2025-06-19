@@ -14,8 +14,8 @@ impl TraitPayOffFunction for POF_IP_PAM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        _model: &ContractModel,
+        _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) -> f64 {

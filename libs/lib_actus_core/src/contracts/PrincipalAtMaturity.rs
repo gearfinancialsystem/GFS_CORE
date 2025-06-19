@@ -1,14 +1,8 @@
-// SPDX-License-Identifier: Apache-2.0
-// Converted from the Java implementation of PrincipalAtMaturity in org.actus.contracts
-
-use std::collections::HashSet;
-use chrono::{DateTime, NaiveDateTime, Utc};
 use std::error::Error;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-// use crate::externals::RiskFactorModelProvider::RiskFactorModelProvider;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 
 use crate::functions::pam::pof::{
@@ -39,7 +33,6 @@ STF_FP_PAM::STF_FP_PAM,
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::util::CommonUtils::CommonUtils;
 use crate::attributes::ContractModel::ContractModel;
 
 /// Represents the Principal At Maturity payoff algorithm

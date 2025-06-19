@@ -5,7 +5,7 @@ use crate::terms::grp_interest::interestcalculationbase::Ntied::NTIED;
 use crate::terms::grp_interest::interestcalculationbase::Ntl::NTL;
 
 
-use crate::traits::TraitTermDescription::TraitTermDescription;
+
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum InterestCalculationBase {

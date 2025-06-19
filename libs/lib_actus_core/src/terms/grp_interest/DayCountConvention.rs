@@ -1,14 +1,9 @@
-use chrono::NaiveDateTime;
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::terms::grp_calendar::{calendars, Calendar::Calendar};
-use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
+use crate::terms::grp_calendar::{Calendar::Calendar};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
-use chrono::Duration;
-use chrono::{Datelike, Timelike};
-use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_interest::daycountconventions::A336::A336;
@@ -19,7 +14,6 @@ use crate::terms::grp_interest::daycountconventions::E283666::E283666;
 use crate::terms::grp_interest::daycountconventions::E30360::E30360;
 use crate::terms::grp_interest::daycountconventions::B252::B252;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum DayCountConvention {
@@ -74,7 +68,7 @@ impl DayCountConvention {
         }
     }
 
-    pub fn day_count_fraction(&self,start_time: NaiveDateTime, end_time: NaiveDateTime) -> f64 {
+    pub fn day_count_fraction(&self,start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         match self {
             DayCountConvention::AAISDA(AAISDA) => AAISDA.day_count_fraction(start_time, end_time),
             DayCountConvention::A360(A360) => A360.day_count_fraction(start_time, end_time),

@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::rc::Rc;
-use chrono::NaiveDateTime;
+
 
 use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
+use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -58,7 +59,7 @@ impl Calendar {
 
 impl TraitBusinessDayCalendar for Calendar {
 
-    fn is_business_day(&self, date: &NaiveDateTime) -> bool {
+    fn is_business_day(&self, date: &IsoDatetime) -> bool {
         match self {
             Self::NC(NC) => NC.is_business_day(date),
             Self::MF(MF) => MF.is_business_day(date)

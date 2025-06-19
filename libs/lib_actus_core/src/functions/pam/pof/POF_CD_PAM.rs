@@ -12,12 +12,12 @@ pub struct POF_CD_PAM;
 impl TraitPayOffFunction for POF_CD_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime, 
-        states: &StateSpace,
-        model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        _time: &IsoDatetime, 
+        _states: &StateSpace,
+        _model: &ContractModel,
+        _risk_factor_model: &RiskFactorModel,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
         0.0
     }

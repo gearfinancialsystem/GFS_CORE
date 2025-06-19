@@ -13,12 +13,12 @@ pub struct POF_RR_PAM;
 impl TraitPayOffFunction for POF_RR_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime, 
-        states: &StateSpace,
-        model: &ContractModel,
+        _time: &IsoDatetime, 
+        _states: &StateSpace,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
         0.0
     }

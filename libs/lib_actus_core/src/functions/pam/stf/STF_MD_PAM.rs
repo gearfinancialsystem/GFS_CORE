@@ -14,10 +14,10 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         &self,
         time: &IsoDatetime, 
         states: &mut StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayConvention,
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 
         // Set state values to zero at maturity

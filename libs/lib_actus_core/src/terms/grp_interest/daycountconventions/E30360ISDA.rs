@@ -3,8 +3,6 @@ use std::rc::Rc;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-
-
 use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

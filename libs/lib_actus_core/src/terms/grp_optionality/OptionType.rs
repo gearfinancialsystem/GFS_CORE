@@ -3,8 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

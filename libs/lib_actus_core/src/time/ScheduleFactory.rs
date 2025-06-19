@@ -1,12 +1,7 @@
-
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-// use crate::algorithmic::EndOfMonthAdjuster::EndOfMonthAdjuster;
-
 use chrono::Duration;
-
 use std::collections::HashSet;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::IsoPeriod::IsoPeriod;
 
 pub struct ScheduleFactory;
 
@@ -24,7 +19,7 @@ impl ScheduleFactory {
         start_time: Option<IsoDatetime>,
         end_time: Option<IsoDatetime>,
         cycle: Option<String>,
-        end_of_month_convention: EndOfMonthConvention,
+        _end_of_month_convention: EndOfMonthConvention,
         add_end_time: bool,
     ) -> HashSet<IsoDatetime> {
         let mut times_set = HashSet::new();

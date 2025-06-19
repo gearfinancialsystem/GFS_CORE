@@ -12,12 +12,12 @@ pub struct POF_IED_PAM;
 impl TraitPayOffFunction for POF_IED_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime, 
-        states: &StateSpace,
+        _time: &IsoDatetime, 
+        _states: &StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        _risk_factor_model: &RiskFactorModel,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
         match (&model.contractRole, &model.notionalPrincipal, &model.premiumDiscountAtIED) {
             (Some(a), Some(b), Some(c)) => 1.0 * -1.0 * a.role_sign() * b * c,

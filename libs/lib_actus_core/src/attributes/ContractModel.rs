@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 use crate::terms::grp_contract_identification::contract_types::Pam::PAM;
-use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum ContractModel {

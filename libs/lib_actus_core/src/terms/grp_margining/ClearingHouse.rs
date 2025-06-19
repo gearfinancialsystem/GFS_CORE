@@ -2,8 +2,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_margining::clearing_house::N::N;
 use crate::terms::grp_margining::clearing_house::Y::Y;
-use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

@@ -3,11 +3,9 @@ use std::rc::Rc;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::ModifiedFollowing::ModifiedFollowing;
 use crate::terms::grp_calendar::Calendar::Calendar;
-
-use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-
+use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SCMF {
@@ -23,11 +21,11 @@ impl SCMF {
     pub fn type_str(&self) -> String {
         return "SCMF day convention".to_string();
     }
-    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayConvention) -> NaiveDateTime {
+    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
         self.scConvention.shift(date, convention)
     }
 
-    pub fn shift_bd(&self, date: &NaiveDateTime) -> NaiveDateTime {
+    pub fn shift_bd(&self, date: &IsoDatetime) -> IsoDatetime {
         self.bdConvention.shift(date)
     }
 }

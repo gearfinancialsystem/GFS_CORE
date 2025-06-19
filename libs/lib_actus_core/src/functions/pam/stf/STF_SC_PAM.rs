@@ -1,10 +1,6 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
-use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
-use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
-use crate::terms::grp_notional_principal::ScalingEffect;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
