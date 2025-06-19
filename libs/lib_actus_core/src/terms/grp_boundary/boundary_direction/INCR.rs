@@ -1,5 +1,3 @@
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
-
 #[derive(Debug, Eq, PartialEq)]
 
 pub struct INCR;

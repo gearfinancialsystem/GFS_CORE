@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::util::CommonUtils::CommonUtils;
 
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
@@ -80,8 +79,8 @@ pub struct PAM {
     pub contractPerformance: Option<ContractPerformance>,
 }
 
-impl Default for PAM {
-    fn default() -> Self {
+impl PAM {
+    pub fn init() -> Self {
         PAM {
             calendar: None,
             businessDayConvention: None,
@@ -213,8 +212,8 @@ impl PAM {
         self.priceAtTerminationDate = CommonUtils::provide_f64(sm, "priceAtTerminationDate");
         self.marketObjectCodeOfScalingIndex = CommonUtils::provide_string(sm, "marketObjectCodeOfScalingIndex");
         self.scalingIndexAtContractDealDate = CommonUtils::provide_f64(sm, "scalingIndexAtContractDealDate");
-        self.notionalScalingMultiplier = CommonUtils::provide_f64(sm, "notionalScalingMultiplier");
-        self.interestScalingMultiplier = CommonUtils::provide_f64(sm, "interestScalingMultiplier");
+        self.notionalScalingMultiplier = CommonUtils::provide_f64default(sm, "notionalScalingMultiplier", 1.0);
+        self.interestScalingMultiplier = CommonUtils::provide_f64default(sm, "interestScalingMultiplier", 1.0);
         self.cycleAnchorDateOfScalingIndex = IsoDatetime::provide(sm, "cycleAnchorDateOfScalingIndex");
         self.cycleOfScalingIndex = CommonUtils::provide_string(sm, "cycleOfScalingIndex");
         self.scalingEffect = ScalingEffect::provide(sm, "scalingEffect");
@@ -222,11 +221,11 @@ impl PAM {
         self.cycleAnchorDateOfOptionality = IsoDatetime::provide(sm, "cycleAnchorDateOfOptionality");
         self.cycleOfOptionality = CommonUtils::provide_string(sm, "cycleOfOptionality");
         self.penaltyType = PenaltyType::provide(sm, "penaltyType");
-        self.penaltyRate = CommonUtils::provide_f64(sm, "penaltyRate");
+        self.penaltyRate = CommonUtils::provide_f64default(sm, "penaltyRate", 0.0);
         self.objectCodeOfPrepaymentModel = CommonUtils::provide_string(sm, "objectCodeOfPrepaymentModel");
         self.cycleAnchorDateOfRateReset = IsoDatetime::provide(sm, "cycleAnchorDateOfRateReset");
         self.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
-        self.rateSpread = CommonUtils::provide_f64(sm, "rateSpread");
+        self.rateSpread = CommonUtils::provide_f64default(sm, "rateSpread", 0.0);
         self.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
         self.lifeCap = CommonUtils::provide_f64(sm, "lifeCap");
         self.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
@@ -235,7 +234,7 @@ impl PAM {
         self.cyclePointOfRateReset = CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset");
         self.fixingPeriod = IsoDatetime::provide(sm, "fixingPeriod");
         self.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
-        self.rateMultiplier = CommonUtils::provide_f64(sm, "rateMultiplier"); // obligatoire
+        self.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0); // obligatoire
         self.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
     }
 

@@ -6,7 +6,6 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 
 use chrono::NaiveDateTime;
 
-use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 

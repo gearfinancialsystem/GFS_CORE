@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use std::str::FromStr;
+use crate::exceptions::ParseError::ParseError;
 // use crate::terms::grp_settlement::DeliverySettlement::S;
 
 
@@ -12,10 +14,40 @@ impl CommonUtils {
     //     string_map.get(key).cloned().map(|c| Box::new(c.parse::<f64>().ok())).unwrap_or_else(|| Box::new(None))
     // }
     pub fn provide_box_f64(string_map: &HashMap<String, String>, key: &str) -> Option<Box<f64>> {
-        string_map.get(key).and_then(|s| s.parse::<f64>().ok()).map(Box::new)
+        //string_map.get(key).and_then(|s| s.parse::<f64>().ok()).map(Box::new)
+        match string_map.get(key) {
+            None => None, // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match <f64>::from_str(s) {
+                    Ok(value) => Some(Box::new(value)), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                }
+            }
+        }
     }
     pub fn provide_f64(string_map: &HashMap<String, String>, key: &str) -> Option<f64> {
-        string_map.get(key).and_then(|s| s.parse::<f64>().ok())
+        // string_map.get(key).and_then(|s| s.parse::<f64>().ok())
+        match string_map.get(key) {
+            None => None, // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match <f64>::from_str(s) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                }
+            }
+        }
+    }
+    pub fn provide_f64default(string_map: &HashMap<String, String>, key: &str, default: f64) -> Option<f64>
+    {
+        match string_map.get(key) {
+            None => Some(default), // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match <f64>::from_str(s) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                }
+            }
+        }
     }
     // pub fn provide_box_string(string_map: &HashMap<String, String>, key: &str) -> Box<Option<String>> {
     //     string_map.get(key).cloned().map(|c| Box::new(Some(c))).unwrap_or_else(|| Box::new(None))
@@ -27,7 +59,21 @@ impl CommonUtils {
         string_map.get(key).cloned()
     }
 
-    
+    // Fonction générique provide
+    pub fn provide<T>(string_map: &HashMap<String, String>, key: &str) -> Option<T>
+    where
+        T: FromStr<Err = ParseError> + Default,
+    {
+        match string_map.get(key) {
+            None => Some(T::default()), // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match T::from_str(s) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(err) => panic!("Erreur de parsing pour la clé {} avec la valeur {} : {}", key, s, err.message),
+                }
+            }
+        }
+    }
     // pub fn is_none(value: &Option<AnyBox>) -> bool {
     //     match value {
     //         None => true,

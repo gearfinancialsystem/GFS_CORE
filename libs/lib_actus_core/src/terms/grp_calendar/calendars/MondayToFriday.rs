@@ -2,7 +2,6 @@
 use chrono::NaiveDateTime;
 use chrono::Datelike;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 /// Monday to Friday Calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]

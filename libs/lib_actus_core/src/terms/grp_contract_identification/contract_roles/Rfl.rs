@@ -1,4 +1,3 @@
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 

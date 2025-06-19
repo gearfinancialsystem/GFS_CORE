@@ -5,7 +5,6 @@ use crate::terms::grp_calendar::businessday::elements::bd_convention::Same::Same
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NOS {

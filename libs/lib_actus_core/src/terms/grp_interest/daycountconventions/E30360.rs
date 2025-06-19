@@ -1,7 +1,7 @@
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360;

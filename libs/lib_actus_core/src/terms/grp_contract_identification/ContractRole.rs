@@ -14,7 +14,7 @@ use crate::terms::grp_contract_identification::contract_roles::Cno::CNO;
 use crate::terms::grp_contract_identification::contract_roles::Udl::UDL;
 use crate::terms::grp_contract_identification::contract_roles::Udlp::UDLP;
 use crate::terms::grp_contract_identification::contract_roles::Udlm::UDLM;
-use crate::traits::TraitTermDescription::TraitTermDescription;
+
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ContractRole {

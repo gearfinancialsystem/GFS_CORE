@@ -1,7 +1,7 @@
+use crate::types::isoDatetime::IsoDatetime;
 
-use chrono::{DurationRound, NaiveDateTime};
 use chrono::NaiveDate;
-use chrono::{Datelike, Duration, Timelike};
+use chrono::{Datelike, Duration};
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -17,7 +17,7 @@ impl EOM {
 }
 
 impl TraitEndOfMonthConvention for EOM {
-    fn shift(&self, datetime: &NaiveDateTime) -> NaiveDateTime {
+    fn shift(&self, datetime: &IsoDatetime) -> IsoDatetime {
         // NaiveDateTime creation with last day of month
         // Extraire l'année et le mois
         let year = datetime.year();

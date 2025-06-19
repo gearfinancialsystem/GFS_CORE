@@ -1,7 +1,6 @@
 use std::{fmt, str::FromStr};
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

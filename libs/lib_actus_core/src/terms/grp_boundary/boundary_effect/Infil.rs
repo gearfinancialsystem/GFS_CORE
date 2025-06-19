@@ -1,7 +1,3 @@
-use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
-use crate::traits::TraitTermDescription::TraitTermDescription;
-
 #[derive(Debug, Eq, Clone, Copy, PartialEq)]
 
 pub struct INFIL;

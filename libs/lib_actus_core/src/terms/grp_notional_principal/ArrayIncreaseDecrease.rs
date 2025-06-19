@@ -2,8 +2,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 #[derive(PartialEq, Eq, Debug)]

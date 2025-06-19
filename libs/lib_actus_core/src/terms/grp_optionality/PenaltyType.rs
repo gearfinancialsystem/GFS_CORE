@@ -6,14 +6,13 @@ use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;
 use crate::terms::grp_optionality::penalty_type::I::I;
 use crate::traits::TraitTermDescription::TraitTermDescription;
-
+use crate::util::CommonUtils::CommonUtils as cu;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PenaltyType {
     N(N),
     A(A),
     R(R),
     I(I),
-    None
 }
 
 impl PenaltyType {
@@ -23,7 +22,6 @@ impl PenaltyType {
             Self::A(A) => A.type_str(),
             Self::R(R) => R.type_str(),
             Self::I(I) => I.type_str(),
-            Self::None => "None".to_string(),
         }
     }
     pub fn new_N() -> Self {
@@ -49,14 +47,7 @@ impl PenaltyType {
             //.unwrap_or_default()
     }
     pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                PenaltyType::from_str(s).ok()
-            })
-            .map(|b| b) // On stocke la convention dans une Box
-        //.unwrap_or_default()
+        cu::provide(string_map, key)
     }
 }
 
@@ -68,7 +59,7 @@ impl FromStr for PenaltyType {
             "A" => Ok(Self::new_A()),
             "R" => Ok(Self::new_R()),
             "I" => Ok(Self::new_I()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid PenaltyType {}", s)})
         }
     }
 }

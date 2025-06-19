@@ -4,12 +4,12 @@ use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
 use crate::traits::TraitTermDescription::TraitTermDescription;
+use crate::util::CommonUtils::CommonUtils as cu;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CyclePointOfInterestPayment {
     B(B),
     E(E),
-    None
 }
 
 impl CyclePointOfInterestPayment {
@@ -17,7 +17,6 @@ impl CyclePointOfInterestPayment {
         match self {
             CyclePointOfInterestPayment::B(B) => B.type_str(),
             CyclePointOfInterestPayment::E(E) => E.type_str(),
-            CyclePointOfInterestPayment::None => "None".to_string(),
         }
     }
     pub fn new_B() -> Self {
@@ -37,14 +36,7 @@ impl CyclePointOfInterestPayment {
             //.unwrap_or_default()
     }
     pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                CyclePointOfInterestPayment::from_str(s).ok()
-            })
-            .map(|b| b) // On stocke la convention dans une Box
-        //.unwrap_or_default()
+        cu::provide(string_map, key)
     }
 }
 
@@ -54,7 +46,7 @@ impl FromStr for CyclePointOfInterestPayment {
         match s.to_uppercase().as_str() {
             "B" => Ok(CyclePointOfInterestPayment::B(B)),
             "E" => Ok(CyclePointOfInterestPayment::E(E)),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid CyclePointOfInterestPayment: {}", s)})
         }
     }
 }

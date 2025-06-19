@@ -1,6 +1,3 @@
-use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
-
 #[derive(Debug, Eq, Clone, Copy, PartialEq)]
 
 pub struct INSEL;

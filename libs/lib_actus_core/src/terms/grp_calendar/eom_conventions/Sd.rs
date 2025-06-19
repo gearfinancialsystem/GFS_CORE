@@ -1,8 +1,5 @@
-
-use chrono::NaiveDateTime;
-use chrono::{Datelike, Duration, Timelike};
+use crate::types::isoDatetime::IsoDatetime;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub struct SD;
@@ -18,7 +15,7 @@ impl SD {
 
 impl TraitEndOfMonthConvention for SD {
     /// Returns the input date without any changes
-    fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime {
+    fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         *date
     }
 }

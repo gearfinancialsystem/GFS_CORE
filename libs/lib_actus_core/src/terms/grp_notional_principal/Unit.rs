@@ -1,8 +1,5 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
-use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
-use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::terms::grp_notional_principal::unitx::BRL::BRL;
 use crate::terms::grp_notional_principal::unitx::BSH::BSH;
 use crate::terms::grp_notional_principal::unitx::CUU::CUU;
@@ -12,7 +9,6 @@ use crate::terms::grp_notional_principal::unitx::PND::PND;
 use crate::terms::grp_notional_principal::unitx::STN::STN;
 use crate::terms::grp_notional_principal::unitx::TON::TON;
 use crate::terms::grp_notional_principal::unitx::TRO::TRO;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 pub enum Unit {

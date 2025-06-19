@@ -5,7 +5,6 @@ use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc:
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
 
 use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 

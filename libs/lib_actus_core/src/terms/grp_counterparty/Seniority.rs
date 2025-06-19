@@ -1,12 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
-use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
-use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::seniority::J::J;
 use crate::terms::grp_counterparty::seniority::S::S;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

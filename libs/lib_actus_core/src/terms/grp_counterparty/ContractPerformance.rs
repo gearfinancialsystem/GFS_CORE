@@ -8,7 +8,8 @@ use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Ma::MA;
 use crate::terms::grp_counterparty::contract_performance::Te::TE;
-use crate::traits::TraitTermDescription::TraitTermDescription;
+
+use crate::util::CommonUtils::CommonUtils as cu;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContractPerformance {
@@ -61,14 +62,7 @@ impl ContractPerformance {
             //.unwrap_or_default()
     }
     pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| b) // On stocke la convention dans une Box
-            //.unwrap_or_default()
+        cu::provide(string_map, key)
     }
 }
 
@@ -76,14 +70,13 @@ impl FromStr for ContractPerformance {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            ""   => Ok(Self::default()),
             "PF" => Ok(Self::new_PF()),
             "DL" => Ok(Self::new_DL()),
             "DQ" => Ok(Self::new_DQ()),
             "DF" => Ok(Self::new_DF()),
             "MA" => Ok(Self::new_MA()),
             "TE" => Ok(Self::new_TE()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid ContractPerformance: {}", s)})
         }
     }
 }

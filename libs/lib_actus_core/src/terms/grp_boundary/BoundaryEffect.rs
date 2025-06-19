@@ -5,7 +5,7 @@ use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
 use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
 use crate::terms::grp_boundary::boundary_effect::Out::OUT;
-use crate::traits::TraitTermDescription::TraitTermDescription;
+
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum BoundaryEffect {

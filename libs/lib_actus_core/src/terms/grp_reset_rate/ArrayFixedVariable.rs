@@ -1,11 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
-use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::E::E;
-use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 #[derive(Debug, Eq, PartialEq)]

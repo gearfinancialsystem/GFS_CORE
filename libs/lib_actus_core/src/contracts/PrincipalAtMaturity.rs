@@ -66,7 +66,7 @@ impl PrincipalAtMaturity {
         );
 
         // Principal redemption (MD)
-        let mat =
+        
         events.push(EventFactory::create_event(
             model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
@@ -383,10 +383,11 @@ impl PrincipalAtMaturity {
                 .iter()
                 .filter(|&&date| date < states.statusDate.unwrap())
                 .collect();
-
+                
+            
             // tMinus = dateEarlierThanT0.get(dateEarlierThanT0.size() -1);
             let t_minus = date_earlier_than_t0.last();
-
+            println!("ok");
             states.accruedInterest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
                                                                     time_adjuster.shift_bd(&states.statusDate.unwrap()))
                 * states.notionalPrincipal.unwrap()

@@ -2,8 +2,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
 use crate::terms::grp_boundary::boundary_direction::INCR::INCR;
-use crate::terms::grp_counterparty::Seniority::Seniority;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

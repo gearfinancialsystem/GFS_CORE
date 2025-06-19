@@ -1,11 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
-use crate::terms::grp_boundary::boundary_direction::INCR::INCR;
 use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
-use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
-use crate::traits::TraitTermDescription::TraitTermDescription;
 use crate::exceptions::ParseError::ParseError;
 
 

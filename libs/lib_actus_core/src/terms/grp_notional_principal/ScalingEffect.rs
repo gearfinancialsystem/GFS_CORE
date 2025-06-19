@@ -7,7 +7,8 @@ use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
 use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
-use crate::traits::TraitTermDescription::TraitTermDescription;
+
+use crate::util::CommonUtils::CommonUtils as cu;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum ScalingEffect {
@@ -15,7 +16,6 @@ pub enum ScalingEffect {
     IOO(IOO),
     ONO(ONO),
     INO(INO),
-    None
 }
 
 impl ScalingEffect {
@@ -25,7 +25,6 @@ impl ScalingEffect {
             ScalingEffect::IOO(IOO) => IOO.type_str(),
             ScalingEffect::ONO(ONO) => ONO.type_str(),
             ScalingEffect::INO(INO) => INO.type_str(),
-            ScalingEffect::None => "None".to_string(),
         }
     }
     pub fn new_OOO() -> Self {
@@ -53,13 +52,7 @@ impl ScalingEffect {
     }
     pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                ScalingEffect::from_str(s).ok()
-            })
-            .map(|b| b) // On stocke la convention dans une Box
-        // .unwrap_or_default()
+        cu::provide(string_map, key)
     }
 }
 
@@ -70,7 +63,6 @@ impl fmt::Display for ScalingEffect {
             ScalingEffect::IOO(_) => write!(f, "IOO"),
             ScalingEffect::ONO(_) => write!(f, "ONO"),
             ScalingEffect::INO(_) => write!(f, "INO"),
-            ScalingEffect::None => write!(f, "None"),
         }
     }
 }
@@ -82,14 +74,14 @@ impl FromStr for ScalingEffect {
             "IOO" => Ok(ScalingEffect::IOO(IOO)),
             "ONO" => Ok(ScalingEffect::ONO(ONO)),
             "INO" => Ok(ScalingEffect::INO(INO)),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid ScalingEffect: {}", s)})
         }
     }
 }
 
 impl Default for ScalingEffect {
     fn default() -> Self {
-        ScalingEffect::None
+        ScalingEffect::OOO(OOO)
     }
 }
 

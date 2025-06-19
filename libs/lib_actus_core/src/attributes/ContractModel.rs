@@ -13,7 +13,7 @@ impl ContractModel {
         let ct = sm.get("contractType").unwrap();
         match ct.as_str() {
             "PAM" => {
-                let mut cm = PAM::default();
+                let mut cm = PAM::init();
                 cm.parse_from_dict(sm);
                 Ok(ContractModel::PAM(cm))
             }

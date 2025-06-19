@@ -4,7 +4,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::traits::TraitEnumOptionDescription::TraitEnumOptionDescription;
+
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E283666 {
