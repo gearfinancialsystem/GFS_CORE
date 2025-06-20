@@ -83,8 +83,7 @@ impl PrincipalAtMaturity {
 
         // Interest payment related events
         if model.nominalInterestRate.is_some()
-            && (model.cycleOfInterestPayment.is_some()
-                || model.cycleAnchorDateOfInterestPayment.is_some())
+            && (model.cycleOfInterestPayment.is_some() || model.cycleAnchorDateOfInterestPayment.is_some())
         {
             // Generate raw interest payment events (IP)
             let mut interest_events = EventFactory::create_events_with_convention(
@@ -125,15 +124,26 @@ impl PrincipalAtMaturity {
                 interest_events.insert(capitalization_end.clone());
                 let mut vec: Vec<_> = interest_events.clone().into_iter().collect();
                 // Change events with time <= IPCED and cont_type IP to IPCI
-                for e in vec.iter_mut() {
-                    if e.get_eventType() == EventType::IP
-                        && e.get_event_time() <= capitalization_end.get_event_time()
-                    {
+
+                v
+                vec.iter_mut()
+                    .filter(|e| e.eventType == EventType::IP &&
+                        e.get_event_time() <= capitalization_end.get_event_time())
+                    .for_each(|e| {
                         e.chg_eventType(EventType::IPCI);
                         e.set_f_pay_off(Some(Rc::new(POF_IPCI_PAM)));
                         e.set_f_state_trans(Some(Rc::new(STF_IPCI_PAM)));
-                    }
-                }
+                    });
+
+                // for e in vec.iter_mut() {
+                //     if e.get_eventType() == EventType::IP
+                //         && e.get_event_time() <= capitalization_end.get_event_time()
+                //     {
+                //         e.chg_eventType(EventType::IPCI);
+                //         e.set_f_pay_off(Some(Rc::new(POF_IPCI_PAM)));
+                //         e.set_f_state_trans(Some(Rc::new(STF_IPCI_PAM)));
+                //     }
+                // }
                 interest_events = vec.into_iter().collect();
             }
 
@@ -370,23 +380,23 @@ impl PrincipalAtMaturity {
                 .iter()
                 .filter(|&&date| date < states.statusDate.unwrap())
                 .collect();
-            
+
             let t_minus = date_earlier_than_t0.last();
             println!("ok");
             states.accruedInterest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
                                                                     time_adjuster.shift_bd(&states.statusDate.unwrap()))
                 * states.notionalPrincipal.unwrap()
                 * states.nominalInterestRate.unwrap());
-            
+
         }
-        
+
         if model.feeRate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
         }
         // TODO: Implement last two possible initializations if needed
-        
+
         states
     }
 }

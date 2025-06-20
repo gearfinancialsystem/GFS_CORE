@@ -20,7 +20,7 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) {
-        
+
         let status_date = states.statusDate.expect("statusDate should always be Some");
         let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
@@ -38,7 +38,7 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });
-        
+
         
         states.contractPerformance = Some(ContractPerformance::new_DF());
         states.statusDate = Some(*time);
