@@ -20,19 +20,11 @@ impl TraitStateTransitionFunction for STF_PP_PAM {
         time_adjuster: &BusinessDayConvention,
     ) {
 
-        assert!(states.statusDate.is_some(), "status date some");
-        assert!(states.accruedInterest.is_some(), "accrued interest some");
-        assert!(states.nominalInterestRate.is_some(), "nominal interest rate");
-        assert!(states.notionalPrincipal.is_some(), "notional principal some");
-        assert!(model.feeRate.is_some(), "fee rate some");
-
-        assert!(states.feeAccrued.is_some(), "fee accrued some");
-
-        let status_date = states.statusDate.unwrap();
-        let accrued_interest = states.accruedInterest.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
-        let fee_rate = model.feeRate.unwrap();
+        let status_date = states.statusDate.expect("status date should be some");
+        let accrued_interest = states.accruedInterest.expect("accrued interest should be some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should be some");
+        let fee_rate = model.feeRate.expect("fee rate should be some");
 
 
         // Calculate time from the last event
@@ -41,21 +33,21 @@ impl TraitStateTransitionFunction for STF_PP_PAM {
             time_adjuster.shift_bd(&time),
         );
 
-        if let Some(mut accrued_interest) = states.accruedInterest {
+        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
-            states.accruedInterest = Some(accrued_interest);
-        }
+            accrued_interest
+        });
 
-        if let Some(mut fee_accrued) = states.feeAccrued {
+        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
-            states.feeAccrued = Some(fee_accrued);
-        }
-        
-        if let Some(mut notional_principal) = states.notionalPrincipal {
-            notional_principal -= 1.0 * notional_principal;
-            states.notionalPrincipal = Some(notional_principal);
-        }
+            fee_accrued
+        });
 
+        states.notionalPrincipal = states.notionalPrincipal.map(|mut notional_princial| {
+            notional_princial -= 1.0 * notional_principal;
+            notional_princial
+        });
+        
         states.statusDate = Some(*time);
 
 

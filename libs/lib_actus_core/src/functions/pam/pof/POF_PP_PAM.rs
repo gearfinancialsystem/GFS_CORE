@@ -19,16 +19,9 @@ impl TraitPayOffFunction for POF_PP_PAM {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-
-            assert!(model.notionalScalingMultiplier.is_some(), "nominal interest rate should always be Some");
-            assert!(states.notionalPrincipal.is_some(), "notional principal should always be Some");
-            assert!(model.contractRole.is_some(), "contractRole rate should always be Some");
-            assert!(model.objectCodeOfPrepaymentModel.is_some(), "objectCode of prepayment model should always be Some");
-
-            let notional_scaling_multiplier = model.notionalScalingMultiplier.unwrap();
-            let notional_principal = states.notionalPrincipal.unwrap();
-            let contract_role = model.contractRole.as_ref().unwrap();
-            let objectCodeOfPrepaymentModel = model.objectCodeOfPrepaymentModel.as_ref().unwrap();
+        
+            let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
+            let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
 
             1.0 * contract_role.role_sign() * 1.0 * notional_principal
 

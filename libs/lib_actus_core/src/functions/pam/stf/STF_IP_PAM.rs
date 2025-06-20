@@ -19,26 +19,18 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) {
-        // Reset accrued interest
-        //let mut new_states: StateSpace = states.copy_state_space(); 
-        assert!(states.feeAccrued.is_some(), "fee accrued toujours some");
-        assert!(states.statusDate.is_some(), "status date some");
-        assert!(model.feeRate.is_some(), "fee rate some");
-        assert!(states.notionalPrincipal.is_some(), "notionalPrincipal some");
         
-        // let fee_accrued = states.feeAccrued.unwrap();
-        let status_date = states.statusDate.unwrap();
-        let fee_rate = model.feeRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
+        let status_date = states.statusDate.expect("status date should be some");
+        let fee_rate = model.feeRate.expect("fee rate should be some");
+        let notional_principal = states.notionalPrincipal.expect("notional principal should be some");
 
         states.accruedInterest = Some(0.0);
-        
-        // Update fee-accrued
-        if let Some(mut fee_accrued) = states.feeAccrued {
+
+        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
             fee_accrued += day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date), time_adjuster.shift_bd(time)) *
-            fee_rate * notional_principal;
-            states.feeAccrued = Some(fee_accrued);
-        }
+                fee_rate * notional_principal;
+            fee_accrued
+        });
 
         states.statusDate = Some(*time);
         

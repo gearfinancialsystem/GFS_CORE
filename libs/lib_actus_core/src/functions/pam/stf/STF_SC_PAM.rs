@@ -19,34 +19,25 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) { // ->StateSpace
-        
-        assert!(states.statusDate.is_some(), "status Date should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
-        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
-        assert!(model.feeRate.is_some(), "fee rate should always be Some");
-        assert!(model.scalingEffect.is_some(), "scaling effect should always be Some");
-        
-        // ddd
-        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
-        assert!(states.feeAccrued.is_some(), "feeAccrued should be None");
-    
-        let status_date = states.statusDate.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
-        let fee_rate = model.feeRate.unwrap();
-        let scaling_effect = model.scalingEffect.as_ref().unwrap();
+
+        let status_date = states.statusDate.expect("status date should always be some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be None");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be None");
+        let fee_rate = model.feeRate.expect("fee rate should always be None");
+        let scaling_effect = model.scalingEffect.as_ref().expect("scalingEffect should always be None");
         
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
                                                                   time_adjuster.shift_bd(time));
 
-        if let Some(mut accrued_interest) = states.accruedInterest {
+        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
-            states.accruedInterest = Some(accrued_interest);
-        }
-        if let Some(mut fee_accrued) = model.feeAccrued {
+            accrued_interest
+        });
+
+        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
-            states.feeAccrued = Some(fee_accrued);
-        }
+            fee_accrued
+        });
         
         let scaling_multiplier = 1.0; // implementer risk factor
         

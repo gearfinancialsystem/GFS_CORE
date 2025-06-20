@@ -20,17 +20,11 @@ impl TraitPayOffFunction for POF_IP_PAM {
         time_adjuster: &BusinessDayConvention,
     ) -> f64 {
         
-        assert!(states.interestScalingMultiplier.is_some(), "interest Scaling Multiplier should always be Some");
-        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
-        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
-        assert!(states.statusDate.is_some(), "status Date should always be Some");
-        
-        let interest_scaling_multiplier = states.interestScalingMultiplier.unwrap();
-        let accrued_interest = states.accruedInterest.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
-        let status_date = states.statusDate.unwrap();
+        let interest_scaling_multiplier = states.interestScalingMultiplier.expect("interestScalingMultiplier should always be some");
+        let accrued_interest = states.accruedInterest.expect("accruedInterest should always be some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
+        let status_date = states.statusDate.expect("status date should always be some");
 
         1.0 * interest_scaling_multiplier *
             (accrued_interest +

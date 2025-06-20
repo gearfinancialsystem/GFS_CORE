@@ -19,14 +19,10 @@ impl TraitPayOffFunction for POF_IED_PAM {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-
-        assert!(model.contractRole.is_some(), "contractRole should always be Some");
-        assert!(model.notionalPrincipal.is_some(), "notionalPrincipal should always be Some");
-        assert!(model.premiumDiscountAtIED.is_some(), "premiumDiscountAtIED should always be Some");
-
-        let contract_role = model.contractRole.as_ref().unwrap();
-        let notional_principal = model.notionalPrincipal.unwrap();
-        let premium_discount = model.premiumDiscountAtIED.unwrap();
+        
+        let contract_role = model.contractRole.as_ref().expect("contract role should always be Some");
+        let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let premium_discount = model.premiumDiscountAtIED.expect("premiumDiscount should always be Some");
 
         1.0 * contract_role.role_sign() * -1.0 * (notional_principal + premium_discount)
 

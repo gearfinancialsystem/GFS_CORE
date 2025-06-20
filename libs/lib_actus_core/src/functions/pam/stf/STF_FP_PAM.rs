@@ -19,26 +19,18 @@ impl TraitStateTransitionFunction for STF_FP_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     )  {
-        assert!(states.statusDate.is_some(), "status Date should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
-        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
-
-        // ddd
-        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
-        assert!(states.feeAccrued.is_none(), "feeAccrued should be None");
-
         
-        let status_date = states.statusDate.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
+        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
                                                                   time_adjuster.shift_bd(time));
-        
-        if let Some(mut accrued_interest) = states.accruedInterest {
+
+        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
-            states.accruedInterest = Some(accrued_interest);
-        }
+            accrued_interest
+        });
         
         states.feeAccrued = Some(0.0);
         states.statusDate = Some(*time);

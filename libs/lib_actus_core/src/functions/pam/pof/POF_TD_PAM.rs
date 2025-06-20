@@ -20,20 +20,13 @@ impl TraitPayOffFunction for POF_TD_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-
-        assert!(model.contractRole.is_some(), "contractRole should always be Some");
-        assert!(model.priceAtTerminationDate.is_some(), "priceAtTerminationDate should always be Some");
-        assert!(states.accruedInterest.is_some(), "accruedInterest should always be Some");
-        assert!(states.statusDate.is_some(), "statusDate should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominalInterest rate should always be Some");
-        assert!(states.notionalPrincipal.is_some(), "notionalPrincipal should always be Some");
         
-        let contract_role = model.contractRole.as_ref().unwrap();
-        let price_at_termination_date = model.priceAtTerminationDate.unwrap();
-        let accrued_interest = states.accruedInterest.unwrap();
-        let status_date = states.statusDate.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
+        let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+        let price_at_termination_date = model.priceAtTerminationDate.expect("priceAtTerminationDate should always exist");
+        let accrued_interest = states.accruedInterest.expect("accruedInterest should always exist");
+        let status_date = states.statusDate.expect("status date should always exist");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be Some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
        
         1.0 *
             contract_role.role_sign() *

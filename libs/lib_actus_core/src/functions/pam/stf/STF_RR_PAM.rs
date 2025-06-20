@@ -20,34 +20,16 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) {
-        assert!(model.rateMultiplier.is_some(), "rateMultiplier should always be None");
-        assert!(model.rateSpread.is_some(), "rateSpread should always be None");
-
-        assert!(states.statusDate.is_some(), "status Date should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
-        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
-
-        assert!(model.periodFloor.is_some(), "periodFloor should always be None");
-        assert!(model.periodCap.is_some(), "periodCap should be Some");
-
-        assert!(model.lifeFloor.is_some(), "lifeFloor should always be None");
-        assert!(model.lifeCap.is_some(), "lifeCap should be Some");
-
-        // ddd
-        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
-        assert!(states.feeAccrued.is_some(), "feeAccrued should be None");
-
-        let rate_multiplier = model.rateMultiplier.unwrap();
-        let rate_spread = model.rateSpread.unwrap();
-        let status_date = states.statusDate.unwrap();
-        let nominal_interest_rate = states.nominalInterestRate.unwrap();
-        let notional_principal = states.notionalPrincipal.unwrap();
-        let period_floor = model.periodFloor.unwrap();
-        let period_cap = model.periodCap.unwrap();
-        let life_floor = model.lifeFloor.unwrap();
-        let life_cap = model.lifeCap.unwrap();
-
-        ////aaaaaaa
+        let rate_multiplier = model.rateMultiplier.expect("rate_multiplier should be some");
+        let rate_spread = model.rateSpread.expect("rate_spread should be some");
+        let status_date = states.statusDate.expect("status date should be some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should be some");
+        let period_floor = model.periodFloor.expect("period floor should be some");
+        let period_cap = model.periodCap.expect("period cap should be some");
+        let life_floor = model.lifeFloor.expect("lifeFloor should be some");
+        let life_cap = model.lifeCap.expect("lifeCap should be some");
+        
         let mut rate = 1.0 * rate_multiplier + rate_spread;
         let mut delta_rate = rate - nominal_interest_rate;
 
@@ -58,10 +40,11 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
                                                                   time_adjuster.shift_bd(time));
 
-        if let Some(mut accrued_interest) = states.accruedInterest {
+        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
-            states.accruedInterest = Some(accrued_interest);
-        }
+            accrued_interest
+        });
+        
         states.nominalInterestRate = Some(rate);
 
         states.statusDate = Some(*time);

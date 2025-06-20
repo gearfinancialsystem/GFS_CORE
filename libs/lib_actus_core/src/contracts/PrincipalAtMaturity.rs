@@ -340,12 +340,7 @@ impl PrincipalAtMaturity {
             states.notionalPrincipal = Some(0.0);
             states.nominalInterestRate = Some(0.0);
         } else {
-            //let role_sign = model.contractRole.role_sign();
 
-            // let role_sign = match (&model.contractRole) {
-            //     (Some(a)) => a.role_sign(),
-            //     (a_x) => 1.0, // to check
-            // };
             let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
             states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
@@ -370,40 +365,28 @@ impl PrincipalAtMaturity {
             ).into_iter().collect();
 
             ip_schedule.sort();
-            // List<LocalDateTime> dateEarlierThanT0 = ipSchedule.stream().filter(time -> time.isBefore(states.statusDate)).collect(Collectors.toList());
 
             let date_earlier_than_t0: Vec<&IsoDatetime> = ip_schedule
                 .iter()
                 .filter(|&&date| date < states.statusDate.unwrap())
                 .collect();
-                
             
-            // tMinus = dateEarlierThanT0.get(dateEarlierThanT0.size() -1);
             let t_minus = date_earlier_than_t0.last();
             println!("ok");
             states.accruedInterest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
                                                                     time_adjuster.shift_bd(&states.statusDate.unwrap()))
                 * states.notionalPrincipal.unwrap()
                 * states.nominalInterestRate.unwrap());
-
-
-            // if let Some(&t_minus) = date_earlier_than_t0.last() {
-            //     let adjusted_t_minus = time_adjuster.shift_calc_time(t_minus);
-            //     let adjusted_status_date = time_adjuster.shift_calc_time(states.statusDate);
-            //     let day_fraction = day_counter.day_count_fraction(adjusted_t_minus, adjusted_status_date);
-            //     states.accruedInterest = day_fraction * states.notionalPrincipal * states.nominalInterestRate;
-            // }
+            
         }
-
-        // Initialize fee accrued
+        
         if model.feeRate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
         }
         // TODO: Implement last two possible initializations if needed
-
-        // Return the initialized state space
+        
         states
     }
 }

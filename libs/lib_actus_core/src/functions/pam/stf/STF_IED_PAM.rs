@@ -19,39 +19,30 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     )  {
-
-        assert!(model.contractRole.is_some(), "Contract role should always be Some");
-        assert!(model.notionalPrincipal.is_some(), "notional Principal should always be Some");
-        assert!(model.nominalInterestRate.is_some(), "nominalInterest rate should be Some");
-
-        let contract_role = model.contractRole.as_ref().unwrap();
-        let notional_principal = model.notionalPrincipal.unwrap();
-        let nominal_interest_rate = model.nominalInterestRate.unwrap();
-
-
-        // ddd
-        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
-        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
-        assert!(states.statusDate.is_some(), "status Date should always be Some");
-        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
-        let notional_principal_s = states.notionalPrincipal.unwrap();
-        let nominal_interest_rate_s = states.nominalInterestRate.unwrap();
-        let status_date = states.statusDate.unwrap();
-        let accrued_interest = states.accruedInterest.unwrap();
+        
+        let contract_role = model.contractRole.as_ref().expect("contract role should be Some");
+        let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should be Some");
+        let notional_principal_s = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let nominal_interest_rate_s = states.nominalInterestRate.expect("nominalInterestRate should be Some");
 
         states.notionalPrincipal = Some(contract_role.role_sign() * notional_principal);
         states.nominalInterestRate = Some(nominal_interest_rate);
         states.statusDate = Some(*time);
 
-        if (model.cycleAnchorDateOfInterestPayment.is_some()) &&
-            model.cycleAnchorDateOfInterestPayment.unwrap() < model.initialExchangeDate.unwrap() { 
-            if let Some(mut accrued_interest) = states.accruedInterest {
-                assert!(model.cycleAnchorDateOfInterestPayment.is_some(), "cycleAnchorDateOfInterestPayment should always be Some");
-                let cycle_anchor_date_of_interest_payment = model.cycleAnchorDateOfInterestPayment.unwrap();
-                accrued_interest += notional_principal_s * nominal_interest_rate_s * 
-                    day_counter.day_count_fraction(time_adjuster.shift_bd(&cycle_anchor_date_of_interest_payment),
-                                                   time_adjuster.shift_bd(time));
-                states.accruedInterest = Some(accrued_interest);
+        if let (Some(cycle_anchor_date), Some(initial_exchange_date)) = (
+            model.cycleAnchorDateOfInterestPayment.as_ref(),
+            model.initialExchangeDate.as_ref(),
+        ) {
+            if cycle_anchor_date < initial_exchange_date {
+                states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+                    accrued_interest += notional_principal_s * nominal_interest_rate_s *
+                        day_counter.day_count_fraction(
+                            time_adjuster.shift_bd(cycle_anchor_date),
+                            time_adjuster.shift_bd(time)
+                        );
+                    accrued_interest
+                });
             }
         }
         
