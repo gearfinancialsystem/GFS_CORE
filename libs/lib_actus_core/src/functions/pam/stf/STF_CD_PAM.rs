@@ -1,7 +1,7 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_counterparty::ContractPerformance;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -21,25 +21,36 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
         time_adjuster: &BusinessDayConvention,
     ) {
 
-        //let mut new_states: StateSpace = states.copy_state_space();
-        // update state space
-        let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
-            time_adjuster.shift_bd(&time),
-        );
+        assert!(states.statusDate.is_some(), "status Date should always be Some");
+        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
+        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
 
-        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (accrued_interest, _, _, _) => accrued_interest,
-        };
+        // ddd
+        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
+        assert!(states.feeAccrued.is_none(), "feeAccrued should be None");
 
-
-        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
-            (Some(a), Some(b), Some(c)) => Some(a + (b * c)),
-            (feeAccrued, _, _) => feeAccrued,
-        };
+        let status_date = states.statusDate.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
         
-        states.contractPerformance = Some(ContractPerformance::ContractPerformance::new_DF());
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
+                                                                  time_adjuster.shift_bd(time));
+
+        if let Some(mut accrued_interest) = states.accruedInterest {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(accrued_interest);
+        }
+
+        if let Some(mut fee_accrued) = states.feeAccrued {
+            let fee_rate = match model.feeRate {
+                Some(fee_rate) => fee_rate,
+                None => 0.0
+            };
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            states.feeAccrued = Some(fee_accrued);
+        }
+        
+        states.contractPerformance = Some(ContractPerformance::new_DF());
         states.statusDate = Some(*time);
 
     }

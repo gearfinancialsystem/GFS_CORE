@@ -20,34 +20,44 @@ impl TraitStateTransitionFunction for STF_PP_PAM {
         time_adjuster: &BusinessDayConvention,
     ) {
 
-        //let mut new_states: StateSpace = states.copy_state_space();
+        assert!(states.statusDate.is_some(), "status date some");
+        assert!(states.accruedInterest.is_some(), "accrued interest some");
+        assert!(states.nominalInterestRate.is_some(), "nominal interest rate");
+        assert!(states.notionalPrincipal.is_some(), "notional principal some");
+        assert!(model.feeRate.is_some(), "fee rate some");
+
+        assert!(states.feeAccrued.is_some(), "fee accrued some");
+
+        let status_date = states.statusDate.unwrap();
+        let accrued_interest = states.accruedInterest.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+        let fee_rate = model.feeRate.unwrap();
+
+
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
+            time_adjuster.shift_bd(&status_date),
             time_adjuster.shift_bd(&time),
         );
 
-        // Update accrued interest and fee accrued
-        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (accruedInterest, _, _, _) => accruedInterest,
-        };
+        if let Some(mut accrued_interest) = states.accruedInterest {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(accrued_interest);
+        }
 
-        states.feeAccrued = match (states.accruedInterest, model.feeRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (feeAccrued, _, _, _) => feeAccrued,
-        };
+        if let Some(mut fee_accrued) = states.feeAccrued {
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            states.feeAccrued = Some(fee_accrued);
+        }
+        
+        if let Some(mut notional_principal) = states.notionalPrincipal {
+            notional_principal -= 1.0 * notional_principal;
+            states.notionalPrincipal = Some(notional_principal);
+        }
 
-        // Apply prepayment adjustment
-        let prepayment_rate = 0.0 ; // risk_factor_model.state_at(model.objectCodeOfPrepaymentModel, &time, states, model);
+        states.statusDate = Some(*time);
 
-        states.notionalPrincipal = match (states.notionalPrincipal, prepayment_rate) {
-            (Some(a), b) => Some(a + (a * b)),
-            (notional_principal, _) => notional_principal,
-        };
-
-        // Update the status date
-        states.statusDate = Some(*time)
 
     }
 }

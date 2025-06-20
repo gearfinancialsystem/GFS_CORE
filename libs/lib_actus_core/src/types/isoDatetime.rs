@@ -31,7 +31,7 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
                 NaiveDate::from_ymd_opt(self.date().year() as i32, self.date().month() + 1, 1).unwrap()
             }
         };
-        let last_day_of_month = first_day_of_next_month.pred().day();
+        let last_day_of_month = first_day_of_next_month.pred_opt().unwrap().day();
         if last_day_of_month == self.day() {
             true
         }

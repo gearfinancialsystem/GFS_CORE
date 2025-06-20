@@ -20,14 +20,10 @@ impl TraitStateTransitionFunction for STF_TD_PAM {
         _time_adjuster: &BusinessDayConvention,
     )  {
 
-        // let mut new_states = StateSpace::copy_state_space(states);
-
-        // Update state space
         states.notionalPrincipal = Some(0.0);
         states.accruedInterest = Some(0.0);
         states.feeAccrued = Some(0.0);
         states.statusDate = Some(*time);
-
-        // Return a copy of the updated state space
+        
     }
 }

@@ -1,3 +1,4 @@
+use std::os::linux::raw::stat;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
@@ -19,13 +20,31 @@ impl TraitPayOffFunction for POF_TD_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-            match (&model.contractRole, &model.priceAtTerminationDate, states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal) {
-                (Some(a), Some(b), Some(c), Some(d), Some(e)) => 1.0 * a.role_sign() * (b + c + day_counter.day_count_fraction(
-                    time_adjuster.shift_bd(&states.statusDate.unwrap()),
-                    time_adjuster.shift_bd(&time)
-                ) * d * e),
-                (a, _, _, _, _) => 1.0, // a verifier
-            }
+
+        assert!(model.contractRole.is_some(), "contractRole should always be Some");
+        assert!(model.priceAtTerminationDate.is_some(), "priceAtTerminationDate should always be Some");
+        assert!(states.accruedInterest.is_some(), "accruedInterest should always be Some");
+        assert!(states.statusDate.is_some(), "statusDate should always be Some");
+        assert!(states.nominalInterestRate.is_some(), "nominalInterest rate should always be Some");
+        assert!(states.notionalPrincipal.is_some(), "notionalPrincipal should always be Some");
+        
+        let contract_role = model.contractRole.as_ref().unwrap();
+        let price_at_termination_date = model.priceAtTerminationDate.unwrap();
+        let accrued_interest = states.accruedInterest.unwrap();
+        let status_date = states.statusDate.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+       
+        1.0 *
+            contract_role.role_sign() *
+            (price_at_termination_date +
+            accrued_interest + 
+            day_counter.day_count_fraction(
+                time_adjuster.shift_bd(&status_date),
+                time_adjuster.shift_bd(time)
+            ) * nominal_interest_rate
+                * notional_principal
+            )
         
     }
 }

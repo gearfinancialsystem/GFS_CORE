@@ -35,22 +35,22 @@ impl Calendar {
 
     pub fn provide_rc(string_map: &HashMap<String, String>, key: &str) -> Option<Rc<Self>> {
         match string_map.get(key) {
-            None => Some(Rc::new(Calendar::default())), // Clé absente → valeur par défaut
+            None => Some(Rc::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
                 match Self::from_str(s) {
-                    Ok(calendar) => Some(Rc::new(calendar)),
-                    Err(_) => None, // Valeur présente mais invalide
+                    Ok(calendar) => Some(Rc::new(calendar)), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
                 }
             }
         }
     }
     pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
         match string_map.get(key) {
-            None => Some(Box::new(Calendar::default())), // Clé absente → valeur par défaut
+            None => Some(Box::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
                 match Self::from_str(s) {
-                    Ok(calendar) => Some(Box::new(calendar)),
-                    Err(_) => None, // Valeur présente mais invalide
+                    Ok(calendar) => Some(Box::new(calendar)), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
                 }
             }
         }
@@ -58,7 +58,6 @@ impl Calendar {
 }
 
 impl TraitBusinessDayCalendar for Calendar {
-
     fn is_business_day(&self, date: &IsoDatetime) -> bool {
         match self {
             Self::NC(NC) => NC.is_business_day(date),

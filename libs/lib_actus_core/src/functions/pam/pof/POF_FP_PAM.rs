@@ -1,19 +1,21 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::types::isoDatetime::IsoDatetime;
+
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::types::isoDatetime::IsoDatetime;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
+
 #[allow(non_camel_case_types)]
 pub struct POF_FP_PAM;
 
 impl TraitPayOffFunction for POF_FP_PAM {
     fn eval(
         &self,
-        _time: &IsoDatetime, 
+        _time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,

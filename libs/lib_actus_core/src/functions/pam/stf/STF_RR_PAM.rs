@@ -6,6 +6,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
+
 #[allow(non_camel_case_types)]
 pub struct STF_RR_PAM;
 
@@ -19,36 +20,50 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) {
+        assert!(model.rateMultiplier.is_some(), "rateMultiplier should always be None");
+        assert!(model.rateSpread.is_some(), "rateSpread should always be None");
 
-        // let mut new_states: StateSpace = states.copy_state_space();
+        assert!(states.statusDate.is_some(), "status Date should always be Some");
+        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
+        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
 
-        // Compute new rate
-        let base_rate = 0.0; // risk_factor_model.state_at(model.marketObjectCodeOfRateReset, &time, states, model);
-        
-        let mut rate = base_rate * model.rateMultiplier.unwrap() + model.rateSpread.unwrap();
-        let mut delta_rate = rate - states.nominalInterestRate.unwrap();
+        assert!(model.periodFloor.is_some(), "periodFloor should always be None");
+        assert!(model.periodCap.is_some(), "periodCap should be Some");
 
-        // Apply period cap/floor
-        delta_rate = delta_rate.clamp(model.periodFloor.unwrap(), model.periodCap.unwrap());
-        
-        rate = states.nominalInterestRate.unwrap() + delta_rate;
+        assert!(model.lifeFloor.is_some(), "lifeFloor should always be None");
+        assert!(model.lifeCap.is_some(), "lifeCap should be Some");
 
-        // Apply life cap/floor
-        rate = rate.clamp(model.lifeFloor.unwrap(), model.lifeCap.unwrap());
+        // ddd
+        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
+        assert!(states.feeAccrued.is_some(), "feeAccrued should be None");
 
-        // Update state space
-        let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
-            time_adjuster.shift_bd(&time),
-        );
-        
-        // Update accrued interest and fee accrued
-        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (accrued_interest, _, _, _) => accrued_interest,
-        };
+        let rate_multiplier = model.rateMultiplier.unwrap();
+        let rate_spread = model.rateSpread.unwrap();
+        let status_date = states.statusDate.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+        let period_floor = model.periodFloor.unwrap();
+        let period_cap = model.periodCap.unwrap();
+        let life_floor = model.lifeFloor.unwrap();
+        let life_cap = model.lifeCap.unwrap();
 
+        ////aaaaaaa
+        let mut rate = 1.0 * rate_multiplier + rate_spread;
+        let mut delta_rate = rate - nominal_interest_rate;
+
+        delta_rate = delta_rate.max(period_floor).min(period_cap);
+        rate = nominal_interest_rate + delta_rate;
+        rate = rate.max(life_floor).min(life_cap);
+
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
+                                                                  time_adjuster.shift_bd(time));
+
+        if let Some(mut accrued_interest) = states.accruedInterest {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(accrued_interest);
+        }
         states.nominalInterestRate = Some(rate);
+
         states.statusDate = Some(*time);
 
 

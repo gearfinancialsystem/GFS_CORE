@@ -19,101 +19,45 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayConvention,
     ) { // ->StateSpace
-        // let mut new_state = StateSpace::copy_state_space(states);
-        // let mut new_states: StateSpace = StateSpace::copy_state_space(states);
-        // Calculate time from the last event
-        let timeFromLastEvent = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
-            time_adjuster.shift_bd(&time),
-        );
+        
+        assert!(states.statusDate.is_some(), "status Date should always be Some");
+        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
+        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
+        assert!(model.feeRate.is_some(), "fee rate should always be Some");
+        assert!(model.scalingEffect.is_some(), "scaling effect should always be Some");
+        
+        // ddd
+        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
+        assert!(states.feeAccrued.is_some(), "feeAccrued should be None");
+    
+        let status_date = states.statusDate.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+        let fee_rate = model.feeRate.unwrap();
+        let scaling_effect = model.scalingEffect.as_ref().unwrap();
+        
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
+                                                                  time_adjuster.shift_bd(time));
 
-        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal) {
-            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
-            (accrued_interest, _, _) => accrued_interest,
-        };
-
-
-
-        // new_state.accruedInterest = Some(new_state.accruedInterest.unwrap() + (new_state.nominalInterestRate.unwrap() * new_state.notionalPrincipal.unwrap() * timeFromLastEvent));
-        // new_state.accruedInterest = match (new_state.accruedInterest, new_state.nominalInterestRate, new_state.notionalPrincipal) {
-        //     (Some(accrued), Some(rate), Some(principal)) => {
-        //         Some(accrued + (rate * principal * timeFromLastEvent))
-        //     }
-        //     (accrued, _, _) => accrued, // garde l'ancienne valeur si le calcul n'est pas possible
-        // };
-
-        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
-            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
-            (fee_accrued, _, _) => fee_accrued,
-        };
-
-        // new_state.feeAccrued = match (new_state.feeAccrued, model.feeRate, new_state.notionalPrincipal) {
-        //     (Some(fee), Some(rate), Some(principal)) => {
-        //         Some(fee + (rate * principal * timeFromLastEvent))
-        //     }
-        //     (fee, _, _) => fee, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
-        // };
-        //
-
-        // // new_state.feeAccrued = Some(new_state.feeAccrued.unwrap() + (model.feeRate.unwrap() * new_state.notionalPrincipal.unwrap() * timeFromLastEvent));
-        let scalingMultiplier = 1.0; // a corriger !!!
-        states.interestScalingMultiplier = match (states.interestScalingMultiplier, scalingMultiplier) {
-            (Some(a), b) => {
-                if a.to_string().contains("I") {
-                    Some(b)
-                }
-                else {
-                    None
-                }
-            },
-            (a, _) => a,
-        };
-
-        states.notionalScalingMultiplier = match (states.notionalScalingMultiplier, scalingMultiplier) {
-            (Some(a), b) => {
-                if a.to_string().contains("N") {
-                    Some(b)
-                }
-                else {
-                    None
-                }
-            },
-            (a, _) => a,
-        };
-
-
+        if let Some(mut accrued_interest) = states.accruedInterest {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(accrued_interest);
+        }
+        if let Some(mut fee_accrued) = model.feeAccrued {
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            states.feeAccrued = Some(fee_accrued);
+        }
+        
+        let scaling_multiplier = 1.0; // implementer risk factor
+        
+        if scaling_effect.to_string().contains("I") {
+            states.interestScalingMultiplier = Some(scaling_multiplier);
+        }
+        if scaling_effect.to_string().contains("N") {
+            states.notionalScalingMultiplier = Some(scaling_multiplier);
+        }
+        
         states.statusDate = Some(*time);
-        //
-        // new_state.interestScalingMultiplier = match (new_state.interestScalingMultiplier, scalingMultiplier) {
-        //     (Some(iScale), scalingMultiplier) => {
-        //         if iScale.to_string().contains("I") {
-        //             Some(iScale + scalingMultiplier)
-        //         } else {
-        //             None
-        //         }
-        //     }
-        //     (iScale, _) => iScale, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
-        // };
-        // new_state.notionalScalingMultiplier = match (new_state.notionalScalingMultiplier, scalingMultiplier) {
-        //     (Some(iScale), scalingMultiplier) => {
-        //         if iScale.to_string().contains("N") {
-        //             Some(iScale + scalingMultiplier)
-        //         } else {
-        //             None
-        //         }
-        //     }
-        //     (iScale, _) => iScale, // garde l'ancienne valeur de feeAccrued si le calcul n'est pas possible
-        // };
-        //
-        // new_state.statusDate = match (new_state.statusDate) {
-        //     (Some(stdate)) => {
-        //         Some(stdate)
-        //     }
-        //     (stdate) => stdate, // garde l'ancienne valeur si le calcul n'est pas possible
-        // };
-        //
-        // // Return a copy of the updated state space
-        // new_state
-
+        
     }
 }

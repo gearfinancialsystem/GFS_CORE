@@ -67,9 +67,3 @@ impl FromStr for EventType {
         }
     }
 }
-
-impl Default for EventType {
-    fn default() -> Self {
-        EventType::PI
-    }
-}

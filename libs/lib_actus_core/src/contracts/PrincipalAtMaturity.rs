@@ -70,7 +70,7 @@ impl PrincipalAtMaturity {
         ));
 
         // Purchase (PRD)
-        if !&model.purchaseDate.is_none() {
+        if model.purchaseDate.is_some() {
             events.push(EventFactory::create_event(
                 model.purchaseDate,
                 EventType::PRD,
@@ -82,9 +82,9 @@ impl PrincipalAtMaturity {
         }
 
         // Interest payment related events
-        if !model.nominalInterestRate.is_none()
-            && (!model.cycleOfInterestPayment.is_none()
-                || !model.cycleAnchorDateOfInterestPayment.is_none())
+        if model.nominalInterestRate.is_some()
+            && (model.cycleOfInterestPayment.is_some()
+                || model.cycleAnchorDateOfInterestPayment.is_some())
         {
             // Generate raw interest payment events (IP)
             let mut interest_events = EventFactory::create_events_with_convention(
@@ -104,7 +104,7 @@ impl PrincipalAtMaturity {
             );
 
             // Adapt if interest capitalization is set
-            if !model.capitalizationEndDate.is_none() {
+            if model.capitalizationEndDate.is_some() {
                 // Remove IP events at IPCED and add IPCI event instead
                 let capitalization_end = EventFactory::create_event_with_convention(
                     model.capitalizationEndDate,
@@ -112,7 +112,7 @@ impl PrincipalAtMaturity {
                     model.currency.as_ref(),
                     Some(Rc::new(POF_IPCI_PAM)),
                     Some(Rc::new(STF_IPCI_PAM)),
-                    &model.businessDayConvention.clone().unwrap(),
+                    &model.businessDayConvention.as_ref().unwrap(),
                     model.contractID.as_ref(),
                 );
 
@@ -138,7 +138,7 @@ impl PrincipalAtMaturity {
             }
 
             events.extend(interest_events);
-        } else if !model.capitalizationEndDate.is_none() {
+        } else if model.capitalizationEndDate.is_some() {
             // If no interest schedule set but capitalization end date, add single IPCI event
             events.push(EventFactory::create_event_with_convention(
                 model.capitalizationEndDate,
@@ -169,7 +169,7 @@ impl PrincipalAtMaturity {
         );
 
         // Adapt fixed rate reset event
-        if !model.nextResetRate.is_none() {
+        if model.nextResetRate.is_some() {
             let status_event = EventFactory::create_event(
                 model.statusDate,
                 EventType::AD,
@@ -195,7 +195,7 @@ impl PrincipalAtMaturity {
         events.extend(rate_reset_events);
 
         // Fee payment events (FP), if specified
-        if !model.cycleOfFee.is_none() {
+        if model.cycleOfFee.is_some() {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
@@ -216,7 +216,7 @@ impl PrincipalAtMaturity {
 
         // Scaling events (SC), if specified
 
-        if !&model.scalingEffect.is_none() && (model.scalingEffect.clone().unwrap().to_string().contains('I') || model.scalingEffect.clone().unwrap().to_string().contains('N'))
+        if model.scalingEffect.is_some() && (model.scalingEffect.clone().unwrap().to_string().contains('I') || model.scalingEffect.clone().unwrap().to_string().contains('N'))
         {
             let scaling_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
@@ -237,7 +237,7 @@ impl PrincipalAtMaturity {
         }
 
         // Termination event (TD)
-        if !model.terminationDate.is_none() {
+        if model.terminationDate.is_some() {
             let termination = EventFactory::create_event(
                 model.terminationDate,
                 EventType::TD,
@@ -305,7 +305,7 @@ impl PrincipalAtMaturity {
         }
 
         // Remove pre-purchase events if purchase date is set
-        if !model.purchaseDate.is_none() {
+        if model.purchaseDate.is_some() {
             let purchase_date = model.purchaseDate;
             let purchase_event = EventFactory::create_event(
                 purchase_date,
@@ -354,7 +354,7 @@ impl PrincipalAtMaturity {
         // Initialize accrued interest
         if model.nominalInterestRate.is_none() {
             states.accruedInterest =  Some(0.0);
-        } else if !model.accruedInterest.is_none() {
+        } else if model.accruedInterest.is_some() {
             states.accruedInterest = model.accruedInterest;
         } else {
             let day_counter = model.dayCountConvention.as_ref().unwrap();
@@ -398,7 +398,7 @@ impl PrincipalAtMaturity {
         // Initialize fee accrued
         if model.feeRate.is_none() {
             states.feeAccrued = Some(0.0);
-        } else if !model.feeAccrued.is_none() {
+        } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
         }
         // TODO: Implement last two possible initializations if needed

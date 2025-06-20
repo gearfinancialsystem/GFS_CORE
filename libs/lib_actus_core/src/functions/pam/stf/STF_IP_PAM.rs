@@ -3,8 +3,6 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_fees::fee_basis::N::N;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
@@ -23,29 +21,26 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
     ) {
         // Reset accrued interest
         //let mut new_states: StateSpace = states.copy_state_space(); 
+        assert!(states.feeAccrued.is_some(), "fee accrued toujours some");
+        assert!(states.statusDate.is_some(), "status date some");
+        assert!(model.feeRate.is_some(), "fee rate some");
+        assert!(states.notionalPrincipal.is_some(), "notionalPrincipal some");
+        
+        // let fee_accrued = states.feeAccrued.unwrap();
+        let status_date = states.statusDate.unwrap();
+        let fee_rate = model.feeRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
 
         states.accruedInterest = Some(0.0);
-
+        
         // Update fee-accrued
-
-        if let Some(fee_basis) = &model.feeBasis {
-            if *fee_basis == FeeBasis::N(N) {
-                let time_fraction = day_counter.day_count_fraction(
-                    time_adjuster.shift_bd(&states.statusDate.unwrap()),
-                    time_adjuster.shift_bd(&time),
-                );
-
-
-                states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
-                    (Some(a), Some(b), Some(c)) => Some(a + (b * c)),
-                    (feeAccrued, _, _) => feeAccrued,
-                };
-            }
-            // Further processing for FeeBasis cases that aren't "N"
-            // Commented out: If additional logic is needed, it can be expanded here
-
-            // Update the status date
-            states.statusDate = Some(*time);
+        if let Some(mut fee_accrued) = states.feeAccrued {
+            fee_accrued += day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date), time_adjuster.shift_bd(time)) *
+            fee_rate * notional_principal;
+            states.feeAccrued = Some(fee_accrued);
         }
+
+        states.statusDate = Some(*time);
+        
     }
 }

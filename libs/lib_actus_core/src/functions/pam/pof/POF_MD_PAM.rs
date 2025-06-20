@@ -12,16 +12,21 @@ pub struct POF_MD_PAM;
 impl TraitPayOffFunction for POF_MD_PAM {
     fn eval(
         &self,
-        _time: &IsoDatetime, 
+        _time: &IsoDatetime,
         states: &StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayConvention,
     ) -> f64 {
-            match (states.notionalScalingMultiplier, states.notionalPrincipal) {
-                (Some(a), Some(b)) => 1.0 * a * b,
-                (a, _) => 1.0, // a verifier
-            }
+
+            assert!(states.notionalScalingMultiplier.is_some(), "nominal interest rate should always be Some");
+            assert!(states.notionalPrincipal.is_some(), "notional principal should always be Some");
+            
+            let notional_scaling_multiplier = states.notionalScalingMultiplier.unwrap();
+            let notional_principal = states.notionalPrincipal.unwrap();
+        
+            1.0 * notional_scaling_multiplier * notional_principal
+        
     }
 }

@@ -20,29 +20,38 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         time_adjuster: &BusinessDayConvention,
     )  {
 
-        //let mut new_states: StateSpace = states.copy_state_space();
-
+        assert!(states.statusDate.is_some(), "status date some");
+        assert!(states.accruedInterest.is_some(), "accrued interest some");
+        assert!(states.nominalInterestRate.is_some(), "nominal interest rate");
+        assert!(states.notionalPrincipal.is_some(), "notional principal some");
+        assert!(model.feeRate.is_some(), "fee rate some");
+        
+        assert!(states.feeAccrued.is_some(), "fee accrued some");
+        
+        let status_date = states.statusDate.unwrap();
+        let accrued_interest = states.accruedInterest.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+        let fee_rate = model.feeRate.unwrap();
+        
+        
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
+            time_adjuster.shift_bd(&status_date),
             time_adjuster.shift_bd(&time),
         );
 
-        // Modify the value inside the Option<Box<f64>>
-        states.notionalPrincipal = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (notionalPrincipal, _, _, _) => notionalPrincipal,
-        };
-
+        if let Some(mut notional_principal) = states.notionalPrincipal {
+            notional_principal += accrued_interest + (nominal_interest_rate * notional_principal * time_from_last_event);
+            states.notionalPrincipal = Some(notional_principal);
+        }
+        
         states.accruedInterest = Some(0.0);
 
-        // Update fee accrued
-        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal, time_from_last_event) {
-            (Some(a), Some(b), Some(c), d) => Some(a + (b * c * d)),
-            (feeAccrued, _, _, _) => feeAccrued,
-        };
-        // Update the status date
-        states.statusDate = Some(*time);
+        if let Some(mut fee_accrued) = states.feeAccrued {
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            states.feeAccrued = Some(fee_accrued);
+        }
 
 
     }

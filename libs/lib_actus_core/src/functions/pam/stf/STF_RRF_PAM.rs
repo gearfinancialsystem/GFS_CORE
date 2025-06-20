@@ -20,26 +20,36 @@ impl TraitStateTransitionFunction for STF_RRF_PAM {
         time_adjuster: &BusinessDayConvention,
     ) {
 
-        // let mut new_states: StateSpace = states.copy_state_space();
-        // Calculate time from the last event
-        let timeFromLastEvent = day_counter.day_count_fraction(
-            time_adjuster.shift_bd(&states.statusDate.unwrap()),
-            time_adjuster.shift_bd(&time),
-        );
+        assert!(states.statusDate.is_some(), "status Date should always be Some");
+        assert!(states.nominalInterestRate.is_some(), "nominal Interest rate should always be Some");
+        assert!(states.notionalPrincipal.is_some(), "notional Principal should always be Some");
+        assert!(model.feeRate.is_some(), "fee rate should always be Some");
+        assert!(model.nextResetRate.is_some(), "nextReset rate should always be Some");
 
-        states.accruedInterest = match (states.accruedInterest, states.nominalInterestRate, states.notionalPrincipal) {
-            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
-            (accrued_interest, _, _) => accrued_interest,
-        };
+        // ddd
+        assert!(states.accruedInterest.is_some(), "accrued Interest should always be Some");
+        assert!(states.feeAccrued.is_some(), "feeAccrued should be None");
 
-        states.feeAccrued = match (states.feeAccrued, model.feeRate, states.notionalPrincipal) {
-            (Some(a), Some(b), Some(c)) => Some(a + (b * c * timeFromLastEvent)),
-            (fee_accrued, _, _) => fee_accrued,
-        };
+        let status_date = states.statusDate.unwrap();
+        let nominal_interest_rate = states.nominalInterestRate.unwrap();
+        let notional_principal = states.notionalPrincipal.unwrap();
+        let fee_rate = model.feeRate.unwrap();
+        let next_reset_rate = model.nextResetRate.unwrap();
 
-        // Set the nominal interest rate to the next reset rate
-        
-        states.nominalInterestRate = model.nextResetRate;
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
+                                                                  time_adjuster.shift_bd(time));
+
+        if let Some(mut accrued_interest) = states.accruedInterest {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(accrued_interest);
+        }
+
+        if let Some(mut fee_accrued) = states.feeAccrued {
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            states.accruedInterest = Some(fee_accrued);
+        }
+
+        states.nominalInterestRate = Some(next_reset_rate);
         states.statusDate = Some(*time)
 
 

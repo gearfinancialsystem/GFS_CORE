@@ -21,7 +21,7 @@ use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PAM {
-    pub calendar: Option<Rc<Calendar>>,
+    pub calendar: Option<Rc<Calendar>>, // pas d'option, champs obligatoire
     pub businessDayConvention: Option<BusinessDayConvention>,
     pub endOfMonthConvention: Option<EndOfMonthConvention>,
     pub contractType: Option<String>, // obligatoire
