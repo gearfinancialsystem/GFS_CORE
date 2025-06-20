@@ -125,7 +125,7 @@ impl PrincipalAtMaturity {
                 let mut vec: Vec<_> = interest_events.clone().into_iter().collect();
                 // Change events with time <= IPCED and cont_type IP to IPCI
 
-                v
+
                 vec.iter_mut()
                     .filter(|e| e.eventType == EventType::IP &&
                         e.get_event_time() <= capitalization_end.get_event_time())
