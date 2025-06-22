@@ -2,6 +2,12 @@ use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 use crate::terms::grp_contract_identification::contract_types::Pam::PAM;
 
+pub enum Value {
+    String(String),
+    HashMap(HashMap<String, Value>),
+    Vec(Vec<Value>),
+}
+
 #[derive(PartialEq, Debug, Clone)]
 pub enum ContractModel {
     PAM(PAM),

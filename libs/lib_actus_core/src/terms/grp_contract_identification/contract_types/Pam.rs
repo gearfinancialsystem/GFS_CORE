@@ -22,7 +22,7 @@ use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct PAM {
     pub calendar: Option<Rc<Calendar>>, // pas d'option, champs obligatoire
-    pub BusinessDayAdjuster: Option<BusinessDayAdjuster>,
+    pub businessDayAdjuster: Option<BusinessDayAdjuster>,
     pub endOfMonthConvention: Option<EndOfMonthConvention>,
     pub contractType: Option<String>, // obligatoire
     pub contractID: Option<String>,
@@ -83,7 +83,7 @@ impl PAM {
     pub fn init() -> Self {
         PAM {
             calendar: None,
-            BusinessDayAdjuster: None,
+            businessDayAdjuster: None,
             endOfMonthConvention: None,
             contractType: None,
             contractID: None,
@@ -160,7 +160,7 @@ impl PAM {
         if let Some(calendar) = &self.calendar {
             // Clone seulement l'Rc, pas le calendrier lui-même
             let calendar_clone = Rc::clone(calendar);
-            self.BusinessDayAdjuster = BusinessDayAdjuster::provide(
+            self.businessDayAdjuster = BusinessDayAdjuster::provide(
                 sm,
                 "BusinessDayAdjuster",
                 calendar_clone

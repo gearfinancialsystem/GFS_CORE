@@ -1,0 +1,42 @@
+
+
+use std::str::FromStr;
+use crate::attributes::reference_type::ReferenceType::ReferenceType::CNT;
+use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_calendar::calendars::NoCalendar::NC;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+
+pub enum ReferenceRole {
+    UDL,
+    FIL,
+    SEL,
+    COVE,
+    COVI
+}
+
+impl ReferenceRole {
+    pub fn new_UDL() -> Self { Self::UDL }
+
+    pub fn new_FIL() -> Self { Self::FIL }
+
+    pub fn new_SEL() -> Self { Self::SEL }
+
+    pub fn new_COVE() -> Self { Self::COVE }
+
+    pub fn new_COVI() -> Self { Self::COVI }
+
+}
+
+impl FromStr for ReferenceRole {
+    type Err = ParseError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "UDL"  => Ok(Self::new_UDL()),
+            "FIL"  => Ok(Self::new_FIL()),
+            "SEL"  => Ok(Self::new_SEL()),
+            "COVE"  => Ok(Self::new_COVE()),
+            "COVI"   => Ok(Self::new_COVI()),
+            _ => Err(ParseError { message: format!("Invalid Reference Role: {}", s)})
+        }
+    }
+}

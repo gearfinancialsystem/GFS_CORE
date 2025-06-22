@@ -6,9 +6,15 @@ use lib_actus_core::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Pam;
 
-fn main() { 
-    let mut dico: HashMap<String, String> = HashMap::new();
+fn main() {
+    enum Value {
+        String(String),
+        HashMap(HashMap<String, Value>),
+        Vec(Vec<Value>),
+    }
+    let mut dico= HashMap::new(); // HashMap<String, String>
 
+    // PAM02
     dico.insert("contractType".to_string(),"PAM".to_string());
     dico.insert("contractID".to_string(),"pam02".to_string());
     dico.insert("statusDate".to_string(),"2012-12-30T00:00:00".to_string());
@@ -27,6 +33,62 @@ fn main() {
     dico.insert("contractRole".to_string(),"RPA".to_string());
     //dico.insert("contractPerformance".to_string(),"xzxz".to_string());
 
+    // SWAPS01
+    // dico.insert("contractType".to_string(), Value::String("SWAPS".to_string()));
+    // dico.insert("contractID".to_string(), Value::String("swaps01".to_string()));
+    // dico.insert("contractRole".to_string(), Value::String("RFL".to_string()));
+    // dico.insert("currency".to_string(), Value::String("USD".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::String("2012-12-28T00:00:00".to_string()));
+    // dico.insert("statusDate".to_string(), Value::String("2012-12-30T00:00:00".to_string()));
+    // dico.insert("deliverySettlement".to_string(), Value::String("D".to_string()));
+    //
+    // let mut cs1 = HashMap::new();
+    // let mut obj1 = HashMap::new();
+    //
+    // obj1.insert("contractType".to_string(), Value::String("PAM".to_string()));
+    // obj1.insert("contractID".to_string(), Value::String("swaps01-leg1".to_string()));
+    // obj1.insert("contractDealDate".to_string(), Value::String("2012-12-28T00:00:00".to_string()));
+    // obj1.insert("initialExchangeDate".to_string(), Value::String("2013-01-01T00:00:00".to_string()));
+    // obj1.insert("currency".to_string(), Value::String("USD".to_string()));
+    // obj1.insert("statusDate".to_string(), Value::String("2012-12-30T00:00:00".to_string()));
+    // obj1.insert("notionalPrincipal".to_string(), Value::String("1000".to_string()));
+    // obj1.insert("dayCountConvention".to_string(), Value::String("A365".to_string()));
+    // obj1.insert("nominalInterestRate".to_string(), Value::String("0.1".to_string()));
+    // obj1.insert("maturityDate".to_string(), Value::String("2014-01-01T00:00:00".to_string()));
+    // obj1.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::String("2013-01-01T00:00:00".to_string()));
+    // obj1.insert("cycleOfInterestPayment".to_string(), Value::String("P1ML1".to_string()));
+    // obj1.insert("premiumDiscountAtIED".to_string(), Value::String("0.0".to_string()));
+    //
+    // cs1.insert("object".to_string(), Value::HashMap(obj1));
+    // cs1.insert("referenceType".to_string(), Value::String("CNT".to_string()));
+    // cs1.insert("referenceRole".to_string(), Value::String("FIL".to_string()));
+    //
+    // let mut cs2 = HashMap::new();
+    // let mut obj2 = HashMap::new();
+    //
+    // obj2.insert("contractType".to_string(), Value::String("PAM".to_string()));
+    // obj2.insert("contractID".to_string(), Value::String("swaps01-leg2".to_string()));
+    // obj2.insert("contractDealDate".to_string(), Value::String("2012-12-28T00:00:00".to_string()));
+    // obj2.insert("initialExchangeDate".to_string(), Value::String("2013-01-01T00:00:00".to_string()));
+    // obj2.insert("currency".to_string(), Value::String("USD".to_string()));
+    // obj2.insert("statusDate".to_string(), Value::String("2012-12-30T00:00:00".to_string()));
+    // obj2.insert("notionalPrincipal".to_string(), Value::String("1200".to_string()));
+    // obj2.insert("dayCountConvention".to_string(), Value::String("A365".to_string()));
+    // obj2.insert("nominalInterestRate".to_string(), Value::String("0.1".to_string()));
+    // obj2.insert("maturityDate".to_string(), Value::String("2014-01-01T00:00:00".to_string()));
+    // obj2.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::String("2013-01-01T00:00:00".to_string()));
+    // obj2.insert("cycleOfInterestPayment".to_string(), Value::String("P3ML1".to_string()));
+    // obj2.insert("premiumDiscountAtIED".to_string(), Value::String("0.0".to_string()));
+    //
+    // cs2.insert("object".to_string(), Value::HashMap(obj2));
+    // cs2.insert("referenceType".to_string(), Value::String("CNT".to_string()));
+    // cs2.insert("referenceRole".to_string(), Value::String("SEL".to_string()));
+    //
+    // dico.insert("contractStructure".to_string(), Value::Vec(vec![Value::HashMap(cs1), Value::HashMap(cs2)]));
+
+
+
+
     let mut dic_parsed = Pam::PAM::init();
     dic_parsed.parse_from_dict(&dico);
 
@@ -43,27 +105,6 @@ fn main() {
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.eventTime.unwrap(), ce.eventType, ce.payoff, ce.state.accruedInterest);
-                // println!("{} - {}", ce.eventTime.as_ref().unwrap(), ce.payoff.as_ref().unwrap());
-                // {'payoff': '-2800.0',
-                //     'accruedInterest': '0.0',
-                //     'exerciseDate': 'null',
-                //     'nominalInterestRate': '0.1',
-                //     'eventType': 'IED',
-                //     'interestScalingMultiplier': '1.0',
-                //     'interestCalculationBaseAmount': '0.0',
-                //     'nominalInterestRate2': '0.0',
-                //     'notionalScalingMultiplier': '1.0',
-                //     'notionalPrincipal2': '0.0',
-                //     'notionalPrincipal': '3000.0',
-                //     'lastInterestPeriod': '0.0',
-                //     'currency': 'USD',
-                //     'accruedInterest2': '0.0',
-                //     'feeAccrued': '0.0',
-                //     'nextPrincipalRedemptionPayment': '0.0',
-                //     'nonPerformingDate': 'null',
-                //     'exerciseAmount': '0.0',
-                //     'eventDate': '2013-01-01T00:00'}
-                //println!("ok");
             }
 
         }

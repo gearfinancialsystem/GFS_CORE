@@ -1,6 +1,6 @@
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Hash)]
 pub struct D;
 impl D {
     pub fn new() -> Self {

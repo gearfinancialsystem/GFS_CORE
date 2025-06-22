@@ -1,14 +1,14 @@
+use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;
 
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Hash)]
 pub enum DeliverySettlement {
     S(S),
     D(D),
-    None
 }
 
 impl DeliverySettlement {
@@ -17,7 +17,6 @@ impl DeliverySettlement {
         match self {
             DeliverySettlement::S(S) => S.type_str(),
             DeliverySettlement::D(D) => D.type_str(),
-            DeliverySettlement::None => "".to_string()
         }
     }
 
@@ -27,6 +26,19 @@ impl DeliverySettlement {
 
     pub fn new_D() -> Self {
         DeliverySettlement::D(D::new())
+    }
+
+    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self>
+    {
+        match string_map.get(key) {
+            None => Some(DeliverySettlement::default()), // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match DeliverySettlement::from_str(s) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -39,7 +51,7 @@ impl FromStr for DeliverySettlement {
             "S" => Ok(DeliverySettlement::new_S()),
             "D" => Ok(DeliverySettlement::new_D()),
             _ => Err(ParseError {
-                message: format!("Invalid Calendar cont_type: {}", s),
+                message: format!("Invalid Delivery Settlement: {}", s),
             }),
         }
     }
@@ -47,6 +59,6 @@ impl FromStr for DeliverySettlement {
 
 impl Default for DeliverySettlement {
     fn default() -> Self {
-        DeliverySettlement::None
+        DeliverySettlement::D(D)
     }
 }
