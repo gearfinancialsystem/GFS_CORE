@@ -1,8 +1,9 @@
+use std::cmp::min;
 use std::collections::HashMap;
 use std::ops::Add;
 use std::ops::Sub;
 use std::rc::Rc;
-use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike};
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike};
 use crate::types::IsoPeriod::IsoPeriod;
 
 pub type IsoDatetime = NaiveDateTime;
@@ -10,6 +11,7 @@ pub type IsoDatetime = NaiveDateTime;
 pub trait traitNaiveDateTimeExtension {
     fn double(&self) -> Self;
     fn is_last_day_of_month(&self) -> bool;
+    fn last_date_of_month(&self) -> Self;
     fn provide_box(sm: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>>;
     fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<NaiveDateTime>;
     fn provide_rc(sm: &HashMap<String, String>, key: &str) -> Option<Rc<NaiveDateTime>>;
@@ -39,6 +41,28 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
             false
         }
 
+    }
+    fn last_date_of_month(&self) -> NaiveDateTime {
+        let year = self.year();
+        let month = self.month();
+        let hour = self.hour();
+        let minute = self.minute();
+        let second = self.second();
+        
+        // Calculer le dernier jour du mois
+        let next_month = if month == 12 {
+            NaiveDate::from_ymd_opt(year + 1, 1, 1).unwrap()
+        } else {
+            NaiveDate::from_ymd_opt(year, month + 1, 1).unwrap()
+        };
+
+        let last_day_of_month = (next_month - NaiveDate::from_ymd_opt(year, month, 1).unwrap()).num_days() as u32;
+
+        // Retourner la dernière date du mois avec l'heure à minuit
+        NaiveDate::from_ymd_opt(year, month, last_day_of_month)
+            .unwrap()
+            .and_hms_opt(hour, minute, second)
+            .unwrap()
     }
     fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>> {
         string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok()).map(Box::new)
@@ -101,10 +125,3 @@ impl Sub<IsoPeriod> for IsoDatetime {
     }
 }
 
-
-#[cfg(test)]
-mod tests_period_cycle_adjuster {
-    use crate::time::adjusters::PeriodCycleAdjuster::PeriodCycleAdjuster;
-    use crate::types::isoDatetime::IsoDatetime;
-    use super::*;
-}

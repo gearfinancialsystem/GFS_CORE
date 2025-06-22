@@ -1,7 +1,7 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -18,7 +18,7 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        time_adjuster: &BusinessDayAdjuster,
     ) {
         let rate_multiplier = model.rateMultiplier.expect("rate_multiplier should be some");
         let rate_spread = model.rateSpread.expect("rate_spread should be some");
@@ -37,8 +37,8 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         rate = nominal_interest_rate + delta_rate;
         rate = rate.max(life_floor).min(life_cap);
 
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date),
-                                                                  time_adjuster.shift_bd(time));
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
+                                                                  time_adjuster.shift_sc(time));
 
         states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;

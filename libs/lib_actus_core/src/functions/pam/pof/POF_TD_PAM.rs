@@ -1,8 +1,7 @@
-use std::os::linux::raw::stat;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -18,7 +17,7 @@ impl TraitPayOffFunction for POF_TD_PAM {
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
         let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
@@ -33,8 +32,8 @@ impl TraitPayOffFunction for POF_TD_PAM {
             (price_at_termination_date +
             accrued_interest + 
             day_counter.day_count_fraction(
-                time_adjuster.shift_bd(&status_date),
-                time_adjuster.shift_bd(time)
+                time_adjuster.shift_sc(&status_date),
+                time_adjuster.shift_sc(time)
             ) * nominal_interest_rate
                 * notional_principal
             )

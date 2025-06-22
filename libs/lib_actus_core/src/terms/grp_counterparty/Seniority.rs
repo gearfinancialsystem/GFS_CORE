@@ -45,7 +45,7 @@ impl FromStr for Seniority {
         match s.to_uppercase().as_str() {
             "S" => Ok(Self::new_S()),
             "J" => Ok(Self::new_J()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

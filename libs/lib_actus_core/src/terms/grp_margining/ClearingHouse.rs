@@ -51,7 +51,7 @@ impl FromStr for ClearingHouse {
         match s.to_uppercase().as_str() {
             "Y" => Ok(Self::new_Y()),
             "N" => Ok(Self::new_N()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

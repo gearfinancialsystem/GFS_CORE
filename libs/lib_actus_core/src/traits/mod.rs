@@ -2,7 +2,7 @@
 
 pub mod TraitDateShifter;
 pub mod TraitBusinessDayCalendar;
-pub mod TraitBusinessDayConvention;
+pub mod TraitBusinessDayAdjuster;
 pub mod TraitEndOfMonthConvention;
 pub mod TraitContractModel;
 pub mod TraitCycleAdjuster;

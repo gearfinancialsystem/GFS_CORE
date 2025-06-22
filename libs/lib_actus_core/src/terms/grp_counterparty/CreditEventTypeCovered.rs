@@ -50,7 +50,7 @@ impl FromStr for CreditEventTypeCovered {
             "DL" => Ok(Self::new_DL()),
             "DQ" => Ok(Self::new_DQ()),
             "DF" => Ok(Self::new_DF()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

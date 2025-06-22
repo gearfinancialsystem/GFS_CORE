@@ -1,4 +1,4 @@
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
@@ -14,7 +14,7 @@ impl CalcShift {
 
 impl TraitShiftCalcConvention for CalcShift {
     /// Returns the `time` unshifted
-    fn shift(&self, time: &IsoDatetime, _convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
+    fn shift(&self, time: &IsoDatetime, _convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         *time
     }
     

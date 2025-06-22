@@ -6,4 +6,4 @@ pub mod eom_conventions;
 
 pub mod EndOfMonthConvention;
 pub mod Calendar;
-pub mod BusinessDayConvention;
+pub mod BusinessDayAdjuster;

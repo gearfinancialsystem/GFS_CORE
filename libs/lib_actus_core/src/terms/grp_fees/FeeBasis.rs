@@ -53,7 +53,7 @@ impl FromStr for FeeBasis {
         match s.to_uppercase().as_str() {
             "A" => Ok(Self::new_A()),
             "N" => Ok(Self::new_N()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

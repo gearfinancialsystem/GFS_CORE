@@ -51,7 +51,7 @@ impl FromStr for GuaranteedExposure {
             "NO" => Ok(Self::NO(NO::new())),
             "NI" => Ok(Self::NI(NI::new())),
             "MV" => Ok(Self::MV(MV::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

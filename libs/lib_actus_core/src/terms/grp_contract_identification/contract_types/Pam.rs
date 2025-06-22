@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use crate::util::CommonUtils::CommonUtils;
 
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
@@ -22,7 +22,7 @@ use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 #[derive(Clone, Debug, PartialEq)]
 pub struct PAM {
     pub calendar: Option<Rc<Calendar>>, // pas d'option, champs obligatoire
-    pub businessDayConvention: Option<BusinessDayConvention>,
+    pub BusinessDayAdjuster: Option<BusinessDayAdjuster>,
     pub endOfMonthConvention: Option<EndOfMonthConvention>,
     pub contractType: Option<String>, // obligatoire
     pub contractID: Option<String>,
@@ -83,7 +83,7 @@ impl PAM {
     pub fn init() -> Self {
         PAM {
             calendar: None,
-            businessDayConvention: None,
+            BusinessDayAdjuster: None,
             endOfMonthConvention: None,
             contractType: None,
             contractID: None,
@@ -160,9 +160,9 @@ impl PAM {
         if let Some(calendar) = &self.calendar {
             // Clone seulement l'Rc, pas le calendrier lui-même
             let calendar_clone = Rc::clone(calendar);
-            self.businessDayConvention = BusinessDayConvention::provide(
+            self.BusinessDayAdjuster = BusinessDayAdjuster::provide(
                 sm,
-                "businessDayConvention",
+                "BusinessDayAdjuster",
                 calendar_clone
             );
         }
@@ -193,13 +193,12 @@ impl PAM {
         self.cycleAnchorDateOfFee = IsoDatetime::provide(sm, "cycleAnchorDateOfFee");
         self.cycleOfFee = CommonUtils::provide_string(sm, "cycleOfFee");
         self.feeBasis = FeeBasis::provide(sm, "feeBasis");
-        self.feeRate = CommonUtils::provide_f64(sm, "feeRate");
-        self.feeAccrued = CommonUtils::provide_f64(sm, "feeAccrued");
+        self.feeRate = CommonUtils::provide_f64default(sm, "feeRate", 0.0);
+        self.feeAccrued = CommonUtils::provide_f64default(sm, "feeAccrued", 0.0);
         self.cycleAnchorDateOfInterestPayment = IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment");
         self.cycleOfInterestPayment = CommonUtils::provide_string(sm, "cycleOfInterestPayment");
         self.nominalInterestRate = CommonUtils::provide_f64(sm, "nominalInterestRate");
-
-        self.accruedInterest = CommonUtils::provide_f64(sm, "accruedInterest");// obligatoire
+        self.accruedInterest = CommonUtils::provide_f64default(sm, "accruedInterest", 0.0);// obligatoire
         self.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
         self.cyclePointOfInterestPayment = CyclePointOfInterestPayment::provide(sm, "cyclePointOfInterestPayment");
         self.currency = CommonUtils::provide_string(sm, "currency"); // obligatoire

@@ -2,6 +2,7 @@ use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use chrono::Duration;
 use std::collections::HashSet;
 use crate::types::isoDatetime::IsoDatetime;
+use crate::util::CycleUtils::{CycleUtils, LONG_STUB};
 
 pub struct ScheduleFactory;
 
@@ -19,17 +20,17 @@ impl ScheduleFactory {
         start_time: Option<IsoDatetime>,
         end_time: Option<IsoDatetime>,
         cycle: Option<String>,
-        _end_of_month_convention: EndOfMonthConvention,
+        end_of_month_convention: EndOfMonthConvention,
         add_end_time: bool,
     ) -> HashSet<IsoDatetime> {
         let mut times_set = HashSet::new();
 
         // Si aucun cycle n'est fourni, ajoutez uniquement start_time et end_time
         if cycle.is_none() {
-            if !start_time.is_none() {
+            if start_time.is_some() {
                 times_set.insert(start_time.unwrap());
             }
-            if !end_time.is_none() {
+            if add_end_time == true {
                 times_set.insert(end_time.unwrap());
             }
             else {
@@ -39,34 +40,36 @@ impl ScheduleFactory {
             }
             return times_set;
         }
-
-        let cycle = cycle.unwrap();
+        let ccycle = cycle.clone().unwrap();
+        let stub = CycleUtils::parse_stub(cycle.as_ref().unwrap()).expect("Invalid stub");
         // let shifter = EndOfMonthAdjuster::new(end_of_month_convention, start_time, cycle.clone());
-        let shifter = EndOfMonthConvention::new_EOM(); // attention vérifier
+        let shifter = EndOfMonthConvention::new(end_of_month_convention, start_time.unwrap(), ccycle.clone()).expect("sd"); // attention vérifier
+        // CHANGER EoM new (prendre cycle as ref, pas en valeur
         // Parsez le cycle pour obtenir une durée
-        let period = Self::parse_period(&cycle);
+        let period = CycleUtils::parse_period(&ccycle).expect("et");
 
         // Créez le calendrier en fonction de la convention de fin de mois
-        let mut new_time = start_time;
+        let mut new_time = start_time.clone();
         let mut counter = 1;
 
-        while new_time <= end_time {
-            times_set.insert(new_time.unwrap());
-            let increment = period * counter;
-            new_time = Some(shifter.shift(start_time.unwrap() + increment));
+        while new_time < end_time {
+            times_set.insert(new_time.clone().unwrap());
+            let increment = period.multiplied_by(counter);
+            new_time = Some(shifter.shift(start_time.clone().unwrap() + increment));
             counter += 1;
         }
 
         // Ajoutez (ou non) end_time au calendrier
-        if add_end_time {
+        if add_end_time == true {
             times_set.insert(end_time.unwrap());
-        } else if end_time == start_time {
-            times_set.remove(&start_time.unwrap());
+        } else {
+            if end_time == start_time {
+                times_set.remove(&start_time.unwrap());
+            }
         }
-
         // Ajustez le dernier stub si nécessaire
-        if cycle.ends_with('L') && times_set.len() > 2 && new_time != end_time {
-            let last_stub_time = shifter.shift(start_time.unwrap() + period * (counter - 2));
+        if stub == LONG_STUB && times_set.len() > 2 && new_time != end_time {
+            let last_stub_time = shifter.shift(start_time.unwrap() + period.multiplied_by (counter - 2));
             times_set.remove(&last_stub_time);
         }
 
@@ -87,7 +90,7 @@ impl ScheduleFactory {
             let sub_schedule = Self::create_schedule(
                 Some(start_times[i]),
                 Some(start_times[i + 1]),
-                cycles[i].clone(),
+                if cycles.is_empty() { None } else { cycles[i].clone() },
                 end_of_month_convention,
                 true,
             );
@@ -98,7 +101,7 @@ impl ScheduleFactory {
         let last_schedule = Self::create_schedule(
             Some(start_times[start_times.len() - 1]),
             Some(end_time),
-            cycles[start_times.len() - 1].clone(),
+            if cycles.is_empty() { None } else { cycles[start_times.len() - 1].clone() },
             end_of_month_convention,
             true,
         );

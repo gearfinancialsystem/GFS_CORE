@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
 
-pub trait TraitBusinessDayConvention {
+pub trait TraitBusinessDayAdjuster {
     fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime;
 }

@@ -43,7 +43,7 @@ impl FromStr for ArrayFixedVariable {
         match s.to_uppercase().as_str() {
             "F" => Ok(Self::new_F()),
             "V" => Ok(Self::new_V()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

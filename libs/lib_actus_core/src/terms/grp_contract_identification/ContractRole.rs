@@ -151,7 +151,7 @@ impl FromStr for ContractRole {
             "UDL"  => Ok(Self::new_UDL()),
             "UDLP" => Ok(Self::new_UDLP()),
             "UDLM" => Ok(Self::new_UDLM()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

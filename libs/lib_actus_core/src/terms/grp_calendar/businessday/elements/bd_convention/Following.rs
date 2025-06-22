@@ -3,7 +3,7 @@ use std::ptr;
 use std::rc::Rc;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone, Debug)]
@@ -27,7 +27,7 @@ impl Following {
     }
 }
 
-impl TraitBusinessDayConvention for Following {
+impl TraitBusinessDayAdjuster for Following {
     /// Décale la date tant que celle-ci n'est pas ouvrée selon le calendrier.
     fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         let mut shifted_date = *date;

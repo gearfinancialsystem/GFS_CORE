@@ -46,7 +46,7 @@ impl FromStr for CyclePointOfRateReset {
         match s.to_uppercase().as_str() {
             "B" => Ok(Self::new_B()),
             "E" => Ok(Self::new_E()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

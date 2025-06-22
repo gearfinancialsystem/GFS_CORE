@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -39,13 +39,12 @@ impl EventFactory {
         currency: Option<&String>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
-        convention: &BusinessDayConvention,
+        convention: &BusinessDayAdjuster,
         contract_id: Option<&String>,
     ) -> ContractEvent {
-        let adjusted_time = Some(convention.shift_bd(&schedule_time.unwrap()));
         ContractEvent::new(
             schedule_time,
-            Some(convention.shift_bd(&schedule_time.unwrap())),
+            Some(convention.shift_bd(schedule_time.as_ref().unwrap())),
             event_type,
             currency.cloned(),
             pay_off,
@@ -95,13 +94,13 @@ impl EventFactory {
         currency: Option<&String>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
-        convention: &BusinessDayConvention,
+        convention: &BusinessDayAdjuster,
         contract_id: Option<&String>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
             .map(|&time| {
-                let adjusted_time = convention.shift_bd(&time);
+                //let adjusted_time = convention.shift_bd(&time);
                 ContractEvent::new(
                     Some(time),
                     Some(convention.shift_bd(&time)),

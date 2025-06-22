@@ -1,5 +1,5 @@
 j'écris une bibliotheque rust, avant d'implémenter la logique core du programme, je définis beaucoup de types avec leurs traits et implémentation. bref. j'ai un probleme :
-Par exemple la structure CSF a deux champs : scConvention & bdConvention. bdConvention est de type Calendar, qui doit être parsé a l'entré du programme, tout comme CSF (un businessdayconvention).
+Par exemple la structure CSF a deux champs : scConvention & bdConvention. bdConvention est de type Calendar, qui doit être parsé a l'entré du programme, tout comme CSF (un BusinessDayAdjuster).
 Du coup on me suggere d'utiliser des lifetimes car Calendar doit vivre au moins aussi longtemps que CSF (car CSF dépend de l'existence de calendar). pour éviter de gérer un lifetime particulier, puis-je dire que calendar a un lifetime static ? et ne plus jamais me soucier de mettre &'static partout ?
 on peut aussi utiliser &dyn ou &impl à la place des lifetime.
 Peut-on éviter les lifetimes et dyns ??
@@ -7,7 +7,7 @@ Peut-on éviter les lifetimes et dyns ??
 voici les code : 
 code 1 :
 use std::str::FromStr;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::util::ParseError::ParseError;
 
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;
@@ -23,7 +23,7 @@ use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 use crate::terms::grp_calendar::Calendar::Calendar;
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum BusinessDayConvention<'a> {
+pub enum BusinessDayAdjuster<'a> {
     NOS(NOS),
     SCF(SCF),
     SCMF(SCMF),
@@ -35,100 +35,100 @@ pub enum BusinessDayConvention<'a> {
     CSMP(CSMP),
 }
 
-impl<'a> BusinessDayConvention<'a> {
+impl<'a> BusinessDayAdjuster<'a> {
 
     pub fn new_NOS() -> Self {
-        BusinessDayConvention::NOS(NOS::new())
+        BusinessDayAdjuster::NOS(NOS::new())
     }
     pub fn new_SCF(calendar: &Calendar) -> Self {
-        BusinessDayConvention::SCF(SCF::new(&calendar))
+        BusinessDayAdjuster::SCF(SCF::new(&calendar))
     }
     pub fn new_SCMF(calendar: &Calendar) -> Self {
-        BusinessDayConvention::SCMF(SCMF::new(&calendar))
+        BusinessDayAdjuster::SCMF(SCMF::new(&calendar))
     }
     pub fn new_CSF(calendar: &Calendar) -> Self {
-        BusinessDayConvention::CSF(CSF::new(&calendar))
+        BusinessDayAdjuster::CSF(CSF::new(&calendar))
     }
     pub fn new_CSMF(calendar: &Calendar) -> Self {
-        BusinessDayConvention::CSMF(CSMF::new(&calendar))
+        BusinessDayAdjuster::CSMF(CSMF::new(&calendar))
     }
     pub fn new_SCP(calendar: &Calendar) -> Self {
-        BusinessDayConvention::SCP(SCP::new(&calendar))
+        BusinessDayAdjuster::SCP(SCP::new(&calendar))
     }
     pub fn new_SCMP(calendar: &Calendar) -> Self {
-        BusinessDayConvention::SCMP(SCMP::new(&calendar))
+        BusinessDayAdjuster::SCMP(SCMP::new(&calendar))
     }
     pub fn new_CSP(calendar: &Calendar) -> Self {
-        BusinessDayConvention::CSP(CSP::new(&calendar))
+        BusinessDayAdjuster::CSP(CSP::new(&calendar))
     }
     pub fn new_CSMP(calendar: &Calendar) -> Self {
-        BusinessDayConvention::CSMP(CSMP::new(&calendar))
+        BusinessDayAdjuster::CSMP(CSMP::new(&calendar))
     }
 
     pub fn description(&self) -> String {
         match self {
-            BusinessDayConvention::NOS(NOS) => NOS.type_str(),
-            BusinessDayConvention::SCF(SCF) => SCF.type_str(),
-            BusinessDayConvention::SCMF(SCMF) => SCMF.type_str(),
-            BusinessDayConvention::CSF(CSF) => CSF.type_str(),
-            BusinessDayConvention::CSMF(CSMF) => CSMF.type_str(),
-            BusinessDayConvention::SCP(SCP) => SCP.type_str(),
-            BusinessDayConvention::SCMP(SCMP) => SCMP.type_str(),
-            BusinessDayConvention::CSP(CSP) => CSP.type_str(),
-            BusinessDayConvention::CSMP(CSMP) => CSMP.type_str(),
+            BusinessDayAdjuster::NOS(NOS) => NOS.type_str(),
+            BusinessDayAdjuster::SCF(SCF) => SCF.type_str(),
+            BusinessDayAdjuster::SCMF(SCMF) => SCMF.type_str(),
+            BusinessDayAdjuster::CSF(CSF) => CSF.type_str(),
+            BusinessDayAdjuster::CSMF(CSMF) => CSMF.type_str(),
+            BusinessDayAdjuster::SCP(SCP) => SCP.type_str(),
+            BusinessDayAdjuster::SCMP(SCMP) => SCMP.type_str(),
+            BusinessDayAdjuster::CSP(CSP) => CSP.type_str(),
+            BusinessDayAdjuster::CSMP(CSMP) => CSMP.type_str(),
         }
     }
 
     pub fn shift_bd(&self, date: &NaiveDateTime) -> NaiveDateTime {
         match self {
-            BusinessDayConvention::NOS(NOS)     =>   NOS.shift_bd(date),
-            BusinessDayConvention::SCF(SCF)     =>   SCF.shift_bd(date),
-            BusinessDayConvention::SCMF(SCMF)  =>   SCMF.shift_bd(date),
-            BusinessDayConvention::CSF(CSF)     =>   CSF.shift_bd(date),
-            BusinessDayConvention::CSMF(CSMF)  =>   CSMF.shift_bd(date),
-            BusinessDayConvention::SCP(SCP)     =>   SCP.shift_bd(date),
-            BusinessDayConvention::SCMP(SCMP)  =>   SCMP.shift_bd(date),
-            BusinessDayConvention::CSP(CSP)     =>   CSP.shift_bd(date),
-            BusinessDayConvention::CSMP(CSMP)  =>   CSMP.shift_bd(date),
+            BusinessDayAdjuster::NOS(NOS)     =>   NOS.shift_bd(date),
+            BusinessDayAdjuster::SCF(SCF)     =>   SCF.shift_bd(date),
+            BusinessDayAdjuster::SCMF(SCMF)  =>   SCMF.shift_bd(date),
+            BusinessDayAdjuster::CSF(CSF)     =>   CSF.shift_bd(date),
+            BusinessDayAdjuster::CSMF(CSMF)  =>   CSMF.shift_bd(date),
+            BusinessDayAdjuster::SCP(SCP)     =>   SCP.shift_bd(date),
+            BusinessDayAdjuster::SCMP(SCMP)  =>   SCMP.shift_bd(date),
+            BusinessDayAdjuster::CSP(CSP)     =>   CSP.shift_bd(date),
+            BusinessDayAdjuster::CSMP(CSMP)  =>   CSMP.shift_bd(date),
         }
     }
 
-    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayConvention) -> NaiveDateTime {
+    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayAdjuster) -> NaiveDateTime {
         match self {
-            BusinessDayConvention::NOS(NOS)     =>   NOS.shift_sc(date, convention),
-            BusinessDayConvention::SCF(SCF)     =>   SCF.shift_sc(date,convention),
-            BusinessDayConvention::SCMF(SCMF)  =>   SCMF.shift_sc(date, convention),
-            BusinessDayConvention::CSF(CSF)     =>   CSF.shift_sc(date, convention),
-            BusinessDayConvention::CSMF(CSMF)  =>   CSMF.shift_sc(date, convention),
-            BusinessDayConvention::SCP(SCP)     =>   SCP.shift_sc(date, convention),
-            BusinessDayConvention::SCMP(SCMP)  =>   SCMP.shift_sc(date, convention),
-            BusinessDayConvention::CSP(CSP)     =>   CSP.shift_sc(date, convention),
-            BusinessDayConvention::CSMP(CSMP)  =>   CSMP.shift_sc(date, convention),
+            BusinessDayAdjuster::NOS(NOS)     =>   NOS.shift_sc(date, convention),
+            BusinessDayAdjuster::SCF(SCF)     =>   SCF.shift_sc(date,convention),
+            BusinessDayAdjuster::SCMF(SCMF)  =>   SCMF.shift_sc(date, convention),
+            BusinessDayAdjuster::CSF(CSF)     =>   CSF.shift_sc(date, convention),
+            BusinessDayAdjuster::CSMF(CSMF)  =>   CSMF.shift_sc(date, convention),
+            BusinessDayAdjuster::SCP(SCP)     =>   SCP.shift_sc(date, convention),
+            BusinessDayAdjuster::SCMP(SCMP)  =>   SCMP.shift_sc(date, convention),
+            BusinessDayAdjuster::CSP(CSP)     =>   CSP.shift_sc(date, convention),
+            BusinessDayAdjuster::CSMP(CSMP)  =>   CSMP.shift_sc(date, convention),
         }
     }
     pub fn parse ( // a la place de FromStr, car j'ai besoin de plus de parametre
             s: &str,
             calendar: &Calendar,
-        ) -> Result<BusinessDayConvention, ParseError> {
+        ) -> Result<BusinessDayAdjuster, ParseError> {
         match s.to_uppercase().as_str() {
-            ""      =>    Ok(BusinessDayConvention::default()),
-            "NOS"   =>    Ok(BusinessDayConvention::new_NOS()),
-            "SCF"   =>    Ok(BusinessDayConvention::new_SCF(calendar)),
-            "SCMF"  =>    Ok(BusinessDayConvention::new_SCMF(calendar)),
-            "CSF"   =>    Ok(BusinessDayConvention::new_CSF(calendar)),
-            "CSMF"  =>    Ok(BusinessDayConvention::new_CSMF(calendar)),
-            "SCP"   =>    Ok(BusinessDayConvention::new_SCP(calendar)),
-            "SCMP"  =>    Ok(BusinessDayConvention::new_SCMP(calendar)),
-            "CSP"   =>    Ok(BusinessDayConvention::new_CSP(calendar)),
-            "CSMP"  =>    Ok(BusinessDayConvention::new_CSMP(calendar)),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            ""      =>    Ok(BusinessDayAdjuster::default()),
+            "NOS"   =>    Ok(BusinessDayAdjuster::new_NOS()),
+            "SCF"   =>    Ok(BusinessDayAdjuster::new_SCF(calendar)),
+            "SCMF"  =>    Ok(BusinessDayAdjuster::new_SCMF(calendar)),
+            "CSF"   =>    Ok(BusinessDayAdjuster::new_CSF(calendar)),
+            "CSMF"  =>    Ok(BusinessDayAdjuster::new_CSMF(calendar)),
+            "SCP"   =>    Ok(BusinessDayAdjuster::new_SCP(calendar)),
+            "SCMP"  =>    Ok(BusinessDayAdjuster::new_SCMP(calendar)),
+            "CSP"   =>    Ok(BusinessDayAdjuster::new_CSP(calendar)),
+            "CSMP"  =>    Ok(BusinessDayAdjuster::new_CSMP(calendar)),
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }    
 }
 
-impl Default for BusinessDayConvention {
+impl Default for BusinessDayAdjuster {
     fn default() -> Self {
-        BusinessDayConvention::new_SCF(&Calendar::default())
+        BusinessDayAdjuster::new_SCF(&Calendar::default())
     }
 }
 
@@ -137,7 +137,7 @@ code 2 :
 use chrono::NaiveDateTime;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitShiftCalcConvention::TraitShiftCalcConvention;
 
@@ -164,7 +164,7 @@ impl<'a> CSF<'a> {
     
     /// Appelle la logique de shift d’après la `scConvention` (CalcShift)
     /// en passant une BDC (trait object) en paramètre.
-    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayConvention) -> NaiveDateTime {
+    pub fn shift_sc(&self, date: &NaiveDateTime, convention: &dyn TraitBusinessDayAdjuster) -> NaiveDateTime {
         self.scConvention.shift(date, convention)
     }
 
@@ -176,7 +176,7 @@ impl<'a> CSF<'a> {
 
 code 3 :
 use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 
 use chrono::NaiveDateTime;
 use chrono::Duration;
@@ -205,7 +205,7 @@ impl<'a> Following<'a> {
     }
 }
 
-impl<'a> TraitBusinessDayConvention for Following<'a> {
+impl<'a> TraitBusinessDayAdjuster for Following<'a> {
     /// Décale la date d'entrée si elle tombe un jour non ouvré
     fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime {
         let mut shifted_date = *date;

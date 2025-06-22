@@ -52,7 +52,7 @@ impl FromStr for OptionExerciseType {
             "E" => Ok(Self::new_E()),
             "B" => Ok(Self::new_B()),
             "A" => Ok(Self::new_A()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

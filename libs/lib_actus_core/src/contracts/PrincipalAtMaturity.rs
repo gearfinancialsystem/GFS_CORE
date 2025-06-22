@@ -4,6 +4,7 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
+use log::{debug, info, warn, error};
 
 use crate::functions::pam::pof::{
     POF_FP_PAM::POF_FP_PAM,
@@ -86,19 +87,24 @@ impl PrincipalAtMaturity {
             && (model.cycleOfInterestPayment.is_some() || model.cycleAnchorDateOfInterestPayment.is_some())
         {
             // Generate raw interest payment events (IP)
+            let a = model.cycleAnchorDateOfInterestPayment.clone().unwrap().format("%Y-%m-%d").to_string();
+            let b = model.maturityDate.clone().unwrap().format("%Y-%m-%d").to_string();
+            debug!("La valeur de a est : {}", a);
+            let z = &ScheduleFactory::create_schedule(
+                model.cycleAnchorDateOfInterestPayment.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
+                model.cycleOfInterestPayment.clone(),
+                model.endOfMonthConvention.unwrap(),
+                true,
+            );
+            let zz = z.iter().map(|a| a.format("%Y-%m-%d").to_string()).collect::<Vec<String>>();
             let mut interest_events = EventFactory::create_events_with_convention(
-                &ScheduleFactory::create_schedule(
-                    model.cycleAnchorDateOfInterestPayment.clone(),
-                    model.maturityDate.clone().map(|rc| (*rc).clone()),
-                    model.cycleOfInterestPayment.clone(),
-                    model.endOfMonthConvention.unwrap(),
-                    true,
-                ),
+                z,
                 EventType::IP,
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IP_PAM)),
                 Some(Rc::new(STF_IP_PAM)),
-                &model.businessDayConvention.clone().unwrap(),
+                model.BusinessDayAdjuster.as_ref().unwrap(),
                 model.contractID.as_ref(),
             );
 
@@ -111,7 +117,7 @@ impl PrincipalAtMaturity {
                     model.currency.as_ref(),
                     Some(Rc::new(POF_IPCI_PAM)),
                     Some(Rc::new(STF_IPCI_PAM)),
-                    &model.businessDayConvention.as_ref().unwrap(),
+                    &model.BusinessDayAdjuster.as_ref().unwrap(),
                     model.contractID.as_ref(),
                 );
 
@@ -148,7 +154,8 @@ impl PrincipalAtMaturity {
             }
 
             events.extend(interest_events);
-        } else if model.capitalizationEndDate.is_some() {
+        }
+        else if model.capitalizationEndDate.is_some() {
             // If no interest schedule set but capitalization end date, add single IPCI event
             events.push(EventFactory::create_event_with_convention(
                 model.capitalizationEndDate,
@@ -156,7 +163,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IPCI_PAM)),
                 Some(Rc::new(STF_IPCI_PAM)),
-                &model.businessDayConvention.clone().unwrap(),
+                &model.BusinessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             ));
         }
@@ -174,7 +181,7 @@ impl PrincipalAtMaturity {
             model.currency.as_ref(),
             Some(Rc::new(POF_RR_PAM)),
             Some(Rc::new(STF_RR_PAM)),
-            &model.businessDayConvention.clone().unwrap(),
+            &model.BusinessDayAdjuster.clone().unwrap(),
             model.contractID.as_ref(),
         );
 
@@ -218,7 +225,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_FP_PAM)),
                 Some(Rc::new(STF_FP_PAM)),
-                &model.businessDayConvention.clone().unwrap(),
+                &model.BusinessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             );
             events.extend(fee_events);
@@ -240,7 +247,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_SC_PAM)),
                 Some(Rc::new(STF_SC_PAM)),
-                &model.businessDayConvention.clone().unwrap(),
+                &model.BusinessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             );
             events.extend(scaling_events);
@@ -288,21 +295,20 @@ impl PrincipalAtMaturity {
         // Sort events according to their time of occurrence
         events.sort();
 
-        Ok(events)
+        Ok(events.clone())
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
     pub fn apply(
-        events: &mut Vec<ContractEvent>,
+        events: Vec<ContractEvent>,
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Vec<ContractEvent> {
         // Initialize state space per status date
         let mut states = Self::init_StateSpace(model);
-
+        let mut events = events.clone();
         // Sort events according to their time sequence
         events.sort();
-
         // Apply events according to their time sequence to current state
         for event in events.iter_mut() {
             event.eval(
@@ -310,10 +316,10 @@ impl PrincipalAtMaturity {
                 model,
                 observer,
                 &model.dayCountConvention.clone().unwrap(),
-                &model.businessDayConvention.clone().unwrap(),
+                &model.BusinessDayAdjuster.clone().unwrap(),
             );
         }
-
+        
         // Remove pre-purchase events if purchase date is set
         if model.purchaseDate.is_some() {
             let purchase_date = model.purchaseDate;
@@ -329,7 +335,7 @@ impl PrincipalAtMaturity {
                 e.get_eventType() == EventType::AD || e >= &purchase_event
             });
         }
-
+        
         // Return evaluated events
         events.clone()
     }
@@ -362,8 +368,9 @@ impl PrincipalAtMaturity {
         } else if model.accruedInterest.is_some() {
             states.accruedInterest = model.accruedInterest;
         } else {
+            // GERER CE CAS : Il y a UNE ERREUR
             let day_counter = model.dayCountConvention.as_ref().unwrap();
-            let time_adjuster = model.businessDayConvention.as_ref().unwrap();
+            let time_adjuster = model.BusinessDayAdjuster.as_ref().unwrap();
 
 
             let mut ip_schedule: Vec<IsoDatetime> = ScheduleFactory::create_schedule(

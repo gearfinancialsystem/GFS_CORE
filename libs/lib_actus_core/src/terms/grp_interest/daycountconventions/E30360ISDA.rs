@@ -7,34 +7,16 @@ use crate::types::isoDatetime::traitNaiveDateTimeExtension;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360ISDA {
-    pub maturity_date: Rc<IsoDatetime>,
+    pub maturity_date: Option<Rc<IsoDatetime>>,
 }
 
 impl E30360ISDA {
-    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new(maturity_date: Option<Rc<IsoDatetime>>) -> Self {
         E30360ISDA {maturity_date}
     }
 }
 
 impl TraitDayCountConvention for E30360ISDA {
-    // fn new() -> Self {
-    //     Self { maturity_date: None }
-    // }
-
-    // /// Fixe la date de maturité (équivalent de `public void maturityDate(LocalDateTime ...)`)
-    // fn set_maturity_date(&mut self, maturity_date: NaiveDateTime) {
-    //     self.maturity_date = Some(maturity_date);
-    // }
-
-    // /// Vérifie si `date` est le dernier jour du mois
-    // fn is_last_day_of_month(date: NaiveDateTime) -> bool {
-    //     let day = date.day();
-    //     // On tente de construire "date" + 1 jour, et on vérifie si le mois a changé
-    //     let next_day = date + Duration::days(1);
-    //     next_day.month() != date.month()
-    //         // ou bien : next_day.day() == 1 => c'est un indicateur que date était le dernier jour
-    //         // (mais on préfère la comparaison de mois)
-    // }
 
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         // d1
@@ -47,15 +29,20 @@ impl TraitDayCountConvention for E30360ISDA {
         let mut d2 = end_time.day();
         // Vérification du cas : si end_time == maturity_date et c'est un mois de février => pas d'ajustement
         let is_february = end_time.month() == 2;
-        if let maturity = *self.maturity_date {
-            // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
-            if end_time == maturity && is_february {
-                // pas d'ajustement, on laisse d2
-            } else if end_time.is_last_day_of_month() {
-                d2 = 30;
+        if self.maturity_date.is_some() {
+            let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
+            if let maturity = a {
+                // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
+                if end_time == maturity && is_february {
+                    // pas d'ajustement, on laisse d2
+                }
+                else if end_time.is_last_day_of_month() {
+                    d2 = 30;
+                }
             }
-        } else {
-            // Pas de maturité => la règle "dernier jour du mois => d2 = 30"
+        }
+        else {
+    // Pas de maturité => la règle "dernier jour du mois => d2 = 30"
             if end_time.is_last_day_of_month() {
                 d2 = 30;
             }
@@ -75,3 +62,344 @@ impl TraitDayCountConvention for E30360ISDA {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::NaiveDateTime;
+    use super::E30360ISDA;
+    //use super::E30360ISDA;
+    fn parse_date(date_str: &str) -> NaiveDateTime {
+        NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date")
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_1() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start1 = parse_date("2006-01-31T00:00:00");
+        let end1 = parse_date("2006-02-28T00:00:00");
+        let result = 30.0;
+        assert_eq!(result, convention.day_count(start1, end1) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_2() {
+
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start2 = parse_date("2006-01-30T00:00:00");
+        let end2 = parse_date("2006-02-28T00:00:00");
+        let result = 30.0;
+        assert_eq!(result, convention.day_count(start2, end2) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_3() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start3 = parse_date("2006-02-28T00:00:00");
+        let end3 = parse_date("2006-03-03T00:00:00");
+        let result = 3.0;
+        assert_eq!(result, convention.day_count(start3, end3) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_4() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start4 = parse_date("2006-02-14T00:00:00");
+        let end4 = parse_date("2006-02-28T00:00:00");
+        let result = 16.0;
+        assert_eq!(result, convention.day_count(start4, end4) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_5() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start5 = parse_date("2006-09-30T00:00:00");
+        let end5 = parse_date("2006-10-31T00:00:00");
+        let result = 30.0;
+        assert_eq!(result, convention.day_count(start5, end5) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_6() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start6 = parse_date("2006-10-31T00:00:00");
+        let end6 = parse_date("2006-11-28T00:00:00");
+        let result = 28.0;
+        assert_eq!(result, convention.day_count(start6, end6) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_7() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start7 = parse_date("2007-08-31T00:00:00");
+        let end7 = parse_date("2008-02-28T00:00:00");
+        let result = 178.0;
+        assert_eq!(result, convention.day_count(start7, end7) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_8() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start8 = parse_date("2008-02-28T00:00:00");
+        let end8 = parse_date("2008-08-28T00:00:00");
+        let result = 180.0;
+        assert_eq!(result, convention.day_count(start8, end8) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_9() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start9 = parse_date("2008-02-28T00:00:00");
+        let end9 = parse_date("2008-08-30T00:00:00");
+        let result = 182.0;
+        assert_eq!(result, convention.day_count(start9, end9) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_10() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start10 = parse_date("2008-02-28T00:00:00");
+        let end10 = parse_date("2008-08-31T00:00:00");
+        let result = 182.0;
+        assert_eq!(result, convention.day_count(start10, end10) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_11() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));;
+
+        let start11 = parse_date("2007-02-28T00:00:00");
+        let end11 = parse_date("2008-02-28T00:00:00");
+        let result = 358.0;
+        assert_eq!(result, convention.day_count(start11, end11) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_12() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));;
+
+        let start12 = parse_date("2007-02-28T00:00:00");
+        let end12 = parse_date("2008-02-29T00:00:00");
+        let result = 359.0;
+        assert_eq!(result, convention.day_count(start12, end12) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_13() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start13 = parse_date("2008-02-29T00:00:00");
+        let end13 = parse_date("2009-02-28T00:00:00");
+        let result = 360.0;
+        assert_eq!(result, convention.day_count(start13, end13) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_14() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start14 = parse_date("2008-02-29T00:00:00");
+        let end14 = parse_date("2008-03-30T00:00:00");
+        let result = 30.0;
+        assert_eq!(result, convention.day_count(start14, end14) as f64);
+    }
+
+    #[test]
+    fn test_daycount_thirty_e_three_sixty_isda_15() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));;
+
+        let start15 = parse_date("2008-02-29T00:00:00");
+        let end15 = parse_date("2008-03-31T00:00:00");
+        let result = 30.0;
+        assert_eq!(result, convention.day_count(start15, end15) as f64);
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_1() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start1 = parse_date("2006-01-31T00:00:00");
+        let end1 = parse_date("2006-02-28T00:00:00");
+        let result = 30.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start1, end1));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_2() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start2 = parse_date("2006-01-30T00:00:00");
+        let end2 = parse_date("2006-02-28T00:00:00");
+        let result = 30.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start2, end2));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_3() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start3 = parse_date("2006-02-28T00:00:00");
+        let end3 = parse_date("2006-03-03T00:00:00");
+        let result = 3.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start3, end3));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_4() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start4 = parse_date("2006-02-14T00:00:00");
+        let end4 = parse_date("2006-02-28T00:00:00");
+        let result = 16.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start4, end4));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_5() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start5 = parse_date("2006-09-30T00:00:00");
+        let end5 = parse_date("2006-10-31T00:00:00");
+        let result = 30.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start5, end5));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_6() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start6 = parse_date("2006-10-31T00:00:00");
+        let end6 = parse_date("2006-11-28T00:00:00");
+        let result = 28.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start6, end6));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_7() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start7 = parse_date("2007-08-31T00:00:00");
+        let end7 = parse_date("2008-02-28T00:00:00");
+        let result = 178.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start7, end7));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_8() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start8 = parse_date("2008-02-28T00:00:00");
+        let end8 = parse_date("2008-08-28T00:00:00");
+        let result = 180.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start8, end8));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_9() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start9 = parse_date("2008-02-28T00:00:00");
+        let end9 = parse_date("2008-08-30T00:00:00");
+        let result = 182.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start9, end9));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_10() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start10 = parse_date("2008-02-28T00:00:00");
+        let end10 = parse_date("2008-08-31T00:00:00");
+        let result = 182.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start10, end10));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_11() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start11 = parse_date("2007-02-28T00:00:00");
+        let end11 = parse_date("2008-02-28T00:00:00");
+        let result = 358.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start11, end11));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_12() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start12 = parse_date("2007-02-28T00:00:00");
+        let end12 = parse_date("2008-02-29T00:00:00");
+        let result = 359.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start12, end12));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_13() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start13 = parse_date("2008-02-29T00:00:00");
+        let end13 = parse_date("2009-02-28T00:00:00");
+        let result = 360.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start13, end13));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_14() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start14 = parse_date("2008-02-29T00:00:00");
+        let end14 = parse_date("2008-03-30T00:00:00");
+        let result = 30.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start14, end14));
+    }
+
+    #[test]
+    fn test_fraction_thirty_e_three_sixty_isda_15() {
+        let mat_date = parse_date("2008-02-29T00:00:00");
+        let mut convention = E30360ISDA::new(Some(Rc::new(mat_date)));
+
+        let start15 = parse_date("2008-02-29T00:00:00");
+        let end15 = parse_date("2008-03-31T00:00:00");
+        let result = 30.0 / 360.0;
+        assert_eq!(result, convention.day_count_fraction(start15, end15));
+    }
+}

@@ -1,11 +1,10 @@
-use std::os::linux::raw::stat;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
@@ -21,7 +20,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
         let fee_basis = model.feeBasis.as_ref().expect("feebasis should always be some");
@@ -36,7 +35,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
             let fee_accrued = states.feeAccrued.expect("fee accrued should always be some");
             let status_date = states.statusDate.expect("status date should always be some");
             
-            1.0 * (fee_accrued + day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date), time_adjuster.shift_bd(time))) * fee_rate * notional_principal
+            1.0 * (fee_accrued + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(time))) * fee_rate * notional_principal
         }
         
    

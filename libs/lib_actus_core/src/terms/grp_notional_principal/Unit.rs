@@ -97,7 +97,7 @@ impl FromStr for Unit {
             "STN" => Ok(Unit::new_STN()),
             "TON" => Ok(Unit::new_TON()),
             "TRO" => Ok(Unit::new_TRO()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

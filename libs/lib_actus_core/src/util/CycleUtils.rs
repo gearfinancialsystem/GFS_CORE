@@ -5,8 +5,8 @@ use chrono::Weekday;
 
 
 // Constants for stub types
-const LONG_STUB: char = '0';
-const SHORT_STUB: char = '1';
+pub const LONG_STUB: char = '0';
+pub const SHORT_STUB: char = '1';
 pub struct CycleUtils;
 
 impl CycleUtils {

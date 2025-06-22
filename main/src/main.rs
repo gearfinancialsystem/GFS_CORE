@@ -1,11 +1,12 @@
 use std::collections::HashMap;
+use std::hash::Hash;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
 use lib_actus_core::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Pam;
 
-fn main() {
+fn main() { 
     let mut dico: HashMap<String, String> = HashMap::new();
 
     dico.insert("contractType".to_string(),"PAM".to_string());
@@ -37,7 +38,7 @@ fn main() {
         
     if let Ok(cm) = contract_model.as_ref().as_ref() {
         let mut events = PrincipalAtMaturity::schedule(&to_date, cm);
-        if let Ok(events_res) = &mut events {
+        if let Ok(events_res) = events {
             let events2 = PrincipalAtMaturity::apply(events_res, cm, &risk_factor_model);
             
             for ce in events2.iter() {

@@ -43,7 +43,7 @@ impl FromStr for ArrayIncreaseDecrease {
         match s.to_uppercase().as_str() {
             "F" => Ok(Self::new_INC()),
             "V" => Ok(Self::new_DEC()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

@@ -3,7 +3,7 @@ use chrono::{Datelike, Duration};
 use std::ptr;
 use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::isoDatetime::IsoDatetime;
 
 /// Implementation of the Modified Following business day convention
@@ -44,7 +44,7 @@ impl ModifiedFollowing {
 
 
 
-impl TraitBusinessDayConvention for ModifiedFollowing {
+impl TraitBusinessDayAdjuster for ModifiedFollowing {
     /// Shift the input date to the closest business day according to the Modified Following convention
     ///
     /// # Arguments

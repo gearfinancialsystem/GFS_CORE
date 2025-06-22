@@ -1,0 +1,16 @@
+businessDayAdjuster =>
+    private BusinessDayConvention bdConvention;
+    private ShiftCalcConvention   scConvention;
+
+    itère sur plusieurs cas de
+        case CSF:
+            scConvention = new CalcShift();
+            bdConvention = new Following(calendar);
+            break;
+        case CSMF:
+            scConvention = new CalcShift();
+            bdConvention = new ModifiedFollowing(calendar);
+            break;
+        etc ...
+
+businessDayConvention => c'est un trait qui suppose d"implémenter : public LocalDateTime shift(LocalDateTime date);

@@ -11,7 +11,7 @@ use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -119,7 +119,7 @@ impl ContractEvent {
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        time_adjuster: &BusinessDayAdjuster,
     ) {
         if !self.fpayoff.is_none() {
             self.payoff = Some(self.fpayoff.clone().unwrap().eval(

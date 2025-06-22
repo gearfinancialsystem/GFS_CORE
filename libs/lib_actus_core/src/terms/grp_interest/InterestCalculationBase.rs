@@ -40,7 +40,7 @@ impl FromStr for InterestCalculationBase {
             "NTIED" => Ok(InterestCalculationBase::new_NTIED()),
             "NTL" => Ok(InterestCalculationBase::new_NTL()),
             "" => Ok(InterestCalculationBase::default()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

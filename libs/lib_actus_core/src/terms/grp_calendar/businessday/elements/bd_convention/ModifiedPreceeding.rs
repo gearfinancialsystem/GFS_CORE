@@ -4,7 +4,7 @@ use std::ptr;
 use std::rc::Rc;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::isoDatetime::IsoDatetime;
 
 /// Implementation of the Modified Preceding business day convention
@@ -37,7 +37,7 @@ impl ModifiedPreceeding {
     }
 }
 
-impl TraitBusinessDayConvention for ModifiedPreceeding {
+impl TraitBusinessDayAdjuster for ModifiedPreceeding {
     /// Shift the input date to the closest business day if it is a non-business day
     ///
     /// # Arguments

@@ -20,3 +20,13 @@ impl TraitBusinessDayCalendar for NC {
     }
 }
 
+#[cfg(test)]
+mod tests_calendars_NoCalendar {
+    use crate::types::isoDatetime::IsoDatetime;
+    use super::*;
+    #[test]
+    fn test_SAME_NoHolidaysCalendar() {
+        let adjuster = "";
+        
+    }
+}

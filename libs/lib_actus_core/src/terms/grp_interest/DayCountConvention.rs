@@ -42,7 +42,7 @@ impl DayCountConvention {
         DayCountConvention::A336(A336::new())
     }
     fn new_E30360ISDA(maturity_date: Rc<IsoDatetime>) -> Self {
-        DayCountConvention::E30360ISDA(E30360ISDA::new(maturity_date))
+        DayCountConvention::E30360ISDA(E30360ISDA::new(Some(maturity_date)))
     }
     fn new_E30360() -> Self {
         DayCountConvention::E30360(E30360::new())
@@ -51,7 +51,7 @@ impl DayCountConvention {
         DayCountConvention::B252(B252::new(calendar))
     }
     fn new_E283666(maturity_date: Rc<IsoDatetime>) -> Self {
-        DayCountConvention::E283666(E283666::new(maturity_date))
+        DayCountConvention::E283666(E283666::new(Some(maturity_date)))
     }
 
     pub fn day_count(&self,start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {

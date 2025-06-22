@@ -8,27 +8,15 @@ use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E283666 {
-    pub maturity_date: Rc<IsoDatetime>,
+    pub maturity_date: Option<Rc<IsoDatetime>>,
 }
 
 impl E283666 {
-    pub fn new(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new(maturity_date: Option<Rc<IsoDatetime>>) -> Self {
         E283666 {maturity_date}
     }
 }
 impl TraitDayCountConvention for E283666 {
-    /// Construit un E283666 avec une maturité donnée.
-    /// (Si vous voulez vraiment un "pas de maturité",
-    /// il faut prévoir une date sentinelle ou un bool).
-    // pub fn new(maturity_date: NaiveDateTime) -> Self {
-    //     Self { maturity_date }
-    // }
-
-    // /// Modifie la maturité
-    // pub fn set_maturity_date(&mut self, maturity_date: NaiveDateTime) {
-    //     self.maturity_date = maturity_date;
-    // }
-
     /// Calcule le nombre de jours, selon la convention 28/336
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         // Ajustement de d1
@@ -39,20 +27,15 @@ impl TraitDayCountConvention for E283666 {
 
         // Ajustement de d2
         let mut d2 = end_time.day();
-        // On reprend la logique initiale:
-        // if !(end_time == *maturity_date || end_time.month() == 2)
-        //     && end_time.day() == end_time.with_day(0).unwrap().day() {
-        //     d2 = 28;
-        // } else if d2 > 28 {
-        //     d2 = 28;
-        // }
-        //
-        // En version adaptée:
-        if !(end_time == *self.maturity_date || end_time.month() == 2)
-            && end_time.is_last_day_of_month()
-        {
-            d2 = 28;
-        } else if d2 > 28 {
+
+        if self.maturity_date.is_some() {
+            let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
+            if !(end_time == a || end_time.month() == 2)
+            && end_time.is_last_day_of_month() {
+                d2 = 28;
+            }
+        }
+        else if d2 > 28 {
             d2 = 28;
         }
 
@@ -69,3 +52,61 @@ impl TraitDayCountConvention for E283666 {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::NaiveDateTime;
+    use super::E283666;
+
+    fn parse_date(date_str: &str) -> NaiveDateTime {
+        NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date")
+    }
+
+    #[test]
+    fn test_daycount_twenty_eight_three_thirty_six_1() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date2 = parse_date("2019-03-31T00:00:00");
+        let result = 27.0;
+        assert_eq!(result, E283666::new(None).day_count(local_date1, local_date2) as f64);
+    }
+
+    #[test]
+    fn test_day_count_fraction_twenty_eight_three_thirty_six_1() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date2 = parse_date("2019-03-31T00:00:00");
+        let result = 27.0 / 336.0; // 27 divided by 336
+        assert_eq!(result, E283666::new(None).day_count_fraction(local_date1, local_date2));
+    }
+
+    #[test]
+    fn test_daycount_twenty_eight_three_thirty_six_2() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date3 = parse_date("2019-04-30T00:00:00");
+        let result = 55.0;
+        assert_eq!(result, E283666::new(None).day_count(local_date1, local_date3) as f64);
+    }
+
+    #[test]
+    fn test_day_count_fraction_twenty_eight_three_thirty_six_2() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date3 = parse_date("2019-04-30T00:00:00");
+        let result = 55.0 / 336.0; // 55 divided by 336
+        assert_eq!(result, E283666::new(None).day_count_fraction(local_date1, local_date3));
+    }
+
+    #[test]
+    fn test_daycount_twenty_eight_three_thirty_six_3() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date4 = parse_date("2019-05-30T23:00:00");
+        let result = 83.0;
+        assert_eq!(result, E283666::new(None).day_count(local_date1, local_date4) as f64);
+    }
+
+    #[test]
+    fn test_day_count_fraction_twenty_eight_three_thirty_six_3() {
+        let local_date1 = parse_date("2019-03-01T00:00:00");
+        let local_date4 = parse_date("2019-05-30T23:00:00");
+        let result = 83.0 / 336.0; // 83 divided by 336
+        assert_eq!(result, E283666::new(None).day_count_fraction(local_date1, local_date4));
+    }
+}

@@ -4,7 +4,7 @@ use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc:
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
 
 use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
@@ -24,7 +24,7 @@ impl SCF {
     pub fn type_str(&self) -> String {
         return "SCF day convention".to_string();
     }
-    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
+    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         self.scConvention.shift(date, convention)
     }
 

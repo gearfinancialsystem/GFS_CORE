@@ -1,4 +1,4 @@
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -10,7 +10,7 @@ impl Same {
     }
 }
 
-impl TraitBusinessDayConvention for Same {
+impl TraitBusinessDayAdjuster for Same {
     /// Returns the non-shifted date (even if a non-business day)
     fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         *date

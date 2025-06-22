@@ -49,7 +49,7 @@ impl FromStr for OptionType {
             "C" => Ok(Self::new_C()),
             "P" => Ok(Self::new_P()),
             "CP" => Ok(Self::new_CP()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

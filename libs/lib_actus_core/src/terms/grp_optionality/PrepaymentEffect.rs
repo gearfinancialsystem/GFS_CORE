@@ -49,7 +49,7 @@ impl FromStr for PrepaymentEffect {
             "N" => Ok(Self::new_N()),
             "A" => Ok(Self::new_A()),
             "M" => Ok(Self::new_M()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayConvention: {}", s)})
+            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
 }

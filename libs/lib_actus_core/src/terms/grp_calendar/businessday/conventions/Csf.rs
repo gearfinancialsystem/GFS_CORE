@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
 use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::traits::TraitBusinessDayConvention::TraitBusinessDayConvention;
+use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
@@ -28,7 +28,7 @@ impl CSF {
     
     /// Applique le décalage selon la convention de shift (scConvention)
     /// en passant un trait object pour la BDC.
-    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayConvention) -> IsoDatetime {
+    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         self.scConvention.shift(date, convention)
     }
 

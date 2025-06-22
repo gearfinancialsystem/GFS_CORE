@@ -1,9 +1,8 @@
-use std::cmp::max;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_optionality::PenaltyType::PenaltyType;
-use crate::terms::grp_calendar::BusinessDayConvention::BusinessDayConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -19,7 +18,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayConvention,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
         let penalty_type = model.penaltyType.as_ref().expect("penaltyType should be Some");
@@ -36,7 +35,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let notional_principal = states.notionalPrincipal.as_ref().expect("notionalPrincipal should be Some");
 
                 1.0 * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date), time_adjuster.shift_bd(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))
                 * penalty_rate * notional_principal
             }
             _ => {
@@ -46,7 +45,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
                 
                 1.0 * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_bd(&status_date), time_adjuster.shift_bd(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))
                     * notional_principal
                     * 0.0f64.max(nominal_interest_rate - 1.0f64)
             }
