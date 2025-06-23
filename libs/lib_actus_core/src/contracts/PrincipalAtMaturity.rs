@@ -104,7 +104,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IP_PAM)),
                 Some(Rc::new(STF_IP_PAM)),
-                model.BusinessDayAdjuster.as_ref().unwrap(),
+                model.businessDayAdjuster.as_ref().unwrap(),
                 model.contractID.as_ref(),
             );
 
@@ -117,7 +117,7 @@ impl PrincipalAtMaturity {
                     model.currency.as_ref(),
                     Some(Rc::new(POF_IPCI_PAM)),
                     Some(Rc::new(STF_IPCI_PAM)),
-                    &model.BusinessDayAdjuster.as_ref().unwrap(),
+                    &model.businessDayAdjuster.as_ref().unwrap(),
                     model.contractID.as_ref(),
                 );
 
@@ -163,7 +163,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IPCI_PAM)),
                 Some(Rc::new(STF_IPCI_PAM)),
-                &model.BusinessDayAdjuster.clone().unwrap(),
+                &model.businessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             ));
         }
@@ -181,7 +181,7 @@ impl PrincipalAtMaturity {
             model.currency.as_ref(),
             Some(Rc::new(POF_RR_PAM)),
             Some(Rc::new(STF_RR_PAM)),
-            &model.BusinessDayAdjuster.clone().unwrap(),
+            &model.businessDayAdjuster.clone().unwrap(),
             model.contractID.as_ref(),
         );
 
@@ -225,7 +225,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_FP_PAM)),
                 Some(Rc::new(STF_FP_PAM)),
-                &model.BusinessDayAdjuster.clone().unwrap(),
+                &model.businessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             );
             events.extend(fee_events);
@@ -247,7 +247,7 @@ impl PrincipalAtMaturity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_SC_PAM)),
                 Some(Rc::new(STF_SC_PAM)),
-                &model.BusinessDayAdjuster.clone().unwrap(),
+                &model.businessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             );
             events.extend(scaling_events);
@@ -316,7 +316,7 @@ impl PrincipalAtMaturity {
                 model,
                 observer,
                 &model.dayCountConvention.clone().unwrap(),
-                &model.BusinessDayAdjuster.clone().unwrap(),
+                &model.businessDayAdjuster.clone().unwrap(),
             );
         }
         
@@ -370,7 +370,7 @@ impl PrincipalAtMaturity {
         } else {
             // GERER CE CAS : Il y a UNE ERREUR
             let day_counter = model.dayCountConvention.as_ref().unwrap();
-            let time_adjuster = model.BusinessDayAdjuster.as_ref().unwrap();
+            let time_adjuster = model.businessDayAdjuster.as_ref().unwrap();
 
 
             let mut ip_schedule: Vec<IsoDatetime> = ScheduleFactory::create_schedule(
