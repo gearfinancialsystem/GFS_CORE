@@ -14,6 +14,7 @@ use crate::terms::grp_interest::daycountconventions::E283666::E283666;
 use crate::terms::grp_interest::daycountconventions::E30360::E30360;
 use crate::terms::grp_interest::daycountconventions::B252::B252;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
+use crate::util::CommonUtils::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum DayCountConvention {
@@ -114,7 +115,7 @@ impl DayCountConvention {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
     }
-    pub fn provide(string_map: &HashMap<String, String>,
+    pub fn provide(string_map: &HashMap<String, Value>,
                        key: &str,
                        ndt: Rc<IsoDatetime>,
                        calendar_trait:Rc<Calendar> ) -> Option<Self> {
@@ -122,7 +123,7 @@ impl DayCountConvention {
         string_map
             .get(key)
             .and_then(|s| {
-                DayCountConvention::parse(s, ndt, calendar_trait).ok()
+                DayCountConvention::parse(s.extract_string().unwrap().as_str(), ndt, calendar_trait).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()

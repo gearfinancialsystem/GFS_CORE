@@ -18,6 +18,7 @@ use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::types::isoDatetime::IsoDatetime;
+use crate::util::CommonUtils::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayAdjuster {
@@ -150,11 +151,11 @@ impl BusinessDayAdjuster {
         }
     }
     
-    pub fn provide(string_map: &HashMap<String, String>, key: &str, calendar: Rc<Calendar> ) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str, calendar: Rc<Calendar> ) -> Option<Self> {
         match string_map.get(key) {
             None => Some(Self::default_with_calendar(calendar)),
             Some(s) => {
-                match Self::parse(s, calendar) {
+                match Self::parse(s.extract_string().unwrap().as_str(), calendar) {
 
                     Ok(bdc) => {
                         println!("{:?}", bdc);

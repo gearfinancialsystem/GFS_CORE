@@ -14,7 +14,7 @@ use crate::terms::grp_contract_identification::contract_roles::Cno::CNO;
 use crate::terms::grp_contract_identification::contract_roles::Udl::UDL;
 use crate::terms::grp_contract_identification::contract_roles::Udlp::UDLP;
 use crate::terms::grp_contract_identification::contract_roles::Udlm::UDLM;
-
+use crate::util::CommonUtils::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ContractRole {
@@ -122,12 +122,12 @@ impl ContractRole {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
     }
-    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
             .and_then(|s| {
-                Self::from_str(s).ok()
+                Self::from_str(s.extract_string().unwrap().as_str()).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()

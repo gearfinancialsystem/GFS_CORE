@@ -5,7 +5,7 @@ use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;
 use crate::terms::grp_optionality::penalty_type::I::I;
-use crate::util::CommonUtils::CommonUtils as cu;
+use crate::util::CommonUtils::{CommonUtils as cu, Value};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PenaltyType {
     N(N),
@@ -45,7 +45,7 @@ impl PenaltyType {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
     }
-    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
     }
 }

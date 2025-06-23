@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
-use crate::util::CommonUtils::CommonUtils as cu;
+use crate::util::CommonUtils::{CommonUtils as cu, Value};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CyclePointOfInterestPayment {
@@ -34,7 +34,7 @@ impl CyclePointOfInterestPayment {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
     }
-    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
     }
 }

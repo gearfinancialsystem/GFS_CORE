@@ -13,69 +13,9 @@ use crate::terms::grp_optionality::PenaltyType::PenaltyType;
 use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::types::isoDatetime::IsoDatetime;
 
-
-pub struct Champs {
-    pub calendar: Option<Rc<Calendar>>, // pas d'option, champs obligatoire
-    pub businessDayAdjuster: Option<BusinessDayAdjuster>,
-    pub endOfMonthConvention: Option<EndOfMonthConvention>,
-    pub contractType: Option<String>, // obligatoire
-    pub contractID: Option<String>,
-    pub statusDate: Option<IsoDatetime>,
-    pub contractRole: Option<ContractRole>,
-    pub counterpartyID: Option<String>,
-    pub marketObjectCode: Option<String>,
-    pub cycleAnchorDateOfFee: Option<IsoDatetime>,
-    pub cycleOfFee: Option<String>,
-    pub feeBasis: Option<FeeBasis>,
-    pub feeRate: Option<f64>,
-    pub feeAccrued: Option<f64>,
-    pub cycleAnchorDateOfInterestPayment: Option<IsoDatetime>,
-    pub cycleOfInterestPayment: Option<String>,
-    pub nominalInterestRate: Option<f64>,
-    pub dayCountConvention: Option<DayCountConvention>,
-    pub accruedInterest: Option<f64>, // obligatoire
-    pub capitalizationEndDate: Option<IsoDatetime>,
-    pub cyclePointOfInterestPayment: Option<CyclePointOfInterestPayment>,
-    pub currency: Option<String>, // obligatoire
-    pub initialExchangeDate: Option<IsoDatetime>,
-    pub premiumDiscountAtIED: Option<f64>,
-    pub notionalPrincipal: Option<f64>,
-    pub purchaseDate: Option<IsoDatetime>,
-    pub priceAtPurchaseDate: Option<f64>,
-    pub terminationDate: Option<IsoDatetime>,
-    pub priceAtTerminationDate: Option<f64>,
-    pub marketObjectCodeOfScalingIndex: Option<String>,
-    pub scalingIndexAtContractDealDate: Option<f64>,
-    pub notionalScalingMultiplier: Option<f64>,
-    pub interestScalingMultiplier: Option<f64>,
-    pub cycleAnchorDateOfScalingIndex: Option<IsoDatetime>,
-    pub cycleOfScalingIndex: Option<String>,
-    pub scalingEffect: Option<ScalingEffect>,
-    // TODO: review prepayment mechanism and attributes
-    pub cycleAnchorDateOfOptionality: Option<IsoDatetime>,
-    pub cycleOfOptionality: Option<String>,
-    pub penaltyType: Option<PenaltyType>,
-    pub penaltyRate: Option<f64>,
-    pub objectCodeOfPrepaymentModel: Option<String>,
-    pub cycleAnchorDateOfRateReset: Option<IsoDatetime>,
-    pub cycleOfRateReset: Option<String>,
-    pub rateSpread: Option<f64>,
-    pub marketObjectCodeOfRateReset: Option<String>,
-    pub lifeCap: Option<f64>,
-    pub lifeFloor: Option<f64>,
-    pub periodCap: Option<f64>,
-    pub periodFloor: Option<f64>,
-    pub cyclePointOfRateReset: Option<CyclePointOfRateReset>,
-    pub fixingPeriod: Option<IsoDatetime>,
-    pub nextResetRate: Option<f64>,
-    pub rateMultiplier: Option<f64>, // obligatoire
-    pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
-    pub contractPerformance: Option<ContractPerformance>,
-}
-
-impl PAM {
+impl CHAMPS {
     pub fn init() -> Self {
-        PAM {
+        CHAMPS {
             calendar: None,
             businessDayAdjuster: None,
             endOfMonthConvention: None,
@@ -133,6 +73,5 @@ impl PAM {
             contractPerformance: None
         }
     }
-
-
+    
 }

@@ -5,6 +5,7 @@ use std::ops::Sub;
 use std::rc::Rc;
 use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike};
 use crate::types::IsoPeriod::IsoPeriod;
+use crate::util::CommonUtils::Value;
 
 pub type IsoDatetime = NaiveDateTime;
 
@@ -12,11 +13,11 @@ pub trait traitNaiveDateTimeExtension {
     fn double(&self) -> Self;
     fn is_last_day_of_month(&self) -> bool;
     fn last_date_of_month(&self) -> Self;
-    fn provide_box(sm: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>>;
-    fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<NaiveDateTime>;
-    fn provide_rc(sm: &HashMap<String, String>, key: &str) -> Option<Rc<NaiveDateTime>>;
-    fn provide_box_vec(sm: &HashMap<String, String>, key: &str) -> Option<Box<Vec<NaiveDateTime>>>;
-    fn provide_vec(string_map: &HashMap<String, String>, key: &str) -> Option<Vec<NaiveDateTime>>;
+    fn provide_box(sm: &HashMap<String, Value>, key: &str) -> Option<Box<NaiveDateTime>>;
+    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<NaiveDateTime>;
+    fn provide_rc(sm: &HashMap<String, Value>, key: &str) -> Option<Rc<NaiveDateTime>>;
+    fn provide_box_vec(sm: &HashMap<String, Value>, key: &str) -> Option<Box<Vec<NaiveDateTime>>>;
+    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<NaiveDateTime>>;
 }
 
 impl traitNaiveDateTimeExtension for NaiveDateTime {
@@ -64,15 +65,15 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
             .and_hms_opt(hour, minute, second)
             .unwrap()
     }
-    fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<NaiveDateTime>> {
-        string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok()).map(Box::new)
+    fn provide_box(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<NaiveDateTime>> {
+        string_map.get(key).and_then(|s| s.extract_string().unwrap().parse::<NaiveDateTime>().ok()).map(Box::new)
     }
-    fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<NaiveDateTime> {
-        string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok())
+    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<NaiveDateTime> {
+        string_map.get(key).and_then(|s| s.extract_string().unwrap().parse::<NaiveDateTime>().ok())
     }
-    fn provide_box_vec(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Vec<NaiveDateTime>>> {
+    fn provide_box_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<Vec<NaiveDateTime>>> {
         string_map.get(key).and_then(|s| {
-            let dates: Vec<NaiveDateTime> = s.split(',')
+            let dates: Vec<NaiveDateTime> = s.extract_string().unwrap().split(',')
                 .map(|date_str| date_str.trim())
                 .filter_map(|date_str| date_str.parse::<NaiveDateTime>().ok())
                 .collect();
@@ -83,9 +84,9 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
             }
         })
     }
-    fn provide_vec(string_map: &HashMap<String, String>, key: &str) -> Option<Vec<NaiveDateTime>> {
+    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<NaiveDateTime>> {
         string_map.get(key).and_then(|s| {
-            let dates: Vec<NaiveDateTime> = s.split(',')
+            let dates: Vec<NaiveDateTime> = s.extract_string().unwrap().split(',')
                 .map(|date_str| date_str.trim())
                 .filter_map(|date_str| date_str.parse::<NaiveDateTime>().ok())
                 .collect();
@@ -96,9 +97,9 @@ impl traitNaiveDateTimeExtension for NaiveDateTime {
             }
         })
     }
-    fn provide_rc(string_map: &HashMap<String, String>, key: &str) -> Option<Rc<Self>> {
+    fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<Self>> {
 
-        string_map.get(key).and_then(|s| s.parse::<NaiveDateTime>().ok()).map(|b| Rc::new(b))
+        string_map.get(key).and_then(|s| s.extract_string().unwrap().parse::<NaiveDateTime>().ok()).map(|b| Rc::new(b))
     }
 
 }

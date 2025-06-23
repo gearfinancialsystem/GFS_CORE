@@ -9,7 +9,7 @@ use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Ma::MA;
 use crate::terms::grp_counterparty::contract_performance::Te::TE;
 
-use crate::util::CommonUtils::CommonUtils as cu;
+use crate::util::CommonUtils::{CommonUtils as cu, Value};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContractPerformance {
@@ -61,7 +61,7 @@ impl ContractPerformance {
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             //.unwrap_or_default()
     }
-    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
     }
 }

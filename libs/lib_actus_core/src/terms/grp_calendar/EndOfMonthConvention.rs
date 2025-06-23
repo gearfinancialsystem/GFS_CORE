@@ -6,6 +6,7 @@ use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::util::CommonUtils::Value;
 use crate::util::CycleUtils::CycleUtils;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -63,12 +64,12 @@ impl EndOfMonthConvention {
             //.unwrap_or_default()
     }
 
-    pub fn provide(string_map: &HashMap<String, String>, key: &str) -> Option<Self> {
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
             .and_then(|s| {
-                Self::from_str(s).ok()
+                Self::from_str(s.extract_string().unwrap().as_str()).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()

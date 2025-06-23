@@ -9,6 +9,7 @@ use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::types::isoDatetime::IsoDatetime;
+use crate::util::CommonUtils::Value;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -33,24 +34,24 @@ impl Calendar {
         Self::MF(MF::new())
     }
 
-    pub fn provide_rc(string_map: &HashMap<String, String>, key: &str) -> Option<Rc<Self>> {
+    pub fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<Self>> {
         match string_map.get(key) {
             None => Some(Rc::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match Self::from_str(s) {
+                match Self::from_str(s.extract_string().unwrap().as_str()) {
                     Ok(calendar) => Some(Rc::new(calendar)), // Valeur valide
-                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
             }
         }
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
+    pub fn provide_box(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<Self>> {
         match string_map.get(key) {
             None => Some(Box::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match Self::from_str(s) {
+                match Self::from_str(s.extract_string().unwrap().as_str()) {
                     Ok(calendar) => Some(Box::new(calendar)), // Valeur valide
-                    Err(_) => panic!("Erreur de parsing pour la clé {} avec la valeur {}", key, s),
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
             }
         }

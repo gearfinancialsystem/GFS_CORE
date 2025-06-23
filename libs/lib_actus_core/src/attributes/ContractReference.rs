@@ -1,77 +1,26 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::str::FromStr;
+use chrono::Days;
+use chrono::format::Numeric::Day;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::attributes::reference_type::ReferenceType::ReferenceType;
 use crate::attributes::ContractModel::ContractModel;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
+use crate::functions::pam::pof::POF_PRD_PAM::POF_PRD_PAM;
+use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable::V;
+use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CommonUtils::Value;
 
-// Structure pour représenter ContractReference
-#[derive(Clone, Debug, PartialEq)]
-pub struct ContractReference {
-    pub reference_role: ReferenceRole,
-    pub reference_type: ReferenceType,
-    pub object: ContractModel,
-}
-
-impl ContractReference {
-    fn new(attributes: &HashMap<String, Value>, contract_role: &ContractRole) -> Self {
-        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap()).unwrap();
-        let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().as_string().unwrap()).unwrap();
-        let object = match reference_type {
-            ReferenceType::CNT => {
-                let mut child_model = attributes.get("object").unwrap().unwrap().clone();
-                match (contract_role, &reference_role) {
-                    (ContractRole::RFL, ReferenceRole::FIL) => {
-                        child_model.insert("contractRole".to_string(), Object::String("RPA".to_string()));
-                    },
-                    (ContractRole::RFL, _) => {
-                        child_model.insert("contractRole".to_string(), Object::String("RPL".to_string()));
-                    },
-                    (_, ReferenceRole::FIL) => {
-                        child_model.insert("contractRole".to_string(), Object::String("RPL".to_string()));
-                    },
-                    (_, _) => {
-                        child_model.insert("contractRole".to_string(), Object::String("RPA".to_string()));
-                    }
-                }
-                ContractModel::parse(&child_model)
-            },
-            ReferenceType::CID => {
-                Object::String(attributes.get("object").unwrap().as_map().unwrap().get("contractIdentifier").unwrap().as_string().unwrap().clone())
-            },
-            ReferenceType::MOC => {
-                Object::String(attributes.get("object").unwrap().as_map().unwrap().get("marketObjectCode").unwrap().as_string().unwrap().clone())
-            },
-            ReferenceType::EID => {
-                attributes.get("object").unwrap().clone()
-            },
-            ReferenceType::CST => {
-                Object::None
-            }
-        };
-
-        ContractReference { reference_role, reference_type, object }
-    }
-
-    fn get_object(&self) -> &Object {
-        &self.object
-    }
-
-    fn get_contract_attribute(&self, contract_attribute: &str) -> Option<String> {
-        match &self.object {
-            Object::String(s) if contract_attribute == "marketObjectCode" && matches!(self.reference_type, ReferenceType::MOC) => Some(s.clone()),
-            Object::ContractModel(model) if matches!(self.reference_type, ReferenceType::CNT) => Some(model.get_as(contract_attribute).to_string()),
-            Object::String(s) if matches!(self.reference_type, ReferenceType::CID) => Some(s.clone()),
-            _ => None,
-        }
-    }
-
-    // Ajoutez d'autres méthodes si nécessaire
-}
-
-// Énumération pour représenter Object
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 enum Object {
     String(String),
     ContractModel(ContractModel),
@@ -82,28 +31,118 @@ enum Object {
 impl Object {
     fn as_string(&self) -> Option<&String> {
         match self {
-            Object::String(s) => Some(s),
+            Self::String(s) => Some(s),
+            _ => None,
+        }
+    }
+    fn as_cm(&self) -> Option<ContractModel> {
+        match self {
+            Self::ContractModel(m) => Some(m.clone()),
             _ => None,
         }
     }
 
     fn as_map(&self) -> Option<&HashMap<String, Object>> {
         match self {
-            Object::Map(m) => Some(m),
+            Self::Map(m) => Some(m),
             _ => None,
         }
     }
 }
 
-// Implémentez les méthodes nécessaires pour ContractModel
-impl ContractModel {
-    fn parse(attributes: &HashMap<String, Object>) -> Self {
-        // Implémentez la logique de parsing ici
-        ContractModel { /* champs */ }
+// Structure pour représenter ContractReference
+#[derive(Clone, Debug, PartialEq)]
+pub struct ContractReference {
+    pub reference_role: ReferenceRole,
+    pub reference_type: ReferenceType,
+    pub object: Object,
+}
+
+impl ContractReference {
+    pub fn new(attributes: &HashMap<String, Value>, contract_role: &ContractRole) -> Self {
+        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().extract_string().unwrap().as_str()).unwrap();
+        let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().extract_string().unwrap().as_str()).unwrap();
+        let object = match reference_type {
+            ReferenceType::CNT => {
+                let mut child_model = attributes.get("object").unwrap().extract_hmap().unwrap();
+                match (contract_role, &reference_role) {
+                    (ContractRole::RFL(RFL), ReferenceRole::FIL) => {
+                        child_model.insert("contractRole".to_string(), Value::String("RPA".to_string()));
+                    },
+                    (ContractRole::RFL(RFL), _) => {
+                        child_model.insert("contractRole".to_string(), Value::String("RPL".to_string()));
+                    },
+                    (_, ReferenceRole::FIL) => {
+                        child_model.insert("contractRole".to_string(), Value::String("RPL".to_string()));
+                    },
+                    (_, _) => {
+                        child_model.insert("contractRole".to_string(), Value::String("RPA".to_string()));
+                    }
+                }
+                Object::ContractModel(ContractModel::new(&child_model).unwrap())
+            },
+            ReferenceType::CID => {
+                Object::String(attributes.get("object").unwrap().extract_hmap().unwrap().get("contractIdentifier").unwrap().extract_string().unwrap())
+            },
+            ReferenceType::MOC => {
+                Object::String(attributes.get("object").unwrap().extract_hmap().unwrap().get("marketObjectCode").unwrap().extract_string().unwrap())
+            },
+            ReferenceType::EID => {
+                Object::None // a implementer //attributes.get("object").unwrap().clone()
+            },
+            ReferenceType::CST => {
+                Object::None
+            }
+        };
+
+        ContractReference { reference_role, reference_type, object }
     }
 
-    fn get_as(&self, attribute: &str) -> &str {
-        // Implémentez la logique pour obtenir l'attribut ici
-        ""
+    pub fn get_object(&self) -> &Object {
+        &self.object
     }
+
+    pub fn get_contract_attribute(&self, contract_attribute: &str) -> Option<String> {
+        match &self.object {
+            Object::String(s) if contract_attribute == "marketObjectCode" && matches!(self.reference_type, ReferenceType::MOC) => Some(s.clone()),
+            Object::ContractModel(model) if matches!(self.reference_type, ReferenceType::CNT) => Some(model.get_field(contract_attribute)?.extract_vString()?),
+            Object::String(s) if matches!(self.reference_type, ReferenceType::CID) => Some(s.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &RiskFactorModel) -> StateSpace {
+        let model = self.object.as_cm().unwrap();
+        if self.reference_type == ReferenceType::CID {
+            let mut events =  ContractType::schedule( Some(time.checked_add_days(Days::new(1))).unwrap(), &self.object.as_cm().unwrap()).unwrap();
+            let analysis_event = EventFactory::create_event(
+                Some(time),
+                EventType::AD,
+                model.currency.as_ref(),
+                Some(Rc::new(POF_AD_PAM)),
+                Some(Rc::new(STF_AD_PAM)),
+                model.contractID.as_ref()
+            );
+            events.push(analysis_event.clone());
+            events.sort();
+            events = ContractType::apply(events, &self.object.as_cm().unwrap(), observer).unwrap();
+            analysis_event.states();
+        }
+        StateSpace::default() // a checker
+    }
+
+    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &RiskFactorModel ) -> ContractEvent {
+        let mut events : Vec<ContractEvent> = vec![];
+        if self.reference_type == ReferenceType::CNT {
+            events = ContractType::apply(
+                ContractType::schedule(None, &self.object.as_cm().unwrap()).unwrap(),
+                &self.object.as_cm().unwrap(),
+                observer
+            ).unwrap();
+            events.iter_mut().filter(|e| e.eventType == event_type);
+        }
+        events.get(0).unwrap().clone()
+    }
+
+    // Ajoutez d'autres méthodes si nécessaire
 }
