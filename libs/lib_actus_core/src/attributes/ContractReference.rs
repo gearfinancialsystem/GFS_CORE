@@ -1,23 +1,26 @@
 use std::collections::HashMap;
+use std::str::FromStr;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::attributes::reference_type::ReferenceType::ReferenceType;
+use crate::attributes::ContractModel::ContractModel;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::attributes::ContractModel::Value;
+use crate::util::CommonUtils::Value;
 
 // Structure pour représenter ContractReference
+#[derive(Clone, Debug, PartialEq)]
 pub struct ContractReference {
     pub reference_role: ReferenceRole,
     pub reference_type: ReferenceType,
-    pub object: Object,
+    pub object: ContractModel,
 }
 
 impl ContractReference {
     fn new(attributes: &HashMap<String, Value>, contract_role: &ContractRole) -> Self {
-        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().as_string().unwrap()).unwrap();
+        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap()).unwrap();
         let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().as_string().unwrap()).unwrap();
         let object = match reference_type {
             ReferenceType::CNT => {
-                let mut child_model = attributes.get("object").unwrap().as_map().unwrap().clone();
+                let mut child_model = attributes.get("object").unwrap().unwrap().clone();
                 match (contract_role, &reference_role) {
                     (ContractRole::RFL, ReferenceRole::FIL) => {
                         child_model.insert("contractRole".to_string(), Object::String("RPA".to_string()));
@@ -32,7 +35,7 @@ impl ContractReference {
                         child_model.insert("contractRole".to_string(), Object::String("RPA".to_string()));
                     }
                 }
-                Object::ContractModel(ContractModel::parse(&child_model))
+                ContractModel::parse(&child_model)
             },
             ReferenceType::CID => {
                 Object::String(attributes.get("object").unwrap().as_map().unwrap().get("contractIdentifier").unwrap().as_string().unwrap().clone())

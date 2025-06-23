@@ -1,7 +1,15 @@
 use std::collections::HashMap;
 use std::str::FromStr;
+use chrono::ParseError;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_contract_identification::contract_types::Pam::PAM;
 // use crate::terms::grp_settlement::DeliverySettlement::S;
+
+pub enum Value {
+    String(String),
+    HashMap(HashMap<String, Value>),
+    Vec(Vec<Value>),
+}
 
 
 
