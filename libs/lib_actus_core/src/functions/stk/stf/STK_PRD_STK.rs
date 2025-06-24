@@ -7,9 +7,9 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
-pub struct STF_TD_STK;
+pub struct STF_PRD_STK;
 
-impl TraitStateTransitionFunction for STF_TD_STK {
+impl TraitStateTransitionFunction for STF_PRD_STK {
     fn eval(
         &self,
         time: &IsoDatetime,
@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_TD_STK {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     )  {
-        
+
         states.statusDate = Some(*time);
 
     }
