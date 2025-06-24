@@ -45,19 +45,18 @@ impl PrincipalAtMaturity {
         to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let mut events: Vec<ContractEvent> = Vec::new();
+        let mut events = Vec::new();
 
         // Initial exchange (IED)
-        events.push(
-            EventFactory::create_event(
-                model.initialExchangeDate,
-                EventType::IED,
-                model.currency.as_ref(),
-                Some(Rc::new(POF_IED_PAM)),
-                Some(Rc::new(STF_IED_PAM)),
-                model.contractID.as_ref(),
-            )
+        let e = EventFactory::create_event(
+            model.initialExchangeDate,
+            EventType::IED,
+            model.currency.as_ref(),
+            Some(Rc::new(POF_IED_PAM)),
+            Some(Rc::new(STF_IED_PAM)),
+            model.contractID.as_ref(),
         );
+        events.push(e);
 
         // Principal redemption (MD)
         

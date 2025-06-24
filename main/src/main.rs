@@ -3,6 +3,7 @@ use std::hash::Hash;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
 use lib_actus_core::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
+use lib_actus_core::contracts::Swap::Swap;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::util::CommonUtils::Value;
 
@@ -93,7 +94,7 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
         
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = Swap::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
             let events2 = PrincipalAtMaturity::apply(events_res, cm, &risk_factor_model);
             
