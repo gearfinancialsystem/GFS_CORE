@@ -21,7 +21,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CommonUtils::Value;
 
 #[derive(Debug, Clone, PartialEq)]
-enum Object {
+pub enum Object {
     String(String),
     ContractModel(ContractModel),
     Map(HashMap<String, Object>),

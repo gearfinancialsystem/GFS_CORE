@@ -7,9 +7,10 @@ use crate::exceptions::ParseError::ParseError;
 pub enum Value {
     String(String),
     HashMap(HashMap<String, Value>),
-    Vec(Vec<Value>),
+    Vec(Vec<HashMap<String, Value>>), // Value a la place de HashMap<String, Value> ... voir si ca marche sur le long terme
 }
 impl Value {
+
     pub fn extract_string(&self) -> Option<String> {
         match self {
             Self::String(s) => Some(s.clone()),
@@ -19,6 +20,12 @@ impl Value {
     pub fn extract_hmap(&self) -> Option<HashMap<String, Value>> {
         match self {
             Self::HashMap(s) => Some(s.clone()),
+            _ => None,
+        }
+    }
+    pub fn extract_vec(&self) -> Option<Vec<HashMap<String, Value>>> {
+        match self {
+            Self::Vec(s) => Some(s.clone()),
             _ => None,
         }
     }

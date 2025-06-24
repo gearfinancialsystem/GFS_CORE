@@ -127,6 +127,11 @@ pub struct ContractModel {
     pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
     pub contractPerformance: Option<ContractPerformance>,
     pub contractStructure: Option<Vec<ContractReference>>,
+    pub quantity: Option<f64>,
+    pub marketValueObserved: Option<f64>,
+    pub cycleOfDividendPayment: Option<String>,
+    pub cycleAnchorDateOfDividendPayment: Option<IsoDatetime>,
+    pub marketObjectCodeOfDividends: Option<String>
 }
 
 impl ContractModel {
@@ -189,6 +194,11 @@ impl ContractModel {
             maturityDate: None,
             contractPerformance: None,
             contractStructure: None,
+            quantity: None,
+            marketValueObserved: None,
+            cycleOfDividendPayment: None,
+            cycleAnchorDateOfDividendPayment: None,
+            marketObjectCodeOfDividends: None
         }
     }
 
@@ -251,6 +261,11 @@ impl ContractModel {
             "maturityDate" =>Some(FieldValue::vMaturityDate(self.maturityDate.clone().unwrap())),
             "contractPerformance" => Some(FieldValue::vContractPerformance(self.contractPerformance?)),
             "deliverySettlement" => Some(FieldValue::vDeliverySettlement(self.deliverySettlement.clone().unwrap())),
+            "quantity" => Some(FieldValue::vF64(self.quantity.clone().unwrap())),
+            "marketValueObserved" => Some(FieldValue::vF64(self.marketValueObserved.clone().unwrap())),
+            "cycleOfDividendPayment" => Some(FieldValue::vString(self.cycleOfDividendPayment.clone().unwrap())),
+            "cycleAnchorDateOfDividendPayment" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfDividendPayment.clone().unwrap())),
+            "marketObjectCodeOfDividends" => Some(FieldValue::vString(self.marketObjectCodeOfDividends.clone().unwrap())),
             _ => None,
         }
     }
@@ -353,10 +368,71 @@ impl ContractModel {
                 cm.terminationDate=IsoDatetime::provide(sm, "terminationDate");
                 cm.priceAtTerminationDate=CommonUtils::provide_f64(sm, "priceAtTerminationDate");
                 cm.deliverySettlement = DeliverySettlement::provide(sm, "deliverySettlement");
-                cm.contractType = CommonUtils::provide_string(sm, "contractID");
-                //cm.contractStructure = ContractStructure::provide(sm, "contractStructure");
+                cm.contractType = CommonUtils::provide_string(sm, "contractType");
+                
+                let v = &sm.get("contractStructure").unwrap().extract_vec().unwrap() ;
+                //let d1 = v.get(0).unwrap();
+                //let r = ContractReference::new(&d1, &cm.contractRole.clone().unwrap());
+
+                let a: Vec<ContractReference> = v.iter().map(|d| {
+                    ContractReference::new(&d, &cm.contractRole.clone().unwrap())
+                }).collect();
+                println!("{:?}", a.get(0).unwrap().object.as_cm().unwrap().initialExchangeDate);
+                println!("{:?}", a.get(1).unwrap().object.as_cm().unwrap().initialExchangeDate);
+                cm.contractStructure = Some(a);
+                
+                
+                //
+
                 Ok(cm)
             }
+            "STK" => {
+                let mut cm = ContractModel::init();
+                cm.contractType = CommonUtils::provide_string(sm, "contractType");
+                cm.contractID = CommonUtils::provide_string(sm, "contractID");
+                cm.statusDate = IsoDatetime::provide(sm, "statusDate");
+                cm.contractRole = ContractRole::provide(sm, "contractRole");
+                cm.counterpartyID = CommonUtils::provide_string(sm, "counterpartyID");
+                cm.currency = CommonUtils::provide_string(sm, "currency");
+                cm.quantity = CommonUtils::provide_f64default(sm, "quantity", 1.0);
+                cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
+                cm.priceAtPurchaseDate = CommonUtils::provide_f64default(sm, "priceAtPurchaseDate", 0.0);
+                cm.terminationDate = IsoDatetime::provide(sm, "terminationDate");
+                cm.priceAtTerminationDate = CommonUtils::provide_f64default(sm, "priceAtTerminationDate", 0.0);
+                cm.marketObjectCode = CommonUtils::provide_string(sm, "marketObjectCode");
+                cm.marketValueObserved = CommonUtils::provide_f64default(sm, "marketValueObserved", 0.0);
+
+                // present for STK but not COM
+                cm.calendar = Calendar::provide_rc(sm, "calendar");
+                if let Some(calendar) = &cm.calendar {
+                    // Clone seulement l'Rc, pas le calendrier lui-même
+                    let calendar_clone = Rc::clone(calendar);
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(
+                        sm,
+                        "BusinessDayAdjuster",
+                        calendar_clone
+                    );
+                }
+                cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
+                cm.cycleOfDividendPayment =  CommonUtils::provide_string(sm, "cycleOfDividendPayment");
+
+                let a = if cm.cycleOfDividendPayment.is_none() {
+                    None
+                } else {
+                    cm.purchaseDate.clone()
+                };
+                let b = IsoDatetime::provide(sm, "cycleAnchorDateOfDividendPayment");
+
+                cm.cycleAnchorDateOfDividendPayment = if b.is_none() {
+                    a
+                } else {
+                    b
+                };
+
+                cm.marketObjectCodeOfDividends =  CommonUtils::provide_string(sm, "marketObjectCodeOfDividends");
+                Ok(cm)
+            }
+           
             _ => Err("test erreur".to_string()),
 
         }

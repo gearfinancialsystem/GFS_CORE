@@ -30,28 +30,28 @@ pub enum DayCountConvention {
 }
 
 impl DayCountConvention {
-    fn new_AAISDA() -> Self {
+    pub fn new_AAISDA() -> Self {
         DayCountConvention::AAISDA(AAISDA::new())
     }
-    fn new_A360() -> Self {
+    pub fn new_A360() -> Self {
         DayCountConvention::A360(A360::new())
     }
-    fn new_A365() -> Self {
+    pub fn new_A365() -> Self {
         DayCountConvention::A365(A365::new())
     }
-    fn new_A336() -> Self {
+    pub fn new_A336() -> Self {
         DayCountConvention::A336(A336::new())
     }
-    fn new_E30360ISDA(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new_E30360ISDA(maturity_date: Rc<IsoDatetime>) -> Self {
         DayCountConvention::E30360ISDA(E30360ISDA::new(Some(maturity_date)))
     }
-    fn new_E30360() -> Self {
+    pub fn new_E30360() -> Self {
         DayCountConvention::E30360(E30360::new())
     }
-    fn new_B252(calendar: Rc<Calendar>) -> Self {
+    pub fn new_B252(calendar: Rc<Calendar>) -> Self {
         DayCountConvention::B252(B252::new(calendar))
     }
-    fn new_E283666(maturity_date: Rc<IsoDatetime>) -> Self {
+    pub fn new_E283666(maturity_date: Rc<IsoDatetime>) -> Self {
         DayCountConvention::E283666(E283666::new(Some(maturity_date)))
     }
 

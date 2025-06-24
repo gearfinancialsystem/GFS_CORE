@@ -16,6 +16,7 @@ use crate::functions::swaps::pof::POF_TD_SWAPS::POF_TD_SWAPS;
 use crate::functions::swaps::stf::STF_NET_SWAPS::STF_NET_SWAPS;
 use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::state_space::StateSpace::StateSpace;
 use crate::util::CommonUtils::CommonUtils;
 
@@ -88,11 +89,11 @@ impl Swap {
         events.retain(|e| e.compare_to(
             &EventFactory::create_event(
                 model.statusDate.clone(),
-                EventType::TD,
+                EventType::AD,
                 model.currency.as_ref(),
                 None,
                 None,
-                model.contractID.as_ref()) ) == -1);
+                model.contractID.as_ref()) ) != -1);
         events.retain(|e| e.compare_to(
             &EventFactory::create_event(
                 Some(to.clone()),
@@ -100,7 +101,7 @@ impl Swap {
                 model.currency.as_ref(),
                 None,
                 None,
-                model.contractID.as_ref()) ) == 1);
+                model.contractID.as_ref()) ) != 1);
         Ok(events)
     }
 
@@ -141,7 +142,7 @@ impl Swap {
         
         
         let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model.clone(), observer);
-        let second_leg_events = ContractType::apply(second_leg_schedule, &first_leg_model.clone(), observer);
+        let second_leg_events = ContractType::apply(second_leg_schedule, &second_leg_model.clone(), observer);
 
         if model.deliverySettlement.clone().unwrap() == DeliverySettlement::S(S) {
             let a = Swap::filter_and_nett_congruent_events(
@@ -161,10 +162,10 @@ impl Swap {
                     let mut parent_state = StateSpace::default();
                     let f_l_events_at_timepoint = first_leg_events.clone().unwrap().iter().filter(|e| {
                         e.eventTime == event.eventTime
-                    }).map(|e| e).collect::<Vec<_>>();
+                    }).map(|e| e.clone()).collect::<Vec<_>>();
                     let s_l_events_at_timepoint = second_leg_events.clone().unwrap().iter().filter(|e| {
                         e.eventTime == event.eventTime
-                    }).map(|e| e).collect::<Vec<_>>();
+                    }).map(|e| e.clone()).collect::<Vec<_>>();
 
                     let mut fl_ipac: f64;
                     let mut sl_ipac: f64;
@@ -197,7 +198,8 @@ impl Swap {
 
                 }
                 else {
-                    event.clone().eval(None, None, None, None, None);
+                    //event.clone().eval(None, None, None, None, None);
+                    //A REFLECHIR
                 }
             }
         });

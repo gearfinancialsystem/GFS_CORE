@@ -79,8 +79,13 @@ fn main() {
     cs2.insert("object".to_string(), Value::HashMap(obj2));
     cs2.insert("referenceType".to_string(), Value::String("CNT".to_string()));
     cs2.insert("referenceRole".to_string(), Value::String("SEL".to_string()));
-    
-    // dico.insert("contractStructure".to_string(), Value::Vec(vec![Value::HashMap(cs1), Value::HashMap(cs2)]));
+
+
+    let mut v: Vec<HashMap<String, Value>> = Vec::new();
+    v.push(cs1.clone());
+    v.push(cs2.clone());
+
+    dico.insert("contractStructure".to_string(), Value::Vec(v));
 
 
 
@@ -96,7 +101,7 @@ fn main() {
     if let Ok(cm) = contract_model.as_ref() {
         let mut events = Swap::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = PrincipalAtMaturity::apply(events_res, cm, &risk_factor_model);
+            let events2 = Swap::apply(events_res, cm, &risk_factor_model);
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.eventTime.unwrap(), ce.eventType, ce.payoff, ce.state.accruedInterest);

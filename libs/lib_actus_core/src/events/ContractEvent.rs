@@ -91,7 +91,7 @@ impl ContractEvent {
         self.payoff.clone().unwrap()
     }
 
-    pub fn  states(&self) -> StateSpace {
+    pub fn states(&self) -> StateSpace {
         self.state.clone()
     }
 
