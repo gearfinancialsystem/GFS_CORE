@@ -2,3 +2,4 @@
 
 pub mod pam;
 pub mod swaps;
+pub mod stk;

@@ -29,20 +29,20 @@ enum Object {
 }
 
 impl Object {
-    fn as_string(&self) -> Option<&String> {
+    pub fn as_string(&self) -> Option<&String> {
         match self {
             Self::String(s) => Some(s),
             _ => None,
         }
     }
-    fn as_cm(&self) -> Option<ContractModel> {
+    pub fn as_cm(&self) -> Option<ContractModel> {
         match self {
             Self::ContractModel(m) => Some(m.clone()),
             _ => None,
         }
     }
 
-    fn as_map(&self) -> Option<&HashMap<String, Object>> {
+    pub fn as_map(&self) -> Option<&HashMap<String, Object>> {
         match self {
             Self::Map(m) => Some(m),
             _ => None,
