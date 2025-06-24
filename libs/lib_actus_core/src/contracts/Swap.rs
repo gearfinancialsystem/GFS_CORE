@@ -7,25 +7,8 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
-use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
-use crate::functions::pam::pof::POF_IP_PAM::POF_IP_PAM;
-use crate::functions::pam::pof::POF_IPCI_PAM::POF_IPCI_PAM;
-use crate::functions::pam::pof::POF_MD_PAM::POF_MD_PAM;
-use crate::functions::pam::pof::POF_PRD_PAM::POF_PRD_PAM;
-use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
-use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
-use crate::functions::pam::pof::POF_TD_PAM::POF_TD_PAM;
-use crate::functions::pam::stf::STF_FP_PAM::STF_FP_PAM;
-use crate::functions::pam::stf::STF_IED_PAM::STF_IED_PAM;
-use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
-use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
-use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
-use crate::functions::pam::stf::STF_PRD_PAM::STF_PRD_PAM;
-use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
-use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
-use crate::functions::pam::stf::STF_SC_PAM::STF_SC_PAM;
-use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
+use crate::functions::swaps::pof::POF_NET_SWAPS::POF_NET_SWAPS;
+use crate::functions::swaps::stf::STF_NET_SWAPS::STF_NET_SWAPS;
 use crate::state_space::StateSpace::StateSpace;
 use crate::util::CommonUtils::CommonUtils;
 
@@ -43,6 +26,7 @@ use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 
 
@@ -164,8 +148,7 @@ impl Swap {
             }
 
             events.extend(interest_events);
-        }
-        else if model.capitalizationEndDate.is_some() {
+        } else if model.capitalizationEndDate.is_some() {
             // If no interest schedule set but capitalization end date, add single IPCI event
             events.push(EventFactory::create_event_with_convention(
                 model.capitalizationEndDate,
@@ -207,15 +190,13 @@ impl Swap {
             );
             let mut vec: Vec<_> = rate_reset_events.clone().into_iter().collect();
             vec.sort();
-            let fixed_event = vec.iter_mut().filter(|e| e.compare_to(&status_event)  == 1 ).next();
+            let fixed_event = vec.iter_mut().filter(|e| e.compare_to(&status_event) == 1).next();
 
             if let Some(fixed_event_val) = fixed_event {
                 fixed_event_val.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
                 fixed_event_val.chg_eventType(EventType::RRF);
                 rate_reset_events.insert(fixed_event_val.clone());
             }
-
-
         }
 
         // Add all rate reset events
@@ -366,7 +347,6 @@ impl Swap {
             states.notionalPrincipal = Some(0.0);
             states.nominalInterestRate = Some(0.0);
         } else {
-
             let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
             states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
@@ -374,7 +354,7 @@ impl Swap {
 
         // Initialize accrued interest
         if model.nominalInterestRate.is_none() {
-            states.accruedInterest =  Some(0.0);
+            states.accruedInterest = Some(0.0);
         } else if model.accruedInterest.is_some() {
             states.accruedInterest = model.accruedInterest;
         } else {
@@ -404,7 +384,6 @@ impl Swap {
                                                                          time_adjuster.shift_bd(&states.statusDate.unwrap()))
                 * states.notionalPrincipal.unwrap()
                 * states.nominalInterestRate.unwrap());
-
         }
 
         if model.feeRate.is_none() {
@@ -415,6 +394,22 @@ impl Swap {
         // TODO: Implement last two possible initializations if needed
 
         states
+    }
+
+    pub fn netting_event(
+        e1: Option<ContractEvent>,
+        e2: Option<ContractEvent>,
+        parent_contract_id: Option<String>,
+    ) -> ContractEvent {
+        let netting = EventFactory::create_event(
+            e1.clone().unwrap().eventTime,
+            e1.clone().unwrap().eventType,
+            e1.clone().unwrap().currency.as_ref(),
+            POF_NET_SWAPS(e1.clone(), e2.clone()),
+            STF_NET_SWAPS(e1.clone(), e2.clone()),
+            parent_contract_id.clone().as_ref(),
+        );
+        netting
     }
 }
 

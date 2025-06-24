@@ -7,28 +7,27 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
-#[allow(non_camel_case_types)]
-pub struct POF_TD_SWAPS;
+pub struct POF_NET_SWAPS {
+    pub e1: Option<ContractEvent>,
+    pub e2: Option<ContractEvent>,
+}
 
-impl POF_TD_SWAPS {
-    pub fn new() -> Self {
-        POF_TD_SWAPS
+impl POF_NET_SWAPS {
+    pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
+        POF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
     }
 }
 
-impl TraitPayOffFunction for POF_TD_SWAPS {
+impl TraitPayOffFunction for POF_NET_SWAPS {
     fn eval(
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let fx_rate = 1.0;
-        let price_at_termination = model.priceAtTerminationDate.expect("No price at termination");
-        let accrued_interest = states.accruedInterest.expect("No accrued interest");
-        fx_rate * price_at_termination + accrued_interest
+        self.e1.clone().unwrap().payoff.unwrap() + self.e2.clone().unwrap().payoff.unwrap()
     }
 }
