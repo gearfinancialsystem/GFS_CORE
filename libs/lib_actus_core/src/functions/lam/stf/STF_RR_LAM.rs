@@ -1,9 +1,9 @@
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
@@ -19,44 +19,40 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        // Create a mutable copy of the states to update
+        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
 
-
-        // Calculate time from last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate),
-            time_adjuster.shift_sc(time),
+            time_adjuster.shift_sc(&status_date),
+            time_adjuster.shift_sc(time)
         );
 
-        // Calculate rate adjustments
-        let rate = (risk_factor_model.state_at(
-            model.get_as("marketObjectCodeOfRateReset"),
-            time,
-            &states,
-            model,
-            true,
-        ) * model.get_as::<f64>("rateMultiplier"))
-            + model.get_as::<f64>("rateSpread")
-            - states.nominalInterestRate;
+        let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
+        let rate_multiplier = model.rateMultiplier.expect("rateMultiplier should always be Some");
+        let rate_spread = model.rateSpread.expect("rateSpread should always be Some");
+        let period_floor = model.periodFloor.expect("periodFloor should always be Some");
+        let period_cap = model.periodCap.expect("periodCap should always be Some");
+        let life_floor = model.lifeFloor.expect("lifeFloor should always be Some");
+        let life_cap = model.lifeCap.expect("lifeCap should always be Some");
+        // risk_factor_model.state_at(market_object_code_of_rate_reset, time, states, model, true) 
+        let rate = ( 1.0 * rate_multiplier)
+            + rate_spread - nominal_interest_rate;
 
-        let delta_rate = rate.max(model.get_as::<f64>("periodFloor")).min(model.get_as::<f64>("periodCap"));
+        let delta_rate = rate.max(period_floor).min(period_cap);
+        let new_rate = (nominal_interest_rate + delta_rate).max(life_floor).min(life_cap);
 
-        let adjusted_rate = (states.nominalInterestRate + delta_rate)
-            .max(model.get_as::<f64>("lifeFloor"))
-            .min(model.get_as::<f64>("lifeCap"));
+        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+            accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
+        });
 
-        // Update state space
-        states.accruedInterest += states.nominalInterestRate
-            * states.interestCalculationBaseAmount
-            * time_from_last_event;
+        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+            let fee_rate = model.feeRate.unwrap_or(0.0);
+            fee_accrued + fee_rate * notional_principal * time_from_last_event
+        });
 
-        states.feeAccrued += model.get_as::<f64>("feeRate")
-            * states.notionalPrincipal
-            * time_from_last_event;
-
-        states.nominalInterestRate = adjusted_rate;
+        states.nominalInterestRate = Some(new_rate);
         states.statusDate = Some(*time);
-
-
     }
 }

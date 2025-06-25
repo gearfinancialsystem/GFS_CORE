@@ -1,0 +1,138 @@
+J'ai converti ce code java en rust de la facon suivante :
+le code java :
+/*
+ * Copyright (C) 2016 - present by ACTUS Financial Research Foundation
+ *
+ * Please see distribution for license.
+ */
+package org.actus.functions.pam;
+
+import org.actus.functions.StateTransitionFunction;
+import org.actus.states.StateSpace;
+import org.actus.attributes.ContractModelProvider;
+import org.actus.externals.RiskFactorModelProvider;
+import org.actus.conventions.daycount.DayCountCalculator;
+import org.actus.conventions.businessday.BusinessDayAdjuster;
+import org.actus.types.ContractPerformance;
+
+import java.time.LocalDateTime;
+
+public final class STF_CD_PAM implements StateTransitionFunction {
+
+    @Override
+    public StateSpace eval(LocalDateTime time, StateSpace states,
+    ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {// update state space
+        double timeFromLastEvent = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(states.statusDate), timeAdjuster.shiftCalcTime(time));
+        states.accruedInterest += states.nominalInterestRate * states.notionalPrincipal * timeFromLastEvent;
+        states.feeAccrued += model.<Double>getAs("feeRate") * states.notionalPrincipal * timeFromLastEvent;
+        states.contractPerformance = ContractPerformance.DF;
+        states.statusDate = time;
+
+        // return post-event-states
+        return StateSpace.copyStateSpace(states);
+    }
+
+}
+
+le code rust :
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::isoDatetime::IsoDatetime;
+
+#[allow(non_camel_case_types)]
+pub struct STF_CD_PAM;
+
+impl TraitStateTransitionFunction for STF_CD_PAM {
+    fn eval(
+        &self,
+        time: &IsoDatetime,
+        states: &mut StateSpace,
+        model: &ContractModel,
+        risk_factor_model: &RiskFactorModel,
+        day_counter: &DayCountConvention,
+        time_adjuster: &BusinessDayAdjuster,
+    ) {
+
+        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
+                                                                  time_adjuster.shift_sc(time));
+
+        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+            accrued_interest
+        });
+
+        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
+            let fee_rate = model.feeRate.unwrap_or(0.0);
+            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+            fee_accrued
+        });
+
+
+        states.contractPerformance = Some(ContractPerformance::new_DF());
+        states.statusDate = Some(*time);
+
+    }
+}
+peux tu convertir le code suivant en gardant les regles de la conversion deduite des 2 codes precedents (styles, declaration des variables au debut ect...)
+/*
+ * Copyright (C) 2016 - present by ACTUS Financial Research Foundation
+ *
+ * Please see distribution for license.
+ */
+package org.actus.functions.lam;
+
+import org.actus.conventions.contractrole.ContractRoleConvention;
+import org.actus.functions.StateTransitionFunction;
+import org.actus.types.ContractRole;
+import org.actus.types.InterestCalculationBase;
+import org.actus.util.CommonUtils;
+import org.actus.states.StateSpace;
+import org.actus.attributes.ContractModelProvider;
+import org.actus.externals.RiskFactorModelProvider;
+import org.actus.conventions.daycount.DayCountCalculator;
+import org.actus.conventions.businessday.BusinessDayAdjuster;
+
+import java.time.LocalDateTime;
+
+public final class STF_IED_LAM implements StateTransitionFunction {
+
+    @Override
+    public StateSpace eval(LocalDateTime time, StateSpace states,
+    ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {
+        // update state space
+        states.statusDate = time;
+        states.notionalPrincipal = ContractRoleConvention.roleSign(model.getAs("contractRole"))* model.<Double>getAs("notionalPrincipal");
+        states.nominalInterestRate = model.<Double>getAs("nominalInterestRate");
+
+
+        if(InterestCalculationBase.NT.equals(model.<InterestCalculationBase>getAs("interestCalculationBase"))){
+            states.interestCalculationBaseAmount = states.notionalPrincipal;
+        }else {
+            states.interestCalculationBaseAmount = ContractRoleConvention.roleSign(model.getAs("contractRole")) * model.<Double>getAs("interestCalculationBaseAmount");
+        }
+
+        if(!CommonUtils.isNull(model.getAs("accruedInterest"))){
+            states.accruedInterest = ContractRoleConvention.roleSign(model.getAs("contractRole")) * model.<Double>getAs("accruedInterest");
+        }else if(!CommonUtils.isNull(model.getAs("cycleAnchorDateOfInterestPayment")) &&
+                model.<LocalDateTime>getAs("cycleAnchorDateOfInterestPayment").isBefore(time)) {
+            states.accruedInterest = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(model.<LocalDateTime>getAs("cycleAnchorDateOfInterestPayment")),timeAdjuster.shiftCalcTime(time))
+                    * states.notionalPrincipal
+                    * states.interestCalculationBaseAmount;
+        } else{
+            states.accruedInterest = 0.0;
+        }
+
+        // return post-event-states
+        return StateSpace.copyStateSpace(states);
+    }
+
+}

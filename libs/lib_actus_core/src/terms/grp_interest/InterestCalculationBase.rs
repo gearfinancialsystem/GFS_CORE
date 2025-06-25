@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_interest::interestcalculationbase::Nt::NT;
-use crate::terms::grp_interest::interestcalculationbase::Ntied::NTIED;
-use crate::terms::grp_interest::interestcalculationbase::Ntl::NTL;
+use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
+use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::util::CommonUtils::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

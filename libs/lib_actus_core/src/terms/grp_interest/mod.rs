@@ -1,10 +1,11 @@
 #![allow(non_snake_case)]
 
-pub mod daycountconventions;
-pub mod cycle_point_of_interest_payment;
-pub mod interestcalculationbase;
-
+pub mod InterestCalculationBase;
 pub mod CyclePointOfInterestPayment;
 pub mod DayCountConvention;
-pub mod InterestCalculationBase;
+
+
+pub mod daycountconventions;
+pub mod interest_calculation_base;
+pub mod cycle_point_of_interest_payment;
 // pub mod InterestCalculationBaseAmount;

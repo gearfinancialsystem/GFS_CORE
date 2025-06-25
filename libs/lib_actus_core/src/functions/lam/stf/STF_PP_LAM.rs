@@ -1,12 +1,12 @@
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::InterestCalculationBase::InterestCalculationBase;
-use crate::utils::CommonUtils;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PP_LAM;
@@ -20,41 +20,43 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
-    )  {
-        // Create a mutable copy of the states to update
+    ) {
+        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
+        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
 
-
-        // Update state space
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate),
-            time_adjuster.shift_sc(time),
+            time_adjuster.shift_sc(&status_date),
+            time_adjuster.shift_sc(time)
         );
 
-        states.accruedInterest += states.nominalInterestRate
-            * states.interestCalculationBaseAmount
-            * time_from_last_event;
+        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+            accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
+        });
 
-        states.feeAccrued += model.get_as::<f64>("feeRate")
-            * states.notionalPrincipal
-            * time_from_last_event;
+        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+            let fee_rate = model.feeRate.unwrap_or(0.0);
+            fee_accrued + fee_rate * notional_principal * time_from_last_event
+        });
 
-        let prepayment_factor = risk_factor_model.state_at(
-            model.get_as("objectCodeOfPrepaymentModel"),
-            time,
-            &states,
-            model,
-            false
-        );
+        // let prepayment_factor = risk_factor_model.state_at(
+        //     &model.objectCodeOfPrepaymentModel,
+        //     time,
+        //     states,
+        //     model,
+        //     false
+        // );
+        let prepayment_factor = 1.0;
 
-        states.notionalPrincipal -= prepayment_factor * states.notionalPrincipal;
+        states.notionalPrincipal = Some(notional_principal - prepayment_factor * notional_principal);
 
-        if !CommonUtils::is_null(model.get_as("interestCalculationBase"))
-            && model.get_as("interestCalculationBase") == InterestCalculationBase::NTL {
-            states.interestCalculationBaseAmount = states.notionalPrincipal;
+        if let Some(interest_calculation_base) = &model.interestCalculationBase {
+            if *interest_calculation_base == InterestCalculationBase::NTL(NTL) {
+                states.interestCalculationBaseAmount = states.notionalPrincipal;
+            }
         }
 
         states.statusDate = Some(*time);
-
-
     }
 }

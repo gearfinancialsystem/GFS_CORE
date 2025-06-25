@@ -7,8 +7,8 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
-pub struct STF_PRN_ANN;
-impl TraitStateTransitionFunction for STF_PRN_ANN {
+pub struct STF_PRF_ANN;
+impl TraitStateTransitionFunction for STF_PRF_ANN {
     fn eval(
         &self,
         time: &IsoDatetime,

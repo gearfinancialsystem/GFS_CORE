@@ -1,9 +1,9 @@
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
@@ -18,30 +18,28 @@ impl TraitStateTransitionFunction for STF_IPCI2_LAM {
         _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
-    )  {
-        // Create a mutable copy of the states to update
+    ) {
+        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
 
-
-        // Update state space
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate),
-            time_adjuster.shift_sc(time),
+            time_adjuster.shift_sc(&status_date),
+            time_adjuster.shift_sc(time)
         );
 
-        states.notionalPrincipal += states.accruedInterest
-            + (states.nominalInterestRate
-            * states.interestCalculationBaseAmount
-            * time_from_last_event);
+        states.notionalPrincipal = states.notionalPrincipal.map(|notional_principal| {
+            notional_principal + states.accruedInterest.unwrap_or(0.0) + (nominal_interest_rate * interest_calculation_base_amount * time_from_last_event)
+        });
 
-        states.accruedInterest = 0.0;
+        states.accruedInterest = Some(0.0);
 
-        states.feeAccrued += model.get_as::<f64>("feeRate")
-            * states.notionalPrincipal
-            * time_from_last_event;
+        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+            let fee_rate = model.feeRate.unwrap_or(0.0);
+            fee_accrued + fee_rate * states.notionalPrincipal.unwrap_or(0.0) * time_from_last_event
+        });
 
         states.statusDate = Some(*time);
         states.interestCalculationBaseAmount = states.notionalPrincipal;
-
-
     }
 }
