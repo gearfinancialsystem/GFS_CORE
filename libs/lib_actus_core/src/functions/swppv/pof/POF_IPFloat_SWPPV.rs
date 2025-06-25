@@ -22,11 +22,11 @@ impl TraitPayOffFunction for POF_IPFloat_SWPPV {
         let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
 
         settlement_currency_fx_rate * (
-            states.accruedInterest2 +
+            states.accruedInterest2.clone().unwrap() +
                 (-1.0) *
-                    states.lastInterestPeriod *
-                    states.nominalInterestRate *
-                    states.notionalPrincipal
+                    states.lastInterestPeriod.clone().unwrap() *
+                    states.nominalInterestRate.clone().unwrap() *
+                    states.notionalPrincipal.clone().unwrap()
         )
     }
 }

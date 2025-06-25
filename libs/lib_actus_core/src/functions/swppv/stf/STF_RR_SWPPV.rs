@@ -3,9 +3,12 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::S::S;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::DeliverySettlement::DeliverySettlement;
+
 
 #[allow(non_camel_case_types)]
 pub struct STF_RR_SWPPV;
@@ -33,7 +36,7 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         let delivery_settlement = model.deliverySettlement.as_ref().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
-            DeliverySettlement::D => model_nominal_interest_rate,
+            DeliverySettlement::D(D) => model_nominal_interest_rate,
             _ => model_nominal_interest_rate - nominal_interest_rate,
         };
 
@@ -53,13 +56,13 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         let rate_spread = model.rateSpread.unwrap_or(0.0);
 
         // Simplified calculation as a placeholder
-        let risk_factor_value = risk_factor_model.state_at(
-            market_object_code_of_rate_reset,
-            time,
-            states,
-            model,
-            true
-        );
+        let risk_factor_value = 1.0; // risk_factor_model.state_at(
+        //     market_object_code_of_rate_reset,
+        //     time,
+        //     states,
+        //     model,
+        //     true
+        // );
 
         states.nominalInterestRate = Some(risk_factor_value * rate_multiplier + rate_spread);
 

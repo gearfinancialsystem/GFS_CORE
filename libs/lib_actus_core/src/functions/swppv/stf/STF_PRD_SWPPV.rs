@@ -3,9 +3,12 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
+use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::DeliverySettlement::DeliverySettlement;
+
 
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_SWPPV;
@@ -33,7 +36,7 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
         let delivery_settlement = model.deliverySettlement.as_ref().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
-            DeliverySettlement::D => model_nominal_interest_rate,
+            DeliverySettlement::D(D) => model_nominal_interest_rate,
             _ => model_nominal_interest_rate - nominal_interest_rate,
         };
 

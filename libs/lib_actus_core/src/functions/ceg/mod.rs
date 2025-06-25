@@ -1,2 +1,2 @@
-mod pof;
-mod stf;
+pub mod pof;
+pub mod stf;

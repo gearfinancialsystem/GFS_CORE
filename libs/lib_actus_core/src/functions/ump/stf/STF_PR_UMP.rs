@@ -5,8 +5,6 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::terms::grp_counterparty::ContractRoleConvention::ContractRoleConvention;
-use crate::types::ContractRole::ContractRole;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PR_UMP {
@@ -43,8 +41,8 @@ impl TraitStateTransitionFunction for STF_PR_UMP {
             accrued_interest
         });
 
-        let contract_role = model.contractRole.expect("contractRole should always be Some");
-        let role_sign = ContractRoleConvention::role_sign(&contract_role);
+        let contract_role = model.contractRole.clone().expect("contractRole should always be Some");
+        let role_sign = contract_role.role_sign();
         states.notionalPrincipal = Some(notional_principal - role_sign * self.payoff);
 
         states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {

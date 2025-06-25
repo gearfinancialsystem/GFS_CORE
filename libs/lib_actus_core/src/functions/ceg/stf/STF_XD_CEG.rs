@@ -5,10 +5,8 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::FeeBasis::FeeBasis;
-use crate::terms::grp_counterparty::ContractRoleConvention::ContractRoleConvention;
-use crate::contracts::CreditEnhancementGuarantee;
-use crate::utils::CycleUtils;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_fees::fee_basis::A::A;
 
 #[allow(non_camel_case_types)]
 pub struct STF_XD_CEG;

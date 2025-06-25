@@ -23,15 +23,15 @@ impl TraitPayOffFunction for POF_IP_SWPPV {
         let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always exist");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate),
+            time_adjuster.shift_sc(&states.statusDate.unwrap()),
             time_adjuster.shift_sc(time)
         );
 
         settlement_currency_fx_rate * (
-            states.accruedInterest +
+            states.accruedInterest.clone().unwrap() +
                 time_from_last_event *
-                    (nominal_interest_rate - states.nominalInterestRate) *
-                    states.notionalPrincipal
+                    (nominal_interest_rate - states.nominalInterestRate.clone().unwrap()) *
+                    states.notionalPrincipal.clone().unwrap()
         )
     }
 }

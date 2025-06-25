@@ -21,15 +21,15 @@ impl TraitPayOffFunction for POF_IP_CLM {
     ) -> f64 {
         let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate),
+            time_adjuster.shift_sc(&states.statusDate.clone().unwrap()),
             time_adjuster.shift_sc(time)
         );
 
         settlement_currency_fx_rate * (
-            states.accruedInterest +
+            states.accruedInterest.clone().unwrap() +
                 time_from_last_event *
-                    states.nominalInterestRate *
-                    states.notionalPrincipal
+                    states.nominalInterestRate.clone().unwrap() *
+                    states.notionalPrincipal.clone().unwrap()
         )
     }
 }

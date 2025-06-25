@@ -22,6 +22,6 @@ impl TraitPayOffFunction for POF_STD_CEG {
         // Remplacer les appels à settlement_currency_fx_rate ou risk_factor_model par 1.0
         let settlement_currency_fx_rate = 1.0;
 
-        settlement_currency_fx_rate * (states.exerciseAmount + states.feeAccrued)
+        settlement_currency_fx_rate * (states.exerciseAmount.clone().unwrap() + states.feeAccrued.clone().unwrap())
     }
 }

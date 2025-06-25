@@ -5,8 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::utils::CommonUtils;
-use crate::contracts::CreditEnhancementGuarantee;
+
 
 #[allow(non_camel_case_types)]
 pub struct STF_FP_CEG;
