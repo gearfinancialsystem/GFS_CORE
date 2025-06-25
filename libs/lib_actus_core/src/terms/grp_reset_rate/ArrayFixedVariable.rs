@@ -3,8 +3,10 @@ use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
+use crate::util::CommonUtils::Value;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArrayFixedVariable {
     F(F),
     V(V),
@@ -34,6 +36,27 @@ impl ArrayFixedVariable {
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             .unwrap_or_default()
+    }
+    pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
+        match string_map.get(key) {
+            None => None, // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+
+                let  a =  s.extract_vec_str().unwrap();
+                let a2 = ArrayFixedVariable::from_str(a.get(0)?.as_str()).unwrap();
+
+                let b0: Vec<ArrayFixedVariable> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str()).unwrap()   }).collect();
+                let b: Vec<Result<ArrayFixedVariable, Err>> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str())   }).collect();
+                let c = b.iter().any(|r| r.is_err());
+
+                if c == true {
+                    panic!("Erreur de parsing pour la clé  avec la valeur ")
+                } else {
+                    Some(b0)
+                }
+
+            }
+        }
     }
 }
 

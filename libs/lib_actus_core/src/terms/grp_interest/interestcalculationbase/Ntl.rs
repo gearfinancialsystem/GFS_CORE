@@ -1,6 +1,6 @@
 
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NTL;
 
 impl NTL {

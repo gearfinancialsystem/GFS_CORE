@@ -8,6 +8,8 @@ pub enum Value {
     String(String),
     HashMap(HashMap<String, Value>),
     Vec(Vec<HashMap<String, Value>>), // Value a la place de HashMap<String, Value> ... voir si ca marche sur le long terme
+    VecStr(Vec<String>),
+    VecReal(Vec<f64>)
 }
 impl Value {
 
@@ -29,6 +31,18 @@ impl Value {
             _ => None,
         }
     }
+    pub fn extract_vec_str(&self) -> Option<Vec<String>> {
+        match self {
+            Self::VecStr(s) => Some(s.clone()),
+            _ => None,
+        }
+    }
+    pub fn extract_vec_f64(&self) -> Option<Vec<f64>> {
+        match self {
+            Self::VecReal(s) => Some(s.clone()),
+            _ => None,
+        }
+    }
 }
 
 
@@ -47,6 +61,18 @@ impl CommonUtils {
             Some(s) => {
                 match <f64>::from_str(s.extract_string()?.as_str()) {
                     Ok(value) => Some(Box::new(value)), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
+    pub fn provide_bool(string_map: &HashMap<String, Value>, key: &str) -> Option<bool> {
+        // string_map.get(key).and_then(|s| s.parse::<f64>().ok())
+        match string_map.get(key) {
+            None => None, // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match <bool>::from_str(s.extract_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
             }
@@ -95,7 +121,32 @@ impl CommonUtils {
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
+    pub fn provide_string_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<String>> {
+        println!("{:?}", key);
+        //string_map.get(key).unwrap().extract_string()
 
+
+        string_map
+            .get(key)
+            .and_then(|s| {
+                s.extract_vec_str()
+            })
+            .map(|b| b) // On stocke la convention dans une Box
+        //.unwrap_or_default()
+    }
+    pub fn provide_f64_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<f64>> {
+        println!("{:?}", key);
+        //string_map.get(key).unwrap().extract_string()
+
+
+        string_map
+            .get(key)
+            .and_then(|s| {
+                s.extract_vec_f64()
+            })
+            .map(|b| b) // On stocke la convention dans une Box
+        //.unwrap_or_default()
+    }
     
 
     // Fonction générique provide

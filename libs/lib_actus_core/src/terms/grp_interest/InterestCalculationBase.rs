@@ -1,13 +1,12 @@
+use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::interestcalculationbase::Nt::NT;
 use crate::terms::grp_interest::interestcalculationbase::Ntied::NTIED;
 use crate::terms::grp_interest::interestcalculationbase::Ntl::NTL;
+use crate::util::CommonUtils::Value;
 
-
-
-
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum InterestCalculationBase {
     NT(NT),
     NTIED(NTIED),
@@ -15,14 +14,17 @@ pub enum InterestCalculationBase {
 }
 
 impl InterestCalculationBase {
-    fn new_NT() -> Self {
+    pub fn new_NT() -> Self {
         InterestCalculationBase::NT(NT::new())
     }
-    fn new_NTIED() -> Self {
+    pub fn new_NTIED() -> Self {
         InterestCalculationBase::NTIED(NTIED::new())
     }
-    fn new_NTL() -> Self {
+    pub fn new_NTL() -> Self {
         InterestCalculationBase::NTL(NTL::new())
+    }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
 }
 

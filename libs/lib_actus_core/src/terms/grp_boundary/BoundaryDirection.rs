@@ -3,10 +3,9 @@ use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
 use crate::terms::grp_boundary::boundary_direction::INCR::INCR;
 use crate::exceptions::ParseError::ParseError;
+use crate::util::CommonUtils::Value;
 
-
-
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum BoundaryDirection {
     INCR(INCR),
     DECR(DECR),
@@ -37,6 +36,9 @@ impl BoundaryDirection {
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             .unwrap_or_default()
+    }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
 }
 

@@ -4,9 +4,9 @@ use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::exceptions::ParseError::ParseError;
+use crate::util::CommonUtils::Value;
 
-
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum OptionType {
     C(C),
     P(P),
@@ -39,6 +39,9 @@ impl OptionType {
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             .unwrap_or_default()
+    }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
 }
 

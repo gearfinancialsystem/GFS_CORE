@@ -4,8 +4,9 @@ use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
 use crate::exceptions::ParseError::ParseError;
+use crate::util::CommonUtils::Value;
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum GuaranteedExposure {
     NO(NO),
     NI(NI),
@@ -41,6 +42,9 @@ impl GuaranteedExposure {
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             .unwrap_or_default()
+    }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
 }
 

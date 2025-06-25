@@ -4,10 +4,10 @@ use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
+use crate::util::CommonUtils::Value;
 
-
-
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CreditEventTypeCovered {
     DL(DL),
     DQ(DQ),
@@ -40,6 +40,30 @@ impl CreditEventTypeCovered {
             })
             .map(|b| Box::new(b)) // On stocke la convention dans une Box
             .unwrap_or_default()
+    }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
+    }
+    pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
+        match string_map.get(key) {
+            None => None, // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+
+                let  a =  s.extract_vec_str().unwrap();
+                let a2 = CreditEventTypeCovered::from_str(a.get(0)?.as_str()).unwrap();
+
+                let b0: Vec<CreditEventTypeCovered> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str()).unwrap()   }).collect();
+                let b: Vec<Result<CreditEventTypeCovered, Err>> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str())   }).collect();
+                let c = b.iter().any(|r| r.is_err());
+
+                if c == true {
+                    panic!("Erreur de parsing pour la clé  avec la valeur ")
+                } else {
+                    Some(b0)
+                }
+
+            }
+        }
     }
 }
 

@@ -18,6 +18,7 @@ impl ContractType {
             "PAM" => Some(PrincipalAtMaturity::schedule(&to.unwrap(), cm).unwrap()),
             "SWAPS" => Some(Swap::schedule(&to.unwrap(),cm).unwrap()),
             "STK" => Some(Stock::schedule(&to.unwrap(),cm).unwrap()),
+            "ANN" => Some(Annuity::schedule(&to.unwrap(),cm).unwrap()),
             _ => None
         }
 
@@ -28,6 +29,7 @@ impl ContractType {
             "PAM" => Some(PrincipalAtMaturity::apply(events, cm, observer)),
             "SWAPS" => Some(Swap::apply(events, cm, observer)),
             "STK" => Some(Stock::apply(events, cm, observer)),
+            "ANN" => Some(Annuity::apply(events, cm, observer)),
             _ => None
         }
     }
