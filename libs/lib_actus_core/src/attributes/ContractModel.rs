@@ -26,6 +26,7 @@ use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CommonUtils::{CommonUtils, Value};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -33,6 +34,7 @@ pub enum FieldValue {
     vString(String),
     vF64(f64),
     vIsoDatetime(IsoDatetime),
+    vIsoPeriod(IsoPeriod),
     vBusinessDayAdjuster(BusinessDayAdjuster),
     vDayCountConvention(DayCountConvention),
     vEndOfMonthConvention(EndOfMonthConvention),
@@ -148,7 +150,7 @@ pub struct ContractModel {
     pub periodCap: Option<f64>,
     pub periodFloor: Option<f64>,
     pub cyclePointOfRateReset: Option<CyclePointOfRateReset>,
-    pub fixingPeriod: Option<String>,
+    pub fixingPeriod: Option<IsoPeriod>,
     pub nextResetRate: Option<f64>,
     pub rateMultiplier: Option<f64>, // obligatoire
     pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
@@ -160,9 +162,9 @@ pub struct ContractModel {
     pub cycleAnchorDateOfDividendPayment: Option<IsoDatetime>,
     pub marketObjectCodeOfDividends: Option<String>,
     pub nonPerformingDate: Option<IsoDatetime>,
-    pub prepaymentPeriod: Option<String>,
-    pub gracePeriod: Option<String>,
-    pub delinquencyPeriod: Option<String>,
+    pub prepaymentPeriod: Option<IsoPeriod>,
+    pub gracePeriod: Option<IsoPeriod>,
+    pub delinquencyPeriod: Option<IsoPeriod>,
     pub delinquencyRate: Option<f64>,
     pub guaranteedExposure: Option<GuaranteedExposure>,
     pub coverageOfCreditEnhancement: Option<f64>,
@@ -172,12 +174,12 @@ pub struct ContractModel {
     pub arrayCycleAnchorDateOfInterestPayment: Option<String>,
     pub arrayCycleOfInterestPayment: Option<String>,
     pub exerciseAmount: Option<f64>,
-    pub settlementPeriod: Option<String>,
+    pub settlementPeriod: Option<IsoPeriod>,
     pub exerciseDate: Option<IsoDatetime>,
     pub optionType: Option<OptionType>,
     pub optionStrike1: Option<f64>,
     pub optionStrike2: Option<f64>,
-    pub xDayNotice: Option<String>,
+    pub xDayNotice: Option<IsoPeriod>,
     pub cycleAnchorDateOfInterestCalculationBase: Option<IsoDatetime>,
     pub cycleOfInterestCalculationBase: Option<String>,
     pub interestCalculationBase: Option<InterestCalculationBase>,
@@ -391,7 +393,7 @@ impl ContractModel {
             "periodCap" => Some(FieldValue::vF64(self.periodCap?)),
             "periodFloor" => Some(FieldValue::vF64(self.periodFloor?)),
             "cyclePointOfRateReset" => Some(FieldValue::vCyclePointOfRateReset(self.cyclePointOfRateReset.clone().unwrap())),
-            "fixingPeriod" => Some(FieldValue::vString(self.fixingPeriod.clone().unwrap())),
+            "fixingPeriod" => Some(FieldValue::vIsoPeriod(self.fixingPeriod.clone().unwrap())),
             "nextResetRate" => Some(FieldValue::vF64(self.nextResetRate?)),
             "rateMultiplier" => Some(FieldValue::vF64(self.rateMultiplier?)),
             "maturityDate" =>Some(FieldValue::vMaturityDate(self.maturityDate.clone().unwrap())),
@@ -403,9 +405,9 @@ impl ContractModel {
             "cycleAnchorDateOfDividendPayment" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfDividendPayment.clone().unwrap())),
             "marketObjectCodeOfDividends" => Some(FieldValue::vString(self.marketObjectCodeOfDividends.clone().unwrap())),
             "nonPerformingDate" => Some(FieldValue::vIsoDatetime(self.nonPerformingDate.clone().unwrap())),
-            "prepaymentPeriod" => Some(FieldValue::vString(self.prepaymentPeriod.clone().unwrap())),
-            "gracePeriod" => Some(FieldValue::vString(self.gracePeriod.clone().unwrap())),
-            "delinquencyPeriod" => Some(FieldValue::vString(self.delinquencyPeriod.clone().unwrap())),
+            "prepaymentPeriod" => Some(FieldValue::vIsoPeriod(self.prepaymentPeriod.clone().unwrap())),
+            "gracePeriod" => Some(FieldValue::vIsoPeriod(self.gracePeriod.clone().unwrap())),
+            "delinquencyPeriod" => Some(FieldValue::vIsoPeriod(self.delinquencyPeriod.clone().unwrap())),
             "delinquencyRate" => Some(FieldValue::vF64(self.delinquencyRate.clone().unwrap())),
             "guaranteedExposure" => Some(FieldValue::vGuaranteedExposure(self.guaranteedExposure.clone().unwrap())),
             "coverageOfCreditEnhancement" =>Some(FieldValue::vF64(self.coverageOfCreditEnhancement.clone().unwrap())),
@@ -415,12 +417,12 @@ impl ContractModel {
             "arrayCycleAnchorDateOfInterestPayment" =>Some(FieldValue::vString(self.arrayCycleAnchorDateOfInterestPayment.clone().unwrap())),
             "arrayCycleOfInterestPayment" =>Some(FieldValue::vString(self.arrayCycleOfInterestPayment.clone().unwrap())),
             "exerciseAmount" =>Some(FieldValue::vF64(self.exerciseAmount.clone().unwrap())),
-            "settlementPeriod" =>Some(FieldValue::vString(self.settlementPeriod.clone().unwrap())),
+            "settlementPeriod" =>Some(FieldValue::vIsoPeriod(self.settlementPeriod.clone().unwrap())),
             "exerciseDate" => Some(FieldValue::vIsoDatetime(self.exerciseDate.clone().unwrap())),
             "optionType" =>Some(FieldValue::vOptionType(self.optionType.clone().unwrap())),
             "optionStrike1" =>Some(FieldValue::vF64(self.optionStrike1.clone().unwrap())),
             "optionStrike2" =>Some(FieldValue::vF64(self.optionStrike2.clone().unwrap())),
-            "xDayNotice"=>Some(FieldValue::vString(self.xDayNotice.clone().unwrap())),
+            "xDayNotice"=>Some(FieldValue::vIsoPeriod(self.xDayNotice.clone().unwrap())),
             "cycleAnchorDateOfInterestCalculationBase"=>Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfInterestCalculationBase.clone().unwrap())),
             "cycleOfInterestCalculationBase"=>Some(FieldValue::vString(self.cycleOfInterestCalculationBase.clone().unwrap())),
             "interestCalculationBase"=>Some(FieldValue::vInterestCalculationBase(self.interestCalculationBase.clone().unwrap())),
@@ -534,7 +536,7 @@ impl ContractModel {
                 cm.periodCap = CommonUtils::provide_f64(sm, "periodCap");
                 cm.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
                 cm.cyclePointOfRateReset = CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0); // obligatoire
                 cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
@@ -717,7 +719,7 @@ impl ContractModel {
                 cm.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
                 cm.periodCap = CommonUtils::provide_f64(sm, "periodCap");
                 cm.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
                 cm.maturityDate = IsoDatetime::provide_rc(sm, "maturityDate");
@@ -823,7 +825,7 @@ impl ContractModel {
                 cm.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
                 cm.periodCap = CommonUtils::provide_f64(sm, "periodCap");
                 cm.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
 
@@ -1001,7 +1003,7 @@ impl ContractModel {
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
                 cm.deliverySettlement = DeliverySettlement::provide(sm, "deliverySettlement");
@@ -1032,7 +1034,7 @@ impl ContractModel {
                 cm.terminationDate = IsoDatetime::provide(sm, "terminationDate");
                 cm.priceAtTerminationDate = CommonUtils::provide_f64default(sm, "priceAtTerminationDate", 0.0);
                 cm.deliverySettlement = DeliverySettlement::provide(sm, "deliverySettlement");
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
 
                 Ok(cm)
             },
@@ -1118,7 +1120,7 @@ impl ContractModel {
                 cm.notionalPrincipal = CommonUtils::provide_f64(sm, "notionalPrincipal");
                 cm.terminationDate = IsoDatetime::provide(sm, "terminationDate");
                 cm.priceAtTerminationDate = CommonUtils::provide_f64default(sm, "priceAtTerminationDate", 0.0);
-                cm.xDayNotice = CommonUtils::provide_string(sm, "xDayNotice");
+                cm.xDayNotice = IsoPeriod::provide(sm, "xDayNotice");
 
                 cm.cycleAnchorDateOfRateReset = if cm.cycleOfRateReset.is_none() {
                     IsoDatetime::provide(sm, "initialExchangeDate")
@@ -1129,7 +1131,7 @@ impl ContractModel {
                 cm.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
                 cm.rateSpread = CommonUtils::provide_f64default(sm, "rateSpread", 0.0);
                 cm.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
                 cm.lifeCap = CommonUtils::provide_f64(sm, "lifeCap");
@@ -1188,7 +1190,7 @@ impl ContractModel {
                 cm.initialExchangeDate = IsoDatetime::provide(sm, "initialExchangeDate");
                 cm.notionalPrincipal = CommonUtils::provide_f64(sm, "notionalPrincipal");
                 cm.maturityDate = IsoDatetime::provide_rc(sm, "maturityDate");
-                cm.xDayNotice = CommonUtils::provide_string(sm, "xDayNotice");
+                cm.xDayNotice = IsoPeriod::provide(sm, "xDayNotice");
 
                 cm.cycleAnchorDateOfRateReset = if cm.cycleOfRateReset.is_none() {
                     IsoDatetime::provide(sm, "initialExchangeDate")
@@ -1199,7 +1201,7 @@ impl ContractModel {
                 cm.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
                 cm.rateSpread = CommonUtils::provide_f64default(sm, "rateSpread", 0.0);
                 cm.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
                 cm.lifeCap = CommonUtils::provide_f64(sm, "lifeCap");
@@ -1308,7 +1310,7 @@ impl ContractModel {
                 cm.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
                 cm.periodCap = CommonUtils::provide_f64(sm, "periodCap");
                 cm.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
-                cm.fixingPeriod = CommonUtils::provide_string(sm, "fixingPeriod");
+                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
                 cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
                 cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0);
                 cm.maturityDate = IsoDatetime::provide_rc(sm, "maturityDate");
@@ -1380,7 +1382,7 @@ impl ContractModel {
                 cm.currency = CommonUtils::provide_string(sm, "currency");
                 cm.exerciseDate = IsoDatetime::provide(sm, "exerciseDate");
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
                     if let Some(structure_vec) = contractStructure.extract_vec() {
@@ -1413,8 +1415,8 @@ impl ContractModel {
                 cm.marketObjectCode = CommonUtils::provide_string(sm, "marketObjectCode");
                 cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
                 cm.nonPerformingDate = IsoDatetime::provide(sm, "nonPerformingDate");
-                cm.gracePeriod = CommonUtils::provide_string(sm, "gracePeriod");
-                cm.delinquencyPeriod = CommonUtils::provide_string(sm, "delinquencyPeriod");
+                cm.gracePeriod = IsoPeriod::provide(sm, "gracePeriod");
+                cm.delinquencyPeriod = IsoPeriod::provide(sm, "delinquencyPeriod");
                 cm.delinquencyRate = CommonUtils::provide_f64default(sm, "delinquencyRate", 0.0);
 
                 cm.guaranteedExposure = GuaranteedExposure::provide(sm, "guaranteedExposure");
@@ -1459,7 +1461,7 @@ impl ContractModel {
                 cm.priceAtTerminationDate = CommonUtils::provide_f64default(sm, "priceAtTerminationDate", 0.0);
                 cm.exerciseDate = IsoDatetime::provide(sm, "exerciseDate");
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
                     if let Some(structure_vec) = contractStructure.extract_vec() {
@@ -1495,9 +1497,9 @@ impl ContractModel {
                 cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
                 cm.seniority = Seniority::provide(sm, "seniority");
                 cm.nonPerformingDate = IsoDatetime::provide(sm, "nonPerformingDate");
-                cm.prepaymentPeriod = CommonUtils::provide_string(sm, "prepaymentPeriod");
-                cm.gracePeriod = CommonUtils::provide_string(sm, "gracePeriod");
-                cm.delinquencyPeriod = CommonUtils::provide_string(sm, "delinquencyPeriod");
+                cm.prepaymentPeriod = IsoPeriod::provide(sm, "prepaymentPeriod");
+                cm.gracePeriod = IsoPeriod::provide(sm, "gracePeriod");
+                cm.delinquencyPeriod = IsoPeriod::provide(sm, "delinquencyPeriod");
                 cm.delinquencyRate = CommonUtils::provide_f64default(sm, "delinquencyRate", 0.0);
 
                 cm.guaranteedExposure = GuaranteedExposure::provide(sm, "guaranteedExposure");
@@ -1539,7 +1541,7 @@ impl ContractModel {
                 cm.futuresPrice = CommonUtils::provide_f64(sm, "futuresPrice");
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
                 cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
                 cm.exerciseDate = IsoDatetime::provide(sm, "exerciseDate");
                 cm.priceAtPurchaseDate = CommonUtils::provide_f64default(sm, "priceAtPurchaseDate", 0.0);
                 cm.currency = CommonUtils::provide_string(sm, "currency");
@@ -1569,9 +1571,9 @@ impl ContractModel {
                 cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
                 cm.seniority = Seniority::provide(sm, "seniority");
                 cm.nonPerformingDate = IsoDatetime::provide(sm, "nonPerformingDate");
-                cm.prepaymentPeriod = CommonUtils::provide_string(sm, "prepaymentPeriod");
-                cm.gracePeriod = CommonUtils::provide_string(sm, "gracePeriod");
-                cm.delinquencyPeriod = CommonUtils::provide_string(sm, "delinquencyPeriod");
+                cm.prepaymentPeriod = IsoPeriod::provide(sm, "prepaymentPeriod");
+                cm.gracePeriod = IsoPeriod::provide(sm, "gracePeriod");
+                cm.delinquencyPeriod = IsoPeriod::provide(sm, "delinquencyPeriod");
                 cm.delinquencyRate = CommonUtils::provide_f64default(sm, "delinquencyRate", 0.0);
 
                 cm.guaranteedExposure = GuaranteedExposure::provide(sm, "guaranteedExposure");
@@ -1611,7 +1613,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
                 cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
                 cm.exerciseDate = IsoDatetime::provide(sm, "exerciseDate");
                 cm.priceAtPurchaseDate = CommonUtils::provide_f64default(sm, "priceAtPurchaseDate", 0.0);
                 cm.currency = CommonUtils::provide_string(sm, "currency");
@@ -1670,9 +1672,9 @@ impl ContractModel {
                 cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
                 cm.seniority = Seniority::provide(sm, "seniority");
                 cm.nonPerformingDate = IsoDatetime::provide(sm, "nonPerformingDate");
-                cm.prepaymentPeriod = CommonUtils::provide_string(sm, "prepaymentPeriod");
-                cm.gracePeriod = CommonUtils::provide_string(sm, "gracePeriod");
-                cm.delinquencyPeriod = CommonUtils::provide_string(sm, "delinquencyPeriod");
+                cm.prepaymentPeriod = IsoPeriod::provide(sm, "prepaymentPeriod");
+                cm.gracePeriod = IsoPeriod::provide(sm, "gracePeriod");
+                cm.delinquencyPeriod = IsoPeriod::provide(sm, "delinquencyPeriod");
                 cm.delinquencyRate = CommonUtils::provide_f64default(sm, "delinquencyRate", 0.0);
 
                 cm.guaranteedExposure = GuaranteedExposure::provide(sm, "guaranteedExposure");
@@ -1715,7 +1717,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
                 cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
-                cm.settlementPeriod = CommonUtils::provide_string(sm, "settlementPeriod");
+                cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
                 cm.exerciseDate = IsoDatetime::provide(sm, "exerciseDate");
                 cm.priceAtPurchaseDate = CommonUtils::provide_f64default(sm, "priceAtPurchaseDate", 0.0);
                 cm.optionType = OptionType::provide(sm, "optionType");

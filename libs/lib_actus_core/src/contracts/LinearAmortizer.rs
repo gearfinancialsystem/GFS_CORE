@@ -24,7 +24,7 @@ pub struct LinearAmortizer;
 
 impl LinearAmortizer {
     pub fn schedule(
-        to: Option<IsoDatetime>,
+        to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();

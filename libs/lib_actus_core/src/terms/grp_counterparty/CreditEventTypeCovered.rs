@@ -4,6 +4,9 @@ use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::contract_performance::Ma::MA;
+use crate::terms::grp_counterparty::contract_performance::Pf::PF;
+use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::util::CommonUtils::Value;
 
@@ -64,6 +67,15 @@ impl CreditEventTypeCovered {
 
             }
         }
+    }
+    pub fn to_stringx(&self) -> Result<String, ParseError> {
+        match self {
+            Self::DL(DL) => Ok("DL".to_string()),
+            Self::DQ(DQ) => Ok("DQ".to_string()),
+            Self::DF(DF) => Ok("DF".to_string()),
+            _ => Err(ParseError { message: format!("Invalid TOSTRING ContractPerformance ")})
+        }
+
     }
 }
 

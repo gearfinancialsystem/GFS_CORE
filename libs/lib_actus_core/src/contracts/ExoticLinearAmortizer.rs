@@ -17,7 +17,7 @@ use crate::conventions::InterestCalculationBase;
 pub struct ExoticLinearAmortizer;
 
 impl ExoticLinearAmortizer {
-    pub fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
         let maturity = Self::maturity(model, to);
 

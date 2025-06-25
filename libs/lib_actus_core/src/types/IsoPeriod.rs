@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 // l'objectif est d'utiliser des 'extension traits' pour Duration
 // le period de java travaille avec Jour, mois, année et n'a pas d'équivalent en rust ;
 use chrono::{Months, NaiveDateTime};
@@ -7,8 +8,12 @@ use regex::Regex;
 use std::fmt;
 use std::ops::Add;
 use std::ops::Sub;
+use std::str::FromStr;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Days;
+use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::util::CommonUtils::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IsoPeriod {
@@ -218,7 +223,7 @@ impl IsoPeriod {
     }
 
     // Obtains a IsoPeriod from a text string such as PnYnMnD
-    pub fn parse(text: &str) -> Option<Self> {
+    pub fn parsex(text: &str) -> Option<Self> {
         let re = Regex::new(r"^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$").unwrap();
         if let Some(caps) = re.captures(text) {
             let years = caps.get(1).and_then(|m| m.as_str().parse().ok()).unwrap_or(0);
@@ -348,7 +353,11 @@ impl IsoPeriod {
     pub fn to_total_months(&self) -> i32 {
         self.years * 12 + self.months
     }
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        string_map.get(key).and_then(|s| IsoPeriod::parsex(s.extract_string().unwrap().as_str()))
+    }
 }
+
 
 // Implement Display trait for IsoPeriod to enable to_string method
 impl fmt::Display for IsoPeriod {

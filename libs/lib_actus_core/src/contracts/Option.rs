@@ -2,11 +2,9 @@ use std::error::Error;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel;
-use crate::conventions::businessday::BusinessDayAdjuster;
 use crate::events::{ContractEvent, EventFactory, EventType};
 use crate::externals::RiskFactorModel;
-use crate::functions::optns::{POF_MD_OPTNS, POF_PRD_OPTNS, POF_STD_OPTNS, POF_TD_OPTNS, POF_XD_OPTNS, STF_MD_OPTNS, STF_STD_OPTNS, STF_XD_OPTNS};
-use crate::functions::stk::{STF_PRD_STK, STF_TD_STK};
+
 use crate::state_space::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils;
@@ -15,7 +13,7 @@ pub struct Option;
 
 impl Option {
     pub fn schedule(
-        to: Option<IsoDatetime>,
+        to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();

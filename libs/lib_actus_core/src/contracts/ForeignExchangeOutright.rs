@@ -16,7 +16,7 @@ use crate::conventions::daycount::DayCountCalculator;
 pub struct ForeignExchangeOutright;
 
 impl ForeignExchangeOutright {
-    pub fn schedule(to: IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
 
         // Purchase event

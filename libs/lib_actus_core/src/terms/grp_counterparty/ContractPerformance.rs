@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
+use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;
@@ -22,6 +23,7 @@ pub enum ContractPerformance {
 }
 
 impl ContractPerformance {
+
     pub fn description(&self) -> String {
         match self {
             Self::PF(PF) => PF.type_str(),
@@ -63,6 +65,18 @@ impl ContractPerformance {
     }
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
+    }
+    pub fn to_stringx(&self) -> Result<String, ParseError> {
+        match self {
+            Self::PF(PF) => Ok("PF".to_string()),
+            Self::DL(DL) => Ok("DL".to_string()),
+            Self::DQ(DQ) => Ok("DQ".to_string()),
+            Self::DF(DF) => Ok("DF".to_string()),
+            Self::MA(MA) => Ok("MA".to_string()),
+            Self::TE(TE) => Ok("TE".to_string()),
+            _ => Err(ParseError { message: format!("Invalid TOSTRING ContractPerformance ")})
+        }
+
     }
 }
 

@@ -61,7 +61,7 @@ impl ContractType {
             "CLM" => Some(CallMoney::apply(events, cm, observer)),
             "CSH" => Some(Cash::apply(events, cm, observer)),
             "FUTUR" => Some(Future::apply(events, cm, observer)),
-            "FXOUT" => Some(ForeignExchangeOutright::apply(events, cm, observer))
+            "FXOUT" => Some(ForeignExchangeOutright::apply(events, cm, observer)),
             "LAM" => Some(LinearAmortizer::apply(events, cm, observer)),
             "LAX" => Some(ExoticLinearAmortizer::apply(events, cm, observer)),
             "NAM" => Some(NegativeAmortizer::apply(events, cm, observer)),

@@ -17,4 +17,4 @@ pub mod ceg;
 pub mod clm;
 pub mod csh;
 pub mod swppv;
-mod ump;
+pub mod ump;

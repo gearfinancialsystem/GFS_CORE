@@ -22,7 +22,7 @@ impl CycleUtils {
      */
     pub fn parse_period(cycle: &String) -> Result<IsoPeriod, AttributeConversionException> {
         let period_part = cycle.split('L').next().unwrap();
-        match IsoPeriod::parse(period_part) {
+        match IsoPeriod::parsex(period_part) {
             Some(period) => Ok(period),
             None => Err(AttributeConversionException),
         }

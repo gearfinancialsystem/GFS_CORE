@@ -1,21 +1,28 @@
 use std::error::Error;
 use std::rc::Rc;
-use crate::events::ContractEvent;
-use crate::events::EventFactory;
-use crate::events::EventType;
-use crate::externals::RiskFactorModel;
-use crate::functions::futur::{POF_MD_FUTUR, POF_XD_FUTUR, STF_MD_FUTUR, STF_XD_FUTUR};
-use crate::functions::optns::{POF_PRD_OPTNS, POF_STD_OPTNS, POF_TD_OPTNS, STF_STD_OPTNS};
-use crate::functions::stk::{STF_PRD_STK, STF_TD_STK};
-use crate::state_space::StateSpace;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+
+use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::attributes::ContractModel;
-use crate::conventions::businessday::BusinessDayAdjuster;
+use crate::attributes::ContractModel::ContractModel;
+use crate::functions::futur::pof::POF_MD_FUTUR::POF_MD_FUTUR;
+use crate::functions::futur::pof::POF_XD_FUTUR::POF_XD_FUTUR;
+use crate::functions::futur::stf::STF_MD_FUTUR::STF_MD_FUTUR;
+use crate::functions::futur::stf::STF_XD_FUTUR::STF_XD_FUTUR;
+use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
+use crate::functions::optns::pof::POF_STD_OPTNS::POF_STD_OPTNS;
+use crate::functions::optns::pof::POF_TD_OPTNS::POF_TD_OPTNS;
+use crate::functions::optns::stf::STF_STD_OPTNS::STF_STD_OPTNS;
+use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 
 pub struct Future;
 
 impl Future {
-    pub fn schedule(to: IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
 
         // Purchase event
@@ -41,8 +48,8 @@ impl Future {
                 model.contractID.as_ref(),
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_event_time(
-                exercise_date.plus_period(&model.settlementPeriod.unwrap())
+            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
+                &(exercise_date.clone() + model.settlementPeriod.clone().unwrap())
             );
 
             events.push(EventFactory::create_event(
@@ -55,7 +62,7 @@ impl Future {
             ));
         } else {
             events.push(EventFactory::create_event(
-                model.maturityDate,
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
                 EventType::XD,
                 model.currency.as_ref(),
                 Some(Rc::new(POF_XD_FUTUR)),
@@ -63,8 +70,8 @@ impl Future {
                 model.contractID.as_ref(),
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_event_time(
-                model.maturityDate.unwrap().plus_period(&model.settlementPeriod.unwrap())
+            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
+                &(model.maturityDate.clone().map(|rc| (*rc).clone()).unwrap().clone() + model.settlementPeriod.clone().unwrap())
             );
 
             events.push(EventFactory::create_event(
@@ -79,7 +86,7 @@ impl Future {
 
         // Maturity event
         events.push(EventFactory::create_event(
-            model.maturityDate,
+            model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
             model.currency.as_ref(),
             Some(Rc::new(POF_MD_FUTUR)),

@@ -15,7 +15,7 @@ pub struct PlainVanillaInterestRateSwap;
 
 impl PlainVanillaInterestRateSwap {
     pub fn schedule(
-        to: Option<IsoDatetime>,
+        to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();

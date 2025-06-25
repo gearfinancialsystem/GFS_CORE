@@ -1,2 +1,2 @@
-mod STF_STD_CEC;
-mod STD_XD_CEC;
+pub mod STF_STD_CEC;
+pub mod STF_XD_CEC;
