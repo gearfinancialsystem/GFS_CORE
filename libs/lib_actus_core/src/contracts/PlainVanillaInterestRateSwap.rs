@@ -1,14 +1,32 @@
 use std::error::Error;
 use std::rc::Rc;
 
-use crate::attributes::ContractModel;
-use crate::events::{ContractEvent, EventFactory, EventType};
-use crate::externals::RiskFactorModel;
-use crate::functions::pam::{POF_IED_SWPPV, POF_IP_SWPPV, POF_IPFix_SWPPV, POF_IPFloat_SWPPV, POF_MD_SWPPV, POF_PRD_FXOUT, POF_RR_PAM, POF_TD_FXOUT, STF_IED_SWPPV, STF_IP_SWPPV, STF_IPFix_SWPPV, STF_IPFloat_SWPPV, STF_MD_SWPPV, STF_PRD_SWPPV, STF_RR_SWPPV, STF_TD_SWPPV};
-use crate::functions::stk::POF_PRD_STK;
-use crate::state_space::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::functions::fxout::pof::POF_PRD_FXOUT::POF_PRD_FXOUT;
+use crate::functions::fxout::pof::POF_TD_FXOUT::POF_TD_FXOUT;
+use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
+use crate::functions::swppv::pof::POF_IED_SWPPV::POF_IED_SWPPV;
+use crate::functions::swppv::pof::POF_IP_SWPPV::POF_IP_SWPPV;
+use crate::functions::swppv::pof::POF_IPFIx_SWPPV::POF_IPFix_SWPPV;
+use crate::functions::swppv::pof::POF_IPFloat_SWPPV::POF_IPFloat_SWPPV;
+use crate::functions::swppv::pof::POF_MD_SWPPV::POF_MD_SWPPV;
+use crate::functions::swppv::stf::STF_IED_SWPPV::STF_IED_SWPPV;
+use crate::functions::swppv::stf::STF_IP_SWPPV::STF_IP_SWPPV;
+use crate::functions::swppv::stf::STF_IPFix_SWPPV::STF_IPFix_SWPPV;
+use crate::functions::swppv::stf::STF_IPFloat_SWPPV::STF_IPFloat_SWPPV;
+use crate::functions::swppv::stf::STF_MD_SWPPV::STF_MD_SWPPV;
+use crate::functions::swppv::stf::STF_PRD_SWPPV::STF_PRD_SWPPV;
+use crate::functions::swppv::stf::STF_RR_SWPPV::STF_RR_SWPPV;
+use crate::functions::swppv::stf::STF_TD_SWPPV::STF_TD_SWPPV;
+use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::S::S;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
+use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::DeliverySettlement;
+
 use crate::util::CommonUtils;
 
 pub struct PlainVanillaInterestRateSwap;
@@ -89,7 +107,7 @@ impl PlainVanillaInterestRateSwap {
         } else {
             // In case of cash delivery (cash settlement)
             let interest_events = EventFactory::create_events_with_convention(
-                &ScheduleFactory::create_schedule(
+                &ScheduleFactory::create_schedule_end_time_true(
                     model.cycleAnchorDateOfInterestPayment.clone(),
                     model.maturityDate.clone(),
                     model.cycleOfInterestPayment.clone(),
@@ -154,7 +172,7 @@ impl PlainVanillaInterestRateSwap {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            to,
+            Some(to.clone()),
             EventType::AD,
             model.currency.as_ref(),
             None,
@@ -210,7 +228,7 @@ impl PlainVanillaInterestRateSwap {
     fn init_state_space(model: &ContractModel) -> StateSpace {
         let mut states = StateSpace::default();
 
-        states.notionalScalingMultiplier = 1.0;
+        states.notionalScalingMultiplier = Some(1.0);
         states.statusDate = model.statusDate;
 
         if model.initialExchangeDate <= model.statusDate {
@@ -220,7 +238,7 @@ impl PlainVanillaInterestRateSwap {
             states.nominalInterestRate2 = model.nominalInterestRate2;
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
             states.accruedInterest2 = Some(role_sign * model.accruedInterest2.unwrap());
-            states.lastInterestPeriod = 0.0;
+            states.lastInterestPeriod = Some(0.0);
         }
 
         states

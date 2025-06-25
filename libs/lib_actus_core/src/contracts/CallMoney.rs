@@ -1,16 +1,26 @@
 use std::error::Error;
 use std::rc::Rc;
-use crate::events::ContractEvent;
-use crate::events::EventFactory;
-use crate::events::EventType;
-use crate::externals::RiskFactorModel;
-use crate::functions::clm::{POF_IED_CLM, POF_IP_CLM, STF_IP_CLM};
-use crate::functions::pam::{POF_IPCI_PAM, POF_MD_PAM, STF_IED_PAM, STF_IPCI_PAM, STF_MD_PAM, POF_RR_PAM, STF_RR_PAM, STF_RRF_PAM, POF_FP_PAM, STF_FP_PAM};
-use crate::state_space::StateSpace;
-use crate::types::IsoDatetime;
-use crate::time::ScheduleFactory;
-use crate::attributes::ContractModel;
-use crate::conventions::contractrole::ContractRoleConvention;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::attributes::ContractModel::ContractModel;
+use crate::functions::clm::pof::POF_IED_CLM::POF_IED_CLM;
+use crate::functions::clm::pof::POF_IP_CLM::POF_IP_CLM;
+use crate::functions::clm::stf::STF_IP_CLM::STF_IP_CLM;
+use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
+use crate::functions::pam::pof::POF_IPCI_PAM::POF_IPCI_PAM;
+use crate::functions::pam::pof::POF_MD_PAM::POF_MD_PAM;
+use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
+use crate::functions::pam::stf::STF_FP_PAM::STF_FP_PAM;
+use crate::functions::pam::stf::STF_IED_PAM::STF_IED_PAM;
+use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
+use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
+use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
+use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct CallMoney;
 
@@ -205,12 +215,12 @@ impl CallMoney {
     fn init_state_space(model: &ContractModel) -> StateSpace {
         let mut states = StateSpace::default();
 
-        states.notionalScalingMultiplier = 1.0;
-        states.interestScalingMultiplier = 1.0;
+        states.notionalScalingMultiplier = Some(1.0);
+        states.interestScalingMultiplier = Some(1.0);
         states.statusDate = model.statusDate.clone();
 
         if model.initialExchangeDate.clone().unwrap() <= model.statusDate.clone().unwrap() {
-            let role_sign = ContractRoleConvention::role_sign(model.contractRole.as_ref().unwrap());
+            let role_sign = model.contractRole.as_ref().unwrap().role_sign();
             states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());

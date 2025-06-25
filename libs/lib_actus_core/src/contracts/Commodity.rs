@@ -20,9 +20,9 @@ impl Commodity {
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
-        let status_date = model.status_date.clone().unwrap();
-        let purchase_date = model.purchase_date.clone();
-        let termination_date = model.termination_date.clone();
+        let status_date = model.statusDate.clone().unwrap();
+        let purchase_date = model.purchaseDate.clone();
+        let termination_date = model.terminationDate.clone();
 
         // Purchase
         if let Some(pd) = purchase_date {
@@ -33,7 +33,7 @@ impl Commodity {
                     model.currency.as_ref(),
                     Some(Rc::new(POF_PRD_STK)),
                     Some(Rc::new(STF_PRD_STK)),
-                    model.contract_id.as_ref(),
+                    model.contractID.as_ref(),
                 ));
             }
         }
@@ -47,7 +47,7 @@ impl Commodity {
                     model.currency.as_ref(),
                     Some(Rc::new(POF_TD_STK)),
                     Some(Rc::new(STF_TD_STK)),
-                    model.contract_id.as_ref(),
+                    model.contractID.as_ref(),
                 ));
             }
         }
@@ -62,7 +62,7 @@ impl Commodity {
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
-        states.status_date = model.status_date.clone();
+        states.statusDate = model.statusDate.clone();
 
         // Sort the events according to their time sequence
         events.sort();

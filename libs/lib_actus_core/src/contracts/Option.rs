@@ -1,11 +1,20 @@
 use std::error::Error;
 use std::rc::Rc;
 
-use crate::attributes::ContractModel;
-use crate::events::{ContractEvent, EventFactory, EventType};
-use crate::externals::RiskFactorModel;
-
-use crate::state_space::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::functions::optns::pof::POF_MD_OPTNS::POF_MD_OPTNS;
+use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
+use crate::functions::optns::pof::POF_STD_OPTNS::POF_STD_OPTNS;
+use crate::functions::optns::pof::POF_TD_OPTNS::POF_TD_OPTNS;
+use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
+use crate::functions::optns::stf::STF_MD_OPTNS::STF_MD_OPTNS;
+use crate::functions::optns::stf::STF_STD_OPTNS::STF_STD_OPTNS;
+use crate::functions::optns::stf::STF_XD_OPTNS::STF_XD_OPTNS;
+use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils;
 
@@ -41,7 +50,7 @@ impl Option {
                 model.contractID.as_ref(),
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_event_time(
+            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
                 exercise_date.plus_period(&model.settlementPeriod.as_ref().unwrap())
             );
 
@@ -63,7 +72,7 @@ impl Option {
                 model.contractID.as_ref(),
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_event_time(
+            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
                 model.maturityDate.as_ref().unwrap().plus_period(&model.settlementPeriod.as_ref().unwrap())
             );
 

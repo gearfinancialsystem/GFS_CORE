@@ -1,17 +1,24 @@
 use std::error::Error;
 use std::rc::Rc;
-use crate::events::ContractEvent;
-use crate::events::EventFactory;
-use crate::events::EventType;
-use crate::externals::RiskFactorModel;
-use crate::functions::bcs::{POF_PRD_BCS, POF_TD_BCS, STF_ME_BCS, STF_TD_BCS};
-use crate::functions::optns::POF_PRD_OPTNS;
-use crate::functions::pam::{POF_AD_PAM, POF_IED_PAM, STF_IED_PAM};
-use crate::functions::stk::STF_PRD_STK;
-use crate::state_space::StateSpace;
-use crate::types::{ContractReference, ContractTypeEnum, IsoDatetime, ReferenceRole};
-use crate::attributes::ContractModel;
-use crate::time::ScheduleFactory;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
+use crate::functions::bcs::pof::POF_PRD_BCS::POF_PRD_BCS;
+use crate::functions::bcs::pof::POF_TD_BCS::POF_TD_BCS;
+use crate::functions::bcs::stf::STF_ME_BCS::STF_ME_BCS;
+use crate::functions::bcs::stf::STF_TD_BCS::STF_TD_BCS;
+use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
+use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
+use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
+use crate::functions::pam::stf::STF_IED_PAM::STF_IED_PAM;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct BoundaryControlledSwitch;
 
@@ -82,19 +89,19 @@ impl BoundaryControlledSwitch {
         events.retain(|e| e.eventType != EventType::ME);
 
         // Activating child legs based on boundaryEffect
-        if states.boundaryCrossedFlag {
+        if states.boundaryCrossedFlag.unwrap() {
             match model.boundaryEffect.as_ref().unwrap().as_str() {
                 "knockINFirstLeg" => {
-                    states.boundaryLeg1ActiveFlag = true;
-                    states.boundaryLeg2ActiveFlag = false;
+                    states.boundaryLeg1ActiveFlag = Some(true);
+                    states.boundaryLeg2ActiveFlag = Some(false);
                 }
                 "knockINSecondLeg" => {
-                    states.boundaryLeg2ActiveFlag = true;
-                    states.boundaryLeg1ActiveFlag = false;
+                    states.boundaryLeg2ActiveFlag = Some(true);
+                    states.boundaryLeg1ActiveFlag = Some(false);
                 }
                 "knockOUTCurrent" => {
-                    states.boundaryLeg1ActiveFlag = false;
-                    states.boundaryLeg2ActiveFlag = false;
+                    states.boundaryLeg1ActiveFlag = Some(false);
+                    states.boundaryLeg2ActiveFlag = Some(false);
                 }
                 _ => {}
             }

@@ -1,18 +1,37 @@
 use std::error::Error;
 use std::rc::Rc;
 use std::collections::HashSet;
-use crate::events::ContractEvent;
-use crate::events::EventFactory;
-use crate::events::EventType;
-use crate::externals::RiskFactorModel;
-use crate::functions::lam::{POF_IPCB_LAM, POF_IP_LAM, POF_PRD_LAM, POF_TD_LAM, STF_FP_LAM, STF_IED_LAM, STF_IPCB_LAM, STF_IPCI2_LAM, STF_IPCI_LAM, STF_PRD_LAM, STF_SC_LAM};
-use crate::functions::lax::{POF_PI_LAX, POF_PR_LAX, STF_PI_LAX, STF_PI_LAX2, STF_PR_LAX, STF_PR_LAX2, STF_RRF_LAX, STF_RRY_LAM, STF_RR_LAX};
-use crate::functions::pam::{POF_AD_PAM, POF_FP_PAM, POF_IED_PAM, POF_IPCI_PAM, POF_MD_PAM, POF_RR_PAM, POF_SC_PAM, STF_AD_PAM, STF_IP_PAM, STF_MD_LAM, STF_TD_PAM};
-use crate::state_space::StateSpace;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::time::ScheduleFactory;
-use crate::attributes::ContractModel;
-use crate::conventions::InterestCalculationBase;
+use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::attributes::ContractModel::ContractModel;
+use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
+use crate::functions::lam::pof::POF_PRD_LAM::POF_PRD_LAM;
+use crate::functions::lam::pof::POF_TD_LAM::POF_TD_LAM;
+use crate::functions::lam::stf::STF_FP_LAM::STF_FP_LAM;
+use crate::functions::lam::stf::STF_IED_LAM::STF_IED_LAM;
+use crate::functions::lam::stf::STF_IPBC_LAM::STF_IPCB_LAM;
+use crate::functions::lam::stf::STF_PRD_LAM::STF_PRD_LAM;
+use crate::functions::lam::stf::STF_SC_LAM::STF_SC_LAM;
+use crate::functions::lax::pof::POF_PI_LAX::POF_PI_LAX;
+use crate::functions::lax::pof::POF_PR_LAX::POF_PR_LAX;
+use crate::functions::lax::stf::STF_PI_LAX2::STF_PI_LAX2;
+use crate::functions::lax::stf::STF_PI_LAX::STF_PI_LAX;
+use crate::functions::lax::stf::STF_PR_LAX2::STF_PR_LAX2;
+use crate::functions::lax::stf::STF_PR_LAX::STF_PR_LAX;
+use crate::functions::lax::stf::STF_RR_LAX::STF_RR_LAX;
+use crate::functions::lax::stf::STF_RRF_LAX::STF_RRF_LAX;
+use crate::functions::lax::stf::STF_RRY_LAM::STF_RRY_LAM;
+use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
+use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
+use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
+use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
+use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 
 pub struct ExoticLinearAmortizer;
 
@@ -450,20 +469,20 @@ impl ExoticLinearAmortizer {
             }
         }
 
-        time_adjuster.shift_event_time(t)
+        time_adjuster.shift_bd(t)
     }
 
     fn init_state_space(model: &ContractModel, maturity: IsoDatetime) -> StateSpace {
         let mut states = StateSpace::default();
 
         states.statusDate = model.statusDate.clone();
-        states.notionalScalingMultiplier = 1.0;
-        states.interestScalingMultiplier = 1.0;
+        states.notionalScalingMultiplier = Some(1.0);
+        states.interestScalingMultiplier = Some(1.0);
 
         if model.initialExchangeDate.unwrap() > model.statusDate {
-            states.notionalPrincipal = 0.0;
-            states.nominalInterestRate = 0.0;
-            states.interestCalculationBaseAmount = 0.0;
+            states.notionalPrincipal = Some(0.0);
+            states.nominalInterestRate = Some(0.0);
+            states.interestCalculationBaseAmount = Some(0.0);
         } else {
             let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
             states.notionalPrincipal = role_sign * model.notionalPrincipal.unwrap();
