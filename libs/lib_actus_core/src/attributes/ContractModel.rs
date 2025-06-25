@@ -176,6 +176,7 @@ pub struct ContractModel {
     pub exerciseDate: Option<IsoDatetime>,
     pub optionType: Option<OptionType>,
     pub optionStrike1: Option<f64>,
+    pub optionStrike2: Option<f64>,
     pub xDayNotice: Option<String>,
     pub cycleAnchorDateOfInterestCalculationBase: Option<IsoDatetime>,
     pub cycleOfInterestCalculationBase: Option<String>,
@@ -297,6 +298,7 @@ impl ContractModel {
             exerciseDate: None,
             optionType: None,
             optionStrike1: None,
+            optionStrike2: None,
             xDayNotice: None,
             cycleAnchorDateOfInterestCalculationBase: None,
             cycleOfInterestCalculationBase: None,
@@ -417,6 +419,7 @@ impl ContractModel {
             "exerciseDate" => Some(FieldValue::vIsoDatetime(self.exerciseDate.clone().unwrap())),
             "optionType" =>Some(FieldValue::vOptionType(self.optionType.clone().unwrap())),
             "optionStrike1" =>Some(FieldValue::vF64(self.optionStrike1.clone().unwrap())),
+            "optionStrike2" =>Some(FieldValue::vF64(self.optionStrike2.clone().unwrap())),
             "xDayNotice"=>Some(FieldValue::vString(self.xDayNotice.clone().unwrap())),
             "cycleAnchorDateOfInterestCalculationBase"=>Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfInterestCalculationBase.clone().unwrap())),
             "cycleOfInterestCalculationBase"=>Some(FieldValue::vString(self.cycleOfInterestCalculationBase.clone().unwrap())),
@@ -1717,6 +1720,7 @@ impl ContractModel {
                 cm.priceAtPurchaseDate = CommonUtils::provide_f64default(sm, "priceAtPurchaseDate", 0.0);
                 cm.optionType = OptionType::provide(sm, "optionType");
                 cm.optionStrike1 = CommonUtils::provide_f64(sm, "optionStrike1");
+                cm.optionStrike2 = CommonUtils::provide_f64(sm, "optionStrike2");
                 cm.currency = CommonUtils::provide_string(sm, "currency");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {

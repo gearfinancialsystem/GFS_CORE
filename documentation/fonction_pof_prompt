@@ -1,0 +1,98 @@
+J'ai converti ce code java en rust de la facon suivante :
+le code java :
+/*
+ * Copyright (C) 2016 - present by ACTUS Financial Research Foundation
+ *
+ * Please see distribution for license.
+ */
+package org.actus.functions.pam;
+
+import org.actus.functions.PayOffFunction;
+import org.actus.states.StateSpace;
+import org.actus.attributes.ContractModelProvider;
+import org.actus.externals.RiskFactorModelProvider;
+import org.actus.conventions.daycount.DayCountCalculator;
+import org.actus.conventions.businessday.BusinessDayAdjuster;
+import org.actus.conventions.contractrole.ContractRoleConvention;
+import org.actus.types.ContractRole;
+import org.actus.util.CommonUtils;
+
+import java.time.LocalDateTime;
+
+public final class POF_PRD_PAM implements PayOffFunction {
+
+    @Override
+        public double eval(LocalDateTime time, StateSpace states,
+    ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {
+        return CommonUtils.settlementCurrencyFxRate(riskFactorModel, model, time, states)
+                * ContractRoleConvention.roleSign(model.getAs("contractRole"))
+                * (-1)
+                * (model.<Double>getAs("priceAtPurchaseDate")
+                    + states.accruedInterest
+                    + dayCounter.dayCountFraction(
+                        timeAdjuster.shiftCalcTime(states.statusDate),
+                        timeAdjuster.shiftCalcTime(time)
+                        )
+                    * states.nominalInterestRate
+                    * states.notionalPrincipal
+                );
+        }
+}
+le code rust :
+use crate::attributes::ContractModel::ContractModel;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::types::isoDatetime::IsoDatetime;
+
+#[allow(non_camel_case_types)]
+pub struct POF_PRD_PAM;
+
+impl TraitPayOffFunction for POF_PRD_PAM {
+    fn eval(
+        &self,
+        time: &IsoDatetime,
+        states: &StateSpace,
+        model: &ContractModel,
+        risk_factor_model: &RiskFactorModel,
+        day_counter: &DayCountConvention,
+        time_adjuster: &BusinessDayAdjuster,
+    ) -> f64 {
+
+            let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
+            let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always exist");
+            let accrued_interest = model.accruedInterest.expect("accruedInterest should always exist");
+            let status_date = model.statusDate.expect("status date should always exist");
+            let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always exist");
+            let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always exist");
+
+            1.0 * contract_role.role_sign() * -1.0 * (
+                    price_at_purchase_date +
+                    accrued_interest + day_counter.day_count_fraction(
+                    time_adjuster.shift_sc(&status_date),
+                    time_adjuster.shift_sc(&time)
+                ) * notional_principal * nominal_interest_rate)
+    }
+}
+
+peux tu convertir le code suivant en gardant les regles de la conversion deduite des 2 codes precedents (styles, declaration des variables au debut ect...)
+si tu vois quelque chose lie a settlement_currency_fx_rate ou risk_factor_model, met 1.0 a la place je limplementerai plus tard
+package org.actus.functions.futur;
+
+import org.actus.attributes.ContractModelProvider;
+import org.actus.conventions.businessday.BusinessDayAdjuster;
+import org.actus.conventions.daycount.DayCountCalculator;
+import org.actus.externals.RiskFactorModelProvider;
+import org.actus.functions.PayOffFunction;
+import org.actus.states.StateSpace;
+
+import java.time.LocalDateTime;
+
+public class POF_MD_FUTUR implements PayOffFunction {
+    @Override
+    public double eval(LocalDateTime time, StateSpace states, ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {
+        return 0.0;
+    }
+}
