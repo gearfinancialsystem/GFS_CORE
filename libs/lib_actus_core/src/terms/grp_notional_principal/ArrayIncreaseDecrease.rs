@@ -47,7 +47,7 @@ impl ArrayIncreaseDecrease {
                 let a2 = ArrayIncreaseDecrease::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<ArrayIncreaseDecrease> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.as_str()).unwrap()   }).collect();
-                let b: Vec<Result<ArrayIncreaseDecrease, Err>> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.as_str())   }).collect();
+                let b: Vec<Result<ArrayIncreaseDecrease, ParseError>> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.as_str())   }).collect();
                 let c = b.iter().any(|r| r.is_err());
 
                 if c == true {

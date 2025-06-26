@@ -1,4 +1,5 @@
 use crate::attributes::ContractModel::ContractModel;
+use crate::contracts::CreditEnhancementGuarantee::CreditEnhancementGuarantee;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;

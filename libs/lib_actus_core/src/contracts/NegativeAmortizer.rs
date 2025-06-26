@@ -5,6 +5,7 @@ use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
+
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
 use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
@@ -32,11 +33,14 @@ use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
 use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_interest::InterestCalculationBase;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
+use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
-
 pub struct NegativeAmortizer;
 
 impl NegativeAmortizer {
@@ -62,12 +66,12 @@ impl NegativeAmortizer {
             model.cycleAnchorDateOfPrincipalRedemption.clone(),
             Some(maturity.clone()),
             model.cycleOfPrincipalRedemption.clone(),
-            model.endOfMonthConvention,
+            model.endOfMonthConvention.clone().unwrap(),
             false,
         );
 
         // Choose the right state transition function depending on ipcb attributes
-        let stf: Rc<dyn StateTransitionFunction> = if model.interestCalculationBase != Some(InterestCalculationBase::NT) {
+        let stf: Rc<dyn TraitStateTransitionFunction> = if model.interestCalculationBase != Some(InterestCalculationBase::NT(NT)) {
             Rc::new(STF_PR_NAM)
         } else {
             Rc::new(STF_PR2_NAM)
@@ -84,7 +88,7 @@ impl NegativeAmortizer {
             model.contractID.as_ref(),
         );
 
-        events.append(&mut pr_events);
+        events.append(&mut pr_events.into_iter().collect());
 
         // Maturity event
         events.push(EventFactory::create_event_with_convention(
@@ -110,7 +114,7 @@ impl NegativeAmortizer {
         }
 
         // Choose the right state transition function for IPCI depending on ipcb attributes
-        let stf_ipci: Rc<dyn StateTransitionFunction> = if model.interestCalculationBase == Some(InterestCalculationBase::NTL) {
+        let stf_ipci: Rc<dyn TraitStateTransitionFunction> = if model.interestCalculationBase == Some(InterestCalculationBase::NTL(NTL)) {
             Rc::new(STF_IPCI_LAM)
         } else {
             Rc::new(STF_IPCI2_LAM)
@@ -123,7 +127,7 @@ impl NegativeAmortizer {
                     model.cycleAnchorDateOfInterestPayment.clone(),
                     Some(maturity.clone()),
                     model.cycleOfInterestPayment.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::IP,
@@ -139,11 +143,11 @@ impl NegativeAmortizer {
                 || model.cycleOfInterestPayment != model.cycleOfPrincipalRedemption {
                 // Calculate the next principal redemption date by subtracting the cycle period from the anchor date
                 let prcl = CycleUtils::parse_period(&model.cycleOfPrincipalRedemption.clone().unwrap());
-                let pranxm = model.cycleAnchorDateOfPrincipalRedemption.unwrap().minus_period(&prcl);
+                let pranxm = model.cycleAnchorDateOfPrincipalRedemption.unwrap() - prcl.unwrap();
 
                 // Remove any interest payment events that occur on or after the calculated next principal redemption date
                 interest_events.retain(|e| {
-                    !(e.eventType == EventType::IP && (e.eventTime > pranxm || e.eventTime == pranxm))
+                    !(e.eventType == EventType::IP && (e.eventTime.clone().unwrap() > pranxm || e.eventTime.clone().unwrap() == pranxm))
                 });
 
                 // Create a new interest payment event at the adjusted principal redemption date
@@ -157,7 +161,7 @@ impl NegativeAmortizer {
                     model.contractID.as_ref(),
                 );
 
-                interest_events.push(ipanxm);
+                interest_events.insert(ipanxm);
 
                 // Generate new interest payment events based on the updated principal redemption schedule
                 let new_interest_events = EventFactory::create_events_with_convention(
@@ -165,7 +169,7 @@ impl NegativeAmortizer {
                         model.cycleAnchorDateOfPrincipalRedemption.clone(),
                         Some(maturity.clone()),
                         model.cycleOfPrincipalRedemption.clone(),
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         true,
                     ),
                     EventType::IP,
@@ -195,18 +199,18 @@ impl NegativeAmortizer {
                     !(e.eventType == EventType::IP && e.eventTime == capitalization_end.eventTime)
                 });
 
-                interest_events.push(capitalization_end);
+                interest_events.insert(capitalization_end.clone());
 
-                for e in &mut interest_events {
-                    if e.eventType == EventType::IP && e.eventTime <= capitalization_end.eventTime {
+                for mut e in &mut interest_events.clone().into_iter() {
+                    if e.eventType == EventType::IP && e.eventTime <= capitalization_end.eventTime.clone() {
                         e.eventType = EventType::IPCI;
-                        e.fPayOff = Some(Rc::new(POF_IPCI_PAM));
-                        e.fStateTrans = Some(stf_ipci.clone());
+                        e.fpayoff = Some(Rc::new(POF_IPCI_PAM));
+                        e.fstate = Some(stf_ipci.clone());
                     }
                 }
             }
 
-            events.append(&mut interest_events);
+            events.append(&mut interest_events.clone().into_iter().collect());
         } else if model.capitalizationEndDate.is_some() {
             // If no extra interest schedule set but capitalization end date, add single IPCI event
             events.push(EventFactory::create_event_with_convention(
@@ -225,7 +229,7 @@ impl NegativeAmortizer {
                     model.cycleAnchorDateOfPrincipalRedemption.clone(),
                     Some(maturity.clone()),
                     model.cycleOfPrincipalRedemption.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::IP,
@@ -245,7 +249,7 @@ impl NegativeAmortizer {
                 model.cycleAnchorDateOfRateReset.clone(),
                 Some(maturity.clone()),
                 model.cycleOfRateReset.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::RR,
@@ -270,15 +274,22 @@ impl NegativeAmortizer {
             let mut sorted_events: Vec<_> = rate_reset_events.iter().collect();
             sorted_events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
 
-            if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.eventTime > status_event.eventTime) {
-                let mut fixed_event = fixed_event.clone();
-                fixed_event.fStateTrans = Some(Rc::new(STF_RRF_LAM));
-                fixed_event.eventType = EventType::RRF;
-                rate_reset_events.push(fixed_event);
-            }
+            let mut fixed_eventa = sorted_events.iter_mut().find(|e| e.eventTime.clone().unwrap() > status_event.eventTime.clone().unwrap()).unwrap().clone();
+            fixed_eventa.fstate = Some(Rc::new(STF_RRF_LAM)); // Ensure the field name is correct
+            fixed_eventa.eventType = EventType::RRF;
+            rate_reset_events.insert(fixed_eventa.clone());
+
+            // if let Some(mut fixed_event) = sorted_events.iter().find(|&e| e.eventTime > status_event.eventTime) {
+            //     let mut fixed_event = fixed_event.clone(); // Clone the event to get an owned value
+            //     fixed_eventxfstate = Some(Rc::new(STF_RRF_LAM)); // Ensure the field name is correct
+            //     fixed_eventxeventType = EventType::RRF;
+            //     rate_reset_events.insert(fixed_eventx.clone()); // Use push to add to the vector
+            // }
+
+
         }
 
-        events.append(&mut rate_reset_events);
+        events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
         if let Some(cycle_of_fee) = &model.cycleOfFee {
@@ -287,7 +298,7 @@ impl NegativeAmortizer {
                     model.cycleAnchorDateOfFee.clone(),
                     Some(maturity.clone()),
                     Some(cycle_of_fee.clone()),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::FP,
@@ -302,14 +313,14 @@ impl NegativeAmortizer {
         }
 
         // Scaling events (if specified)
-        if let Some(scaling_effect) = &model.scalingEffect {
+        if let scaling_effect = &model.scalingEffect.clone().unwrap().to_string() {
             if scaling_effect.contains('I') || scaling_effect.contains('N') {
                 let scaling_events = EventFactory::create_events_with_convention(
                     &ScheduleFactory::create_schedule(
                         model.cycleAnchorDateOfScalingIndex.clone(),
                         Some(maturity.clone()),
                         model.cycleOfScalingIndex.clone(),
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         false,
                     ),
                     EventType::SC,
@@ -325,13 +336,13 @@ impl NegativeAmortizer {
         }
 
         // Interest calculation base events (if specified)
-        if model.interestCalculationBase == Some(InterestCalculationBase::NTL) {
+        if model.interestCalculationBase == Some(InterestCalculationBase::NTL(NTL)) {
             let icb_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfInterestCalculationBase.clone(),
                     Some(maturity.clone()),
                     model.cycleOfInterestCalculationBase.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     false,
                 ),
                 EventType::IPCB,
@@ -373,7 +384,7 @@ impl NegativeAmortizer {
         events.retain(|e| e.eventTime >= status_event.eventTime);
 
         // Remove all post to-date events
-        let to_date = to.unwrap_or(maturity);
+        let to_date = maturity.clone(); //to.unwrap_or(maturity);
         let post_date = EventFactory::create_event(
             Some(to_date),
             EventType::AD,
@@ -429,29 +440,29 @@ impl NegativeAmortizer {
     }
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
-        if let Some(maturity) = model.maturityDate {
-            return maturity;
+        if let maturity = model.maturityDate.clone().unwrap() {
+            return *maturity.clone();
         }
 
         let t0 = model.statusDate.unwrap();
         let pranx = model.cycleAnchorDateOfPrincipalRedemption.unwrap();
         let ied = model.initialExchangeDate.unwrap();
-        let prcl = CycleUtils::parse_period(&model.cycleOfPrincipalRedemption.clone().unwrap());
+        let prcl = CycleUtils::parse_period(&model.cycleOfPrincipalRedemption.clone().unwrap()).unwrap();
         let last_event: IsoDatetime;
 
-        if !pranx.is_before(&t0) || pranx == t0 {
+        if pranx >= t0 || pranx == t0 {
             last_event = pranx;
-        } else if ied.plus_period(&prcl).is_after(&t0) || ied.plus_period(&prcl) == t0 {
-            last_event = ied.plus_period(&prcl);
+        } else if (ied + prcl.clone()) > t0 || (ied + prcl.clone()) == t0 {
+            last_event = ied + prcl.clone();
         } else {
             let mut previous_events = ScheduleFactory::create_schedule_end_time_true(
                 model.cycleAnchorDateOfPrincipalRedemption.clone(),
                 model.statusDate.clone(),
                 model.cycleOfPrincipalRedemption.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
             );
 
-            previous_events.retain(|d| d.is_before(&t0));
+            previous_events.retain(|d| d.clone() < t0);
             previous_events.remove(&t0);
 
             let mut prev_events_list: Vec<_> = previous_events.into_iter().collect();
@@ -461,8 +472,8 @@ impl NegativeAmortizer {
         }
 
         let time_from_last_event_plus_one_cycle = model.dayCountConvention.as_ref().unwrap().day_count_fraction(
-            &last_event,
-            &last_event.plus_period(&prcl),
+            last_event,
+            last_event + prcl.clone(),
         );
 
         let redemption_per_cycle = model.nextPrincipalRedemptionPayment.unwrap()
@@ -471,7 +482,7 @@ impl NegativeAmortizer {
         let remaining_periods = ((model.notionalPrincipal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
 
         model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-            last_event.plus_period(&prcl.multiplied_by(remaining_periods)),
+            &(last_event + prcl.multiplied_by(remaining_periods)),
         )
     }
 
@@ -493,7 +504,7 @@ impl NegativeAmortizer {
             states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
 
-            if model.interestCalculationBase == Some(InterestCalculationBase::NT) {
+            if model.interestCalculationBase == Some(InterestCalculationBase::NT(NT)) {
                 states.interestCalculationBaseAmount = states.notionalPrincipal;
             } else {
                 states.interestCalculationBaseAmount = Some(role_sign * model.interestCalculationBaseAmount.unwrap());
@@ -510,14 +521,14 @@ impl NegativeAmortizer {
             let time_adjuster = model.businessDayAdjuster.as_ref().unwrap();
             let mut ip_schedule: Vec<IsoDatetime> = ScheduleFactory::create_schedule(
                 model.cycleAnchorDateOfInterestPayment.clone(),
-                model.maturityDate.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
                 model.cycleOfInterestPayment.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 true,
             ).into_iter().collect();
 
             ip_schedule.sort();
-            let date_earlier_than_t0: Vec<_> = ip_schedule.into_iter().filter(|date| date.is_before(&states.statusDate.unwrap())).collect();
+            let date_earlier_than_t0: Vec<IsoDatetime> = ip_schedule.into_iter().filter(|date| date.clone() < states.statusDate.unwrap()).collect();
             let t_minus = date_earlier_than_t0.last().unwrap();
 
             states.accruedInterest = Some(day_counter.day_count_fraction(

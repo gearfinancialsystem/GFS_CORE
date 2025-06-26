@@ -18,6 +18,10 @@ use crate::functions::fxout::stf::STF_MD2_FXOUT::STF_MD2_FXOUT;
 use crate::functions::fxout::stf::STF_STD_FXOUT::STF_STD_FXOUT;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
+use crate::terms::grp_settlement::delivery_settlement::S::S;
 
 pub struct ForeignExchangeOutright;
 
@@ -49,9 +53,9 @@ impl ForeignExchangeOutright {
             ));
         } else {
             // Settlement events
-            if model.deliverySettlement == Some(DeliverySettlement::D) || model.deliverySettlement.is_none() {
+            if model.deliverySettlement == Some(DeliverySettlement::D(D)) || model.deliverySettlement.is_none() {
                 events.push(EventFactory::create_event_with_convention(
-                    model.maturityDate,
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
                     EventType::MD,
                     model.currency.as_ref(),
                     Some(Rc::new(POF_MD1_FXOUT)),
@@ -61,7 +65,7 @@ impl ForeignExchangeOutright {
                 ));
 
                 events.push(EventFactory::create_event_with_convention(
-                    model.maturityDate,
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
                     EventType::MD,
                     model.currency2.as_ref(),
                     Some(Rc::new(POF_MD2_FXOUT)),
@@ -70,8 +74,8 @@ impl ForeignExchangeOutright {
                     model.contractID.as_ref(),
                 ));
             } else {
-                let shifted_maturity_date = model.businessDayAdjuster.as_ref().unwrap().shift_event_time(
-                    model.maturityDate.unwrap().plus_period(&model.settlementPeriod.unwrap())
+                let shifted_maturity_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
+                    &(model.maturityDate.clone().map(|rc| (*rc).clone()).unwrap() + model.settlementPeriod.clone().unwrap())
                 );
 
                 events.push(EventFactory::create_event_with_convention(
@@ -100,7 +104,7 @@ impl ForeignExchangeOutright {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            Some(to),
+            Some(to.clone()),
             EventType::AD,
             model.currency.as_ref(),
             None,
@@ -127,7 +131,7 @@ impl ForeignExchangeOutright {
                 &mut states,
                 model,
                 observer,
-                &DayCountCalculator::new("AA", model.calendar.as_ref().unwrap()),
+                &DayCountConvention::new_AAISDA(),
                 model.businessDayAdjuster.as_ref().unwrap(),
             );
         }

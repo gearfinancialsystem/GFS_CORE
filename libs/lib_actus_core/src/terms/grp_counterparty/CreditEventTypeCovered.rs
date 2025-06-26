@@ -56,7 +56,7 @@ impl CreditEventTypeCovered {
                 let a2 = CreditEventTypeCovered::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<CreditEventTypeCovered> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str()).unwrap()   }).collect();
-                let b: Vec<Result<CreditEventTypeCovered, Err>> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str())   }).collect();
+                let b: Vec<Result<CreditEventTypeCovered, ParseError>> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str())   }).collect();
                 let c = b.iter().any(|r| r.is_err());
 
                 if c == true {

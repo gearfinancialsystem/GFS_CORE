@@ -45,7 +45,7 @@ impl UndefinedMaturityProfile {
                 model.cycleAnchorDateOfInterestPayment.clone(),
                 Some(to.clone()),
                 model.cycleOfInterestPayment.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::IPCI,
@@ -64,7 +64,7 @@ impl UndefinedMaturityProfile {
                 model.cycleAnchorDateOfRateReset.clone(),
                 Some(to.clone()),
                 model.cycleOfRateReset.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::RR,
@@ -89,15 +89,20 @@ impl UndefinedMaturityProfile {
             let mut sorted_events: Vec<_> = rate_reset_events.iter().collect();
             sorted_events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
 
-            if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.eventTime > status_event.eventTime) {
-                let mut fixed_event = fixed_event.clone();
-                fixed_event.fStateTrans = Some(Rc::new(STF_RRF_PAM));
-                fixed_event.eventType = EventType::RRF;
-                rate_reset_events.push(fixed_event);
-            }
+            let mut fixed_event = sorted_events.iter().find(|&e| e.eventTime.clone() > status_event.eventTime.clone()).unwrap().clone().clone();
+            fixed_event.fstate = Some(Rc::new(STF_RRF_PAM));
+            fixed_event.eventType = EventType::RRF;
+            rate_reset_events.insert(fixed_event);
+            // 
+            // if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.eventTime > status_event.eventTime) {
+            //     let mut fixed_event = fixed_event.clone();
+            //     fixed_event.fstate = Some(Rc::new(STF_RRF_PAM));
+            //     fixed_event.eventType = EventType::RRF;
+            //     rate_reset_events.insert(fixed_event);
+            // }
         }
 
-        events.append(&mut rate_reset_events);
+        events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
         if let Some(cycle_of_fee) = &model.cycleOfFee {
@@ -106,7 +111,7 @@ impl UndefinedMaturityProfile {
                     model.cycleAnchorDateOfFee.clone(),
                     Some(to.clone()),
                     Some(cycle_of_fee.clone()),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     false,
                 ),
                 EventType::FP,

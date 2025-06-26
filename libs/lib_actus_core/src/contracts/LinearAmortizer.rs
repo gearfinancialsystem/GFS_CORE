@@ -5,6 +5,8 @@ use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
+use crate::events::EventType::EventType::RRF;
+
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
 use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
@@ -31,10 +33,16 @@ use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
 use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_interest::InterestCalculationBase;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
+use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
+use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
+use crate::util::RedemptionUtils::RedemptionUtils;
 
 pub struct LinearAmortizer;
 
@@ -61,13 +69,13 @@ impl LinearAmortizer {
             model.cycleAnchorDateOfPrincipalRedemption,
             Some(maturity.clone()),
             model.cycleOfPrincipalRedemption.clone(),
-            model.endOfMonthConvention,
+            model.endOfMonthConvention.clone().unwrap(),
             false,
         );
 
         // Choose the right state transition function depending on ipcb attributes
-        let stf: Rc<dyn StateTransitionFunction> = if model.interestCalculationBase
-            == Some(InterestCalculationBase::NTL)
+        let stf: Rc<dyn TraitStateTransitionFunction> = if model.interestCalculationBase
+            == Some(InterestCalculationBase::NTL(NTL))
         {
             Rc::new(STF_PR_LAM)
         } else {
@@ -83,7 +91,7 @@ impl LinearAmortizer {
             Some(stf),
             model.businessDayAdjuster.as_ref().unwrap(),
             model.contractID.as_ref(),
-        );
+        ).into_iter().collect();
 
         events.append(&mut pr_events);
 
@@ -111,8 +119,8 @@ impl LinearAmortizer {
         }
 
         // Choose the right state transition function for IPCI depending on ipcb attributes
-        let stf_ipci: Rc<dyn StateTransitionFunction> = if model.interestCalculationBase
-            == Some(InterestCalculationBase::NTL)
+        let stf_ipci: Rc<dyn TraitStateTransitionFunction> = if model.interestCalculationBase
+            == Some(InterestCalculationBase::NTL(NTL))
         {
             Rc::new(STF_IPCI_LAM)
         } else {
@@ -123,12 +131,12 @@ impl LinearAmortizer {
         if model.cycleOfInterestPayment.is_some()
             || model.cycleAnchorDateOfInterestPayment.is_some()
         {
-            let mut interest_events = EventFactory::create_events_with_convention(
+            let mut interest_events: Vec<ContractEvent> = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfInterestPayment,
                     Some(maturity.clone()),
                     model.cycleOfInterestPayment.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::IP,
@@ -137,7 +145,7 @@ impl LinearAmortizer {
                 Some(Rc::new(STF_IP_PAM)),
                 model.businessDayAdjuster.as_ref().unwrap(),
                 model.contractID.as_ref(),
-            );
+            ).into_iter().collect();
 
             // Adapt if interest capitalization is set
             if let Some(capitalization_end_date) = &model.capitalizationEndDate {
@@ -156,13 +164,13 @@ impl LinearAmortizer {
                         && e.eventTime == capitalization_end.eventTime)
                 });
 
-                interest_events.push(capitalization_end);
+                interest_events.push(capitalization_end.clone());
 
                 for e in &mut interest_events {
-                    if e.eventType == EventType::IP && e.eventTime <= capitalization_end.eventTime {
+                    if e.eventType == EventType::IP && e.eventTime <= capitalization_end.eventTime.clone(){
                         e.eventType = EventType::IPCI;
-                        e.fPayOff = Some(Rc::new(POF_IPCI_PAM));
-                        e.fStateTrans = Some(stf_ipci.clone());
+                        e.fpayoff = Some(Rc::new(POF_IPCI_PAM));
+                        e.fstate = Some(stf_ipci.clone());
                     }
                 }
             }
@@ -187,7 +195,7 @@ impl LinearAmortizer {
                 model.cycleAnchorDateOfRateReset,
                 Some(maturity.clone()),
                 model.cycleOfRateReset.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::RR,
@@ -213,17 +221,17 @@ impl LinearAmortizer {
             sorted_events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
 
             if let Some(fixed_event) = sorted_events
-                .iter()
-                .find(|&&e| e.eventTime > status_event.eventTime)
+                .iter_mut()
+                .find(|e| e.eventTime.clone().unwrap().clone() > status_event.eventTime.clone().unwrap())
             {
                 let mut fixed_event = fixed_event.clone();
-                fixed_event.fStateTrans = Some(Rc::new(STF_RRF_LAM));
-                fixed_event.eventType = EventType::RRF;
-                rate_reset_events.push(fixed_event);
+                fixed_event.fstate = Some(Rc::new(STF_RRF_LAM));
+                fixed_event.eventType = RRF;
+                rate_reset_events.insert(fixed_event);
             }
         }
 
-        events.append(&mut rate_reset_events);
+        events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
         if let Some(cycle_of_fee) = &model.cycleOfFee {
@@ -232,7 +240,7 @@ impl LinearAmortizer {
                     model.cycleAnchorDateOfFee,
                     Some(maturity.clone()),
                     Some(cycle_of_fee.clone()),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::FP,
@@ -247,14 +255,14 @@ impl LinearAmortizer {
         }
 
         // Scaling events (if specified)
-        if let Some(scaling_effect) = &model.scalingEffect {
+        if let scaling_effect= &model.scalingEffect.clone().unwrap().to_string() {
             if scaling_effect.contains('I') || scaling_effect.contains('N') {
                 let scaling_events = EventFactory::create_events_with_convention(
                     &ScheduleFactory::create_schedule(
                         model.cycleAnchorDateOfScalingIndex,
                         Some(maturity.clone()),
                         model.cycleOfScalingIndex.clone(),
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         false,
                     ),
                     EventType::SC,
@@ -270,13 +278,13 @@ impl LinearAmortizer {
         }
 
         // Interest calculation base events (if specified)
-        if model.interestCalculationBase == Some(InterestCalculationBase::NTL) {
+        if model.interestCalculationBase == Some(InterestCalculationBase::NTL(NTL)) {
             let icb_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfInterestCalculationBase,
                     Some(maturity.clone()),
                     model.cycleOfInterestCalculationBase.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     false,
                 ),
                 EventType::IPCB,
@@ -318,9 +326,10 @@ impl LinearAmortizer {
         events.retain(|e| e.eventTime >= status_event.eventTime);
 
         // Remove all post to-date events
-        let to_date = to.unwrap_or(maturity);
+        // let to_date = to.unwrap_or(maturity); // A CHECKER
+        let to_date = to;
         let post_date = EventFactory::create_event(
-            Some(to_date),
+            Some(to_date.clone()),
             EventType::AD,
             model.currency.as_ref(),
             None,
@@ -375,28 +384,29 @@ impl LinearAmortizer {
     }
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
-        if let Some(maturity) = model.maturityDate {
-            return maturity;
+        if let Some(maturity) = &model.maturityDate {
+            return maturity.as_ref().clone();
         }
 
         let last_event: IsoDatetime;
         let remaining_periods: i32;
-        let cycle_anchor_date = model.cycleAnchorDateOfPrincipalRedemption.unwrap();
-        let status_date = model.statusDate.unwrap();
-        let cycle = model.cycleOfPrincipalRedemption.as_ref().unwrap();
+        let cycle_anchor_date = model.cycleAnchorDateOfPrincipalRedemption.clone().unwrap();
+        let status_date = model.statusDate.clone().unwrap();
+        let cycle = model.cycleOfPrincipalRedemption.clone().unwrap();
 
         if cycle_anchor_date < status_date {
             let mut previous_events = ScheduleFactory::create_schedule(
                 Some(cycle_anchor_date.clone()),
                 Some(status_date.clone()),
                 Some(cycle.clone()),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             );
 
-            let cycle_period = CycleUtils::parse_period(cycle);
+            let cycle_period = CycleUtils::parse_period(&cycle.clone()).unwrap();
+
             previous_events.retain(|d| {
-                d >= &status_date.minus_period(&cycle_period)
+                d >= &(status_date + cycle_period.clone())
                     && d != &status_date
             });
 
@@ -411,14 +421,14 @@ impl LinearAmortizer {
                 .ceil() as i32)
                 - 1;
         }
-
-        let adjuster = EndOfMonthAdjuster::new(
-            model.endOfMonthConvention,
+        let cycle_period = &model.cycleOfPrincipalRedemption.clone().unwrap();
+        let adjuster = EndOfMonthConvention::new(
+            model.endOfMonthConvention.clone().unwrap(),
             last_event,
             cycle.clone(),
-        );
+        ).unwrap();
 
-        adjuster.shift(last_event.plus_period(&cycle_period.multiplied_by(remaining_periods)))
+        adjuster.shift(   last_event + CycleUtils::parse_period(cycle_period).unwrap().multiplied_by(remaining_periods)   )
     }
 
     fn init_state_space(
@@ -438,7 +448,7 @@ impl LinearAmortizer {
             states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
 
-            if model.interestCalculationBase == Some(InterestCalculationBase::NT) {
+            if model.interestCalculationBase == Some(InterestCalculationBase::NT(NT)) {
                 states.interestCalculationBaseAmount = states.notionalPrincipal;
             } else {
                 states.interestCalculationBaseAmount = Some(
@@ -466,7 +476,7 @@ impl LinearAmortizer {
 
         if model.nextPrincipalRedemptionPayment.is_none() {
             states.nextPrincipalRedemptionPayment =
-                Some(RedemptionUtils::redemption_amount(model, &states));
+                Some(RedemptionUtils::redemptionAmount(model, &states));
         } else {
             states.nextPrincipalRedemptionPayment = model.nextPrincipalRedemptionPayment;
         }

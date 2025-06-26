@@ -21,6 +21,7 @@ use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
 use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
 use crate::types::isoDatetime::IsoDatetime;
+use crate::util::CycleUtils::CycleUtils;
 
 pub struct CallMoney;
 
@@ -67,14 +68,14 @@ impl CallMoney {
         // Interest payment capitalization (if specified)
         if model.cycleOfInterestPayment.is_some() {
             let cycle_anchor_date = if model.cycleAnchorDateOfInterestPayment.is_none() {
-                model.initialExchangeDate.clone().unwrap().plus_period(&model.cycleOfInterestPayment.clone().unwrap())
+                model.initialExchangeDate.clone().unwrap() + CycleUtils::parse_period(&model.cycleOfInterestPayment.clone().unwrap()).unwrap()
             } else {
-                model.cycleAnchorDateOfInterestPayment.clone()
+                model.cycleAnchorDateOfInterestPayment.clone().unwrap()
             };
 
             let interest_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
-                    cycle_anchor_date,
+                    Some(cycle_anchor_date),
                     Some(maturity.clone()),
                     model.cycleOfInterestPayment.clone(),
                     model.endOfMonthConvention.clone().unwrap(),
@@ -209,7 +210,7 @@ impl CallMoney {
     }
 
     fn maturity(model: &ContractModel, to: &IsoDatetime) -> IsoDatetime {
-        model.maturityDate.clone().unwrap_or(to.clone())
+        model.maturityDate.clone().unwrap_or(Rc::new(to.clone())).clone().as_ref().clone()
     }
 
     fn init_state_space(model: &ContractModel) -> StateSpace {

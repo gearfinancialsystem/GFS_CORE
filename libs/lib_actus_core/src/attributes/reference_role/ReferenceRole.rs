@@ -3,6 +3,8 @@
 use std::str::FromStr;
 use crate::attributes::reference_type::ReferenceType::ReferenceType::CNT;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
+use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 
@@ -12,7 +14,8 @@ pub enum ReferenceRole {
     FIL,
     SEL,
     COVE,
-    COVI
+    COVI,
+    externalReferenceIndex
 }
 
 impl ReferenceRole {
@@ -26,6 +29,17 @@ impl ReferenceRole {
 
     pub fn new_COVI() -> Self { Self::COVI }
 
+    pub fn to_stringx(&self) -> Result<String, ParseError> {
+        match self {
+            Self::UDL => Ok("UDL".to_string()),
+            Self::FIL => Ok("FIL".to_string()),
+            Self::SEL => Ok("SEL".to_string()),
+            Self::COVE => Ok("COVE".to_string()),
+            Self::COVI => Ok("COVI".to_string()),
+            _ => Err(ParseError { message: format!("Invalid TOSTRING ContractPerformance ")})
+        }
+
+    }
 }
 
 impl FromStr for ReferenceRole {

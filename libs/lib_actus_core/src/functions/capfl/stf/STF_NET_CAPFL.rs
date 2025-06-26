@@ -23,14 +23,12 @@ impl TraitStateTransitionFunction for STF_NET_CAPFL {
     fn eval(
         &self,
         time: &IsoDatetime,
-        _states: &StateSpace,
+        states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
-    ) -> StateSpace {
-        let mut post_event_states = StateSpace::new();
-        post_event_states.statusDate = Some(*time);
-        post_event_states
+    )  {
+        states.statusDate = Some(*time);
     }
 }

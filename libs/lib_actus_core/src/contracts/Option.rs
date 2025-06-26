@@ -51,7 +51,7 @@ impl Option {
             ));
 
             let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-                exercise_date.plus_period(&model.settlementPeriod.as_ref().unwrap())
+                &(*exercise_date + model.clone().settlementPeriod.unwrap())
             );
 
             events.push(EventFactory::create_event(
@@ -64,7 +64,7 @@ impl Option {
             ));
         } else {
             events.push(EventFactory::create_event(
-                model.maturityDate.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
                 EventType::XD,
                 model.currency.as_ref(),
                 Some(Rc::new(POF_XD_OPTNS)),
@@ -73,7 +73,7 @@ impl Option {
             ));
 
             let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-                model.maturityDate.as_ref().unwrap().plus_period(&model.settlementPeriod.as_ref().unwrap())
+                &(model.maturityDate.clone().map(|rc| (*rc).clone()).unwrap() + model.settlementPeriod.clone().unwrap())
             );
 
             events.push(EventFactory::create_event(
@@ -88,7 +88,7 @@ impl Option {
 
         // Maturity event
         events.push(EventFactory::create_event(
-            model.maturityDate.clone(),
+            model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
             model.currency.as_ref(),
             Some(Rc::new(POF_MD_OPTNS)),

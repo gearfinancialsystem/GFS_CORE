@@ -93,10 +93,13 @@ impl CreditEnhancementCollateral {
     }
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
-        let covered_contract_refs: Vec<&ContractReference> = model.contractStructure.clone().unwrap()
+
+        let covered_contract_refs = model.contractStructure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
-            .collect();
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
+
 
         let mut maturity_dates: Vec<IsoDatetime> = covered_contract_refs
             .iter()
@@ -132,15 +135,17 @@ impl CreditEnhancementCollateral {
         Ok(states)
     }
 
-    fn calculate_notional_principal(
+    pub fn calculate_notional_principal(
         model: &ContractModel,
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covered_contract_refs: Vec<&ContractReference> = model.contractStructure.clone().unwrap()
+
+        let covered_contract_refs = model.contractStructure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
-            .collect();
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
 
         let states_at_time_point: Vec<StateSpace> = covered_contract_refs
             .iter()
@@ -178,21 +183,21 @@ impl CreditEnhancementCollateral {
                     * market_object_codes
                     .iter()
                     .map(|code| observer.state_at(code, time, &StateSpace::default(), model, true).unwrap())
-                    .sum()
+                    .sum::<f64>()
             }
         }
     }
 
-    fn calculate_market_value_covering_contracts(
+    pub fn calculate_market_value_covering_contracts(
         model: &ContractModel,
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covering_contract_refs: Vec<&ContractReference> = model.contractStructure.clone().unwrap()
+        let covering_contract_refs = model.contractStructure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVI)
-            .collect();
-
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
         let market_object_codes: Vec<String> = covering_contract_refs
             .iter()
             .map(|e| e.get_contract_attribute("marketObjectCode").unwrap())
@@ -215,7 +220,12 @@ impl CreditEnhancementCollateral {
             .map(|c| c.get_contract_attribute("contractID").unwrap())
             .collect();
 
-        let credit_event_type_covered = model.creditEventTypeCovered.clone().unwrap().get(0).unwrap();
+        let a_credit_event_type_covered = model.creditEventTypeCovered.clone().unwrap()
+            .iter()
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
+        let credit_event_type_covered = a_credit_event_type_covered.get(0).unwrap();
+
 
         let observed_events = observer.events(model);
 

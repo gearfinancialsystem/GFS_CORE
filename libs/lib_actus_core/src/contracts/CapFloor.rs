@@ -9,10 +9,16 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 
 use crate::attributes::ContractModel::ContractModel;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::functions::capfl::pof::POF_NET_CAPFL::POF_NET_CAPFL;
 use crate::functions::capfl::stf::STF_NET_CAPFL::STF_NET_CAPFL;
+use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
+use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
+use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
 pub struct CapFloor;
@@ -23,21 +29,21 @@ impl CapFloor {
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         // Compute underlying event schedule
-        let underlying_model = model.contractStructure
+        let underlying_model = model.contractStructure.clone().unwrap()
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
-            .and_then(|c| c.object.clone())
+            .and_then(|c| Some(c.object.clone().as_cm()))
             .map(|obj| {
-                let mut m = obj;
-                m.add_attribute("contractRole", ContractRole::RPA);
+                let mut m = obj.unwrap();
+                m.contractRole = Some(ContractRole::new_RPA()); //   .add_attribute("contractRole", ContractRole::RPA);
                 m
             })
             .ok_or("Underlying model not found")?;
 
         let mut events = ContractType::schedule(
-            underlying_model.maturity_date.as_ref().unwrap(),
+            underlying_model.maturityDate.clone().map(|rc| (*rc).clone()),
             &underlying_model,
-        )?;
+        ).unwrap();
 
         // Purchase
         if let Some(purchase_date) = &model.purchaseDate {
@@ -102,25 +108,25 @@ impl CapFloor {
         let underlying_model = model.contractStructure.clone().unwrap()
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
-            .and_then(|c| c.object.clone())
-            .ok_or("Underlying model not found")?;
+            .and_then(|c| Some(c.object.clone()))
+            .ok_or("Underlying model not found").unwrap();
 
-        let mut underlying_events = ContractType::apply(events.clone(), &underlying_model, observer)?
+        let mut underlying_events: Vec<ContractEvent> = ContractType::apply(events.clone(), &underlying_model.as_cm().unwrap(), observer).unwrap()
             .into_iter()
             .filter(|e| e.eventType == EventType::IP)
-            .collect::<Vec<_>>();
+            .collect();//::<Vec<_>>();
 
         // Evaluate events of underlying with cap/floor applied
-        let mut underlying_model_with_cap_floor = underlying_model.clone();
-        underlying_model_with_cap_floor.add_attribute("lifeCap", model.lifeCap);
-        underlying_model_with_cap_floor.add_attribute("lifeFloor", model.lifeFloor);
+        let mut underlying_model_with_cap_floor = underlying_model.clone().as_cm().unwrap();
+        underlying_model_with_cap_floor.lifeCap = model.lifeCap;
+        underlying_model_with_cap_floor.lifeFloor = model.lifeFloor;
 
         let mut underlying_with_cap_floor_events = events
             .into_iter()
             .map(|e| e.copy())
-            .collect::<Vec<_>>();
+            .collect();
 
-        underlying_with_cap_floor_events = ContractType::apply(underlying_with_cap_floor_events, &underlying_model_with_cap_floor, observer)?
+        underlying_with_cap_floor_events = ContractType::apply(underlying_with_cap_floor_events, &underlying_model_with_cap_floor, observer).unwrap()
             .into_iter()
             .filter(|e| e.eventType == EventType::IP)
             .collect::<Vec<_>>();
@@ -170,8 +176,8 @@ impl CapFloor {
             e1.eventTime.clone(),
             e1.eventType,
             e1.currency.as_ref(),
-            Some(Rc::new(POF_NET_CAPFL::new(e1, e2))),
-            Some(Rc::new(STF_NET_CAPFL::new(e1, e2))),
+            Some(Rc::new(POF_NET_CAPFL::new(e1.clone(), e2.clone()))),
+            Some(Rc::new(STF_NET_CAPFL::new(e1.clone(), e2.clone()))),
             model.contractID.as_ref(),
         );
 
@@ -179,7 +185,7 @@ impl CapFloor {
             &mut StateSpace::default(),
             model,
             observer,
-            &DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
+            &DayCountConvention::new_AAISDA(),//&DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
             model.businessDayAdjuster.as_ref().unwrap(),
         );
 

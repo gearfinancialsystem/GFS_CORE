@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="CargoProjects">
+    <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/actus-core-master-rust-project-v2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/actus-core-master-rust-project-v2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/ReferenceRole.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/ReferenceRole.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Annuity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Annuity.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/BoundaryControlledSwitch.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/BoundaryControlledSwitch.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CallMoney.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CallMoney.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CapFloor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CapFloor.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Commodity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Commodity.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementCollateral.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementCollateral.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementGuarantee.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementGuarantee.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ExoticLinearAmortizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ExoticLinearAmortizer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ForeignExchangeOutright.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ForeignExchangeOutright.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/LinearAmortizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/LinearAmortizer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/NegativeAmortizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/NegativeAmortizer.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Option.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Option.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PlainVanillaInterestRateSwap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PlainVanillaInterestRateSwap.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/UndefinedMaturityProfile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/UndefinedMaturityProfile.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_TD_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_TD_BCS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/stf/STF_NET_CAPFL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/stf/STF_NET_CAPFL.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/pof/POF_STD_CEC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/pof/POF_STD_CEC.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/stf/STF_XD_CEC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/stf/STF_XD_CEC.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/mod.rs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="TSNepBb9" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2z0jaWXklpd03sqE65vxfg4M9uY" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "language.rust.cargo.check",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RsExternalLinterProjectSettings">
+    <option name="runOnTheFly" value="true" />
+  </component>
+  <component name="RunManager" selected="Cargo.Test actus-core-master-rust-project-v2">
+    <configuration name="Run main" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="command" value="run --package main --bin main" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test actus-core-master-rust-project-v2" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --workspace" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="RustProjectSettings">
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="" />
+      <created>1750874950234</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1750874950234</updated>
+      <workItem from="1750874952272" duration="17554000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

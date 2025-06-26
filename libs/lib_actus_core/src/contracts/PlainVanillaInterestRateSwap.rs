@@ -62,7 +62,7 @@ impl PlainVanillaInterestRateSwap {
 
         // Principal redemption event
         events.push(EventFactory::create_event(
-            model.maturityDate.clone(),
+            model.maturityDate.clone().map(|rc| (*rc).clone()),
             EventType::MD,
             model.currency.as_ref(),
             Some(Rc::new(POF_MD_SWPPV)),
@@ -71,13 +71,13 @@ impl PlainVanillaInterestRateSwap {
         ));
 
         // Interest payment events
-        if model.deliverySettlement == Some(DeliverySettlement::D) || model.deliverySettlement.is_none() {
+        if model.deliverySettlement == Some(DeliverySettlement::D(D)) || model.deliverySettlement.is_none() {
             // In case of physical delivery (delivery of individual cash flows)
-            let interest_schedule = ScheduleFactory::create_schedule(
+            let interest_schedule = ScheduleFactory::create_schedule_end_time_true(
                 model.cycleAnchorDateOfInterestPayment.clone(),
-                model.maturityDate.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
                 model.cycleOfInterestPayment.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
             );
 
             // Fixed rate events
@@ -109,9 +109,9 @@ impl PlainVanillaInterestRateSwap {
             let interest_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule_end_time_true(
                     model.cycleAnchorDateOfInterestPayment.clone(),
-                    model.maturityDate.clone(),
+                    model.maturityDate.clone().map(|rc| (*rc).clone()),
                     model.cycleOfInterestPayment.clone(),
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                 ),
                 EventType::IP,
                 model.currency.as_ref(),
@@ -128,9 +128,9 @@ impl PlainVanillaInterestRateSwap {
         let rate_reset_events = EventFactory::create_events_with_convention(
             &ScheduleFactory::create_schedule(
                 model.cycleAnchorDateOfRateReset.clone(),
-                model.maturityDate.clone(),
+                model.maturityDate.clone().map(|rc| (*rc).clone()),
                 model.cycleOfRateReset.clone(),
-                model.endOfMonthConvention,
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::RR,

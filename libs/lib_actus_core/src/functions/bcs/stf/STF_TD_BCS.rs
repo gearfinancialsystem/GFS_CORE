@@ -18,8 +18,8 @@ impl TraitStateTransitionFunction for STF_TD_BCS {
         _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
-    ) -> StateSpace {
+    ) {
         states.notionalPrincipal = Some(0.0);
-        StateSpace::copy_state_space(states)
+
     }
 }

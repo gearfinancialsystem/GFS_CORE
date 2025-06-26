@@ -11,7 +11,7 @@ use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
 use crate::functions::pam::*;
@@ -32,6 +32,9 @@ use crate::functions::lam::stf::STF_PRD_LAM::STF_PRD_LAM;
 use crate::functions::lam::stf::STF_RR_LAM::STF_RR_LAM;
 use crate::functions::lam::stf::STF_RRF_LAM::STF_RRF_LAM;
 use crate::functions::lam::stf::STF_SC_LAM::STF_SC_LAM;
+use crate::functions::nam::pof::POF_PR_NAM::POF_PR_NAM;
+use crate::functions::nam::stf::STF_PR2_NAM::STF_PR2_NAM;
+use crate::functions::nam::stf::STF_PR_NAM::STF_PR_NAM;
 use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
 use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
 use crate::functions::pam::pof::POF_IPCI_PAM::POF_IPCI_PAM;
@@ -45,7 +48,8 @@ use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::types::IsoPeriod;
 use crate::util::CycleUtils::CycleUtils;
-
+use crate::util::RedemptionUtils::RedemptionUtils;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 pub struct Annuity;
 
 impl Annuity {
@@ -74,10 +78,11 @@ impl Annuity {
         ));
 
         // Principal redemption schedule (PR)
-        let stf = if model.clone().interestCalculationBase.unwrap() != InterestCalculationBase::NT(NT) {
-            Rc::new(STF_PR_NAM)
+        let mut stf: Rc<dyn TraitStateTransitionFunction>;
+        if model.clone().interestCalculationBase.unwrap() != InterestCalculationBase::NT(NT) {
+            stf = Rc::new(STF_PR_NAM)
         } else {
-            Rc::new(STF_PR2_NAM)
+            stf = Rc::new(STF_PR2_NAM)
         };
 
         events.extend(EventFactory::create_events_with_convention(
@@ -141,7 +146,7 @@ impl Annuity {
         }
 
         // Interest payment related events (IP)
-        let stf_ipci = if model.interestCalculationBase == Some(InterestCalculationBase::NTL(NTL)) {
+        let stf_ipci: Rc<dyn TraitStateTransitionFunction> = if model.interestCalculationBase == Some(InterestCalculationBase::NTL(NTL)) {
             Rc::new(STF_IPCI_LAM)
         } else {
             Rc::new(STF_IPCI2_LAM)
@@ -151,9 +156,9 @@ impl Annuity {
             let mut interest_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfInterestPayment,
-                    maturity,
-                    model.cycleOfInterestPayment,
-                    model.endOfMonthConvention,
+                    Some(maturity),
+                    model.cycleOfInterestPayment.clone(),
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
                 ),
                 EventType::IP,
@@ -165,9 +170,9 @@ impl Annuity {
             );
 
             if model.cycleAnchorDateOfInterestPayment != model.cycleAnchorDateOfPrincipalRedemption || model.cycleOfInterestPayment != model.cycleOfPrincipalRedemption {
-                let prcl = CycleUtils::parse_period(&model.cycleOfPrincipalRedemption.unwrap());
+                let prcl = CycleUtils::parse_period(&model.cycleOfPrincipalRedemption.clone().unwrap()).unwrap();
                 let pranxm = model.cycleAnchorDateOfPrincipalRedemption.unwrap() - prcl;
-                interest_events.retain(|e| !(e.eventType == EventType::IP && e.eventTime >= pranxm));
+                interest_events.retain(|e| !(e.eventType == EventType::IP && e.eventTime.clone().unwrap() >= pranxm));
 
                 let ipanxm = EventFactory::create_event_with_convention(
                     Some(pranxm),
@@ -178,14 +183,14 @@ impl Annuity {
                     &model.clone().businessDayAdjuster.unwrap(),
                     model.contractID.as_ref(),
                 );
-                interest_events.push(ipanxm);
+                interest_events.insert(ipanxm);
 
                 interest_events.extend(EventFactory::create_events_with_convention(
                     &ScheduleFactory::create_schedule(
                         model.cycleAnchorDateOfPrincipalRedemption,
-                        maturity,
+                        Some(maturity),
                         model.cycleOfPrincipalRedemption.clone(),
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         true,
                     ),
                     EventType::IP,
@@ -203,19 +208,19 @@ impl Annuity {
                     EventType::IPCI,
                     model.currency.as_ref(),
                     Some(Rc::new(POF_IPCI_PAM)),
-                    Some(stf_ipci),
-                    model.clone().businessDayAdjuster.unwrap(),
+                    Some(stf_ipci.clone()),
+                    &model.clone().businessDayAdjuster.unwrap(),
                     model.contractID.as_ref(),
                 );
 
                 interest_events.retain(|e| !(e.eventType == EventType::IP && e.eventTime == capitalization_end.eventTime));
-                interest_events.push(capitalization_end);
+                interest_events.insert(capitalization_end.clone());
 
-                for e in &mut interest_events {
+                for mut e in &mut interest_events.clone().into_iter() {
                     if e.eventType == EventType::IP && e.eventTime <= capitalization_end.eventTime {
                         e.eventType = EventType::IPCI;
-                        e.fPayOff = Some(Rc::new(POF_IPCI_PAM));
-                        e.fStateTrans = Some(stf_ipci.clone());
+                        e.fpayoff = Some(Rc::new(POF_IPCI_PAM));
+                        e.fstate = Some(stf_ipci.clone());
                     }
                 }
             }
@@ -228,23 +233,23 @@ impl Annuity {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IPCI_PAM)),
                 Some(stf_ipci),
-                model.clone().businessDayAdjuster.unwrap(),
+                &model.clone().businessDayAdjuster.unwrap(),
                 model.contractID.as_ref(),
             ));
         } else if model.cycleOfInterestPayment.is_none() && model.cycleAnchorDateOfInterestPayment.is_none() {
             let interest_events = EventFactory::create_events_with_convention(
-                Some(ScheduleFactory::create_schedule(
+                &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfPrincipalRedemption,
-                    maturity,
+                    Some(maturity),
                     model.clone().cycleOfPrincipalRedemption,
-                    model.endOfMonthConvention,
+                    model.endOfMonthConvention.clone().unwrap(),
                     true,
-                )),
+                ),
                 EventType::IP,
                 model.currency.as_ref(),
                 Some(Rc::new(POF_IP_LAM)),
                 Some(Rc::new(STF_IP_PAM)),
-                model.clone().businessDayAdjuster.unwrap(),
+                &model.businessDayAdjuster.clone().unwrap(),
                 model.contractID.as_ref(),
             );
             events.extend(interest_events);
@@ -252,20 +257,20 @@ impl Annuity {
 
         // Interest calculation base (IPCB)
         if let Some(interest_calculation_base) = &model.interestCalculationBase {
-            if interest_calculation_base == &InterestCalculationBase::NTL {
+            if interest_calculation_base.clone() == InterestCalculationBase::NTL(NTL) {
                 events.extend(EventFactory::create_events_with_convention(
-                    Some(ScheduleFactory::create_schedule(
+                    &ScheduleFactory::create_schedule(
                         model.cycleAnchorDateOfInterestCalculationBase,
-                        maturity,
+                        Some(maturity),
                         model.clone().cycleOfInterestCalculationBase,
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         false,
-                    )),
+                    ),
                     EventType::IPCB,
                     model.currency.as_ref(),
                     Some(Rc::new(POF_IPCB_LAM)),
                     Some(Rc::new(STF_IPCB_LAM)),
-                    model.clone().businessDayAdjuster.unwrap(),
+                    &model.clone().businessDayAdjuster.unwrap(),
                     model.contractID.as_ref(),
                 ));
             }
@@ -275,9 +280,9 @@ impl Annuity {
         let mut rate_reset_events = EventFactory::create_events_with_convention(
             &ScheduleFactory::create_schedule(
                 model.cycleAnchorDateOfRateReset,
-                maturity,
-                model.cycleOfRateReset,
-                model.endOfMonthConvention,
+                Some(maturity),
+                model.cycleOfRateReset.clone(),
+                model.endOfMonthConvention.clone().unwrap(),
                 false,
             ),
             EventType::RR,
@@ -298,24 +303,25 @@ impl Annuity {
                 model.contractID.as_ref(),
             );
 
-            if let Some(fixed_event) = rate_reset_events.iter_mut().find(|e| e > &status_event) {
-                fixed_event.fStateTrans = Some(Rc::new(STF_RRF_LAM));
-                fixed_event.eventType = EventType::RRF;
-                rate_reset_events.push(fixed_event.clone());
-            }
+            let mut fixed_eventa =  rate_reset_events.clone().iter().find(|e| e > &&status_event).unwrap().clone();
+            fixed_eventa.fstate = Some(Rc::new(STF_RRF_LAM));
+            fixed_eventa.eventType = EventType::RRF;
+            rate_reset_events.insert(fixed_eventa.clone());
+
+
         }
 
-        events.extend(rate_reset_events);
+        events.extend(rate_reset_events.clone());
 
-        let prf_schedule: HashSet<_> = rate_reset_events.iter().map(|e| e.eventTime).collect();
+        let prf_schedule: HashSet<_> = rate_reset_events.clone().iter().map(|e| e.eventTime.unwrap()).collect();
         if !prf_schedule.is_empty() {
             events.extend(EventFactory::create_events_with_convention(
-                &prf_schedule.into_iter().collect::<Vec<_>>(),
+                &prf_schedule,
                 EventType::PRF,
                 model.currency.as_ref(),
                 Some(Rc::new(POF_RR_PAM)),
                 Some(Rc::new(STF_PRF_ANN)),
-                model.clone().businessDayAdjuster.unwrap(),
+                &model.clone().businessDayAdjuster.unwrap(),
                 model.contractID.as_ref(),
             ));
         }
@@ -324,13 +330,13 @@ impl Annuity {
         if let Some(scaling_effect) = &model.scalingEffect {
             if scaling_effect.to_string().contains('I') || scaling_effect.to_string().contains('N') {
                 events.extend(EventFactory::create_events_with_convention(
-                    &Some(ScheduleFactory::create_schedule(
+                    &ScheduleFactory::create_schedule(
                         model.cycleAnchorDateOfScalingIndex,
-                        maturity,
+                        Some(maturity),
                         model.clone().cycleOfScalingIndex,
-                        model.endOfMonthConvention,
+                        model.endOfMonthConvention.clone().unwrap(),
                         false,
-                    )),
+                    ),
                     EventType::SC,
                     model.currency.as_ref(),
                     Some(Rc::new(POF_SC_PAM)),
@@ -419,8 +425,8 @@ impl Annuity {
     }
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
-        if let Some(maturity_date) = model.maturityDate {
-            return maturity_date;
+        if let Some(maturity_date) = model.maturityDate.clone() {
+            return *maturity_date;
         }
 
         if let Some(amortization_date) = model.amortizationDate {
@@ -437,23 +443,23 @@ impl Annuity {
         } else if ied + prcl.clone() > t0 {
             ied + prcl.clone()
         } else {
-            let mut previous_events = ScheduleFactory::create_schedule_end_time_true(
+            let mut previous_events: Vec<IsoDatetime> = ScheduleFactory::create_schedule_end_time_true(
                 model.cycleAnchorDateOfPrincipalRedemption,
                 Some(t0),
                 model.clone().cycleOfPrincipalRedemption,
                 model.clone().endOfMonthConvention.unwrap(),
-            );
+            ).into_iter().collect();
 
             previous_events.retain(|&d| d > t0);
             previous_events.sort();
             *previous_events.last().unwrap()
         };
 
-        let time_from_last_event_plus_one_cycle = model.dayCountConvention.as_ref().unwrap().day_count_fraction(last_event, last_event + prcl);
+        let time_from_last_event_plus_one_cycle = model.dayCountConvention.as_ref().unwrap().day_count_fraction(last_event, last_event + prcl.clone());
         let redemption_per_cycle = model.nextPrincipalRedemptionPayment.unwrap() - (time_from_last_event_plus_one_cycle * model.nominalInterestRate.unwrap() * model.notionalPrincipal.unwrap());
         let remaining_periods = ((model.notionalPrincipal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
 
-        model.clone().businessDayAdjuster.unwrap().shift_bd(last_event + prcl.multiplied_by(remaining_periods))
+        model.clone().businessDayAdjuster.unwrap().shift_bd(&(last_event.clone() + prcl.multiplied_by(remaining_periods)))
     }
 
     fn init_state_space(model: &ContractModel) -> StateSpace {
@@ -487,23 +493,23 @@ impl Annuity {
             let day_counter = model.dayCountConvention.as_ref().unwrap();
             let time_adjuster = model.clone().businessDayAdjuster.unwrap();
 
-            let mut ip_schedule = ScheduleFactory::create_schedule(
+            let mut ip_schedule: Vec<IsoDatetime> = ScheduleFactory::create_schedule(
                 model.cycleAnchorDateOfInterestPayment,
                 states.maturityDate,
                 model.clone().cycleOfInterestPayment,
                 model.clone().endOfMonthConvention.unwrap(),
                 true,
-            );
+            ).into_iter().collect();
 
             ip_schedule.sort();
 
             let date_earlier_than_t0: Vec<_> = ip_schedule.iter().filter(|&&date| date < states.statusDate.unwrap()).collect();
             let t_minus = date_earlier_than_t0.last().unwrap();
 
-            states.accruedInterest = day_counter.day_count_fraction(
+            states.accruedInterest = Some(day_counter.day_count_fraction(
                 time_adjuster.shift_sc(*t_minus),
                 time_adjuster.shift_sc(&states.statusDate.unwrap()),
-            ) * states.notionalPrincipal * states.nominalInterestRate;
+            ) * states.notionalPrincipal.clone().unwrap() * states.nominalInterestRate.clone().unwrap());
         }
 
         if model.feeRate.is_none() {
@@ -516,7 +522,7 @@ impl Annuity {
             if model.initialExchangeDate.unwrap() > model.statusDate.unwrap() {
                 // Fixed at initial PRF event
             } else {
-                states.nextPrincipalRedemptionPayment = RedemptionUtils::redemption_amount(model, &states);
+                states.nextPrincipalRedemptionPayment = Some(RedemptionUtils::redemptionAmount(model, &states));
             }
         } else {
             states.nextPrincipalRedemptionPayment = model.nextPrincipalRedemptionPayment;

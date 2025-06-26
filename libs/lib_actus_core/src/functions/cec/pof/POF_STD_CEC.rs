@@ -21,6 +21,6 @@ impl TraitPayOffFunction for POF_STD_CEC {
     ) -> f64 {
         let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
 
-        settlement_currency_fx_rate * states.exerciseAmount
+        settlement_currency_fx_rate * states.exerciseAmount.clone().unwrap()
     }
 }

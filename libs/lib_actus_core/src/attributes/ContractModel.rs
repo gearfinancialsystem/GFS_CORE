@@ -171,8 +171,8 @@ pub struct ContractModel {
     pub cycleOfDividend: Option<String>,
     pub nextDividendPaymentAmount: Option<f64>,
     pub exDividendDate: Option<IsoDatetime>,
-    pub arrayCycleAnchorDateOfInterestPayment: Option<String>,
-    pub arrayCycleOfInterestPayment: Option<String>,
+    pub arrayCycleAnchorDateOfInterestPayment: Option<Vec<IsoDatetime>>,
+    pub arrayCycleOfInterestPayment: Option<Vec<String>>,
     pub exerciseAmount: Option<f64>,
     pub settlementPeriod: Option<IsoPeriod>,
     pub exerciseDate: Option<IsoDatetime>,
@@ -414,8 +414,8 @@ impl ContractModel {
             "cycleOfDividend" =>Some(FieldValue::vString(self.cycleOfDividend.clone().unwrap())),
             "nextDividendPaymentAmount" =>Some(FieldValue::vF64(self.nextDividendPaymentAmount.clone().unwrap())),
             "exDividendDate" => Some(FieldValue::vIsoDatetime(self.exDividendDate.clone().unwrap())),
-            "arrayCycleAnchorDateOfInterestPayment" =>Some(FieldValue::vString(self.arrayCycleAnchorDateOfInterestPayment.clone().unwrap())),
-            "arrayCycleOfInterestPayment" =>Some(FieldValue::vString(self.arrayCycleOfInterestPayment.clone().unwrap())),
+            "arrayCycleAnchorDateOfInterestPayment" =>Some(FieldValue::vVecIsoDatetime(self.arrayCycleAnchorDateOfInterestPayment.clone().unwrap())),
+            "arrayCycleOfInterestPayment" =>Some(FieldValue::vVecString(self.arrayCycleOfInterestPayment.clone().unwrap())),
             "exerciseAmount" =>Some(FieldValue::vF64(self.exerciseAmount.clone().unwrap())),
             "settlementPeriod" =>Some(FieldValue::vIsoPeriod(self.settlementPeriod.clone().unwrap())),
             "exerciseDate" => Some(FieldValue::vIsoDatetime(self.exerciseDate.clone().unwrap())),
@@ -888,8 +888,8 @@ impl ContractModel {
                 cm.arrayCycleOfPrincipalRedemption = CommonUtils::provide_string_vec(sm, "arrayCycleOfPrincipalRedemption");
                 cm.arrayNextPrincipalRedemptionPayment = CommonUtils::provide_f64_vec(sm, "arrayNextPrincipalRedemptionPayment");
                 cm.arrayIncreaseDecrease = ArrayIncreaseDecrease::provide_vec(sm, "arrayIncreaseDecrease"); // to update
-                cm.arrayCycleAnchorDateOfInterestPayment = CommonUtils::provide_string(sm, "arrayCycleAnchorDateOfInterestPayment");
-                cm.arrayCycleOfInterestPayment = CommonUtils::provide_string(sm, "arrayCycleOfInterestPayment");
+                cm.arrayCycleAnchorDateOfInterestPayment = IsoDatetime::provide_vec(sm, "arrayCycleAnchorDateOfInterestPayment");
+                cm.arrayCycleOfInterestPayment = CommonUtils::provide_string_vec(sm, "arrayCycleOfInterestPayment");
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
@@ -1711,9 +1711,9 @@ impl ContractModel {
                     IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                cm.arrayCycleAnchorDateOfInterestPayment = CommonUtils::provide_string(sm, "arrayCycleAnchorDateOfInterestPayment");
+                cm.arrayCycleAnchorDateOfInterestPayment = IsoDatetime::provide_vec(sm, "arrayCycleAnchorDateOfInterestPayment");
                 cm.cycleOfInterestPayment = CommonUtils::provide_string(sm, "cycleOfInterestPayment");
-                cm.arrayCycleOfInterestPayment = CommonUtils::provide_string(sm, "arrayCycleOfInterestPayment");
+                cm.arrayCycleOfInterestPayment = CommonUtils::provide_string_vec(sm, "arrayCycleOfInterestPayment");
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
                 cm.exerciseAmount = CommonUtils::provide_f64default(sm, "exerciseAmount", 0.0);
                 cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");

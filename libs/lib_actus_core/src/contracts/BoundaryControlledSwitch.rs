@@ -6,7 +6,9 @@ use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
+
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
+
 use crate::functions::bcs::pof::POF_PRD_BCS::POF_PRD_BCS;
 use crate::functions::bcs::pof::POF_TD_BCS::POF_TD_BCS;
 use crate::functions::bcs::stf::STF_ME_BCS::STF_ME_BCS;
@@ -16,6 +18,10 @@ use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
 use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
 use crate::functions::pam::stf::STF_IED_PAM::STF_IED_PAM;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
+use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
+use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
+use crate::terms::grp_boundary::boundary_effect::Out::OUT;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::isoDatetime::IsoDatetime;
@@ -90,16 +96,16 @@ impl BoundaryControlledSwitch {
 
         // Activating child legs based on boundaryEffect
         if states.boundaryCrossedFlag.unwrap() {
-            match model.boundaryEffect.as_ref().unwrap().as_str() {
-                "knockINFirstLeg" => {
+            match model.boundaryEffect.as_ref().unwrap() {
+                BoundaryEffect::INFIL(INFIL) => {
                     states.boundaryLeg1ActiveFlag = Some(true);
                     states.boundaryLeg2ActiveFlag = Some(false);
                 }
-                "knockINSecondLeg" => {
+                BoundaryEffect::INSEL(INSEL) => {
                     states.boundaryLeg2ActiveFlag = Some(true);
                     states.boundaryLeg1ActiveFlag = Some(false);
                 }
-                "knockOUTCurrent" => {
+                BoundaryEffect::OUT(OUT) => {
                     states.boundaryLeg1ActiveFlag = Some(false);
                     states.boundaryLeg2ActiveFlag = Some(false);
                 }
@@ -108,29 +114,29 @@ impl BoundaryControlledSwitch {
         }
 
         // First leg model
-        let first_leg_model = model.contractStructure.iter()
-            .find(|c| c.referenceRole == ReferenceRole::FIL)
-            .and_then(|c| c.object.clone())
+        let first_leg_model = model.contractStructure.clone().unwrap().iter()
+            .find(|c| c.reference_role == ReferenceRole::FIL)
+            .and_then(|c| c.object.clone().as_cm())
             .unwrap();
 
         let mut first_leg_schedule = Vec::new();
 
         // Second leg model
-        let second_leg = model.contractStructure.iter()
-            .find(|c| c.referenceRole == ReferenceRole::SEL)
-            .and_then(|c| c.object.clone());
+        let second_leg = model.contractStructure.clone().unwrap().iter()
+            .find(|c| c.reference_role == ReferenceRole::SEL)
+            .and_then(|c| c.object.clone().as_cm());
 
         let mut second_leg_schedule = Vec::new();
         let second_leg_model = second_leg.unwrap();
 
         // Create children event schedule based on boundary conditions
-        if states.boundaryLeg1ActiveFlag {
+        if states.boundaryLeg1ActiveFlag.unwrap() == true {
             first_leg_schedule = ContractType::schedule(
-                first_leg_model.maturityDate.as_ref().unwrap(),
+                first_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
                 &first_leg_model,
             ).unwrap();
 
-            if !first_leg_model.contractType.eq(&ContractTypeEnum::PAM) {
+            if first_leg_model.contractType.clone().unwrap() != "PAM" {
                 first_leg_schedule.push(EventFactory::create_event(
                     states.statusDate.clone(),
                     EventType::PRD,
@@ -154,18 +160,18 @@ impl BoundaryControlledSwitch {
             first_leg_schedule.retain(|e| e.eventTime >= states.statusDate);
 
             // Apply schedule of children
-            let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model, observer);
+            let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model, observer).unwrap();
             events.extend(first_leg_events);
-        } else if !states.boundaryLeg1ActiveFlag
+        } else if states.boundaryLeg1ActiveFlag.clone().unwrap() == false
             && model.boundaryLegInitiallyActive.is_some()
-            && model.boundaryLegInitiallyActive.as_ref().unwrap().eq(&ReferenceRole::FIL)
+            && model.boundaryLegInitiallyActive.clone().unwrap().to_stringx().unwrap() == ReferenceRole::FIL.to_stringx().unwrap()
         {
             first_leg_schedule = ContractType::schedule(
-                first_leg_model.maturityDate.as_ref().unwrap(),
+                first_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
                 &first_leg_model,
             ).unwrap();
 
-            if !first_leg_model.contractType.eq(&ContractTypeEnum::PAM) {
+            if first_leg_model.contractType.clone().unwrap() != "PAM" {
                 first_leg_schedule.push(EventFactory::create_event(
                     model.purchaseDate.clone(),
                     EventType::PRD,
@@ -190,16 +196,16 @@ impl BoundaryControlledSwitch {
 
             // Apply schedule of children
             let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model, observer);
-            events.extend(first_leg_events);
+            events.extend(first_leg_events.unwrap());
         }
 
-        if states.boundaryLeg2ActiveFlag {
+        if states.boundaryLeg2ActiveFlag.clone().unwrap() == true {
             second_leg_schedule = ContractType::schedule(
-                second_leg_model.maturityDate.as_ref().unwrap(),
+                second_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
                 &second_leg_model,
             ).unwrap();
 
-            if !second_leg_model.contractType.eq(&ContractTypeEnum::PAM) {
+            if second_leg_model.contractType.clone().unwrap().to_string() != "PAM"{
                 second_leg_schedule.push(EventFactory::create_event(
                     states.statusDate.clone(),
                     EventType::PRD,
@@ -224,12 +230,12 @@ impl BoundaryControlledSwitch {
 
             // Apply schedule of children
             let second_leg_events = ContractType::apply(second_leg_schedule, &second_leg_model, observer);
-            events.extend(second_leg_events);
-        } else if !states.boundaryLeg2ActiveFlag
+            events.extend(second_leg_events.unwrap());
+        } else if states.boundaryLeg2ActiveFlag.clone().unwrap() == false
             && model.boundaryLegInitiallyActive.is_some()
-            && model.boundaryLegInitiallyActive.as_ref().unwrap().eq(&ReferenceRole::SEL)
+            && model.boundaryLegInitiallyActive.as_ref().unwrap().to_stringx().unwrap() == ReferenceRole::SEL.to_stringx().unwrap()
         {
-            if !second_leg_model.contractType.eq(&ContractTypeEnum::PAM) {
+            if second_leg_model.contractType.clone().unwrap() != "PAM" {
                 second_leg_schedule.push(EventFactory::create_event(
                     model.purchaseDate.clone(),
                     EventType::PRD,
@@ -253,17 +259,17 @@ impl BoundaryControlledSwitch {
             second_leg_schedule.push(td_event);
 
             second_leg_schedule = ContractType::schedule(
-                second_leg_model.maturityDate.as_ref().unwrap(),
+                second_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
                 &second_leg_model,
             ).unwrap();
 
             // Apply schedule of children
             let second_leg_events = ContractType::apply(second_leg_schedule, &second_leg_model, observer);
-            events.extend(second_leg_events);
+            events.extend(second_leg_events.unwrap());
         }
 
         // Termination of master contract
-        if states.boundaryCrossedFlag && model.boundaryEffect.as_ref().unwrap().ne("knockINFirstLeg") {
+        if states.boundaryCrossedFlag.clone().unwrap() == true && model.boundaryEffect.clone().unwrap() != BoundaryEffect::INFIL(INFIL) {
             events.push(EventFactory::create_event(
                 states.statusDate.clone(),
                 EventType::TD,
@@ -296,27 +302,27 @@ impl BoundaryControlledSwitch {
         // Initialize state variables
         states.statusDate = model.statusDate;
         states.contractPerformance = model.contractPerformance;
-        states.boundaryCrossedFlag = false;
-        states.boundaryMonitoringFlag = true;
+        states.boundaryCrossedFlag = Some(false);
+        states.boundaryMonitoringFlag = Some(true);
 
-        if let Some(role) = &model.boundaryLegInitiallyActive {
-            match role {
-                ReferenceRole::FIL => {
-                    states.boundaryLeg1ActiveFlag = true;
-                    states.boundaryLeg2ActiveFlag = false;
+        if let role = &model.boundaryLegInitiallyActive.clone().unwrap().to_stringx().unwrap() {
+            match role.as_str() {
+                "FIL" => {
+                    states.boundaryLeg1ActiveFlag = Some(true);
+                    states.boundaryLeg2ActiveFlag = Some(false);
                 }
-                ReferenceRole::SEL => {
-                    states.boundaryLeg2ActiveFlag = true;
-                    states.boundaryLeg1ActiveFlag = false;
+                "SEL" => {
+                    states.boundaryLeg2ActiveFlag = Some(true);
+                    states.boundaryLeg1ActiveFlag = Some(false);
                 }
                 _ => {
-                    states.boundaryLeg1ActiveFlag = false;
-                    states.boundaryLeg2ActiveFlag = false;
+                    states.boundaryLeg1ActiveFlag = Some(false);
+                    states.boundaryLeg2ActiveFlag = Some(false);
                 }
             }
         } else {
-            states.boundaryLeg1ActiveFlag = false;
-            states.boundaryLeg2ActiveFlag = false;
+            states.boundaryLeg1ActiveFlag = Some(false);
+            states.boundaryLeg2ActiveFlag = Some(false);
         }
 
         states

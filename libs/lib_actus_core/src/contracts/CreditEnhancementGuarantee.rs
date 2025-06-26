@@ -152,10 +152,11 @@ impl CreditEnhancementGuarantee {
         if let Some(maturity_date) = model.maturityDate.clone().map(|rc| (*rc).clone()) {
             maturity_date.clone()
         } else {
-            let covered_contract_refs: Vec<&ContractReference> = model.contractStructure.clone().unwrap()
+            let covered_contract_refs = model.contractStructure.clone().unwrap()
                 .iter()
                 .filter(|e| e.reference_role == ReferenceRole::COVE)
-                .collect();
+                .map(|cr| cr.clone())
+                .collect::<Vec<_>>();
 
             let mut maturity_dates: Vec<IsoDatetime> = covered_contract_refs
                 .iter()
@@ -206,16 +207,18 @@ impl CreditEnhancementGuarantee {
         Ok(states)
     }
 
-    fn calculate_notional_principal(
+    pub fn calculate_notional_principal(
         states: &StateSpace,
         model: &ContractModel,
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covered_contract_refs: Vec<&ContractReference> = model.contractStructure.clone().unwrap()
+
+        let covered_contract_refs = model.contractStructure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
-            .collect();
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
 
         let states_at_time_point: Vec<StateSpace> = covered_contract_refs
             .iter()

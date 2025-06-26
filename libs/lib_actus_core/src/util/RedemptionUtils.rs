@@ -1,121 +1,90 @@
-// SPDX-License-Identifier: Apache-2.0
-// Converted from the Java implementation of RedemptionUtils in org.actus.util
-
-use crate::AttributeConversionException::AttributeConversionException;
-
-use crate::traits::ContractModelTrait::ContractModelTrait;
-
-// use crate::algorithmic::DayCountCalculator::DayCountCalculator;
-use crate::states::StateSpace::StateSpace;
-// use crate::algorithmic::ScheduleFactory::ScheduleFactory;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-
-use chrono::prelude::*;
-
-
+use std::collections::HashSet;
+use crate::attributes::ContractModel::ContractModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;
 
-// impl RedemptionUtils {
-    // Calculate the NextPrincipalRedemption amount
-    // pub fn redemption_amount(
-    //     model: &dyn ContractModelTrait,
-    //     state: &StateSpace,
-    // ) -> Result<f64, AttributeConversionException> {
-    //     let redemption_amount: f64;
-    //     let status_date = state.statusDate;
-    //     let maturity = if model.get_as("AmortizationDate").is_none() {
-    //         state.maturityDate
-    //     } else {
-    //         model.get_as("AmortizationDate")
-    //     };
+impl RedemptionUtils {
+    pub fn redemptionAmount(model: &ContractModel, state: &StateSpace) -> f64 {
+        let redemption_amount: f64;
+        let status_date = state.statusDate.clone().unwrap();
+        let maturity = if model.amortizationDate.is_none() {
+            state.maturityDate.clone().unwrap()
+        } else {
+            model.amortizationDate.clone().unwrap()
+        };
 
-    //     let accrued_interest = state.accruedInterest;
-    //     let outstanding_notional = state.notionalPrincipal;
-    //     let interest_rate = state.nominalInterestRate;
+        let accrued_interest = state.accruedInterest.clone().unwrap();
+        let outstanding_notional = state.notionalPrincipal.clone().unwrap();
+        let interest_rate = state.nominalInterestRate.clone().unwrap();
 
-    //     // Extract day count convention
-    //     let day_counter: DayCountCalculator = model.get_as("DayCountConvention")?;
+        // extract day count convention
+        let day_counter = model.dayCountConvention.clone().unwrap();
 
-    //     // Determine remaining PR schedule
-    //     let mut event_times = ScheduleFactory::create_schedule_with_end_time(
-    //         model.get_as("CycleAnchorDateOfPrincipalRedemption"),
-    //         maturity,
-    //         model.get_as("CycleOfPrincipalRedemption"),
-    //         model.get_as("EndOfMonthConvention"),
-    //         true,
-    //     );
+        // determine remaining PR schedule
+        let mut event_times: HashSet<IsoDatetime> = ScheduleFactory::create_schedule(
+            model.cycleAnchorDateOfPrincipalRedemption,
+            Some(maturity),
+            model.cycleOfPrincipalRedemption.clone(),
+            model.endOfMonthConvention.unwrap(),
+            true
+        );
+        event_times.retain(|e| e >= &status_date);
+        event_times.remove(&status_date);
 
-    //     event_times.retain(|&d| d >= status_date);
-    //     event_times.remove(&status_date);
+        redemption_amount = match model.contractType.clone().unwrap().as_str() {
+            "LAM" => {
+                model.notionalPrincipal.clone().unwrap() / event_times.len() as f64 // on est sur que cest len ?
+            },
+            "ANN" => {
+                0.0 // a implementer
+            },
+            "NAM" => {
+                let mut event_times_sorted: Vec<IsoDatetime> = event_times.into_iter().collect();
 
-    //     // Compute redemption amount for different contracts
-    //     match model.get_as("ContractType") {
-    //         ContractTypeEnum::LAM => {
-    //             redemption_amount =
-    //                 model.get_as::<f64>("NotionalPrincipal") / event_times.len() as f64;
-    //         }
-    //         ContractTypeEnum::ANN | ContractTypeEnum::NAM => {
-    //             let mut event_times_sorted: Vec<DateTime<Utc>> =
-    //                 event_times.into_iter().collect();
-    //             event_times_sorted.sort();
-    //             let lb = 1;
-    //             let ub = event_times_sorted.len();
-    //             let scale = outstanding_notional
-    //                 + accrued_interest
-    //                 + day_counter
-    //                     .day_count_fraction(state.statusDate, event_times_sorted[0])?
-    //                     * interest_rate
-    //                     * outstanding_notional;
-    //             let sum = Self::sum(lb, ub, &event_times_sorted, interest_rate, &day_counter)?;
-    //             let frac = Self::product(lb, ub, &event_times_sorted, interest_rate, &day_counter)?
-    //                 / (1.0 + sum);
-    //             redemption_amount = scale * frac;
-    //         }
-    //         _ => {
-    //             redemption_amount = 0.0;
-    //         }
-    //     }
+                event_times_sorted.sort();
+                let lb = 1;
+                let ub = event_times_sorted.len();
+                let scale = outstanding_notional + accrued_interest + day_counter.day_count(state.statusDate.clone().unwrap(),
+                                                                                            event_times_sorted.get(0).unwrap().clone()) * interest_rate*outstanding_notional;
+                let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate, day_counter.clone());
+                let frac = RedemptionUtils::product(lb, ub as i32, event_times_sorted.clone(), interest_rate, day_counter.clone()) / (1.0 + sum);
+                scale * frac
+            },
+            _ => 0.0
+        };
+        
+        // finally, return the annuity payment
+        redemption_amount
+    }
 
-    //     // Return the annuity payment
-    //     Ok(redemption_amount)
-    // }
+    fn product(lb: i32, ub: i32, times: Vec<IsoDatetime>, ir: f64, day_counter: DayCountConvention) -> f64 {
+        let mut prod = 1.0;
+        for i in lb..ub {
+            prod *= RedemptionUtils::effective_rate(i, times.clone(), ir, day_counter.clone());
+        }
 
-    // fn product(
-    //     lb: usize,
-    //     ub: usize,
-    //     times: &[DateTime<Utc>],
-    //     ir: f64,
-    //     day_counter: &DayCountCalculator,
-    // ) -> Result<f64, AttributeConversionException> {
-    //     let mut prod = 1.0;
-    //     for i in lb..ub {
-    //         prod *= Self::effective_rate(i, times, ir, day_counter)?;
-    //     }
-    //     Ok(prod)
-    // }
+        prod
+    }
 
-    // fn sum(
-    //     lb: usize,
-    //     ub: usize,
-    //     times: &[DateTime<Utc>],
-    //     ir: f64,
-    //     day_counter: &DayCountCalculator,
-    // ) -> Result<f64, AttributeConversionException> {
-    //     let mut sum = 0.0;
-    //     for i in lb..ub {
-    //         sum += Self::product(i, ub, times, ir, day_counter)?;
-    //     }
-    //     Ok(sum)
-    // }
 
-    // fn effective_rate(
-    //     index: usize,
-    //     times: &[DateTime<Utc>],
-    //     ir: f64,
-    //     day_counter: &DayCountCalculator,
-    // ) -> Result<f64, AttributeConversionException> {
-    //     let yf = day_counter.day_count_fraction(times[index - 1], times[index]);
-    //     Ok(1.0 + ir * yf)
-    // }
-// }
+    fn effective_rate(index: i32, times: Vec<IsoDatetime>, ir: f64, day_counter: DayCountConvention) -> f64 {
+        let yf: f64 = day_counter.day_count_fraction (times[(index - 1) as usize],
+                                                      times[index as usize]);
+
+        1.0 + ir * yf
+    }
+
+
+    pub fn sumx(lb: i32, ub: i32, times: Vec<IsoDatetime>, ir: f64,
+                day_counter: DayCountConvention) -> f64 {
+        let mut sum = 0.0;
+        for i in lb..ub {
+            sum += RedemptionUtils::product(i, ub, times.clone(), ir, day_counter.clone());
+        }
+        sum
+    }
+}

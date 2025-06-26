@@ -1,16 +1,19 @@
 use std::error::Error;
 use std::rc::Rc;
 
-use crate::events::ContractEvent;
-use crate::events::EventFactory;
-use crate::events::EventType;
-use crate::externals::RiskFactorModel;
-use crate::state_space::StateSpace;
-use crate::attributes::ContractModel;
-use crate::conventions::daycount::DayCountCalculator;
-use crate::conventions::businessday::BusinessDayAdjuster;
-use crate::functions::stk::{POF_PRD_STK, STF_PRD_STK, POF_TD_STK, STF_TD_STK};
-use crate::types::IsoDatetime;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::attributes::ContractModel::ContractModel;
+use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
+use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
+use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct Commodity;
 
@@ -73,8 +76,8 @@ impl Commodity {
                 &mut states,
                 model,
                 observer,
-                &DayCountCalculator::new("AA", None),
-                &BusinessDayAdjuster::new(None, None),
+                &DayCountConvention::new_AAISDA(),
+                &BusinessDayAdjuster::new_NOS(model.calendar.clone().unwrap()),
             );
         }
 

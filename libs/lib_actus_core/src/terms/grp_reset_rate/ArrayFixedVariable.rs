@@ -46,7 +46,7 @@ impl ArrayFixedVariable {
                 let a2 = ArrayFixedVariable::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<ArrayFixedVariable> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str()).unwrap()   }).collect();
-                let b: Vec<Result<ArrayFixedVariable, Err>> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str())   }).collect();
+                let b: Vec<Result<ArrayFixedVariable, ParseError>> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str())   }).collect();
                 let c = b.iter().any(|r| r.is_err());
 
                 if c == true {
