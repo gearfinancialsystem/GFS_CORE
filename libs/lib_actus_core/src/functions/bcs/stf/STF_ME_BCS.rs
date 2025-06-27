@@ -1,4 +1,3 @@
-use std::cmp::PartialEq;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -28,7 +27,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
         if states.boundaryMonitoringFlag.unwrap_or(false) {
             if let Some(contract_structure) = &model.contractStructure {
                 if let Some(contract_reference) = contract_structure.iter().find(|e| {
-                    e.clone().reference_role == ReferenceRole::externalReferenceIndex
+                    e.reference_role == ReferenceRole::externalReferenceIndex
                 }) {
                     let cbv = risk_factor_model.state_at(
                         contract_reference.get_object().as_string().unwrap(),

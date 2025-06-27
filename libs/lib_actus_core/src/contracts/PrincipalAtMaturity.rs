@@ -4,7 +4,6 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use log::{debug, info, warn, error};
 
 use crate::functions::pam::pof::{
     POF_FP_PAM::POF_FP_PAM,
@@ -86,9 +85,8 @@ impl PrincipalAtMaturity {
             && (model.cycleOfInterestPayment.is_some() || model.cycleAnchorDateOfInterestPayment.is_some())
         {
             // Generate raw interest payment events (IP)
-            let a = model.cycleAnchorDateOfInterestPayment.clone().unwrap().format("%Y-%m-%d").to_string();
-            let b = model.maturityDate.clone().unwrap().format("%Y-%m-%d").to_string();
-            debug!("La valeur de a est : {}", a);
+            //let a = model.cycleAnchorDateOfInterestPayment.clone().unwrap().format("%Y-%m-%d").to_string();
+            //let b = model.maturityDate.clone().unwrap().format("%Y-%m-%d").to_string();
             let z = &ScheduleFactory::create_schedule(
                 model.cycleAnchorDateOfInterestPayment.clone(),
                 model.maturityDate.clone().map(|rc| (*rc).clone()),
@@ -96,7 +94,7 @@ impl PrincipalAtMaturity {
                 model.endOfMonthConvention.unwrap(),
                 true,
             );
-            let zz = z.iter().map(|a| a.format("%Y-%m-%d").to_string()).collect::<Vec<String>>();
+            //let zz = z.iter().map(|a| a.format("%Y-%m-%d").to_string()).collect::<Vec<String>>();
             let mut interest_events = EventFactory::create_events_with_convention(
                 z,
                 EventType::IP,
@@ -406,3 +404,17 @@ impl PrincipalAtMaturity {
         states
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::{Value, Map};
+    use std::fs::File;
+    use std::io::Read;
+    use std::error::Error;
+    use std::collections::HashMap;
+
+    //#[test]
+    //fn test_pam_contracts() -> Result<(), Box<dyn Error>> {}
+}
+

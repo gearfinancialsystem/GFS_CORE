@@ -29,7 +29,7 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
             time_adjuster.shift_sc(time)
         );
 
-        let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
+        //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
         let rate_multiplier = model.rateMultiplier.expect("rateMultiplier should always be Some");
         let rate_spread = model.rateSpread.expect("rateSpread should always be Some");
         let period_floor = model.periodFloor.expect("periodFloor should always be Some");

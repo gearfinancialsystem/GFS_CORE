@@ -1,8 +1,6 @@
 use std::str::FromStr;
-use crate::attributes::reference_type::ReferenceType::ReferenceType::CNT;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_calendar::calendars::NoCalendar::NC;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ReferenceType {

@@ -15,10 +15,10 @@ impl TraitStateTransitionFunction for STF_CD_STK {
         &self,
         time: &IsoDatetime,
         states: &mut StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     )  {
         states.contractPerformance = Some(ContractPerformance::new_DF());
         states.statusDate = Some(*time);

@@ -25,7 +25,7 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
 
         let fee_rate = model.feeRate.clone().expect("fee rate should always be Some");
-        let scaling_index_at_contract_deal_date = model.scalingIndexAtContractDealDate.clone().expect("fee rate should always be Some");
+        //let scaling_index_at_contract_deal_date = model.scalingIndexAtContractDealDate.clone().expect("fee rate should always be Some");
         let scaling_effect = model.scalingEffect.clone().expect("fee rate should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(

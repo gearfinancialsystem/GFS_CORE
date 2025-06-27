@@ -4,10 +4,6 @@ use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::contract_performance::Ma::MA;
-use crate::terms::grp_counterparty::contract_performance::Pf::PF;
-use crate::terms::grp_counterparty::contract_performance::Te::TE;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::util::CommonUtils::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -53,7 +49,7 @@ impl CreditEventTypeCovered {
             Some(s) => {
 
                 let  a =  s.extract_vec_str().unwrap();
-                let a2 = CreditEventTypeCovered::from_str(a.get(0)?.as_str()).unwrap();
+                //let a2 = CreditEventTypeCovered::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<CreditEventTypeCovered> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str()).unwrap()   }).collect();
                 let b: Vec<Result<CreditEventTypeCovered, ParseError>> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.as_str())   }).collect();
@@ -73,7 +69,6 @@ impl CreditEventTypeCovered {
             Self::DL(DL) => Ok("DL".to_string()),
             Self::DQ(DQ) => Ok("DQ".to_string()),
             Self::DF(DF) => Ok("DF".to_string()),
-            _ => Err(ParseError { message: format!("Invalid TOSTRING ContractPerformance ")})
         }
 
     }

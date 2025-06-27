@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;

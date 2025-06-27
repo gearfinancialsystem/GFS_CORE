@@ -12,12 +12,12 @@ pub struct POF_TD_BCS;
 impl TraitPayOffFunction for POF_TD_BCS {
     fn eval(
         &self,
-        time: &IsoDatetime,
-        states: &StateSpace,
-        model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _time: &IsoDatetime,
+        _states: &StateSpace,
+        _model: &ContractModel,
+        _risk_factor_model: &RiskFactorModel,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         // Remplacer les appels à settlement_currency_fx_rate ou risk_factor_model par 1.0
         let settlement_currency_fx_rate = 1.0;

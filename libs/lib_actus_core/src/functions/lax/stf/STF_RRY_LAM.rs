@@ -6,13 +6,14 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
+#[allow(non_camel_case_types)]
 pub struct STF_RRY_LAM;
 
 impl TraitStateTransitionFunction for STF_RRY_LAM {
     fn eval(
         &self,
         _time: &IsoDatetime,
-        states: &mut StateSpace,
+        _states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,

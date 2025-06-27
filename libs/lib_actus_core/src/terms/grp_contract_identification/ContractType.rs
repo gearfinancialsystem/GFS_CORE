@@ -1,7 +1,7 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::contracts::Annuity::Annuity;
 use crate::contracts::BoundaryControlledSwitch::BoundaryControlledSwitch;
-use crate::contracts::{CapFloor::CapFloor, CreditEnhancementGuarantee::CreditEnhancementGuarantee};
+use crate::contracts::{CapFloor::CapFloor, Commodity::Commodity, CreditEnhancementGuarantee::CreditEnhancementGuarantee};
 use crate::contracts::CallMoney::CallMoney;
 use crate::contracts::Cash::Cash;
 use crate::contracts::CreditEnhancementCollateral::CreditEnhancementCollateral;
@@ -18,6 +18,7 @@ use crate::contracts::PlainVanillaInterestRateSwap::PlainVanillaInterestRateSwap
 use crate::types::isoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::util::CommonUtils;
 
 #[derive(Debug, PartialEq)]
 pub struct ContractType;
@@ -28,24 +29,25 @@ impl ContractType {
     pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent>> {
 
         match cm.clone().contractType.unwrap().as_str() {
-            "ANN" => Some(Annuity::schedule(&to.unwrap(),cm).unwrap()),
-            "BCS" => Some(BoundaryControlledSwitch::schedule(&to.unwrap(),cm).unwrap()),
-            "CPFL" => Some(CapFloor::schedule(&to.unwrap(),cm).unwrap()),
-            "CEC" => Some(CreditEnhancementCollateral::schedule(&to.unwrap(),cm).unwrap()),
-            "CEG" => Some(CreditEnhancementGuarantee::schedule(&to.unwrap(),cm).unwrap()),
-            "CLM" => Some(CallMoney::schedule(&to.unwrap(),cm).unwrap()),
-            "CSH" => Some(Cash::schedule(&to.unwrap(),cm).unwrap()),
-            "FUTUR" => Some(Future::schedule(&to.unwrap(),cm).unwrap()),
-            "FXOUT" => Some(ForeignExchangeOutright::schedule(&to.unwrap(),cm).unwrap()),
-            "LAM" => Some(LinearAmortizer::schedule(&to.unwrap(),cm).unwrap()),
-            "LAX" => Some(ExoticLinearAmortizer::schedule(&to.unwrap(),cm).unwrap()),
-            "NAM" => Some(NegativeAmortizer::schedule(&to.unwrap(),cm).unwrap()),
-            "OPTNS" => Some(Optionx::schedule(&to.unwrap(),cm).unwrap()),
             "PAM" => Some(PrincipalAtMaturity::schedule(&to.unwrap(), cm).unwrap()),
-            "STK" => Some(Stock::schedule(&to.unwrap(),cm).unwrap()),
-            "SWAPS" => Some(Swap::schedule(&to.unwrap(),cm).unwrap()),
-            "SWPPV" => Some(PlainVanillaInterestRateSwap::schedule(&to.unwrap(),cm).unwrap()),
+            "LAM" => Some(LinearAmortizer::schedule(&to.unwrap(),cm).unwrap()),
+            "NAM" => Some(NegativeAmortizer::schedule(&to.unwrap(),cm).unwrap()),
+            "ANN" => Some(Annuity::schedule(&to.unwrap(),cm).unwrap()),
+            "LAX" => Some(ExoticLinearAmortizer::schedule(&to.unwrap(),cm).unwrap()),
+            "CLM" => Some(CallMoney::schedule(&to.unwrap(),cm).unwrap()),
             "UMP" => Some(BoundaryControlledSwitch::schedule(&to.unwrap(),cm).unwrap()),
+            "CSH" => Some(Cash::schedule(&to.unwrap(),cm).unwrap()),
+            "STK" => Some(Stock::schedule(&to.unwrap(),cm).unwrap()),
+            "COM" => Some(Commodity::schedule(&to.unwrap(),cm).unwrap()),
+            "FXOUT" => Some(ForeignExchangeOutright::schedule(&to.unwrap(),cm).unwrap()),
+            "SWPPV" => Some(PlainVanillaInterestRateSwap::schedule(&to.unwrap(),cm).unwrap()),
+            "SWAPS" => Some(Swap::schedule(&to.unwrap(),cm).unwrap()),
+            "CAPFL" => Some(CapFloor::schedule(&to.unwrap(),cm).unwrap()),
+            "OPTNS" => Some(Optionx::schedule(&to.unwrap(),cm).unwrap()),
+            "FUTUR" => Some(Future::schedule(&to.unwrap(),cm).unwrap()),
+            "CEG" => Some(CreditEnhancementGuarantee::schedule(&to.unwrap(),cm).unwrap()),
+            "CEC" => Some(CreditEnhancementCollateral::schedule(&to.unwrap(),cm).unwrap()),
+            "BCS" => Some(BoundaryControlledSwitch::schedule(&to.unwrap(),cm).unwrap()),
             _ => None
         }
 

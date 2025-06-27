@@ -3,7 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/libs/lib_actus_core/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libs/lib_datetime_period/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lib_risk_factor/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>

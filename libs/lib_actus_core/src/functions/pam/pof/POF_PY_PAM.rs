@@ -42,7 +42,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let status_date = states.statusDate.expect("status date should always exist");
                 let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
                 let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be Some");
-                let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
+                //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
                 
                 1.0 * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))

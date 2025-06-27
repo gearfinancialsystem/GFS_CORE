@@ -1,10 +1,10 @@
 [package]
-name = "lib_datetime_period"
+name = "lib_risk_factor"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "lib_datetime_period"
+name = "lib_risk_factor"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]

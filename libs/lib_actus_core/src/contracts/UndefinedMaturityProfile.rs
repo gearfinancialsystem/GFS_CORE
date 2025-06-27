@@ -18,7 +18,6 @@ use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::util::CommonUtils;
 
 pub struct UndefinedMaturityProfile;
 
@@ -93,13 +92,7 @@ impl UndefinedMaturityProfile {
             fixed_event.fstate = Some(Rc::new(STF_RRF_PAM));
             fixed_event.eventType = EventType::RRF;
             rate_reset_events.insert(fixed_event);
-            // 
-            // if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.eventTime > status_event.eventTime) {
-            //     let mut fixed_event = fixed_event.clone();
-            //     fixed_event.fstate = Some(Rc::new(STF_RRF_PAM));
-            //     fixed_event.eventType = EventType::RRF;
-            //     rate_reset_events.insert(fixed_event);
-            // }
+
         }
 
         events.append(&mut rate_reset_events.into_iter().collect());

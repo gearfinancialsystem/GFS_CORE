@@ -6,6 +6,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
+#[allow(non_camel_case_types)]
 pub struct STF_PR_LAX2 {
     pr_payment: f64,
 }

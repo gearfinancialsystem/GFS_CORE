@@ -7,19 +7,44 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+    <list default="true" id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="sss">
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util_tests/TestsUtils.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util_tests/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-ad0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-ann.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-capfl.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-cec.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-ceg.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-clm.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-com.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-csh.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-futur.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-fxout.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-lam.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-lax.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-nam.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-optns.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-pam.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-stk.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-swaps.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-swppv.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/tests_sets/actus-tests-ump.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/actus-core-master-rust-project-v2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/actus-core-master-rust-project-v2.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractReference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractReference.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/ReferenceRole.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/ReferenceRole.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_role/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_type/ReferenceType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_type/ReferenceType.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_type/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/reference_type/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Annuity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Annuity.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/BoundaryControlledSwitch.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/BoundaryControlledSwitch.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CallMoney.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CallMoney.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CapFloor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CapFloor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Commodity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Commodity.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementCollateral.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementCollateral.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementGuarantee.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/CreditEnhancementGuarantee.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ExoticLinearAmortizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/ExoticLinearAmortizer.rs" afterDir="false" />
@@ -28,68 +53,194 @@
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/NegativeAmortizer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/NegativeAmortizer.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Option.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Option.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PlainVanillaInterestRateSwap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PlainVanillaInterestRateSwap.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PrincipalAtMaturity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/PrincipalAtMaturity.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Stock.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Stock.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/UndefinedMaturityProfile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/UndefinedMaturityProfile.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/contracts/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/events/ContractEvent.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/events/ContractEvent.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/events/EventFactory.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/events/EventFactory.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/events/EventType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/events/EventType.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/exceptions/ContractTypeUnknownException.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/exceptions/ContractTypeUnknownException.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/pof/POF_PRD_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/pof/POF_PRD_BCS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/pof/POF_TD_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/pof/POF_TD_BCS.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_TD_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_TD_BCS.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/stf/STF_NET_CAPFL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/stf/STF_NET_CAPFL.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/pof/POF_NET_CAPFL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/pof/POF_NET_CAPFL.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/pof/POF_STD_CEC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/pof/POF_STD_CEC.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/stf/STF_XD_CEC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/cec/stf/STF_XD_CEC.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_MD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_MD_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_STD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_STD_CEG.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IED_CLM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IED_CLM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IP_CLM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IP_CLM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/pof/POF_MD_FUTUR.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/pof/POF_MD_FUTUR.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/pof/POF_XD_FUTUR.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/pof/POF_XD_FUTUR.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_IPCB_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_IPCB_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_IP_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_IP_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_PR_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/pof/POF_PR_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_FP_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_FP_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IED_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IED_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RR_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RR_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_SC_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_SC_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX2.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX2.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRF_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRF_LAX.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRY_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRY_LAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RR_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RR_LAX.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR2_NAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR2_NAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR_NAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR_NAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_PRD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_PRD_OPTNS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_STD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_STD_OPTNS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_TD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_TD_OPTNS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/stf/STF_MD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/stf/STF_MD_OPTNS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PRD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PRD_PAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PY_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PY_PAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PRD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PRD_PAM.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_CD_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_CD_STK.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_DV_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_DV_STK.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_TD_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STF_TD_STK.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STK_PRD_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/stf/STK_PRD_STK.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_NET_SWAPS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_NET_SWAPS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_PRD_SWAPS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_PRD_SWAPS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_TD_SWAPS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/pof/POF_TD_SWAPS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/stf/STF_NET_SWAPS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swaps/stf/STF_NET_SWAPS.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_IED_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_IED_SWPPV.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_IPFloat_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_IPFloat_SWPPV.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_MD_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/pof/POF_MD_SWPPV.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_PRD_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_PRD_SWPPV.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_RR_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_RR_SWPPV.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/pof/POF_PR_UMP.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/pof/POF_PR_UMP.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/BusinessDayAdjuster.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/BusinessDayAdjuster.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/EndOfMonthConvention.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/EndOfMonthConvention.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractStructure.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractStructure.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/ContractPerformance.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/ContractPerformance.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E283666.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E283666.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360ISDA.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360ISDA.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/types/IsoPeriod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/types/IsoPeriod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/types/isoDatetime.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/types/isoDatetime.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/CommonUtils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/CommonUtils.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_risk_factor/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/cycle.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/cycleAdjuster.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/mod.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/periodCycleAdjuster.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/traitCycleAjuster.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/cycle/weekdayCycleAdjuster.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/Value.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_risk_factor/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/local_datetime/local_datetime.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/local_datetime/mod.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/period/mod.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_datetime_period/src/period/period.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/main/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/main/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitLabMergeRequestFiltersHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPENED&quot;,
+    &quot;assignee&quot;: {
+      &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+      &quot;username&quot;: &quot;othxy&quot;,
+      &quot;fullname&quot;: &quot;Charles-Emmanuel Teuf&quot;
+    }
+  }
+}</component>
+  <component name="GitLabMergeRequestsSettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;first&quot;: &quot;git@gitlab.com:othxy/actus_core_2.git&quot;,
+    &quot;second&quot;: &quot;6a63db0e-370a-4598-90ce-87bba6353e41&quot;
+  }
+}</component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="TSNepBb9" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2z0jaWXklpd03sqE65vxfg4M9uY" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Cargo.Run main.executor": "Run",
+    "Cargo.Test Swap::tests.executor": "Debug",
+    "Cargo.Test contracts::Swap::tests::test_pam_contracts.executor": "Run",
+    "Cargo.Test contracts::Swap::tests::test_swap_contracts.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_actus_core/tests_sets",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.first.attach.projects": "true",
     "settings.editor.selected.configurable": "language.rust.cargo.check",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/libs/lib_actus_core/tests_sets" />
+      <recent name="$PROJECT_DIR$/libs" />
+    </key>
+  </component>
   <component name="RsExternalLinterProjectSettings">
     <option name="runOnTheFly" value="true" />
   </component>
-  <component name="RunManager" selected="Cargo.Test actus-core-master-rust-project-v2">
+  <component name="RunManager" selected="Cargo.Run main">
     <configuration name="Run main" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package main --bin main" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test Swap::tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package lib_actus_core --lib contracts::Swap::tests" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
       <option name="emulateTerminal" value="true" />
@@ -123,6 +274,48 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test contracts::Swap::tests::test_pam_contracts" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --package lib_actus_core --lib contracts::Swap::tests::test_pam_contracts -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test contracts::Swap::tests::test_swap_contracts" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package lib_actus_core --lib contracts::Swap::tests::test_swap_contracts -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo.Test contracts::Swap::tests::test_swap_contracts" />
+        <item itemvalue="Cargo.Test Swap::tests" />
+        <item itemvalue="Cargo.Test contracts::Swap::tests::test_pam_contracts" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
@@ -135,11 +328,138 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750874950234</updated>
-      <workItem from="1750874952272" duration="17554000" />
+      <workItem from="1750874952272" duration="21157000" />
+      <workItem from="1750939204034" duration="24050000" />
+      <workItem from="1750977765865" duration="3445000" />
     </task>
+    <task id="LOCAL-00001" summary="sss">
+      <option name="closed" value="true" />
+      <created>1750909336984</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750909336984</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="sss" />
+    <option name="LAST_COMMIT_MESSAGE" value="sss" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/util_tests/TestsUtils.rs</url>
+          <line>131</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>744</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>743</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>645</line>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>643</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>576</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>624</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>633</line>
+          <option name="timeStamp" value="86" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>742</line>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>564</line>
+          <option name="timeStamp" value="104" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>586</line>
+          <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>595</line>
+          <option name="timeStamp" value="126" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>605</line>
+          <option name="timeStamp" value="127" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>615</line>
+          <option name="timeStamp" value="128" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>731</line>
+          <option name="timeStamp" value="131" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>126</line>
+          <option name="timeStamp" value="132" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>84</line>
+          <option name="timeStamp" value="135" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/lib_actus_core/src/contracts/Swap.rs</url>
+          <line>123</line>
+          <option name="timeStamp" value="137" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CargoCommandRunConfiguration">
+        <watch expression="w1.clone().parse::&lt;f64&gt;().unwrap()" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

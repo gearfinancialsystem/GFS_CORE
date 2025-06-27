@@ -5,7 +5,6 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::util::CommonUtils;
 
 #[allow(non_camel_case_types)]
 pub struct POF_IP_LAM;
@@ -15,7 +14,7 @@ impl TraitPayOffFunction for POF_IP_LAM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,

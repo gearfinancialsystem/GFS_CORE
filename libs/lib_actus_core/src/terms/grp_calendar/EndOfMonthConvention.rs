@@ -4,9 +4,8 @@ use std::str::FromStr;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
-use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
-use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::util::CommonUtils::Value;
 use crate::util::CycleUtils::CycleUtils;
 
@@ -34,7 +33,7 @@ impl EndOfMonthConvention {
     pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: String) -> Result<Self, AttributeConversionException> {
         match end_of_month_convention {
             Self::EOM(EOM) => {
-                if (ref_date == ref_date.last_date_of_month() && CycleUtils::parse_period(&cycle).unwrap().get_months() > 0){ //ok
+                if ref_date == ref_date.last_date_of_month() && CycleUtils::parse_period(&cycle).unwrap().get_months() > 0{ //ok
                     Ok(EndOfMonthConvention::EOM(EOM))
                 }
                 else {

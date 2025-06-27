@@ -6,7 +6,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::isoDatetime::IsoDatetime;
-
+#[allow(non_camel_case_types)]
 pub struct POF_NET_SWAPS {
     pub e1: Option<ContractEvent>,
     pub e2: Option<ContractEvent>,
@@ -21,12 +21,12 @@ impl POF_NET_SWAPS {
 impl TraitPayOffFunction for POF_NET_SWAPS {
     fn eval(
         &self,
-        time: &IsoDatetime,
-        states: &StateSpace,
+        _time: &IsoDatetime,
+        _states: &StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         self.e1.clone().unwrap().payoff.unwrap() + self.e2.clone().unwrap().payoff.unwrap()
     }

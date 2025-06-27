@@ -1,7 +1,6 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_optionality::OptionType::OptionType;
@@ -21,7 +20,7 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _time_adjuster: &BusinessDayAdjuster,
     ) {
         if states.exerciseDate.is_none() {
             let mut x = 0.0;

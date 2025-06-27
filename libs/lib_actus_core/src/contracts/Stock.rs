@@ -4,32 +4,7 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use log::{debug, info, warn, error};
 
-use crate::functions::pam::pof::{
-    POF_FP_PAM::POF_FP_PAM,
-    POF_IED_PAM::POF_IED_PAM,
-    POF_IP_PAM::POF_IP_PAM,
-    POF_IPCI_PAM::POF_IPCI_PAM,
-    POF_MD_PAM::POF_MD_PAM,
-    POF_PRD_PAM::POF_PRD_PAM,
-    POF_RR_PAM::POF_RR_PAM,
-    POF_SC_PAM::POF_SC_PAM,
-    POF_TD_PAM::POF_TD_PAM
-};
-
-use crate::functions::pam::stf::{
-    STF_FP_PAM::STF_FP_PAM,
-    STF_IED_PAM::STF_IED_PAM,
-    STF_IP_PAM::STF_IP_PAM,
-    STF_IPCI_PAM::STF_IPCI_PAM,
-    STF_MD_PAM::STF_MD_PAM,
-    STF_PRD_PAM::STF_PRD_PAM,
-    STF_RR_PAM::STF_RR_PAM,
-    STF_RRF_PAM::STF_RRF_PAM,
-    STF_SC_PAM::STF_SC_PAM,
-    STF_TD_PAM::STF_TD_PAM,
-};
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::isoDatetime::IsoDatetime;

@@ -7,9 +7,7 @@ use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-
 use crate::attributes::ContractModel::ContractModel;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::functions::capfl::pof::POF_NET_CAPFL::POF_NET_CAPFL;
 use crate::functions::capfl::stf::STF_NET_CAPFL::STF_NET_CAPFL;
@@ -17,6 +15,7 @@ use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::types::isoDatetime::IsoDatetime;
@@ -111,7 +110,7 @@ impl CapFloor {
             .and_then(|c| Some(c.object.clone()))
             .ok_or("Underlying model not found").unwrap();
 
-        let mut underlying_events: Vec<ContractEvent> = ContractType::apply(events.clone(), &underlying_model.as_cm().unwrap(), observer).unwrap()
+        let underlying_events: Vec<ContractEvent> = ContractType::apply(events.clone(), &underlying_model.as_cm().unwrap(), observer).unwrap()
             .into_iter()
             .filter(|e| e.eventType == EventType::IP)
             .collect();//::<Vec<_>>();

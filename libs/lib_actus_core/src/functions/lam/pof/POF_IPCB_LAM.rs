@@ -12,12 +12,12 @@ pub struct POF_IPCB_LAM;
 impl TraitPayOffFunction for POF_IPCB_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
-        states: &StateSpace,
-        model: &ContractModel,
+        _time: &IsoDatetime,
+        _states: &StateSpace,
+        _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         0.0
     }

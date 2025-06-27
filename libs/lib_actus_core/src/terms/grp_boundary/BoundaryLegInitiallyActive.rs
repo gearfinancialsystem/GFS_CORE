@@ -3,12 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::contract_performance::Df::DF;
-use crate::terms::grp_counterparty::contract_performance::Dl::DL;
-use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
-use crate::terms::grp_counterparty::contract_performance::Ma::MA;
-use crate::terms::grp_counterparty::contract_performance::Pf::PF;
-use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::util::CommonUtils::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

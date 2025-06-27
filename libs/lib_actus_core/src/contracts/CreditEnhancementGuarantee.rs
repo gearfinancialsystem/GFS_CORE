@@ -1,5 +1,4 @@
 use std::error::Error;
-use std::ops::Deref;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -19,11 +18,9 @@ use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
-use crate::attributes::ContractReference::ContractReference;
 
 pub struct CreditEnhancementGuarantee;
 

@@ -2,10 +2,11 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
-use lib_actus_core::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
 use lib_actus_core::contracts::Swap::Swap;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::util::CommonUtils::Value;
+use lib_actus_core::util_tests::TestsUtils::test_read_and_parse_json;
+use lib_actus_core::util_tests::TestsUtils::json_to_dico;
 
 fn main() {
     let mut dico= HashMap::new(); // HashMap<String, String>
@@ -88,8 +89,16 @@ fn main() {
     dico.insert("contractStructure".to_string(), Value::Vec(v));
 
 
-
-
+    // test loading avec functions
+    // let pathx = "libs/lib_actus_core/tests_sets/actus-tests-swaps.json";
+    // let json_value = test_read_and_parse_json(pathx).unwrap();
+    // let dico_from_json = json_to_dico(json_value);
+    // 
+    // let first_val = dico_from_json.get("swaps01").unwrap().extract_hmap().unwrap();
+    // let terms = first_val.get("terms").unwrap().extract_hmap().unwrap();
+    // 
+    // let contracts_structs = terms.get("contractStructure").unwrap().extract_vec().unwrap();
+    // let first_contract = contracts_structs.get(0).unwrap();
     let mut contract_model = Box::new(ContractModel::new(&dico));
 
     //let contract_model = Box::new(ContractModel::new(&dico));
@@ -97,7 +106,7 @@ fn main() {
     let to_date = IsoDatetime::parse_from_str("2014-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     
     let risk_factor_model = RiskFactorModel;
-        
+    
     if let Ok(cm) = contract_model.as_ref() {
         let mut events = Swap::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {

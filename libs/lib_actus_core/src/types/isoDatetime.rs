@@ -1,4 +1,3 @@
-use std::cmp::min;
 use std::collections::HashMap;
 use std::ops::Add;
 use std::ops::Sub;
@@ -9,7 +8,7 @@ use crate::util::CommonUtils::Value;
 
 pub type IsoDatetime = NaiveDateTime;
 
-pub trait traitNaiveDateTimeExtension {
+pub trait TraitNaiveDateTimeExtension {
     fn double(&self) -> Self;
     fn is_last_day_of_month(&self) -> bool;
     fn last_date_of_month(&self) -> Self;
@@ -20,7 +19,7 @@ pub trait traitNaiveDateTimeExtension {
     fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<NaiveDateTime>>;
 }
 
-impl traitNaiveDateTimeExtension for NaiveDateTime {
+impl TraitNaiveDateTimeExtension for NaiveDateTime {
     fn double(&self) -> Self {
         *self
     }

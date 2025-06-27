@@ -14,7 +14,7 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
         &self,
         time: &IsoDatetime,
         states: &mut StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,

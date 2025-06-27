@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use crate::types::isoDatetime::IsoDatetime;
-use crate::types::isoDatetime::traitNaiveDateTimeExtension;
+use crate::types::isoDatetime::TraitNaiveDateTimeExtension;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 

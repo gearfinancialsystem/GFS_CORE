@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::error::Error;
 use std::rc::Rc;
 
@@ -36,7 +35,6 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
-use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -45,7 +43,7 @@ pub struct NegativeAmortizer;
 
 impl NegativeAmortizer {
     pub fn schedule(
-        to: &IsoDatetime,
+        _to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();

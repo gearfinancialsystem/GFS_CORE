@@ -425,7 +425,7 @@ impl ExoticLinearAmortizer {
             return maturity_date.clone().as_ref().clone();
         }
 
-        let day_counter = model.dayCountConvention.as_ref().unwrap();
+        //let day_counter = model.dayCountConvention.as_ref().unwrap();
         let time_adjuster = model.businessDayAdjuster.as_ref().unwrap();
         let notional_principal = model.notionalPrincipal.unwrap();
         let pr_anchor_dates = model.arrayCycleAnchorDateOfPrincipalRedemption.as_ref().unwrap();

@@ -1,15 +1,11 @@
-use std::collections::HashMap;
 use std::error::Error;
 use std::rc::Rc;
-use log::debug;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-use crate::functions::pam::pof::POF_MD_PAM::POF_MD_PAM;
-use crate::functions::pam::pof::POF_PRD_PAM::POF_PRD_PAM;
 use crate::functions::swaps::pof::POF_NET_SWAPS::POF_NET_SWAPS;
 use crate::functions::swaps::pof::POF_PRD_SWAPS::POF_PRD_SWAPS;
 use crate::functions::swaps::pof::POF_TD_SWAPS::POF_TD_SWAPS;
@@ -18,26 +14,10 @@ use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::state_space::StateSpace::StateSpace;
-use crate::util::CommonUtils::CommonUtils;
-
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
-use crate::terms::grp_optionality::PenaltyType::PenaltyType;
-use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
-use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::isoDatetime::IsoDatetime;
 
 
 // use crate::contracts::PrincipalAtMaturity::PrincipalAtMaturity;
@@ -58,7 +38,7 @@ impl Swap {
         let mat1 = first_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
         let mat2 = second_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
 
-        first_leg_schedule = ContractType::schedule(mat1,&first_leg_model).unwrap();
+        first_leg_schedule = ContractType::schedule(mat1, &first_leg_model).unwrap();
         second_leg_schedule = ContractType::schedule(mat2, &second_leg_model).unwrap();
         events.extend(first_leg_schedule);
         events.extend(second_leg_schedule);
@@ -140,7 +120,7 @@ impl Swap {
                 !second_leg_schedule.iter().any(|second_leg_event| second_leg_event.contractID == e.contractID)
         });
         
-        
+        /// PROBLEM A REGLER ?? first_leg_schedule modifiee passer events en reference ?
         let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model.clone(), observer);
         let second_leg_events = ContractType::apply(second_leg_schedule, &second_leg_model.clone(), observer);
 
@@ -454,4 +434,318 @@ impl Swap {
         netting
     }
 }
-
+// 
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::util_tests::TestsUtils::{convert_value_map_to_string_map_ref, test_read_and_parse_json};
+//     use crate::util_tests::TestsUtils::json_to_dico;
+//     use crate::util::CommonUtils::Value;
+//     use std::error::Error;
+//     use std::collections::{HashMap, HashSet};
+//     use std::hash::Hash;
+//     use chrono::ParseError;
+//     use log::debug;
+//     use crate::attributes::ContractReference::ContractReference;
+//     use crate::exceptions::ContractTypeUnknownException::ContractError;
+// 
+// 
+//     fn load_dico_tests() -> Vec<Value> {
+//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_actus_core/tests_sets/actus-tests-swaps.json";
+//         let json_value = test_read_and_parse_json(pathx).unwrap();
+//         let dico_from_json = json_to_dico(json_value);
+//         dico_from_json
+//     }
+//     fn are_contracts_equal(
+//         mut contracts1: Vec<HashMap<String, Value>>,
+//         mut contracts2: Vec<HashMap<String, Value>>
+//     ) -> bool {
+//         // 1. Vérifier que les vecteurs ont la même longueur
+//         let a = contracts1.len();
+//         let b = contracts2.len();
+// 
+//         if a != b {
+//             return false;
+//         } else {
+//             contracts1.sort_by(|a, b| {
+//                 // Comparaison par eventTime (String) en premier
+//                 let time_order = {
+//                     let a_time = a.get("eventTime").and_then(|v| match v {
+//                         Value::String(s) => Some(s.as_str()),
+//                         _ => None
+//                     });
+//                     let b_time = b.get("eventTime").and_then(|v| match v {
+//                         Value::String(s) => Some(s.as_str()),
+//                         _ => None
+//                     });
+//                     match (a_time, b_time) {
+//                         (Some(a), Some(b)) => a.cmp(b),
+//                         (Some(_), None) => std::cmp::Ordering::Less,
+//                         (None, Some(_)) => std::cmp::Ordering::Greater,
+//                         (None, None) => std::cmp::Ordering::Equal,
+//                     }
+//                 };
+// 
+//                 // Si les eventTime sont égaux, on compare par la valeur f64
+//                 if time_order == std::cmp::Ordering::Equal {
+//                     // Récupération des valeurs f64 avec gestion des erreurs
+//                     let a_value: f64 = match a.get("notionalPrincipal") { // Remplacez "amount" par votre clé
+//                         Some(Value::F64(n)) => *n,
+//                         _ => 0.0 // Valeur par défaut si la clé est manquante ou du mauvais type
+//                     };
+//                     let b_value: f64 = match b.get("notionalPrincipal") { // Remplacez "amount" par votre clé
+//                         Some(Value::F64(n)) => *n,
+//                         _ => 0.0 // Valeur par défaut si la clé est manquante ou du mauvais type
+//                     };
+// 
+//                     // Comparaison des f64
+//                     a_value.partial_cmp(&b_value).unwrap_or(std::cmp::Ordering::Equal)
+//                 } else {
+//                     time_order
+//                 }
+//             });
+//             // contracts1.sort_by(|a, b| {
+//             //     let a_time = a.get("eventTime").and_then(|v| {
+//             //         if let Value::String(s) = v { Some(s) } else { None }
+//             //     });
+//             //     let b_time = b.get("eventTime").and_then(|v| {
+//             //         if let Value::String(s) = v { Some(s) } else { None }
+//             //     });
+//             //     a_time.cmp(&b_time)
+//             // });
+// 
+//             contracts2.sort_by(|a, b| {
+//                 // Comparaison par eventTime (String) en premier
+//                 let time_order = {
+//                     let a_time = a.get("eventTime").and_then(|v| match v {
+//                         Value::String(s) => Some(s.as_str()),
+//                         _ => None
+//                     });
+//                     let b_time = b.get("eventTime").and_then(|v| match v {
+//                         Value::String(s) => Some(s.as_str()),
+//                         _ => None
+//                     });
+//                     match (a_time, b_time) {
+//                         (Some(a), Some(b)) => a.cmp(b),
+//                         (Some(_), None) => std::cmp::Ordering::Less,
+//                         (None, Some(_)) => std::cmp::Ordering::Greater,
+//                         (None, None) => std::cmp::Ordering::Equal,
+//                     }
+//                 };
+// 
+//                 // Si les eventTime sont égaux, on compare par la valeur f64
+//                 if time_order == std::cmp::Ordering::Equal {
+//                     // Récupération des valeurs f64 avec gestion des erreurs
+//                     let a_value: f64 = match a.get("notionalPrincipal") { // Remplacez "amount" par votre clé
+//                         Some(Value::F64(n)) => *n,
+//                         _ => 0.0 // Valeur par défaut si la clé est manquante ou du mauvais type
+//                     };
+//                     let b_value: f64 = match b.get("notionalPrincipal") { // Remplacez "amount" par votre clé
+//                         Some(Value::F64(n)) => *n,
+//                         _ => 0.0 // Valeur par défaut si la clé est manquante ou du mauvais type
+//                     };
+// 
+//                     // Comparaison des f64
+//                     a_value.partial_cmp(&b_value).unwrap_or(std::cmp::Ordering::Equal)
+//                 } else {
+//                     time_order
+//                 }
+//             });
+//             // contracts2.sort_by(|a, b| {
+//             //     let a_time = a.get("eventDate").and_then(|v| {
+//             //         if let Value::String(s) = v { Some(s) } else { None }
+//             //     });
+//             //     let b_time = b.get("eventDate").and_then(|v| {
+//             //         if let Value::String(s) = v { Some(s) } else { None }
+//             //     });
+//             //     a_time.cmp(&b_time)
+//             // });
+// 
+//             let mut vec_bool: Vec<bool> = vec![];
+//             let mut i = 0;
+//             for hm in contracts1.into_iter() {
+//                 for (k, v)  in hm.iter() {
+// 
+//                     match k.as_str() {
+//                         "eventDate" => {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             if w1 == w2 {
+//                                 vec_bool.push(true);
+//                             }
+//                             else {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "eventType" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             if w1 == w2 {
+//                                 vec_bool.push(true);
+//                             }
+//                             else {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "payoff" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             if (w1 * 100.0).round() / 100.0 == (w2 * 100.0).round() / 100.0 {
+//                                 vec_bool.push(true);
+//                             } else {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "currency" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             if w1 == w2 {
+//                                 vec_bool.push(true);
+//                             } else
+//                             {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "notionalPrincipal" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             if (w1 * 100.0).round() / 100.0 == (w2 * 100.0).round() / 100.0 {
+//                                 vec_bool.push(true);
+//                             } else {
+//                                 //let invest = hm.get("state");
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "nominalInterestRate" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             if (w1 * 100.0).round() / 100.0 == (w2 * 100.0).round() / 100.0 {
+//                                 vec_bool.push(true);
+//                             } else {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         "accruedInterest" =>  {
+//                             let w1 = hm.get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_f64().unwrap();
+//                             if (w1 * 100.0).round() / 100.0 == (w2 * 100.0).round() / 100.0 {
+//                                 vec_bool.push(true);
+//                             } else {
+//                                 vec_bool.push(false);
+//                             }
+//                         },
+//                         _ => {}
+//                     }
+//                 }
+// 
+//                 i = i + 1;
+//             }
+// 
+//             println!("{:?}", vec_bool);
+//         }
+//         true
+// 
+//     }
+// 
+//     #[test]
+//     fn test_swap_contracts()  {
+// 
+//         let dico_tests = load_dico_tests();
+// 
+//         //let dico_tests: Vec<HashMap<String, Value>> = vec![load_dico_tests()];
+//         for el in dico_tests.iter() {
+// 
+//             let curr_test = el.extract_hmap().unwrap();
+// 
+//             let curr_identifier = curr_test.get("identifier").unwrap().extract_string();
+//             let curr_terms = curr_test.get("terms").unwrap().extract_hmap();
+//             let curr_to = curr_test.get("to").unwrap().extract_string();
+//             let curr_data_observed = curr_test.get("dataObserved").unwrap().extract_hmap(); // verifier si cest None
+//             let curr_events_observed = curr_test.get("eventsObserved").unwrap().extract_vec();
+//             let curr_results = curr_test.get("results").unwrap().extract_vec().unwrap();
+//             //let a = curr_results.get(0).unwrap().get("notionalPrincipal").unwrap().extract_string().unwrap();
+//             let to_date = if let Some(curr_to) = curr_to {
+//                 IsoDatetime::parse_from_str(&curr_to, "%Y-%m-%dT%H:%M:%S").ok()
+//             } else {
+//                 None
+//             };
+// 
+//             let mut contract_model: Box<Result<ContractModel, ContractError>> = if let Some(ref curr_terms) = curr_terms {
+//                 // Supposons que ContractModel::new retourne Result<ContractModel, String>
+//                 match ContractModel::new(&curr_terms) {
+//                     Ok(model) => Box::new(Ok(model)),
+//                     Err(e) => Box::new(Err(ContractError::from(e))),
+//                 }
+//             } else {
+//                 Box::new(Err(ContractError::MissingTerms))
+//             };
+// 
+//             let risk_factor_model = RiskFactorModel;
+// 
+// 
+//             let mut vec_results: Vec<HashMap<String, Value>> = vec![];
+//             if let Ok(cm) = contract_model.as_ref() {
+//                 let mut events = Swap::schedule(&to_date.unwrap(), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+// 
+//                 if let Ok(events_res) = events {
+//                     let events2 = Swap::apply(events_res, cm, &risk_factor_model);
+// 
+//                     for ce in events2.iter() {
+//                         let mut sub_res_hm: HashMap<String, Value> = HashMap::new();
+//                         sub_res_hm.insert("eventDate".to_string(), Value::String( ce.eventTime.unwrap().format("%Y-%m-%dT%H:%M:%S").to_string() ));
+//                         sub_res_hm.insert("eventType".to_string(), Value::String( ce.eventType.clone().to_string() ));
+//                         sub_res_hm.insert("payoff".to_string(), Value::F64( ce.payoff.unwrap() ));
+//                         sub_res_hm.insert("currency".to_string(),Value::String( ce.currency.clone().unwrap() ));
+//                         let ci = ce.contractID.clone().unwrap();
+// 
+//                         let vContRef: Vec<ContractReference> = cm.contractStructure.clone()
+//                             .unwrap_or_default()
+//                             .iter()
+//                             .filter(|cr| {
+//                                 cr.object.as_cm()
+//                                     .and_then(|cm_obj| cm_obj.contractID.clone())
+//                                     .map_or(false, |id| id == ci)
+//                             })
+//                             .cloned()
+//                             .collect();
+// 
+//                         let not2 = vContRef.get(0)
+//                             .and_then(|cr| cr.object.as_cm())
+//                             .and_then(|cm_obj| cm_obj.notionalPrincipal.clone())
+//                             .unwrap_or_default();
+// 
+//                         sub_res_hm.insert("notionalPrincipal".to_string(), Value::F64( not2 ));
+// 
+//                         let nomInt2 = vContRef.get(0)
+//                             .and_then(|cr| cr.object.as_cm())
+//                             .and_then(|cm_obj| cm_obj.nominalInterestRate.clone())
+//                             .unwrap_or_default();
+//                         sub_res_hm.insert("nominalInterestRate".to_string(), Value::F64( nomInt2  ));
+// 
+//                         let accInt = vContRef.get(0)
+//                             .and_then(|cr| cr.object.as_cm())
+//                             .and_then(|cm_obj| cm_obj.accruedInterest.clone())
+//                             .unwrap_or_default();
+//                         sub_res_hm.insert("accruedInterest".to_string(), Value::F64( accInt  ));
+// 
+//                         println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.eventTime.unwrap(), ce.eventType, ce.payoff, ce.state.accruedInterest);
+//                         vec_results.push(sub_res_hm);
+//                     }
+// 
+// 
+//                     println!("events");
+//                 }
+//             }
+//              // enlever pour faire les autres tests
+// 
+//             let mut v1  = convert_value_map_to_string_map_ref(&vec_results);
+//             let mut v2  = convert_value_map_to_string_map_ref(&curr_results.clone());
+//             let t = are_contracts_equal(vec_results, curr_results.clone());
+//             //assert!(are_contracts_equal(&vec_results, &curr_results));
+//             println!("events");
+//             break;
+// 
+//         }
+// 
+//     }
+// }

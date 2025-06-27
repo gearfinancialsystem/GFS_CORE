@@ -12,12 +12,12 @@ pub struct POF_STD_CEC;
 impl TraitPayOffFunction for POF_STD_CEC {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        _time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
 

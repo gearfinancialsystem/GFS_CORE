@@ -4,7 +4,6 @@ use std::rc::Rc;
 
 use crate::exceptions::ParseError::ParseError;
 
-// Import des différentes conventions
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;
 use crate::terms::grp_calendar::businessday::conventions::Scf::SCF;
 use crate::terms::grp_calendar::businessday::conventions::Scmf::SCMF;
@@ -15,7 +14,6 @@ use crate::terms::grp_calendar::businessday::conventions::Scmp::SCMP;
 use crate::terms::grp_calendar::businessday::conventions::Csp::CSP;
 use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 
-use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::types::isoDatetime::IsoDatetime;
 use crate::util::CommonUtils::Value;

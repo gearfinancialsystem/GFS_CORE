@@ -3,7 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
 use crate::util::CommonUtils::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -43,7 +42,7 @@ impl ArrayFixedVariable {
             Some(s) => {
 
                 let  a =  s.extract_vec_str().unwrap();
-                let a2 = ArrayFixedVariable::from_str(a.get(0)?.as_str()).unwrap();
+                //let a2 = ArrayFixedVariable::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<ArrayFixedVariable> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str()).unwrap()   }).collect();
                 let b: Vec<Result<ArrayFixedVariable, ParseError>> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.as_str())   }).collect();

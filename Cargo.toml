@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "libs/lib_actus_core",
-    "libs/lib_datetime_period",
+    "libs/lib_risk_factor",
     "main"
 ]
 resolver = "2"

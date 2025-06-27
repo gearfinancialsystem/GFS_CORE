@@ -12,12 +12,12 @@ pub struct POF_STD_OPTNS;
 impl TraitPayOffFunction for POF_STD_OPTNS {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        _time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
         let exercise_amount = states.exerciseAmount.expect("exerciseAmount should always exist");

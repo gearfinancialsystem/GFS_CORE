@@ -21,7 +21,6 @@ use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
 
 pub struct ForeignExchangeOutright;
 

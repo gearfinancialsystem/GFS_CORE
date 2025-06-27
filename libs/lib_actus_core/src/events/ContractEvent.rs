@@ -18,16 +18,6 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
 
 
-//
-// Lorsque vous appelez sorted() sur une liste de ContractEvent, la méthode utilise l'ordre naturel défini par l'interface Comparable<ContractEvent>, qui est implémentée par la classe ContractEvent. Plus précisément, le tri est effectué en utilisant la méthode compareTo de la classe ContractEvent, qui compare les événements basés sur leur epochOffset.
-//
-// Ainsi, les événements sont triés dans l'ordre croissant de leur epochOffset, ce qui correspond à un ordre chronologique basé sur le temps de l'événement et un décalage spécifique au type d'événement.
-//
-// Réponse finale :
-//
-// La méthode sorted() utilise l'ordre naturel défini par la méthode compareTo de la classe ContractEvent. Les événements sont triés selon leur epochOffset, qui est basé sur le temps de l'événement et un décalage spécifique au type d'événement.
-//
-
 #[derive(Clone)]
 pub struct ContractEvent {
     pub epochOffset: Option<i64>,

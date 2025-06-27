@@ -22,12 +22,9 @@ use crate::functions::swppv::stf::STF_RR_SWPPV::STF_RR_SWPPV;
 use crate::functions::swppv::stf::STF_TD_SWPPV::STF_TD_SWPPV;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::isoDatetime::IsoDatetime;
-
-use crate::util::CommonUtils;
 
 pub struct PlainVanillaInterestRateSwap;
 

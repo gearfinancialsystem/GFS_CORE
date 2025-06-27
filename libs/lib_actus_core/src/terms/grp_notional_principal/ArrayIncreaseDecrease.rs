@@ -3,7 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::util::CommonUtils::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -44,7 +43,7 @@ impl ArrayIncreaseDecrease {
             Some(s) => {
 
                 let  a =  s.extract_vec_str().unwrap();
-                let a2 = ArrayIncreaseDecrease::from_str(a.get(0)?.as_str()).unwrap();
+                //let a2 = ArrayIncreaseDecrease::from_str(a.get(0)?.as_str()).unwrap();
 
                 let b0: Vec<ArrayIncreaseDecrease> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.as_str()).unwrap()   }).collect();
                 let b: Vec<Result<ArrayIncreaseDecrease, ParseError>> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.as_str())   }).collect();

@@ -4,7 +4,6 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
@@ -51,7 +50,7 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         });
 
         // Placeholder for risk factor calculation
-        let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
+        //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
         let rate_multiplier = model.rateMultiplier.unwrap_or(1.0);
         let rate_spread = model.rateSpread.unwrap_or(0.0);
 

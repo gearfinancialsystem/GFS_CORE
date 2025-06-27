@@ -1,49 +1,11 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-
+use crate::util::Value::Value;
 use crate::exceptions::ParseError::ParseError;
 // use crate::terms::grp_settlement::DeliverySettlement::S;
-#[derive(PartialEq, Debug, Clone)]
-pub enum Value {
-    String(String),
-    HashMap(HashMap<String, Value>),
-    Vec(Vec<HashMap<String, Value>>), // Value a la place de HashMap<String, Value> ... voir si ca marche sur le long terme
-    VecStr(Vec<String>),
-    VecReal(Vec<f64>)
-}
-impl Value {
 
-    pub fn extract_string(&self) -> Option<String> {
-        match self {
-            Self::String(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_hmap(&self) -> Option<HashMap<String, Value>> {
-        match self {
-            Self::HashMap(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vec(&self) -> Option<Vec<HashMap<String, Value>>> {
-        match self {
-            Self::Vec(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vec_str(&self) -> Option<Vec<String>> {
-        match self {
-            Self::VecStr(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vec_f64(&self) -> Option<Vec<f64>> {
-        match self {
-            Self::VecReal(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-}
+
+
 
 
 pub struct CommonUtils;
@@ -59,7 +21,7 @@ impl CommonUtils {
         match string_map.get(key) {
             None => None, // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match <f64>::from_str(s.extract_string()?.as_str()) {
+                match <f64>::from_str(s.as_string()?.as_str()) {
                     Ok(value) => Some(Box::new(value)), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
@@ -71,7 +33,7 @@ impl CommonUtils {
         match string_map.get(key) {
             None => None, // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match <bool>::from_str(s.extract_string().unwrap().as_str()) {
+                match <bool>::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
@@ -83,7 +45,7 @@ impl CommonUtils {
         match string_map.get(key) {
             None => None, // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match <f64>::from_str(s.extract_string().unwrap().as_str()) {
+                match <f64>::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
@@ -95,7 +57,7 @@ impl CommonUtils {
         match string_map.get(key) {
             None => Some(default), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match <f64>::from_str(s.extract_string().unwrap().as_str()) {
+                match <f64>::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
@@ -106,7 +68,7 @@ impl CommonUtils {
     //     string_map.get(key).cloned().map(|c| Box::new(Some(c))).unwrap_or_else(|| Box::new(None))
     // }
     pub fn provide_box_string(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<String>> {
-        string_map.get(key).unwrap().extract_string().map(Box::new)
+        string_map.get(key).unwrap().to_string().map(Box::new)
     }
     pub fn provide_string(string_map: &HashMap<String, Value>, key: &str) -> Option<String> {
         println!("{:?}", key);

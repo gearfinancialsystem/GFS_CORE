@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-// l'objectif est d'utiliser des 'extension traits' pour Duration
-// le period de java travaille avec Jour, mois, année et n'a pas d'équivalent en rust ;
 use chrono::{Months, NaiveDateTime};
 use std::hash::{Hash, Hasher};
 use chrono::{Datelike, NaiveDate, Duration};
@@ -8,11 +6,8 @@ use regex::Regex;
 use std::fmt;
 use std::ops::Add;
 use std::ops::Sub;
-use std::str::FromStr;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Days;
-use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::util::CommonUtils::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

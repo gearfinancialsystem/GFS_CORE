@@ -10,8 +10,7 @@ use crate::types::isoDatetime::IsoDatetime;
 pub struct EventFactory;
 
 impl EventFactory {
-
-    /// Create a single `ContractEvent`
+    
     pub fn create_event(
         schedule_time: Option<IsoDatetime>,
         event_type: EventType,

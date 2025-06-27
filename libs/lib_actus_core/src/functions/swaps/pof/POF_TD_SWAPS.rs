@@ -1,5 +1,4 @@
 use crate::attributes::ContractModel::ContractModel;
-use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -19,12 +18,12 @@ impl POF_TD_SWAPS {
 impl TraitPayOffFunction for POF_TD_SWAPS {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        _time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &DayCountConvention,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let fx_rate = 1.0;
         let price_at_termination = model.priceAtTerminationDate.expect("No price at termination");

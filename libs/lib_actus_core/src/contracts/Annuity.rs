@@ -1,55 +1,38 @@
-use std::error::Error;
-use std::rc::Rc;
-use std::cmp::Ordering;
-use std::collections::HashSet;
-use chrono::Days;
-use log::{debug, info, warn, error};
+use std::{error::Error, rc::Rc, collections::HashSet};
 
-// Assuming these are defined elsewhere in your Rust project
+use chrono::Days;
+
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::isoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
-use crate::functions::pam::*;
-use crate::functions::lam::*;
-use crate::functions::ann::*;
-use crate::functions::ann::stf::STF_PRF_ANN::STF_PRF_ANN;
-use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
-use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
-use crate::functions::lam::pof::POF_PRD_LAM::POF_PRD_LAM;
-use crate::functions::lam::pof::POF_TD_LAM::POF_TD_LAM;
-use crate::functions::lam::stf::STF_FP_LAM::STF_FP_LAM;
-use crate::functions::lam::stf::STF_IED_LAM::STF_IED_LAM;
-use crate::functions::lam::stf::STF_IPBC_LAM::STF_IPCB_LAM;
-use crate::functions::lam::stf::STF_IPCI2_LAM::STF_IPCI2_LAM;
-use crate::functions::lam::stf::STF_IPCI_LAM::STF_IPCI_LAM;
-use crate::functions::lam::stf::STF_MD_LAM::STF_MD_LAM;
-use crate::functions::lam::stf::STF_PRD_LAM::STF_PRD_LAM;
-use crate::functions::lam::stf::STF_RR_LAM::STF_RR_LAM;
-use crate::functions::lam::stf::STF_RRF_LAM::STF_RRF_LAM;
-use crate::functions::lam::stf::STF_SC_LAM::STF_SC_LAM;
-use crate::functions::nam::pof::POF_PR_NAM::POF_PR_NAM;
-use crate::functions::nam::stf::STF_PR2_NAM::STF_PR2_NAM;
-use crate::functions::nam::stf::STF_PR_NAM::STF_PR_NAM;
-use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
-use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
-use crate::functions::pam::pof::POF_IPCI_PAM::POF_IPCI_PAM;
-use crate::functions::pam::pof::POF_MD_PAM::POF_MD_PAM;
-use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
-use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
-use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
-use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
-use crate::types::IsoPeriod;
 use crate::util::CycleUtils::CycleUtils;
 use crate::util::RedemptionUtils::RedemptionUtils;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+
+use crate::functions::{
+    ann::stf::STF_PRF_ANN::STF_PRF_ANN,
+    lam::pof::{
+        POF_IP_LAM::POF_IP_LAM, POF_IPCB_LAM::POF_IPCB_LAM, POF_PRD_LAM::POF_PRD_LAM, POF_TD_LAM::POF_TD_LAM,
+    },
+    lam::stf::{
+        STF_FP_LAM::STF_FP_LAM, STF_IED_LAM::STF_IED_LAM, STF_IPBC_LAM::STF_IPCB_LAM, STF_IPCI2_LAM::STF_IPCI2_LAM, STF_IPCI_LAM::STF_IPCI_LAM,
+        STF_MD_LAM::STF_MD_LAM, STF_PRD_LAM::STF_PRD_LAM, STF_RR_LAM::STF_RR_LAM, STF_RRF_LAM::STF_RRF_LAM, STF_SC_LAM::STF_SC_LAM
+    },
+    nam::pof::POF_PR_NAM::POF_PR_NAM,
+    nam::stf::{STF_PR2_NAM::STF_PR2_NAM, STF_PR_NAM::STF_PR_NAM},
+    pam::pof::{POF_FP_PAM::POF_FP_PAM, POF_IED_PAM::POF_IED_PAM, POF_IPCI_PAM::POF_IPCI_PAM, POF_MD_PAM::POF_MD_PAM, POF_RR_PAM::POF_RR_PAM, POF_SC_PAM::POF_SC_PAM,},
+    pam::stf::{STF_IP_PAM::STF_IP_PAM, STF_TD_PAM::STF_TD_PAM}
+};
+
+
 pub struct Annuity;
 
 impl Annuity {

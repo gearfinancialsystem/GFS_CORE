@@ -14,7 +14,7 @@ impl TraitPayOffFunction for POF_IP_CLM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,

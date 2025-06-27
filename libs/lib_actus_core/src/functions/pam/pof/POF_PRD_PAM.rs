@@ -13,7 +13,7 @@ impl TraitPayOffFunction for POF_PRD_PAM {
     fn eval(
         &self,
         time: &IsoDatetime, 
-        states: &StateSpace,
+        _states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::ops::{Deref, DerefMut};
 use std::rc::Rc;
 use crate::attributes::ContractReference::ContractReference;
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
@@ -25,10 +24,11 @@ use crate::terms::grp_optionality::PenaltyType::PenaltyType;
 use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::types::isoDatetime::{traitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CommonUtils::{CommonUtils, Value};
 
+#[allow(non_camel_case_types)]
 #[derive(PartialEq, Debug, Clone)]
 pub enum FieldValue {
     vString(String),

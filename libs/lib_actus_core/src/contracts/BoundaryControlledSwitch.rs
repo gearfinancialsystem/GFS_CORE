@@ -30,7 +30,7 @@ pub struct BoundaryControlledSwitch;
 
 impl BoundaryControlledSwitch {
     pub fn schedule(
-        to: &IsoDatetime,
+        _to: &IsoDatetime,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();

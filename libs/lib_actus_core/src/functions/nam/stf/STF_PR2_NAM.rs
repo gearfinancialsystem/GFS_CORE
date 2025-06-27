@@ -1,7 +1,6 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -26,7 +25,7 @@ impl TraitStateTransitionFunction for STF_PR2_NAM {
         let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.nextPrincipalRedemptionPayment.expect("nextPrincipalRedemptionPayment should always be Some");
-        let contract_role = model.contractRole.clone().expect("contract role should always be Some");
+        //let contract_role = model.contractRole.clone().expect("contract role should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
