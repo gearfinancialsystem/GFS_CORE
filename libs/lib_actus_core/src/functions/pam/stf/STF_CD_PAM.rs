@@ -40,7 +40,7 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
         });
 
         
-        states.contractPerformance = Some(ContractPerformance::new_DF());
+        states.contractPerformance = Some(ContractPerformance::new("DF").expect("ok cp"));
         states.statusDate = Some(*time);
 
     }

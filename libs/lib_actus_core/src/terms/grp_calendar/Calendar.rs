@@ -4,12 +4,12 @@ use std::rc::Rc;
 
 
 use crate::exceptions::ParseError::ParseError;
-
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -25,37 +25,23 @@ impl Calendar {
             Self::MF(MF) => MF.type_str()
         }
     }
-
-    pub fn new_NC() -> Self {
-        Self::NC(NC::new())
+    
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        Calendar::from_str(element)
     }
-
-    pub fn new_MF() -> Self {
-        Self::MF(MF::new())
-    }
-
+    
     pub fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<Self>> {
         match string_map.get(key) {
             None => Some(Rc::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match Self::from_str(s.extract_string().unwrap().as_str()) {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
                     Ok(calendar) => Some(Rc::new(calendar)), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
             }
         }
     }
-    pub fn provide_box(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<Self>> {
-        match string_map.get(key) {
-            None => Some(Box::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
-            Some(s) => {
-                match Self::from_str(s.extract_string().unwrap().as_str()) {
-                    Ok(calendar) => Some(Box::new(calendar)), // Valeur valide
-                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
-                }
-            }
-        }
-    }
+
 }
 
 impl TraitBusinessDayCalendar for Calendar {
@@ -72,9 +58,8 @@ impl FromStr for Calendar {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "" => Ok(Self::default()),
-            "NC" => Ok(Self::new_NC()),
-            "MF" => Ok(Self::new_MF()),
+            "NC" => Ok(Self::NC(NC::new())),
+            "MF" => Ok(Self::MF(MF::new())),
             _ => Err(ParseError {
                 message: format!("Invalid Calendar cont_type: {}", s),
             }),
@@ -84,7 +69,7 @@ impl FromStr for Calendar {
 
 impl Default for Calendar {
     fn default() -> Self {
-        Self::new_NC()
+        Self::NC(NC::new())
     }
 }
 

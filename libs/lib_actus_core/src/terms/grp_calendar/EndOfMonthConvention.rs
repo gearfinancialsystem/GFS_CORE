@@ -1,12 +1,15 @@
 use crate::exceptions::ParseError::ParseError;
 use std::collections::HashMap;
+use std::rc::Rc;
 use std::str::FromStr;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 use crate::util::CycleUtils::CycleUtils;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -53,22 +56,13 @@ impl EndOfMonthConvention {
         EndOfMonthConvention::EOM(EOM::new())
     }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            //.unwrap_or_default()
-    }
+
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
             None => Some(Self::default()), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match EndOfMonthConvention::from_str(s.extract_string().unwrap().as_str()) {
+                match EndOfMonthConvention::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }

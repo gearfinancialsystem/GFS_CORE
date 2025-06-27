@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
+use serde_json::to_string;
 use crate::util::Value::Value;
 use crate::exceptions::ParseError::ParseError;
 // use crate::terms::grp_settlement::DeliverySettlement::S;
@@ -13,21 +14,6 @@ pub struct CommonUtils;
 
 impl CommonUtils {
 
-    // pub fn provide_box_f64(string_map: &HashMap<String, String>, key: &str) -> Box<Option<f64>>{
-    //     string_map.get(key).cloned().map(|c| Box::new(c.parse::<f64>().ok())).unwrap_or_else(|| Box::new(None))
-    // }
-    pub fn provide_box_f64(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<f64>> {
-        //string_map.get(key).and_then(|s| s.parse::<f64>().ok()).map(Box::new)
-        match string_map.get(key) {
-            None => None, // Clé absente : valeur par défaut dans un Some
-            Some(s) => {
-                match <f64>::from_str(s.as_string()?.as_str()) {
-                    Ok(value) => Some(Box::new(value)), // Valeur valide
-                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
-                }
-            }
-        }
-    }
     pub fn provide_bool(string_map: &HashMap<String, Value>, key: &str) -> Option<bool> {
         // string_map.get(key).and_then(|s| s.parse::<f64>().ok())
         match string_map.get(key) {
@@ -64,47 +50,42 @@ impl CommonUtils {
             }
         }
     }
-    // pub fn provide_box_string(string_map: &HashMap<String, String>, key: &str) -> Box<Option<String>> {
-    //     string_map.get(key).cloned().map(|c| Box::new(Some(c))).unwrap_or_else(|| Box::new(None))
-    // }
-    pub fn provide_box_string(string_map: &HashMap<String, Value>, key: &str) -> Option<Box<String>> {
-        string_map.get(key).unwrap().to_string().map(Box::new)
-    }
+
     pub fn provide_string(string_map: &HashMap<String, Value>, key: &str) -> Option<String> {
         println!("{:?}", key);
-        //string_map.get(key).unwrap().extract_string()
+        //string_map.get(key).unwrap().as_string()
 
 
         string_map
             .get(key)
             .and_then(|s| {
-                s.extract_string()
+                Some(s.as_string().unwrap().to_string())
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
     pub fn provide_string_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<String>> {
         println!("{:?}", key);
-        //string_map.get(key).unwrap().extract_string()
+        //string_map.get(key).unwrap().as_string()
 
 
         string_map
             .get(key)
             .and_then(|s| {
-                s.extract_vec_str()
+                Some(vec![s.to_string()])
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
     pub fn provide_f64_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<f64>> {
         println!("{:?}", key);
-        //string_map.get(key).unwrap().extract_string()
+        //string_map.get(key).unwrap().as_string()
 
 
         string_map
             .get(key)
             .and_then(|s| {
-                s.extract_vec_f64()
+                Some(vec![s.to_f64()])
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
@@ -119,7 +100,7 @@ impl CommonUtils {
         match string_map.get(key) {
             None => Some(T::default()), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match T::from_str(s.extract_string().unwrap().as_str()) {
+                match T::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(err) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?} : {:?}", key, s, err.message),
                 }

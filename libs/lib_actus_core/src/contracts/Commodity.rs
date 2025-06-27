@@ -76,8 +76,8 @@ impl Commodity {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new_AAISDA(),
-                &BusinessDayAdjuster::new_NOS(model.calendar.clone().unwrap()),
+                &DayCountConvention::new(Some("AAISDA"), None, None).expect("etet"),
+                &BusinessDayAdjuster::new("NOS", model.calendar.clone().unwrap()).expect("good NOS"),
             );
         }
 

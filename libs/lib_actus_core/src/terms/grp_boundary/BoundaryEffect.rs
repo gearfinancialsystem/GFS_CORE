@@ -5,7 +5,7 @@ use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
 use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
 use crate::terms::grp_boundary::boundary_effect::Out::OUT;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum BoundaryEffect {
@@ -24,26 +24,14 @@ impl BoundaryEffect {
             Self::None => "None".to_string(),
         }
     }
-    pub fn new_INFIL() -> Self {
-        BoundaryEffect::INFIL(INFIL::new())
-    }
-    pub fn new_INSEL() -> Self {
-        BoundaryEffect::INSEL(INSEL::new())
-    }
-    pub fn new_OUT() -> Self {
-        BoundaryEffect::OUT(OUT::new())
+
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => BoundaryEffect::from_str(n),
+            None => Ok(BoundaryEffect::None),
+        }
     }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                BoundaryEffect::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
-    }
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
@@ -53,10 +41,10 @@ impl FromStr for BoundaryEffect {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "INFIL" => Ok(BoundaryEffect::new_INFIL()),
-            "INSEL" => Ok(BoundaryEffect::new_INSEL()),
-            "OUT" => Ok(BoundaryEffect::new_OUT()),
-            _ => Err(ParseError { message: format!("Invalid BoundaryEffect: {}", s)})
+            "INFIL" => Ok(BoundaryEffect::INFIL(INFIL::new())),
+            "INSEL" => Ok(BoundaryEffect::INSEL(INSEL::new())),
+            "OUT" => Ok(BoundaryEffect::OUT(OUT::new())),
+            _ => Err(ParseError { message: format!("Invalid BoundaryEffect: {}", s) })
         }
     }
 }

@@ -26,7 +26,8 @@ use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::types::IsoPeriod::IsoPeriod;
-use crate::util::CommonUtils::{CommonUtils, Value};
+use crate::util::CommonUtils::CommonUtils;
+use crate::util::Value::Value;
 
 #[allow(non_camel_case_types)]
 #[derive(PartialEq, Debug, Clone)]
@@ -460,7 +461,7 @@ impl ContractModel {
 
     pub fn new(sm: &HashMap<String, Value>) -> Result<ContractModel, String> {
         let ct = sm.get("contractType").unwrap();
-        match ct.extract_string().unwrap().as_str() {
+        match ct.as_string().unwrap().as_str() {
             "PAM" => {
                 let mut cm = ContractModel::init();
 
@@ -470,11 +471,11 @@ impl ContractModel {
 
                 if let Some(calendar) = &cm.calendar {
                     // Clone seulement l'Rc, pas le calendrier lui-même
-                    let calendar_clone = Rc::clone(calendar);
+                    let calendar_clone = Some(Rc::clone(calendar));
                     cm.businessDayAdjuster = BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
-                        calendar_clone
+                        calendar_clone.expect("te")
                     );
                 }
 
@@ -483,8 +484,8 @@ impl ContractModel {
                     cm.dayCountConvention = DayCountConvention::provide(
                         sm,
                         "dayCountConvention",
-                        Rc::clone(maturity_date),
-                        Rc::clone(calendar)
+                        Some(Rc::clone(maturity_date)),
+                        Some(Rc::clone(calendar))
                     );
                 }
 
@@ -558,12 +559,12 @@ impl ContractModel {
                 cm.deliverySettlement = DeliverySettlement::provide(sm, "deliverySettlement");
                 cm.contractType = CommonUtils::provide_string(sm, "contractType");
                 
-                let v = &sm.get("contractStructure").unwrap().extract_vec().unwrap() ;
+                let v = sm.get("contractStructure").unwrap().as_vec().unwrap() ;
                 //let d1 = v.get(0).unwrap();
                 //let r = ContractReference::new(&d1, &cm.contractRole.clone().unwrap());
 
                 let a: Vec<ContractReference> = v.iter().map(|d| {
-                    ContractReference::new(&d, &cm.contractRole.clone().unwrap())
+                    ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap())
                 }).collect();
                 println!("{:?}", a.get(0).unwrap().object.as_cm().unwrap().initialExchangeDate);
                 println!("{:?}", a.get(1).unwrap().object.as_cm().unwrap().initialExchangeDate);
@@ -594,11 +595,11 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
                 if let Some(calendar) = &cm.calendar {
                     // Clone seulement l'Rc, pas le calendrier lui-même
-                    let calendar_clone = Rc::clone(calendar);
+                    let calendar_clone = Some(Rc::clone(calendar));
                     cm.businessDayAdjuster = BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
-                        calendar_clone
+                        calendar_clone.expect("df")
                     );
                 }
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -626,8 +627,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.expect("ere"));
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -659,7 +660,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -667,7 +668,7 @@ impl ContractModel {
                 cm.accruedInterest = CommonUtils::provide_f64default(sm, "accruedInterest", 0.0);
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
-                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new_B()) {
+                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
                     Some(CyclePointOfRateReset::new_E())
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
@@ -732,8 +733,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -765,7 +766,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -773,7 +774,7 @@ impl ContractModel {
                 cm.accruedInterest = CommonUtils::provide_f64default(sm, "accruedInterest", 0.0);
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
-                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new_B()) {
+                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
                     Some(CyclePointOfRateReset::new_E())
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
@@ -870,8 +871,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.contractID = CommonUtils::provide_string(sm, "contractID");
@@ -893,7 +894,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -950,8 +951,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -974,7 +975,7 @@ impl ContractModel {
                 cm.nominalInterestRate2 = CommonUtils::provide_f64(sm, "nominalInterestRate2");
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -998,7 +999,7 @@ impl ContractModel {
                 cm.rateSpread = CommonUtils::provide_f64default(sm, "rateSpread", 0.0);
                 cm.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
 
-                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new_B()) {
+                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
                     Some(CyclePointOfRateReset::new_E())
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
@@ -1014,8 +1015,8 @@ impl ContractModel {
                 let mut cm = ContractModel::init();
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
                 cm.contractType = CommonUtils::provide_string(sm, "contractType");
@@ -1076,8 +1077,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1109,7 +1110,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1147,8 +1148,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1180,7 +1181,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1217,8 +1218,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1250,7 +1251,7 @@ impl ContractModel {
                 cm.nominalInterestRate = CommonUtils::provide_f64default(sm, "nominalInterestRate", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1258,7 +1259,7 @@ impl ContractModel {
                 cm.accruedInterest = CommonUtils::provide_f64default(sm, "accruedInterest", 0.0);
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
-                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new_B()) {
+                cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
                     Some(CyclePointOfRateReset::new_E())
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
@@ -1352,8 +1353,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1369,12 +1370,12 @@ impl ContractModel {
                 let a = CreditEventTypeCovered::provide_vec(sm,"creditEventTypeCovered");
                 let b: Vec<CreditEventTypeCovered> = if a.is_none() {
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 } else {
                     // A REFAIRE PAS LE BON CODE
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 };
                 cm.creditEventTypeCovered = Some(b);
@@ -1385,9 +1386,9 @@ impl ContractModel {
                 cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
-                    if let Some(structure_vec) = contractStructure.extract_vec() {
+                    if let Some(structure_vec) = contractStructure.as_vec() {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                            .map(|d| ContractReference::new(d, &cm.contractRole.clone().unwrap()))
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap()))
                             .collect();
                         cm.contractStructure = Some(contract_structure);
                     }
@@ -1401,8 +1402,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1425,12 +1426,12 @@ impl ContractModel {
                 let a = CreditEventTypeCovered::provide_vec(sm,"creditEventTypeCovered");
                 let b: Vec<CreditEventTypeCovered> = if a.is_none() {
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc")  );
                     w
                 } else {
                     // A REFAIRE PAS LE BON CODE
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 };
                 cm.creditEventTypeCovered = Some(b);
@@ -1447,7 +1448,7 @@ impl ContractModel {
                 cm.feeAccrued = CommonUtils::provide_f64default(sm, "feeAccrued", 0.0);
 
                 cm.dayCountConvention = if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Rc::clone(maturity_date), Rc::clone(calendar))
+                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1464,9 +1465,9 @@ impl ContractModel {
                 cm.settlementPeriod = IsoPeriod::provide(sm, "settlementPeriod");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
-                    if let Some(structure_vec) = contractStructure.extract_vec() {
+                    if let Some(structure_vec) = contractStructure.as_vec() {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                            .map(|d| ContractReference::new(d, &cm.contractRole.clone().unwrap()))
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap()))
                             .collect();
                         cm.contractStructure = Some(contract_structure);
                     }
@@ -1482,8 +1483,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1508,12 +1509,12 @@ impl ContractModel {
                 let a = CreditEventTypeCovered::provide_vec(sm,"creditEventTypeCovered");
                 let b: Vec<CreditEventTypeCovered> = if a.is_none() {
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 } else {
                     // A REFAIRE PAS LE BON CODE
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 };
                 cm.creditEventTypeCovered = Some(b);
@@ -1556,8 +1557,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1582,12 +1583,12 @@ impl ContractModel {
                 let a = CreditEventTypeCovered::provide_vec(sm,"creditEventTypeCovered");
                 let b: Vec<CreditEventTypeCovered> = if a.is_none() {
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 } else {
                     // A REFAIRE PAS LE BON CODE
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 };
                 cm.creditEventTypeCovered = Some(b);
@@ -1639,9 +1640,9 @@ impl ContractModel {
                 cm.boundaryCrossedFlag = CommonUtils::provide_bool(sm, "boundaryCrossedFlag");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
-                    if let Some(structure_vec) = contractStructure.extract_vec() {
+                    if let Some(structure_vec) = contractStructure.as_vec() {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                            .map(|d| ContractReference::new(d, &cm.contractRole.clone().unwrap()))
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap()))
                             .collect();
                         cm.contractStructure = Some(contract_structure);
                     }
@@ -1657,8 +1658,8 @@ impl ContractModel {
                 cm.calendar = Calendar::provide_rc(sm, "calendar");
 
                 if let Some(calendar) = &cm.calendar {
-                    let calendar_clone = Rc::clone(calendar);
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone);
+                    let calendar_clone = Some(Rc::clone(calendar));
+                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(sm, "businessDayAdjuster", calendar_clone.unwrap());
                 }
 
                 cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
@@ -1684,12 +1685,12 @@ impl ContractModel {
                 let a = CreditEventTypeCovered::provide_vec(sm,"creditEventTypeCovered");
                 let b: Vec<CreditEventTypeCovered> = if a.is_none() {
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 } else {
                     // A REFAIRE PAS LE BON CODE
                     let mut w: Vec<CreditEventTypeCovered> = vec![];
-                    w.push(CreditEventTypeCovered::new_DF());
+                    w.push(CreditEventTypeCovered::new("DF").expect("good cetc"));
                     w
                 };
                 cm.creditEventTypeCovered = Some(b);
@@ -1726,9 +1727,9 @@ impl ContractModel {
                 cm.currency = CommonUtils::provide_string(sm, "currency");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
-                    if let Some(structure_vec) = contractStructure.extract_vec() {
+                    if let Some(structure_vec) = contractStructure.as_vec() {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                            .map(|d| ContractReference::new(d, &cm.contractRole.clone().unwrap()))
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap()))
                             .collect();
                         cm.contractStructure = Some(contract_structure);
                     }
@@ -1754,9 +1755,9 @@ impl ContractModel {
                 cm.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
 
                 if let Some(contractStructure) = sm.get("contractStructure") {
-                    if let Some(structure_vec) = contractStructure.extract_vec() {
+                    if let Some(structure_vec) = contractStructure.as_vec() {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                            .map(|d| ContractReference::new(d, &cm.contractRole.clone().unwrap()))
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &cm.contractRole.clone().unwrap()))
                             .collect();
                         cm.contractStructure = Some(contract_structure);
                     }

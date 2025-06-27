@@ -4,7 +4,7 @@ use std::error::Error;
 use std::collections::HashMap;
 use serde_json::{Value as SerdeValue};
 use serde_json::from_str;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 pub fn read_file(path: &str) ->Result<String, Box<dyn Error>> {
     let mut file = File::open(path)?;
@@ -30,10 +30,10 @@ pub fn convert_value_map_to_string_map_ref(
         .collect()
 }
 pub fn custom_value_to_types(value: Value) -> String {
-    if let Value::String(s) = value {
+    if let Value::Vstring(s) = value {
         return s;
     }
-    if let Value::F64(f) = value {
+    if let Value::Vf64(f) = value {
         return format!("{:.2}", f);
     }
     "".to_string()
@@ -44,7 +44,7 @@ pub fn serde_value_to_custom_value(value: SerdeValue) -> Value {
         SerdeValue::Object(map) => {
             if map.is_empty() {
                 // Cas spécial pour les objets vides comme dataObserved
-                Value::HashMap(HashMap::new())
+                Value::VhashMap(HashMap::new())
             } else {
                 let mut hm = HashMap::new();
                 for (k, v) in map {
@@ -52,73 +52,73 @@ pub fn serde_value_to_custom_value(value: SerdeValue) -> Value {
                     if k == "eventsObserved" {
                         if let SerdeValue::Array(vec) = v.clone() {
                             if vec.is_empty() {
-                                hm.insert(k, Value::VecVal(Vec::new()));
+                                hm.insert(k, Value::VvecVal(Vec::new()));
                                 continue;
                             }
                         }
                     }
                     hm.insert(k, serde_value_to_custom_value(v));
                 }
-                Value::HashMap(hm)
+                Value::VhashMap(hm)
             }
         }
         SerdeValue::Array(vec) => {
             if vec.is_empty() {
                 // Traitement uniforme pour tous les tableaux vides
-                Value::VecVal(Vec::new())
+                Value::VvecVal(Vec::new())
             } else {
                 let first_element = &vec[0];
                 if first_element.is_object() {
-                    let v: Vec<HashMap<String, Value>> = vec.into_iter()
+                    let v: Vec<Value> = vec.into_iter()
                         .map(|v| {
                             if let SerdeValue::Object(map) = v {
                                 let mut hm = HashMap::new();
                                 for (k, v) in map {
                                     hm.insert(k, serde_value_to_custom_value(v));
                                 }
-                                hm
+                                Value::VhashMap(hm)
                             } else {
                                 let mut hm = HashMap::new();
-                                hm.insert("error".to_string(), Value::String("Expected an object".to_string()));
-                                hm
+                                hm.insert("error".to_string(), Value::Vstring("Expected an object".to_string()));
+                                Value::VhashMap(hm)
                             }
                         })
                         .collect();
-                    Value::Vec(v)
+                    Value::VvecVal(v)
                 } else if first_element.is_string() {
-                    let v: Vec<String> = vec.into_iter()
+                    let v: Vec<Value> = vec.into_iter()
                         .map(|v| {
                             if let SerdeValue::String(s) = v {
-                                s
+                                Value::Vstring(s)
                             } else {
-                                "".to_string()
+                                Value::Vstring("".to_string())
                             }
                         })
                         .collect();
-                    Value::VecStr(v)
+                    Value::VvecVal(v)
                 } else if first_element.is_number() {
-                    let v: Vec<f64> = vec.into_iter()
+                    let v: Vec<Value> = vec.into_iter()
                         .map(|v| {
                             if let SerdeValue::Number(n) = v {
-                                n.as_f64().unwrap_or(0.0)
+                                Value::Vf64(n.as_f64().unwrap_or(0.0))
                             } else {
-                                0.0
+                                Value::Vf64(0.0)
                             }
                         })
                         .collect();
-                    Value::VecReal(v)
+                    Value::VvecVal(v)
                 } else {
                     // Par défaut, traiter comme un VecVal avec des valeurs converties
                     let v: Vec<Value> = vec.into_iter()
                         .map(serde_value_to_custom_value)
                         .collect();
-                    Value::VecVal(v)
+                    Value::VvecVal(v)
                 }
             }
         }
-        SerdeValue::String(s) => Value::String(s),
-        SerdeValue::Number(n) => Value::F64(n.as_f64().unwrap()),
-        SerdeValue::Bool(b) => Value::String(b.to_string()),
+        SerdeValue::String(s) => Value::Vstring(s),
+        SerdeValue::Number(n) => Value::Vf64(n.as_f64().unwrap()),
+        SerdeValue::Bool(b) => Value::Vstring(b.to_string()),
         SerdeValue::Null => Value::None,
     }
 }

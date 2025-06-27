@@ -30,16 +30,7 @@ impl PrepaymentEffect {
     pub fn new_M() -> Self {
         Self::M(M::new())
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
-    }
+
 }
 
 impl FromStr for PrepaymentEffect {

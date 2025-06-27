@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
-use crate::util::CommonUtils::{CommonUtils as cu, Value};
+use crate::util::CommonUtils::CommonUtils as cu;
+use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CyclePointOfInterestPayment {
@@ -18,22 +20,11 @@ impl CyclePointOfInterestPayment {
             CyclePointOfInterestPayment::E(E) => E.type_str(),
         }
     }
-    pub fn new_B() -> Self {
-        CyclePointOfInterestPayment::B(B::new())
+
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        CyclePointOfInterestPayment::from_str(element)
     }
-    pub fn new_RPL() -> Self {
-        CyclePointOfInterestPayment::E(E::new())
-    }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                CyclePointOfInterestPayment::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            //.unwrap_or_default()
-    }
+    
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
     }

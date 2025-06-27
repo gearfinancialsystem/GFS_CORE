@@ -3,7 +3,8 @@ use std::str::FromStr;
 use crate::terms::grp_counterparty::seniority::J::J;
 use crate::terms::grp_counterparty::seniority::S::S;
 use crate::exceptions::ParseError::ParseError;
-use crate::util::CommonUtils::Value;
+use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum Seniority {
@@ -20,23 +21,14 @@ impl Seniority {
             Self::None => "".to_string()
         }
     }
-    pub fn new_S() -> Self {
-        Self::S(S::new())
-    }
-    pub fn new_J() -> Self {
-        Self::J(J::new())
-    }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => Seniority::from_str(n),
+            None => Ok(Seniority::None),
+        }
     }
+    
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
@@ -46,8 +38,8 @@ impl FromStr for Seniority {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "S" => Ok(Self::new_S()),
-            "J" => Ok(Self::new_J()),
+            "S" => Ok(Self::S(S::new())),
+            "J" => Ok(Self::J(J::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }

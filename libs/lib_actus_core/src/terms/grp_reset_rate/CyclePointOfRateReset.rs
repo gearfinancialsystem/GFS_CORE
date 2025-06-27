@@ -4,7 +4,8 @@ use crate::exceptions::ParseError::ParseError;
 
 use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
 use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::E::E;
-use crate::util::CommonUtils::{CommonUtils as cu, Value};
+use crate::util::CommonUtils::CommonUtils as cu;
+use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CyclePointOfRateReset {
@@ -25,16 +26,7 @@ impl CyclePointOfRateReset {
     pub fn new_E() -> Self {
         Self::E(E::new())
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                CyclePointOfRateReset::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            // .unwrap_or_default()
-    }
+
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
     }

@@ -3,7 +3,8 @@ use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
 use crate::exceptions::ParseError::ParseError;
-use crate::util::CommonUtils::Value;
+use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
+use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum BoundaryLegInitiallyActive {
@@ -20,23 +21,14 @@ impl BoundaryLegInitiallyActive {
             Self::None => "".to_string()
         }
     }
-    pub fn new_FIL() -> Self {
-        Self::FIL(FIL::new())
-    }
-    pub fn new_SEL() -> Self {
-        Self::SEL(SEL::new())
+
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => BoundaryLegInitiallyActive::from_str(n),
+            None => Ok(BoundaryLegInitiallyActive::None),
+        }
     }
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
-    }
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
@@ -54,9 +46,8 @@ impl FromStr for BoundaryLegInitiallyActive {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "FIL" => Ok(Self::new_FIL()),
-            "SEL" => Ok(Self::new_SEL()),
-            "NUll" => Ok(Self::None),
+            "FIL" => Ok(Self::FIL(FIL::new())),
+            "SEL" => Ok(Self::SEL(SEL::new())),
             _ => Err(ParseError { message: format!("Invalid BoundaryLegInitiallyActive: {}", s)})
         }
     }

@@ -440,7 +440,7 @@ impl Swap {
 //     use super::*;
 //     use crate::util_tests::TestsUtils::{convert_value_map_to_string_map_ref, test_read_and_parse_json};
 //     use crate::util_tests::TestsUtils::json_to_dico;
-//     use crate::util::CommonUtils::Value;
+//     use crate::util::Value::Value;
 //     use std::error::Error;
 //     use std::collections::{HashMap, HashSet};
 //     use std::hash::Hash;
@@ -568,8 +568,8 @@ impl Swap {
 // 
 //                     match k.as_str() {
 //                         "eventDate" => {
-//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
-//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w1 = hm.get(k.as_str()).unwrap().as_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().as_string().unwrap();
 //                             if w1 == w2 {
 //                                 vec_bool.push(true);
 //                             }
@@ -578,8 +578,8 @@ impl Swap {
 //                             }
 //                         },
 //                         "eventType" =>  {
-//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
-//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w1 = hm.get(k.as_str()).unwrap().as_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().as_string().unwrap();
 //                             if w1 == w2 {
 //                                 vec_bool.push(true);
 //                             }
@@ -597,8 +597,8 @@ impl Swap {
 //                             }
 //                         },
 //                         "currency" =>  {
-//                             let w1 = hm.get(k.as_str()).unwrap().extract_string().unwrap();
-//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().extract_string().unwrap();
+//                             let w1 = hm.get(k.as_str()).unwrap().as_string().unwrap();
+//                             let w2 = contracts2.get(i).unwrap().get(k.as_str()).unwrap().as_string().unwrap();
 //                             if w1 == w2 {
 //                                 vec_bool.push(true);
 //                             } else
@@ -657,13 +657,13 @@ impl Swap {
 // 
 //             let curr_test = el.extract_hmap().unwrap();
 // 
-//             let curr_identifier = curr_test.get("identifier").unwrap().extract_string();
+//             let curr_identifier = curr_test.get("identifier").unwrap().as_string();
 //             let curr_terms = curr_test.get("terms").unwrap().extract_hmap();
-//             let curr_to = curr_test.get("to").unwrap().extract_string();
+//             let curr_to = curr_test.get("to").unwrap().as_string();
 //             let curr_data_observed = curr_test.get("dataObserved").unwrap().extract_hmap(); // verifier si cest None
 //             let curr_events_observed = curr_test.get("eventsObserved").unwrap().extract_vec();
 //             let curr_results = curr_test.get("results").unwrap().extract_vec().unwrap();
-//             //let a = curr_results.get(0).unwrap().get("notionalPrincipal").unwrap().extract_string().unwrap();
+//             //let a = curr_results.get(0).unwrap().get("notionalPrincipal").unwrap().as_string().unwrap();
 //             let to_date = if let Some(curr_to) = curr_to {
 //                 IsoDatetime::parse_from_str(&curr_to, "%Y-%m-%dT%H:%M:%S").ok()
 //             } else {

@@ -136,7 +136,7 @@ impl Stock {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new_E30360(),
+                &DayCountConvention::new(Some("E30360"), None, None).unwrap(),
                 &model.businessDayAdjuster.clone().unwrap()
             )
         });

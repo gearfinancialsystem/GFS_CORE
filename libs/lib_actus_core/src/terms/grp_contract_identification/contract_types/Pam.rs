@@ -176,11 +176,6 @@ impl PAM {
                 Rc::clone(calendar)
             );
         }
-        // self.dayCountConvention = DayCountConvention::provide_box(&sm, "dayCountConvention",
-        //         *self.maturityDate.clone().unwrap(),
-        //         Calendar::provide_rc(&sm, "calendar").unwrap());
-
-        
 
 
         self.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");

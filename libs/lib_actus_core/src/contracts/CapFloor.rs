@@ -34,7 +34,7 @@ impl CapFloor {
             .and_then(|c| Some(c.object.clone().as_cm()))
             .map(|obj| {
                 let mut m = obj.unwrap();
-                m.contractRole = Some(ContractRole::new_RPA()); //   .add_attribute("contractRole", ContractRole::RPA);
+                m.contractRole = Some(ContractRole::new(Some("RPA")).expect("good contract role")); //   .add_attribute("contractRole", ContractRole::RPA);
                 m
             })
             .ok_or("Underlying model not found")?;
@@ -184,7 +184,7 @@ impl CapFloor {
             &mut StateSpace::default(),
             model,
             observer,
-            &DayCountConvention::new_AAISDA(),//&DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
+            &DayCountConvention::new(Some("AAISDA"), None, None).expect("dfe"),//&DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
             model.businessDayAdjuster.as_ref().unwrap(),
         );
 

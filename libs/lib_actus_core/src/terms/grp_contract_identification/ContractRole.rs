@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
 use crate::terms::grp_contract_identification::contract_roles::Rpa::RPA;
 use crate::terms::grp_contract_identification::contract_roles::Rpl::RPL;
 use crate::terms::grp_contract_identification::contract_roles::Rfl::RFL;
@@ -14,7 +15,7 @@ use crate::terms::grp_contract_identification::contract_roles::Cno::CNO;
 use crate::terms::grp_contract_identification::contract_roles::Udl::UDL;
 use crate::terms::grp_contract_identification::contract_roles::Udlp::UDLP;
 use crate::terms::grp_contract_identification::contract_roles::Udlm::UDLM;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ContractRole {
@@ -71,63 +72,21 @@ impl ContractRole {
             Self::None => 0.0,
         }
     }
+    
 
-    pub fn new_RPA() -> Self {
-        Self::RPA(RPA::new())
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => ContractRole::from_str(n),
+            None => Ok(ContractRole::None),
+        }
     }
-    pub fn new_RPL() -> Self {
-        Self::RPL(RPL::new())
-    }
-    pub fn new_RFL() -> Self {
-        Self::RFL(RFL::new())
-    }
-    pub fn new_PFL() -> Self {
-        Self::PFL(PFL::new())
-    }
-    pub fn new_RF() -> Self {
-        Self::RF(RF::new())
-    }
-    pub fn new_PF() -> Self {
-        Self::PF(PF::new())
-    }
-    pub fn new_BUY() -> Self {
-        Self::BUY(BUY::new())
-    }
-    pub fn new_SEL() -> Self {
-        Self::SEL(SEL::new())
-    }
-    pub fn new_COL() -> Self {
-        Self::COL(COL::new())
-    }
-    pub fn new_CNO() -> Self {
-        Self::CNO(CNO::new())
-    }
-    pub fn new_UDL() -> Self {
-        Self::UDL(UDL::new())
-    }
-    pub fn new_UDLP() -> Self {
-        Self::UDLP(UDLP::new())
-    }
-    pub fn new_UDLM() -> Self {
-        Self::UDLM(UDLM::new())
-    }
-
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Option<Box<Self>> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            //.unwrap_or_default()
-    }
+    
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
             .and_then(|s| {
-                Self::from_str(s.extract_string().unwrap().as_str()).ok()
+                Self::from_str(s.as_string().unwrap().as_str()).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
@@ -138,19 +97,19 @@ impl FromStr for ContractRole {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "RPA"  => Ok(Self::new_RPA()),
-            "RPL"  => Ok(Self::new_RPL()),
-            "RFL"  => Ok(Self::new_RFL()),
-            "PFL"  => Ok(Self::new_PFL()),
-            "RF"   => Ok(Self::new_RF()),
-            "PF"   => Ok(Self::new_PF()),
-            "BUY"  => Ok(Self::new_BUY()),
-            "SEL"  => Ok(Self::new_SEL()),
-            "COL"  => Ok(Self::new_COL()),
-            "CNO"  => Ok(Self::new_CNO()),
-            "UDL"  => Ok(Self::new_UDL()),
-            "UDLP" => Ok(Self::new_UDLP()),
-            "UDLM" => Ok(Self::new_UDLM()),
+            "RPA"  => Ok(Self::RPA(RPA::new())),
+            "RPL"  => Ok(Self::RPL(RPL::new())),
+            "RFL"  => Ok(Self::RFL(RFL::new())),
+            "PFL"  => Ok(Self::PFL(PFL::new())),
+            "RF"   => Ok(Self::RF(RF::new())),
+            "PF"   => Ok(Self::PF(PF::new())),
+            "BUY"  => Ok(Self::BUY(BUY::new())),
+            "SEL"  => Ok(Self::SEL(SEL::new())),
+            "COL"  => Ok(Self::COL(COL::new())),
+            "CNO"  => Ok(Self::CNO(CNO::new())),
+            "UDL"  => Ok(Self::UDL(UDL::new())),
+            "UDLP" => Ok(Self::UDLP(UDLP::new())),
+            "UDLM" => Ok(Self::UDLM(UDLM::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }

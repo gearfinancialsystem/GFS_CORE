@@ -8,7 +8,7 @@ use std::ops::Add;
 use std::ops::Sub;
 use crate::types::isoDatetime::IsoDatetime;
 use chrono::Days;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IsoPeriod {
@@ -349,7 +349,7 @@ impl IsoPeriod {
         self.years * 12 + self.months
     }
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        string_map.get(key).and_then(|s| IsoPeriod::parsex(s.extract_string().unwrap().as_str()))
+        string_map.get(key).and_then(|s| IsoPeriod::parsex(s.as_string().unwrap().as_str()))
     }
 }
 

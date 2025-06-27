@@ -3,7 +3,6 @@ use std::rc::Rc;
 
 
 use crate::exceptions::ParseError::ParseError;
-
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;
 use crate::terms::grp_calendar::businessday::conventions::Scf::SCF;
 use crate::terms::grp_calendar::businessday::conventions::Scmf::SCMF;
@@ -13,10 +12,9 @@ use crate::terms::grp_calendar::businessday::conventions::Scp::SCP;
 use crate::terms::grp_calendar::businessday::conventions::Scmp::SCMP;
 use crate::terms::grp_calendar::businessday::conventions::Csp::CSP;
 use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
-
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayAdjuster {
@@ -32,40 +30,9 @@ pub enum BusinessDayAdjuster {
 }
 
 impl BusinessDayAdjuster {
-    pub fn new_NOS(calendar: Rc<Calendar>) -> Self {
-        Self::NOS(NOS::new(calendar))
-    }
 
-    pub fn new_SCF(calendar: Rc<Calendar>) -> Self {
-        Self::SCF(SCF::new(calendar))
-    }
-
-    pub fn new_SCMF(calendar: Rc<Calendar>) -> Self {
-        Self::SCMF(SCMF::new(calendar))
-    }
-
-    pub fn new_CSF(calendar: Rc<Calendar>) -> Self {
-        Self::CSF(CSF::new(calendar))
-    }
-
-    pub fn new_CSMF(calendar: Rc<Calendar>) -> Self {
-        Self::CSMF(CSMF::new(calendar))
-    }
-
-    pub fn new_SCP(calendar: Rc<Calendar>) -> Self {
-        Self::SCP(SCP::new(calendar))
-    }
-
-    pub fn new_SCMP(calendar: Rc<Calendar>) -> Self {
-        Self::SCMP(SCMP::new(calendar))
-    }
-
-    pub fn new_CSP(calendar: Rc<Calendar>) -> Self {
-        Self::CSP(CSP::new(calendar))
-    }
-
-    pub fn new_CSMP(calendar: Rc<Calendar>) -> Self {
-        Self::CSMP(CSMP::new(calendar))
+    pub fn new(element: &str, calendar: Rc<Calendar>) -> Result<Self, ParseError> {
+        BusinessDayAdjuster::parse(element, calendar)
     }
 
     pub fn description(&self) -> String {
@@ -112,48 +79,31 @@ impl BusinessDayAdjuster {
 
     pub fn default_with_calendar(calendar: Rc<Calendar>) -> Self {
         // le calendrier doit forcément pré-exister au BusinessDayAdjuster
-        Self::new_NOS(calendar)
+        Self::NOS(NOS::new(calendar))
     }
 
     /// Fonction de parsing qui prend en paramètre le calendrier (boxed)
     pub fn parse(s: &str, calendar: Rc<Calendar>) -> Result<BusinessDayAdjuster, ParseError> {
         match s.to_uppercase().as_str() {
-            ""      => Ok(Self::default_with_calendar(calendar)),
-            "NOS"   => Ok(Self::new_NOS(calendar)),
-            "SCF"   => Ok(Self::new_SCF(calendar)),
-            "SCMF"  => Ok(Self::new_SCMF(calendar)),
-            "CSF"   => Ok(Self::new_CSF(calendar)),
-            "CSMF"  => Ok(Self::new_CSMF(calendar)),
-            "SCP"   => Ok(Self::new_SCP(calendar)),
-            "SCMP"  => Ok(Self::new_SCMP(calendar)),
-            "CSP"   => Ok(Self::new_CSP(calendar)),
-            "CSMP"  => Ok(Self::new_CSMP(calendar)),
+            "NOS"   => Ok(Self::NOS(NOS::new(calendar))),
+            "SCF"   => Ok(Self::SCF(SCF::new(calendar))),
+            "SCMF"  => Ok(Self::SCMF(SCMF::new(calendar))),
+            "CSF"   => Ok(Self::CSF(CSF::new(calendar))),
+            "CSMF"  => Ok(Self::CSMF(CSMF::new(calendar))),
+            "SCP"   => Ok(Self::SCP(SCP::new(calendar))),
+            "SCMP"  => Ok(Self::SCMP(SCMP::new(calendar))),
+            "CSP"   => Ok(Self::CSP(CSP::new(calendar))),
+            "CSMP"  => Ok(Self::CSMP(CSMP::new(calendar))),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s) })
         }
     }    
 
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str, calendar: Rc<Calendar> ) -> Option<Box<Self>> {
-        match string_map.get(key) {
-            None => Some(Box::new(Self::default_with_calendar(calendar))),
-            Some(s) => {
-                match Self::parse(s, calendar) {
-
-                    Ok(bdc) => {
-                        println!("{:?}", bdc);
-                        Some(Box::new(bdc))
-
-                    },
-                    Err(_) => None,
-                }
-            }
-        }
-    }
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str, calendar: Rc<Calendar> ) -> Option<Self> {
         match string_map.get(key) {
             None => Some(Self::default_with_calendar(calendar)),
             Some(s) => {
-                match Self::parse(s.extract_string().unwrap().as_str(), calendar) {
+                match Self::parse(s.as_string().unwrap().as_str(), calendar) {
 
                     Ok(bdc) => {
                         println!("{:?}", bdc);
@@ -178,8 +128,8 @@ mod tests_period_cycle_adjuster {
     fn test_SAME_NoHolidaysCalendar() {
         // list of unadjusted times
         // let mut adjuster = new BusinessDayAdjuster(BusinessDayConventionEnum.NOS, new NoHolidaysCalendar());
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_NOS(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("NOS", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
 
@@ -213,9 +163,9 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_SAME_MondayToFridayCalendar() {
         // Create a calendar and adjuster for Monday to Friday
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_NOS(calendar.clone());
-
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        //let adjuster = BusinessDayAdjuster::new_NOS(calendar.clone());
+        let adjuster = BusinessDayAdjuster::new("NOS", calendar.clone()).expect("Adjuster good");
         // List of unadjusted times
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -252,8 +202,9 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCF_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCF", calendar.clone()).expect("Adjuster good");
+
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -285,9 +236,9 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCF_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
-
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        //let adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
+        let adjuster = BusinessDayAdjuster::new("SCF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
         unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -318,9 +269,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSF_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_CSF(calendar.clone());
-
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
         unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -351,9 +301,9 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSF_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_CSF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
 
+        let adjuster = BusinessDayAdjuster::new("CSF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
         unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -384,8 +334,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCMF_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_SCMF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -417,8 +367,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCMF_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_SCMF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -450,8 +400,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSMF_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_CSMF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -483,8 +433,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSMF_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_CSMF(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -516,8 +466,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCP_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_SCP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -549,8 +499,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCP_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_SCP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -582,8 +532,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSP_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_CSP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -615,8 +565,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSP_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_CSP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -648,8 +598,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCMP_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_SCMP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -681,8 +631,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SCMP_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_SCMP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("SCMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -714,8 +664,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSMP_NoHolidaysCalendar() {
-        let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = BusinessDayAdjuster::new_CSMP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
@@ -747,8 +697,8 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_CSMP_MondayToFridayCalendar() {
-        let calendar = Rc::new(Calendar::new_MF());
-        let adjuster = BusinessDayAdjuster::new_CSMP(calendar.clone());
+        let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
+        let adjuster = BusinessDayAdjuster::new("CSMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));

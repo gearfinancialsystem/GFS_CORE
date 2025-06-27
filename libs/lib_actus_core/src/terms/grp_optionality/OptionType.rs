@@ -4,7 +4,7 @@ use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::exceptions::ParseError::ParseError;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum OptionType {
@@ -30,16 +30,7 @@ impl OptionType {
     pub fn new_CP() -> Self {
         Self::CP(CP::new())
     }
-    pub fn provide_box(string_map: &HashMap<String, String>, key: &str) -> Box<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        string_map
-            .get(key)
-            .and_then(|s| {
-                Self::from_str(s).ok()
-            })
-            .map(|b| Box::new(b)) // On stocke la convention dans une Box
-            .unwrap_or_default()
-    }
+
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }

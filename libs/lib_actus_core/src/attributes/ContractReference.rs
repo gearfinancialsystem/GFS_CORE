@@ -15,7 +15,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Object {
@@ -57,32 +57,32 @@ pub struct ContractReference {
 
 impl ContractReference {
     pub fn new(attributes: &HashMap<String, Value>, contract_role: &ContractRole) -> Self {
-        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().extract_string().unwrap().as_str()).unwrap();
-        let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().extract_string().unwrap().as_str()).unwrap();
+        let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().as_string().unwrap().as_str()).unwrap();
+        let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().as_string().unwrap().as_str()).unwrap();
         let object = match reference_type {
             ReferenceType::CNT => {
-                let mut child_model = attributes.get("object").unwrap().extract_hmap().unwrap();
+                let mut child_model = attributes.get("object").unwrap().to_hashmap();
                 match (contract_role, &reference_role) {
                     (ContractRole::RFL(RFL), ReferenceRole::FIL) => {
-                        child_model.insert("contractRole".to_string(), Value::String("RPA".to_string()));
+                        child_model.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
                     },
                     (ContractRole::RFL(RFL), _) => {
-                        child_model.insert("contractRole".to_string(), Value::String("RPL".to_string()));
+                        child_model.insert("contractRole".to_string(), Value::Vstring("RPL".to_string()));
                     },
                     (_, ReferenceRole::FIL) => {
-                        child_model.insert("contractRole".to_string(), Value::String("RPL".to_string()));
+                        child_model.insert("contractRole".to_string(), Value::Vstring("RPL".to_string()));
                     },
                     (_, _) => {
-                        child_model.insert("contractRole".to_string(), Value::String("RPA".to_string()));
+                        child_model.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
                     }
                 }
                 Object::ContractModel(ContractModel::new(&child_model).unwrap())
             },
             ReferenceType::CID => {
-                Object::String(attributes.get("object").unwrap().extract_hmap().unwrap().get("contractIdentifier").unwrap().extract_string().unwrap())
+                Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("contractIdentifier").unwrap().to_string())
             },
             ReferenceType::MOC => {
-                Object::String(attributes.get("object").unwrap().extract_hmap().unwrap().get("marketObjectCode").unwrap().extract_string().unwrap())
+                Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("marketObjectCode").unwrap().to_string())
             },
             ReferenceType::EID => {
                 Object::None // a implementer //attributes.get("object").unwrap().clone()

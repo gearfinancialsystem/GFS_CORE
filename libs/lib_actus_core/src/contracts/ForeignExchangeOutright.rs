@@ -130,7 +130,7 @@ impl ForeignExchangeOutright {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new_AAISDA(),
+                &DayCountConvention::new(Some("AAISDA"), None, None).expect(""),
                 model.businessDayAdjuster.as_ref().unwrap(),
             );
         }

@@ -42,7 +42,7 @@ impl TraitStateTransitionFunction for STF_CD_SWPPV {
             accrued_interest2
         });
 
-        states.contractPerformance = Some(ContractPerformance::new_DF());
+        states.contractPerformance = Some(ContractPerformance::new("DF").expect("good cp"));
         states.statusDate = Some(*time);
     }
 }

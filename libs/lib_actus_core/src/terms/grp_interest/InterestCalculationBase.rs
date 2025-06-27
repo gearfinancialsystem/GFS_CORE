@@ -4,7 +4,7 @@ use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum InterestCalculationBase {

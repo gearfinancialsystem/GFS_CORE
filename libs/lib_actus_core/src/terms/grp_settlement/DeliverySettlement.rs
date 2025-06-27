@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;
-use crate::util::CommonUtils::Value;
+use crate::util::Value::Value;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
 pub enum DeliverySettlement {
@@ -33,7 +33,7 @@ impl DeliverySettlement {
         match string_map.get(key) {
             None => Some(DeliverySettlement::default()), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
-                match DeliverySettlement::from_str(s.extract_string().unwrap().as_str()) {
+                match DeliverySettlement::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
