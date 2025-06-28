@@ -10,6 +10,7 @@ impl RiskFactorModel {
         let events = Vec::new();
         events
     }
+    
     pub fn state_at(&self, id: &String, time: &IsoDatetime, states: &StateSpace, attributes: &ContractModel, isMarket: bool) -> Option<f64> {
         Some(1.0) // a implementer
     }

@@ -40,10 +40,8 @@ pub struct PAM;
 
 impl PAM {
     /// Compute next events within the period up to `to` date based on the contract model
-    pub fn schedule(
-        to: &IsoDatetime,
-        model: &ContractModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    pub fn schedule(to: &IsoDatetime, model: &ContractModel) 
+    -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
 
         // Initial exchange (IED)
@@ -296,11 +294,8 @@ impl PAM {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    pub fn apply(
-        events: Vec<ContractEvent>,
-        model: &ContractModel,
-        observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent> {
+    pub fn apply(events: Vec<ContractEvent>, model: &ContractModel, observer: &RiskFactorModel)
+     -> Vec<ContractEvent> {
         // Initialize state space per status date
         let mut states = Self::init_StateSpace(model);
         let mut events = events.clone();
@@ -338,9 +333,8 @@ impl PAM {
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_StateSpace(
-        model: &ContractModel,
-    ) -> StateSpace {
+    fn init_StateSpace(model: &ContractModel) 
+    -> StateSpace {
         let mut states = StateSpace::default();
 
         states.notionalScalingMultiplier = model.notionalScalingMultiplier;
@@ -405,15 +399,63 @@ impl PAM {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use serde_json::{Value, Map};
-    use std::fs::File;
-    use std::io::Read;
-    use std::error::Error;
-    use std::collections::HashMap;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use serde_json::{Value as ValueS, Map};
+//     use std::fs::File;
+//     use std::io::Read;
+//     use std::error::Error;
+//     use std::collections::HashMap;
+//     use crate::exceptions::ContractTypeUnknownException::ContractError;
+//     use c>rate::util::Value::Value;
+//     use crate::util_tests::TestsUtils::test_read_and_parse_json;
+//     use crate::util_tests::TestsUtils::json_to_dico;
 
-    //#[test]
-    //fn test_pam_contracts() -> Result<(), Box<dyn Error>> {}
-}
+//     fn load_dico_tests() -> Vec<Value> {
+//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_actus_core/tests_sets/actus-tests-pam.json";
+//         let json_value = test_read_and_parse_json(pathx).unwrap();
+//         let dico_from_json = json_to_dico(json_value);
+//         dico_from_json
+//     }
+
+//     #[test]
+//     fn test_pam_contracts(){
+//         let dico_tests = load_dico_tests();
+
+//         //let dico_tests: Vec<HashMap<String, Value>> = vec![load_dico_tests()];
+//         for el in dico_tests.iter() {
+
+//             let curr_test = el.as_hashmap().unwrap();
+
+//             let curr_identifier = curr_test.get("identifier").unwrap().as_string();
+//             let curr_terms = curr_test.get("terms").unwrap().as_hashmap();
+//             let curr_to = curr_test.get("to").unwrap().as_string();
+//             let curr_data_observed = curr_test.get("dataObserved").unwrap().as_hashmap(); // verifier si cest None
+//             let curr_events_observed = curr_test.get("eventsObserved").unwrap().as_vec();
+//             let curr_results = curr_test.get("results").unwrap().as_vec().unwrap();
+//             //let a = curr_results.get(0).unwrap().get("notionalPrincipal").unwrap().as_string().unwrap();
+//             let to_date = if let Some(curr_to) = curr_to {
+//                 IsoDatetime::parse_from_str(&curr_to, "%Y-%m-%dT%H:%M:%S").ok()
+//             } else {
+//                 None
+//             };
+
+//             let mut contract_model: Box<Result<ContractModel, ContractError>> = if let Some(ref curr_terms) = curr_terms {
+//                 // Supposons que ContractModel::new retourne Result<ContractModel, String>
+//                 match ContractModel::new(&curr_terms) {
+//                     Ok(model) => Box::new(Ok(model)),
+//                     Err(e) => Box::new(Err(ContractError::from(e))),
+//                 }
+//             } else {
+//                 Box::new(Err(ContractError::MissingTerms))
+//             };
+
+//             let risk_factor_model = RiskFactorModel;
+
+
+//             let mut vec_results: Vec<HashMap<String, Value>> = vec![];
+//         }
+//         true
+//     }
+// }

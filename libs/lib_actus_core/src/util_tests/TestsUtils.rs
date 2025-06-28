@@ -122,6 +122,7 @@ pub fn serde_value_to_custom_value(value: SerdeValue) -> Value {
         SerdeValue::Null => Value::None,
     }
 }
+
 pub fn json_to_dico(value: SerdeValue) -> Vec<Value> {
     if let SerdeValue::Object(map) = value {
         //let mut dico = HashMap::new();
