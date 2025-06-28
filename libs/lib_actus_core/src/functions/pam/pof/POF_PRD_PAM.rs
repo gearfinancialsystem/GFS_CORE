@@ -13,7 +13,7 @@ impl TraitPayOffFunction for POF_PRD_PAM {
     fn eval(
         &self,
         time: &IsoDatetime, 
-        _states: &StateSpace,
+        states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
@@ -26,8 +26,14 @@ impl TraitPayOffFunction for POF_PRD_PAM {
             let status_date = model.statusDate.expect("status date should always exist");
             let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always exist");
             let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always exist");
-        
-            1.0 * contract_role.role_sign() * -1.0 * (
+
+            let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+                risk_factor_model,
+                model,
+                time,
+                states
+            );
+            settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (
                     price_at_purchase_date + 
                     accrued_interest + day_counter.day_count_fraction(
                     time_adjuster.shift_sc(&status_date),

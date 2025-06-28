@@ -1,10 +1,7 @@
 use crate::exceptions::ParseError::ParseError;
 use std::collections::HashMap;
-use std::rc::Rc;
 use std::str::FromStr;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;

@@ -8,8 +8,6 @@ pub mod TraitContractModel;
 pub mod TraitCycleAdjuster;
 pub mod TraitCountConvention;
 pub mod TraitCalcConvention;
-pub mod TraitTermDescription;
-pub mod TraitEnumOptionDescription;
 
 pub mod TraitPayOffFunction;
 // pub mod RiskFactorModelTrait;

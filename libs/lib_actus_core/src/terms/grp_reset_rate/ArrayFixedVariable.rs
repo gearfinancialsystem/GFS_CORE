@@ -3,6 +3,7 @@ use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -20,11 +21,12 @@ impl ArrayFixedVariable {
             Self::None => "None".to_string(),
         }
     }
-    pub fn new_F() -> Self {
-        Self::F(F::new())
-    }
-    pub fn new_V() -> Self {
-        Self::V(V::new())
+    
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => ArrayFixedVariable::from_str(n),
+            None => Ok(ArrayFixedVariable::None),
+        }
     }
 
     pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
@@ -54,8 +56,8 @@ impl FromStr for ArrayFixedVariable {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "F" => Ok(Self::new_F()),
-            "V" => Ok(Self::new_V()),
+            "F" => Ok(Self::F(F::new())),
+            "V" => Ok(Self::V(V::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }

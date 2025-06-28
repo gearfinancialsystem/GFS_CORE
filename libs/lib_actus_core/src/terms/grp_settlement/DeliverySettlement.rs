@@ -3,6 +3,7 @@ use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_optionality::OptionType::OptionType;
 use crate::util::Value::Value;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
@@ -19,13 +20,9 @@ impl DeliverySettlement {
             DeliverySettlement::D(D) => D.type_str(),
         }
     }
-
-    pub fn new_S() -> Self {
-        DeliverySettlement::S(S::new())
-    }
-
-    pub fn new_D() -> Self {
-        DeliverySettlement::D(D::new())
+    
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        DeliverySettlement::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self>
@@ -47,9 +44,8 @@ impl FromStr for DeliverySettlement {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "" => Ok(DeliverySettlement::default()),
-            "S" => Ok(DeliverySettlement::new_S()),
-            "D" => Ok(DeliverySettlement::new_D()),
+            "S" => Ok(DeliverySettlement::S(S::new())),
+            "D" => Ok(DeliverySettlement::D(D::new())),
             _ => Err(ParseError {
                 message: format!("Invalid Delivery Settlement: {}", s),
             }),

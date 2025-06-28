@@ -5,8 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::contracts::CreditEnhancementCollateral::CreditEnhancementCollateral;
-
+use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
 #[allow(non_camel_case_types)]
 pub struct STF_XD_CEC;
 
@@ -21,13 +20,13 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
 
-        let market_value_covering_contracts = CreditEnhancementCollateral::calculate_market_value_covering_contracts(
+        let market_value_covering_contracts = CEC::calculate_market_value_covering_contracts(
             model,
             risk_factor_model,
             time
         );
 
-        states.notionalPrincipal = Some(CreditEnhancementCollateral::calculate_notional_principal(
+        states.notionalPrincipal = Some(CEC::calculate_notional_principal(
             model,
             risk_factor_model,
             time

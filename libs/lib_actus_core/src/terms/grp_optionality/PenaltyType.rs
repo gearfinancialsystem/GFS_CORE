@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_optionality::OptionType::OptionType;
 use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;
@@ -25,17 +26,9 @@ impl PenaltyType {
             Self::I(I) => I.type_str(),
         }
     }
-    pub fn new_N() -> Self {
-        PenaltyType::N(N::new())
-    }
-    pub fn new_A() -> Self {
-        PenaltyType::A(A::new())
-    }
-    pub fn new_R() -> Self {
-        PenaltyType::R(R::new())
-    }
-    pub fn new_I() -> Self {
-        PenaltyType::I(I::new())
+
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        PenaltyType::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
@@ -47,10 +40,10 @@ impl FromStr for PenaltyType {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "N" => Ok(Self::new_N()),
-            "A" => Ok(Self::new_A()),
-            "R" => Ok(Self::new_R()),
-            "I" => Ok(Self::new_I()),
+            "N" => Ok(Self::N(N::new())),
+            "A" => Ok(Self::A(A::new())),
+            "R" => Ok(Self::R(R::new())),
+            "I" => Ok(Self::I(I::new())),
             _ => Err(ParseError { message: format!("Invalid PenaltyType {}", s)})
         }
     }

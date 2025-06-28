@@ -1,3 +1,4 @@
+use std::arch::x86_64::_mm256_set_epi16;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
@@ -14,10 +15,10 @@ pub struct POF_TD_STK;
 impl TraitPayOffFunction for POF_TD_STK {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -25,7 +26,13 @@ impl TraitPayOffFunction for POF_TD_STK {
         let quantity = model.quantity.expect("quantity should always be some");
         let price_at_termination_date = model.priceAtTerminationDate.expect("priceAtTermination date should always be some");
 
-        1.0 * contract_role.role_sign() * quantity * price_at_termination_date
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        settlement_currency_fx_rate * contract_role.role_sign() * quantity * price_at_termination_date
 
     }
 }

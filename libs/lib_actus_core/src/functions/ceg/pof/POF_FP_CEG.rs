@@ -22,7 +22,12 @@ impl TraitPayOffFunction for POF_FP_CEG {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
         let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
         let fee_rate = model.feeRate.expect("feeRate should always exist");
 

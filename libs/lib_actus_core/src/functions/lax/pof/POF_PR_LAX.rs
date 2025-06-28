@@ -20,10 +20,10 @@ impl POF_PR_LAX {
 impl TraitPayOffFunction for POF_PR_LAX {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -32,8 +32,15 @@ impl TraitPayOffFunction for POF_PR_LAX {
         let notional_scaling_multiplier = model.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
 
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+
         let redemption = role * self.pr_payment - role * f64::max(0.0, self.pr_payment.abs() - notional_principal.abs());
 
-        1.0 * notional_scaling_multiplier * redemption
+        settlement_currency_fx_rate * notional_scaling_multiplier * redemption
     }
 }

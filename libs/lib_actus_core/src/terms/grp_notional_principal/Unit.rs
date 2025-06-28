@@ -10,6 +10,7 @@ use crate::terms::grp_notional_principal::unitx::STN::STN;
 use crate::terms::grp_notional_principal::unitx::TON::TON;
 use crate::terms::grp_notional_principal::unitx::TRO::TRO;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
 
 pub enum Unit {
     BRL(BRL),
@@ -39,34 +40,13 @@ impl Unit {
             Self::None => "".to_string(),
         }
     }
-    pub fn new_BRL() -> Self {
-        Self::BRL(BRL::new())
-    }
-    pub fn new_BSH() -> Self {
-        Self::BSH(BSH::new())
-    }
-    pub fn new_GLN() -> Self {
-        Self::GLN(GLN::new())
-    }
-    pub fn new_CUU() -> Self {
-        Self::CUU(CUU::new())
-    }
-    pub fn new_MWH() -> Self {
-        Self::MWH(MWH::new())
-    }
-    pub fn new_PND() -> Self {
-        Self::PND(PND::new())
-    }
-    pub fn new_STN() -> Self {
-        Self::STN(STN::new())
-    }
-    pub fn new_TON() -> Self {
-        Self::TON(TON::new())
-    }
-    pub fn new_TRO() -> Self {
-        Self::TRO(TRO::new())
-    }
 
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => Unit::from_str(n),
+            None => Ok(Unit::None),
+        }
+    }
 }
 
 impl Default for Unit {
@@ -79,15 +59,15 @@ impl FromStr for Unit {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "BRL" => Ok(Unit::new_BRL()),
-            "BSH" => Ok(Unit::new_BSH()),
-            "GLN" => Ok(Unit::new_GLN()),
-            "CUU" => Ok(Unit::new_CUU()),
-            "MWH" => Ok(Unit::new_MWH()),
-            "PND" => Ok(Unit::new_PND()),
-            "STN" => Ok(Unit::new_STN()),
-            "TON" => Ok(Unit::new_TON()),
-            "TRO" => Ok(Unit::new_TRO()),
+            "BRL" => Ok(Self::BRL(BRL::new())),
+            "BSH" => Ok(Self::BSH(BSH::new())),
+            "GLN" => Ok(Self::GLN(GLN::new())),
+            "CUU" => Ok(Self::CUU(CUU::new())),
+            "MWH" => Ok(Self::MWH(MWH::new())),
+            "PND" => Ok(Self::PND(PND::new())),
+            "STN" => Ok(Self::STN(STN::new())),
+            "TON" => Ok(Self::TON(TON::new())),
+            "TRO" => Ok(Self::TRO(TRO::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }

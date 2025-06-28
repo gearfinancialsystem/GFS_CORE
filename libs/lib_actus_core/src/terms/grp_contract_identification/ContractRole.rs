@@ -1,38 +1,20 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
-use crate::terms::grp_contract_identification::contract_roles::Rpa::RPA;
-use crate::terms::grp_contract_identification::contract_roles::Rpl::RPL;
-use crate::terms::grp_contract_identification::contract_roles::Rfl::RFL;
-use crate::terms::grp_contract_identification::contract_roles::Pfl::PFL;
-use crate::terms::grp_contract_identification::contract_roles::Rf::RF;
-use crate::terms::grp_contract_identification::contract_roles::Pf::PF;
-use crate::terms::grp_contract_identification::contract_roles::Buy::BUY;
-use crate::terms::grp_contract_identification::contract_roles::Sel::SEL;
-use crate::terms::grp_contract_identification::contract_roles::Col::COL;
-use crate::terms::grp_contract_identification::contract_roles::Cno::CNO;
-use crate::terms::grp_contract_identification::contract_roles::Udl::UDL;
-use crate::terms::grp_contract_identification::contract_roles::Udlp::UDLP;
-use crate::terms::grp_contract_identification::contract_roles::Udlm::UDLM;
+use crate::terms::grp_contract_identification::contract_roles::{
+    Rpa::RPA, Rpl::RPL, Rfl::RFL, Pfl::PFL,
+    Rf::RF, Pf::PF, Buy::BUY, Sel::SEL,
+    Col::COL, Cno::CNO, Udl::UDL, Udlp::UDLP,
+    Udlm::UDLM,
+};
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ContractRole {
-    RPA(RPA),
-    RPL(RPL),
-    RFL(RFL),
-    PFL(PFL),
-    RF(RF),
-    PF(PF),
-    BUY(BUY),
-    SEL(SEL),
-    COL(COL),
-    CNO(CNO),
-    UDL(UDL),
-    UDLP(UDLP),
-    UDLM(UDLM),
-    None
+    RPA(RPA), RPL(RPL), RFL(RFL), PFL(PFL),
+    RF(RF), PF(PF), BUY(BUY), SEL(SEL),
+    COL(COL), CNO(CNO), UDL(UDL), UDLP(UDLP),
+    UDLM(UDLM), None
 }
 impl ContractRole {
     pub fn description(&self) -> String {
@@ -82,14 +64,12 @@ impl ContractRole {
     }
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         string_map
             .get(key)
             .and_then(|s| {
                 Self::from_str(s.as_string().unwrap().as_str()).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
-        //.unwrap_or_default()
     }
 }
 

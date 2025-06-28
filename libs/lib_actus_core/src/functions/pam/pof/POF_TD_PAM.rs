@@ -26,8 +26,14 @@ impl TraitPayOffFunction for POF_TD_PAM {
         let status_date = states.statusDate.expect("status date should always exist");
         let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
-       
-        1.0 *
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        
+        settlement_currency_fx_rate *
             contract_role.role_sign() *
             (price_at_termination_date +
             accrued_interest + 

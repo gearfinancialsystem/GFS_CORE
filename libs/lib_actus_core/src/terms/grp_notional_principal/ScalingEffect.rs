@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
-
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
 use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
@@ -28,17 +28,9 @@ impl ScalingEffect {
             ScalingEffect::INO(INO) => INO.type_str(),
         }
     }
-    pub fn new_OOO() -> Self {
-        ScalingEffect::OOO(OOO::new())
-    }
-    pub fn new_RPL() -> Self {
-        ScalingEffect::IOO(IOO::new())
-    }
-    pub fn new_RFL() -> Self {
-        ScalingEffect::ONO(ONO::new())
-    }
-    pub fn new_PFL() -> Self {
-        ScalingEffect::INO(INO::new())
+    
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        ScalingEffect::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
@@ -61,10 +53,10 @@ impl FromStr for ScalingEffect {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "OOO" => Ok(ScalingEffect::OOO(OOO)),
-            "IOO" => Ok(ScalingEffect::IOO(IOO)),
-            "ONO" => Ok(ScalingEffect::ONO(ONO)),
-            "INO" => Ok(ScalingEffect::INO(INO)),
+            "OOO" => Ok(ScalingEffect::OOO(OOO::new())),
+            "IOO" => Ok(ScalingEffect::IOO(IOO::new())),
+            "ONO" => Ok(ScalingEffect::ONO(ONO::new())),
+            "INO" => Ok(ScalingEffect::INO(INO::new())),
             _ => Err(ParseError { message: format!("Invalid ScalingEffect: {}", s)})
         }
     }

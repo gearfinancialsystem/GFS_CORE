@@ -14,12 +14,19 @@ impl TraitPayOffFunction for POF_IP_LAM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        _model: &ContractModel,
+        model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        1.0 * states.interestScalingMultiplier.unwrap()
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        
+        settlement_currency_fx_rate * states.interestScalingMultiplier.unwrap()
             * (states.accruedInterest.unwrap() + (day_counter.day_count_fraction(
                                                     time_adjuster.shift_sc(&states.statusDate.unwrap()),
                                                     time_adjuster.shift_sc(time)

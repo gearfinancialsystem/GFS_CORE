@@ -12,18 +12,24 @@ pub struct POF_MD_PAM;
 impl TraitPayOffFunction for POF_MD_PAM {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
-        _model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        model: &ContractModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
             let notional_scaling_multiplier = states.notionalScalingMultiplier.expect("notionalScalingMultiplier should always be some");
             let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
-        
-            1.0 * notional_scaling_multiplier * notional_principal
+
+            let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+                risk_factor_model,
+                model,
+                time,
+                states
+            );
+            settlement_currency_fx_rate * notional_scaling_multiplier * notional_principal
         
     }
 }

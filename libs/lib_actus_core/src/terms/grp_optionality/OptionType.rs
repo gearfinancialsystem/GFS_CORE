@@ -4,6 +4,7 @@ use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -21,14 +22,9 @@ impl OptionType {
             Self::CP(CP) => CP.type_str(),
         }
     }
-    pub fn new_C() -> Self {
-        Self::C(C::new())
-    }
-    pub fn new_P() -> Self {
-        Self::P(P::new())
-    }
-    pub fn new_CP() -> Self {
-        Self::CP(CP::new())
+
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        OptionType::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
@@ -40,9 +36,9 @@ impl FromStr for OptionType {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "C" => Ok(Self::new_C()),
-            "P" => Ok(Self::new_P()),
-            "CP" => Ok(Self::new_CP()),
+            "C" => Ok(Self::C(C::new())),
+            "P" => Ok(Self::P(P::new())),
+            "CP" => Ok(Self::CP(CP::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
@@ -50,7 +46,7 @@ impl FromStr for OptionType {
 
 impl Default for OptionType {
     fn default() -> Self {
-        Self::new_C()
+        Self::C(C::new())
     }
 }
 

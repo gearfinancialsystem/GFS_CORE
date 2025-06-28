@@ -12,10 +12,10 @@ pub struct POF_IED_PAM;
 impl TraitPayOffFunction for POF_IED_PAM {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -23,8 +23,13 @@ impl TraitPayOffFunction for POF_IED_PAM {
         let contract_role = model.contractRole.as_ref().expect("contract role should always be Some");
         let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always be Some");
         let premium_discount = model.premiumDiscountAtIED.expect("premiumDiscount should always be Some");
-
-        1.0 * contract_role.role_sign() * -1.0 * (notional_principal + premium_discount)
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (notional_principal + premium_discount)
 
     }
 }

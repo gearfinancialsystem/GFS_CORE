@@ -12,7 +12,7 @@ pub struct POF_PP_PAM;
 impl TraitPayOffFunction for POF_PP_PAM {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
@@ -23,7 +23,13 @@ impl TraitPayOffFunction for POF_PP_PAM {
             let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
             let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
 
-            1.0 * contract_role.role_sign() * 1.0 * notional_principal
+            let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+                risk_factor_model,
+                model,
+                time,
+                states
+            );
+            settlement_currency_fx_rate * contract_role.role_sign() * 1.0 * notional_principal
 
     }
 }

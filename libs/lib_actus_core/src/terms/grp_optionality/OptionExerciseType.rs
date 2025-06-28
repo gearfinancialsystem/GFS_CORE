@@ -4,7 +4,7 @@ use crate::terms::grp_optionality::option_exercise_type::A::A;
 use crate::terms::grp_optionality::option_exercise_type::B::B;
 use crate::terms::grp_optionality::option_exercise_type::E::E;
 use crate::exceptions::ParseError::ParseError;
-
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum OptionExerciseType {
@@ -23,25 +23,22 @@ impl OptionExerciseType {
             OptionExerciseType::None => "".to_string(),
         }
     }
-    pub fn new_E() -> Self {
-        Self::E(E::new())
+
+    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+        match element {
+            Some(n) => OptionExerciseType::from_str(n),
+            None => Ok(OptionExerciseType::None),
+        }
     }
-    pub fn new_B() -> Self {
-        Self::B(B::new())
-    }
-    pub fn new_A() -> Self {
-        Self::A(A::new())
-    }
-    
 }
 
 impl FromStr for OptionExerciseType {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "E" => Ok(Self::new_E()),
-            "B" => Ok(Self::new_B()),
-            "A" => Ok(Self::new_A()),
+            "E" => Ok(Self::E(E::new())),
+            "B" => Ok(Self::B(B::new())),
+            "A" => Ok(Self::A(A::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }

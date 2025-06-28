@@ -1,3 +1,4 @@
+use std::arch::x86_64::_mm256_set_epi16;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
@@ -20,20 +21,28 @@ impl POF_PI_LAX {
 impl TraitPayOffFunction for POF_PI_LAX {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
+        
         let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
         let notional_scaling_multiplier = model.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
 
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        
         let redemption = self.pr_payment - contract_role.role_sign()
             * f64::max(0.0, self.pr_payment.abs() - notional_principal.abs());
 
-        1.0 * -1.0 * contract_role.role_sign() * notional_scaling_multiplier * redemption
+        settlement_currency_fx_rate * -1.0 * contract_role.role_sign() * notional_scaling_multiplier * redemption
     }
 }

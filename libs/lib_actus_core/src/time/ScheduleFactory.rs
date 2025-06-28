@@ -109,16 +109,5 @@ impl ScheduleFactory {
 
         times_set
     }
-
-    /// Parse une chaîne de cycle en une durée.
-    fn parse_period(cycle: &str) -> Duration {
-        // Exemple de parsing simple : "1M" pour 1 mois, "2D" pour 2 jours, etc.
-        let amount = cycle[..cycle.len() - 1].parse::<i64>().unwrap_or(1);
-        match cycle.chars().last().unwrap() {
-            'D' => Duration::days(amount),
-            'M' => Duration::days(amount * 30), // Approximation pour les mois
-            'Y' => Duration::days(amount * 365), // Approximation pour les années
-            _ => Duration::days(1), // Par défaut, 1 jour
-        }
-    }
+    
 }

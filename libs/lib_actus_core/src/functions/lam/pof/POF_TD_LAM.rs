@@ -20,7 +20,13 @@ impl TraitPayOffFunction for POF_TD_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        1.0
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        settlement_currency_fx_rate
             * model.clone().contractRole.unwrap().role_sign()
             * (model.priceAtTerminationDate.unwrap() + states.accruedInterest.unwrap()
             + day_counter.day_count_fraction(

@@ -12,10 +12,10 @@ pub struct POF_MD2_FXOUT;
 impl TraitPayOffFunction for POF_MD2_FXOUT {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -23,6 +23,13 @@ impl TraitPayOffFunction for POF_MD2_FXOUT {
         let contract_role_sign = contract_role.role_sign();
         let notional_principal_2 = model.notionalPrincipal2.expect("notionalPrincipal2 should always exist");
 
-        1.0 * contract_role_sign * -1.0 * notional_principal_2
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+
+        settlement_currency_fx_rate * contract_role_sign * -1.0 * notional_principal_2
     }
 }

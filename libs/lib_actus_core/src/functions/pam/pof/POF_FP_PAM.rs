@@ -18,7 +18,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
         time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -26,16 +26,22 @@ impl TraitPayOffFunction for POF_FP_PAM {
         let fee_basis = model.feeBasis.as_ref().expect("feebasis should always be some");
         let fee_rate = model.feeRate.expect("fee rate should always be some");
         
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
         if fee_basis.eq(&FeeBasis::A(A)) {
             let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
-            1.0 * contract_role.role_sign() * fee_rate
+            settlement_currency_fx_rate * contract_role.role_sign() * fee_rate
         } 
         else {
             let notional_principal = model.notionalPrincipal.as_ref().expect("notionalPrincipal should always be some");
             let fee_accrued = states.feeAccrued.expect("fee accrued should always be some");
             let status_date = states.statusDate.expect("status date should always be some");
             
-            1.0 * (fee_accrued + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(time))) * fee_rate * notional_principal
+            settlement_currency_fx_rate * (fee_accrued + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(time))) * fee_rate * notional_principal
         }
         
    

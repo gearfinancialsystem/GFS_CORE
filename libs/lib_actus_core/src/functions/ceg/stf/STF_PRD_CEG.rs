@@ -5,7 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::isoDatetime::IsoDatetime;
-use crate::contracts::CreditEnhancementGuarantee::CreditEnhancementGuarantee;
+use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_CEG;
@@ -22,7 +22,7 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
     ) {
         // Set notionalPrincipal if it is not already set
         if model.notionalPrincipal.is_none() {
-            states.notionalPrincipal = Some(CreditEnhancementGuarantee::calculate_notional_principal(
+            states.notionalPrincipal = Some(CEG::calculate_notional_principal(
                 states,
                 model,
                 risk_factor_model,

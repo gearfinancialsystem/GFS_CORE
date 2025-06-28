@@ -37,6 +37,13 @@ impl TraitPayOffFunction for POF_PR_NAM {
 
         let redemption = redemption_amount - redemption_amount.max(0.0) - notional_principal.abs();
 
-        1.0 * contract_role.role_sign() * notional_scaling_multiplier * redemption
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        
+        settlement_currency_fx_rate * contract_role.role_sign() * notional_scaling_multiplier * redemption
     }
 }

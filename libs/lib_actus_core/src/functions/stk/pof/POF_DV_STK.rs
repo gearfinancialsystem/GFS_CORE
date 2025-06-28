@@ -14,17 +14,22 @@ pub struct POF_DV_STK;
 impl TraitPayOffFunction for POF_DV_STK {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
         let quantity = model.quantity.expect("quantity should always be some");
-
-        1.0 * contract_role.role_sign() * quantity * 1.0
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        settlement_currency_fx_rate * contract_role.role_sign() * quantity * 1.0
         
     }
 }

@@ -12,16 +12,22 @@ pub struct POF_IED_CLM;
 impl TraitPayOffFunction for POF_IED_CLM {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime, 
+        states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
+        
         let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
         let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always exist");
-        let settlement_currency_fx_rate = 1.0; // Remplacer par 1.0 comme demandé
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
 
         settlement_currency_fx_rate
             * contract_role.role_sign()

@@ -12,10 +12,10 @@ pub struct POF_PRD_FXOUT;
 impl TraitPayOffFunction for POF_PRD_FXOUT {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -23,6 +23,13 @@ impl TraitPayOffFunction for POF_PRD_FXOUT {
         let contract_role_sign = contract_role.role_sign();
         let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always exist");
 
-        1.0 * contract_role_sign * -1.0 * price_at_purchase_date
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+
+        settlement_currency_fx_rate * contract_role_sign * -1.0 * price_at_purchase_date
     }
 }

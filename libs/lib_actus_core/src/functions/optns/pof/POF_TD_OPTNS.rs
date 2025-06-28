@@ -12,15 +12,21 @@ pub struct POF_TD_OPTNS;
 impl TraitPayOffFunction for POF_TD_OPTNS {
     fn eval(
         &self,
-        _time: &IsoDatetime,
-        _states: &StateSpace,
+        time: &IsoDatetime,
+        states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let price_at_termination_date = model.priceAtTerminationDate.expect("priceAtTerminationDate should always exist");
-
-        1.0 * price_at_termination_date
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        
+        settlement_currency_fx_rate * price_at_termination_date
     }
 }

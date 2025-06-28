@@ -3,6 +3,7 @@ use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -18,16 +19,11 @@ impl ArrayIncreaseDecrease {
             Self::DEC(DEC) => DEC.type_str(),
         }
     }
-    pub fn new_INC() -> Self {
-        Self::INC(INC::new())
-    }
-    pub fn new_DEC() -> Self {
-        Self::DEC(DEC::new())
-    }
 
-    // pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-    //     crate::util::CommonUtils::CommonUtils::provide(string_map, key)
-    // }
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        ArrayIncreaseDecrease::from_str(element)
+    }
+    
     pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
         match string_map.get(key) {
             None => None, // Clé absente : valeur par défaut dans un Some
@@ -55,8 +51,8 @@ impl FromStr for ArrayIncreaseDecrease {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "F" => Ok(Self::new_INC()),
-            "V" => Ok(Self::new_DEC()),
+            "INC" => Ok(Self::INC(INC::new())),
+            "DEC" => Ok(Self::DEC(DEC::new())),
             _ => Err(ParseError { message: format!("Invalid ArrayIncreaseDecrease: {}", s)})
         }
     }

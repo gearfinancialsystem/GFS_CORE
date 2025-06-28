@@ -5,7 +5,6 @@ use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::types::isoDatetime::IsoDatetime;
 
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_interest::daycountconventions::A336::A336;
 use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::terms::grp_interest::daycountconventions::A365::A365;

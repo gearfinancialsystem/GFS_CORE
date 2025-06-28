@@ -24,17 +24,23 @@ impl TraitPayOffFunction for POF_PY_PAM {
         let penalty_type = model.penaltyType.as_ref().expect("penaltyType should be Some");
         let contract_role = model.contractRole.as_ref().expect("contract role should be Some");
 
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
         match penalty_type {
             PenaltyType::A(_A) => {
                 let penalty_rate = model.penaltyRate.as_ref().expect("penaltyRate should be Some");
-                1.0 * contract_role.role_sign() * penalty_rate
+                settlement_currency_fx_rate * contract_role.role_sign() * penalty_rate
             }
             PenaltyType::N(_N) => {
                 let penalty_rate = model.penaltyRate.as_ref().expect("penaltyRate should be Some");
                 let status_date = states.statusDate.as_ref().expect("status date should always exist");
                 let notional_principal = states.notionalPrincipal.as_ref().expect("notionalPrincipal should be Some");
 
-                1.0 * contract_role.role_sign()
+                settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))
                 * penalty_rate * notional_principal
             }
@@ -44,7 +50,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be Some");
                 //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
                 
-                1.0 * contract_role.role_sign()
+                settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))
                     * notional_principal
                     * 0.0f64.max(nominal_interest_rate - 1.0f64)

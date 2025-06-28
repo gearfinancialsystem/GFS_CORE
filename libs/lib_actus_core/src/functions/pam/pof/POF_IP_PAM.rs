@@ -14,8 +14,8 @@ impl TraitPayOffFunction for POF_IP_PAM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        _model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        model: &ContractModel,
+        risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -29,7 +29,13 @@ impl TraitPayOffFunction for POF_IP_PAM {
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(&time)
         );
-        let res = 1.0 * interest_scaling_multiplier * (accrued_interest + a) * nominal_interest_rate * notional_principal;
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        let res = settlement_currency_fx_rate * interest_scaling_multiplier * (accrued_interest + a) * nominal_interest_rate * notional_principal;
 
         res
     }

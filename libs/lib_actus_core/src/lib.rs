@@ -10,5 +10,5 @@ pub mod functions;
 pub mod state_space;
 pub mod events;
 pub mod externals;
-pub mod contracts;
+
 pub mod util_tests;

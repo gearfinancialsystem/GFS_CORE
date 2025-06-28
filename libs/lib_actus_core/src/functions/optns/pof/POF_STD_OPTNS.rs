@@ -12,7 +12,7 @@ pub struct POF_STD_OPTNS;
 impl TraitPayOffFunction for POF_STD_OPTNS {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
@@ -22,6 +22,12 @@ impl TraitPayOffFunction for POF_STD_OPTNS {
         let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
         let exercise_amount = states.exerciseAmount.expect("exerciseAmount should always exist");
 
-        1.0 * contract_role.role_sign() * exercise_amount
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
+        settlement_currency_fx_rate * contract_role.role_sign() * exercise_amount
     }
 }

@@ -214,6 +214,7 @@ pub struct ContractModel {
     pub notionalPrincipal2: Option<f64>,
     pub creditEventTypeCovered: Option<Vec<CreditEventTypeCovered>>,
     pub futuresPrice: Option<f64>,
+    pub settlementCurrency: Option<String>
 }
 
 impl ContractModel {
@@ -335,6 +336,7 @@ impl ContractModel {
             notionalPrincipal2: None,
             creditEventTypeCovered: None,
             futuresPrice: None,
+            settlementCurrency: None
         }
     }
 
@@ -455,6 +457,7 @@ impl ContractModel {
             "notionalPrincipal2" =>Some(FieldValue::vF64(self.notionalPrincipal2.clone().unwrap())),
             "creditEventTypeCovered"=>Some(FieldValue::vVecCreditEventTypeCovered(self.creditEventTypeCovered.clone().unwrap())),
             "futuresPrice" =>Some(FieldValue::vF64(self.futuresPrice.clone().unwrap())),
+            "settlementCurrency"=>Some(FieldValue::vString(self.settlementCurrency.clone().unwrap())),
             _ => None,
         }
     }
@@ -669,7 +672,7 @@ impl ContractModel {
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
                 cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
-                    Some(CyclePointOfRateReset::new_E())
+                    Some(CyclePointOfRateReset::new("E").expect("f"))
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };
@@ -775,7 +778,7 @@ impl ContractModel {
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
                 cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
-                    Some(CyclePointOfRateReset::new_E())
+                    Some(CyclePointOfRateReset::new("E").expect("fe"))
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };
@@ -1000,7 +1003,7 @@ impl ContractModel {
                 cm.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
 
                 cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
-                    Some(CyclePointOfRateReset::new_E())
+                    Some(CyclePointOfRateReset::new("E").expect("d"))
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };
@@ -1260,7 +1263,7 @@ impl ContractModel {
                 cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
 
                 cm.cyclePointOfRateReset = if cm.cyclePointOfInterestPayment == Some(CyclePointOfInterestPayment::new("B").unwrap()) {
-                    Some(CyclePointOfRateReset::new_E())
+                    Some(CyclePointOfRateReset::new("E").expect("r"))
                 } else {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };

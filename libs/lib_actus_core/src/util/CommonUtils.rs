@@ -1,13 +1,11 @@
 use std::collections::HashMap;
 use std::str::FromStr;
-use serde_json::to_string;
+use crate::attributes::ContractModel::ContractModel;
 use crate::util::Value::Value;
 use crate::exceptions::ParseError::ParseError;
-// use crate::terms::grp_settlement::DeliverySettlement::S;
-
-
-
-
+use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::state_space::StateSpace::StateSpace;
+use crate::types::isoDatetime::IsoDatetime;
 
 pub struct CommonUtils;
 
@@ -26,6 +24,7 @@ impl CommonUtils {
             }
         }
     }
+
     pub fn provide_f64(string_map: &HashMap<String, Value>, key: &str) -> Option<f64> {
         // string_map.get(key).and_then(|s| s.parse::<f64>().ok())
         match string_map.get(key) {
@@ -38,8 +37,8 @@ impl CommonUtils {
             }
         }
     }
-    pub fn provide_f64default(string_map: &HashMap<String, Value>, key: &str, default: f64) -> Option<f64>
-    {
+
+    pub fn provide_f64default(string_map: &HashMap<String, Value>, key: &str, default: f64) -> Option<f64> {
         match string_map.get(key) {
             None => Some(default), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
@@ -64,6 +63,7 @@ impl CommonUtils {
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
+
     pub fn provide_string_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<String>> {
         println!("{:?}", key);
         //string_map.get(key).unwrap().as_string()
@@ -77,6 +77,7 @@ impl CommonUtils {
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
+
     pub fn provide_f64_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<f64>> {
         println!("{:?}", key);
         //string_map.get(key).unwrap().as_string()
@@ -90,9 +91,7 @@ impl CommonUtils {
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
-    
 
-    // Fonction générique provide
     pub fn provide<T>(string_map: &HashMap<String, Value>, key: &str) -> Option<T>
     where
         T: FromStr<Err = ParseError> + Default,
@@ -107,37 +106,22 @@ impl CommonUtils {
             }
         }
     }
-    // pub fn is_none(value: &Option<AnyBox>) -> bool {
-    //     match value {
-    //         None => true,
-    //         Some(v) => false,
-    //     }
-    // }
-    // pub fn is_none_string(value: &Option<&String>) -> bool {
-    //     match value {
-    //         None => true,
-    //         Some(v) => false,
-    //     }
-    // }
 
-    // pub fn settlement_currency_fx_rate(
-    //     risk_factor_model: &dyn RiskFactorModelTrait,
-    //     model: &dyn ContractModelTrait,
-    //     time: IsoDatetime,
-    //     state: &StateSpace,
-    // ) -> f64 {
-    //     let settlement_currency = model.get_as("SettlementCurrency");
-    //     let currency = model.get_as("Currency");
+    pub fn settlementCurrencyFxRate(riskFactorModel: &RiskFactorModel, model: &ContractModel, time: &IsoDatetime, state: &StateSpace) -> f64{    
+        let settlementCurrency = model.settlementCurrency.clone();
+        let currency = model.currency.clone();
+        
+        if settlementCurrency.is_none()  || currency == settlementCurrency {
+            1.0
+        }
+        else {
+            let strings = vec![currency.unwrap(), settlementCurrency.unwrap()];
 
-    //     let are_equal = match(settlement_currency, currency){
-    //         (Some(a), Some(b)) => a.downcast_ref::<&str>() == b.downcast_ref::<&str>(), _ => false,
-    //     };
+            let str_slices: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
+            let joined = str_slices.join(" ");
 
-    //     if CommonUtils::is_none(settlement_currency) || are_equal {
-    //         1.0
-    //     } else {
-    //         let currency_pair = format!("{:?}/{:?}", currency.unwrap(), settlement_currency.unwrap());
-    //         risk_factor_model.state_at(&currency_pair, &time, state, model)
-    //     }
-    // }
+            riskFactorModel.state_at(&joined, time, state, model,true).unwrap()
+        }
+        
+    }
 }

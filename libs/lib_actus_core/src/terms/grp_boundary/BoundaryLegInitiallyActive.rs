@@ -3,7 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
 use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

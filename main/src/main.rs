@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use lib_actus_core::types::isoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
-use lib_actus_core::contracts::Swap::Swap;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::util::Value::Value;
 
@@ -106,9 +106,9 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = Swap::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = SWAPS::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = Swap::apply(events_res, cm, &risk_factor_model);
+            let events2 = SWAPS::apply(events_res, cm, &risk_factor_model);
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.eventTime.unwrap(), ce.eventType, ce.payoff, ce.state.accruedInterest);

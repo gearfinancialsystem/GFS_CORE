@@ -20,7 +20,9 @@ impl TraitStateTransitionFunction for STF_MD_FUTUR {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // Placeholder for risk factor model state retrieval
-        let st = 1.0; // Placeholder value for demonstration
+        let st = RiskFactorModel.state_at(
+            &model.contractStructure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap().marketObjectCode.clone().unwrap(),
+            time, states, model, true).expect("correct risk factor model");
         let futures_price = model.futuresPrice.unwrap_or(0.0);
         let x = st - futures_price;
 

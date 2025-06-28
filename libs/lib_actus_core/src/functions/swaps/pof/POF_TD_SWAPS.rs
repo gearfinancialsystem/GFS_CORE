@@ -18,16 +18,22 @@ impl POF_TD_SWAPS {
 impl TraitPayOffFunction for POF_TD_SWAPS {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let fx_rate = 1.0;
+        let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
+            risk_factor_model,
+            model,
+            time,
+            states
+        );
         let price_at_termination = model.priceAtTerminationDate.expect("No price at termination");
         let accrued_interest = states.accruedInterest.expect("No accrued interest");
-        fx_rate * price_at_termination + accrued_interest
+
+        settlement_currency_fx_rate * price_at_termination + accrued_interest
     }
 }

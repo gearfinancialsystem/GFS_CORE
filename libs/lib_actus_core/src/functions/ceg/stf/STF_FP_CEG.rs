@@ -1,5 +1,5 @@
 use crate::attributes::ContractModel::ContractModel;
-use crate::contracts::CreditEnhancementGuarantee::CreditEnhancementGuarantee;
+use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -22,7 +22,7 @@ impl TraitStateTransitionFunction for STF_FP_CEG {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         if model.notionalPrincipal.is_none() {
-            states.notionalPrincipal = Some(CreditEnhancementGuarantee::calculate_notional_principal(
+            states.notionalPrincipal = Some(CEG::calculate_notional_principal(
                 states,
                 model,
                 risk_factor_model,

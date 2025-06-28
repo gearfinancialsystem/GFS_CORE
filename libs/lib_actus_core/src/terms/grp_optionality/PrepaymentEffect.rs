@@ -4,7 +4,7 @@ use crate::terms::grp_optionality::prepayment_effect::A::A;
 use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
 use crate::exceptions::ParseError::ParseError;
-
+use crate::terms::grp_optionality::OptionType::OptionType;
 
 #[derive(PartialEq, Eq)]
 pub enum PrepaymentEffect {
@@ -21,25 +21,19 @@ impl PrepaymentEffect {
             PrepaymentEffect::M(M) => M.type_str(),
         }
     }
-    pub fn new_N() -> Self {
-        Self::N(N::new())
-    }
-    pub fn new_A() -> Self {
-        Self::A(A::new())
-    }
-    pub fn new_M() -> Self {
-        Self::M(M::new())
-    }
 
+    pub fn new(element: &str) -> Result<Self, ParseError> {
+        PrepaymentEffect::from_str(element)
+    }
 }
 
 impl FromStr for PrepaymentEffect {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "N" => Ok(Self::new_N()),
-            "A" => Ok(Self::new_A()),
-            "M" => Ok(Self::new_M()),
+            "N" => Ok(Self::N(N::new())),
+            "A" => Ok(Self::A(A::new())),
+            "M" => Ok(Self::M(M::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }
@@ -47,7 +41,7 @@ impl FromStr for PrepaymentEffect {
 
 impl Default for PrepaymentEffect {
     fn default() -> Self {
-        Self::new_N()
+        Self::N(N::new())
     }
 }
 
