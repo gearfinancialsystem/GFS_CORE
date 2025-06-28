@@ -24,6 +24,8 @@ impl TraitStateTransitionFunction for STF_XD_FUTUR {
             &model.contractStructure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap().marketObjectCode.clone().unwrap(),
             time, states, model, true).expect("correct risk factor model");
         let futures_price = model.futuresPrice.unwrap_or(0.0);
+        
+        
         states.exerciseAmount = Some(st - futures_price);
         states.statusDate = Some(*time);
     }
