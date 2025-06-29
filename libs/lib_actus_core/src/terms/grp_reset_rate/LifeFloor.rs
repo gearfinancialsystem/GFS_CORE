@@ -1,0 +1,1 @@
+pub struct LifeFloor(f64);

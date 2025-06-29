@@ -1,0 +1,1 @@
+pub struct NotionalPrincipal2(f64);

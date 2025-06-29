@@ -1,0 +1,1 @@
+pub struct VariationMargin(f64);

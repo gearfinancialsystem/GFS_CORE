@@ -1,0 +1,1 @@
+pub struct RateSpread(f64);

@@ -1,0 +1,1 @@
+pub struct NotionalScalingMultiplier(f64);

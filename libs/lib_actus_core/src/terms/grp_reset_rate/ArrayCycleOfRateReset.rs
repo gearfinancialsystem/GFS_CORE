@@ -1,0 +1,1 @@
+pub struct ArrayCycleOfRateReset(Vec<String>);

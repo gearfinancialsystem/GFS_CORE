@@ -1,0 +1,1 @@
+pub struct NominalInterestRate2(f64);

@@ -1,0 +1,1 @@
+pub struct CoverageOfCreditEnhancement(f64);

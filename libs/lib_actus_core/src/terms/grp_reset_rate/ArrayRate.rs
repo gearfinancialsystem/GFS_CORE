@@ -1,0 +1,1 @@
+pub struct ArrayRate(Vec<f64>);

@@ -1,0 +1,1 @@
+pub struct OptionStrike1(f64);

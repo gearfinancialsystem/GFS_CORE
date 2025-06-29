@@ -1,0 +1,1 @@
+pub struct FeeAccrued(f64);

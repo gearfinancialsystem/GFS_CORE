@@ -1,0 +1,5 @@
+-suivre le Newtype Patern, encapsuler tous les termes dans des structures
+- verifier les termes :
+sils sont optionels ou pas.
+sil ne sont pas optionnels :
+    voir s'ils sont essentiel a lexecution de tous les types de contrats (dans ce cas ), ils doivent etre spécifiés par l'utilisateur ?

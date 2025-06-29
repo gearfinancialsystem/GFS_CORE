@@ -1,0 +1,1 @@
+pub struct ArrayNextPrincipalRedemptionPayment(Vec<f64>);
