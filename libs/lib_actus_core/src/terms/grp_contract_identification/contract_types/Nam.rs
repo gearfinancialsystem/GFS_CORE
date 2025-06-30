@@ -37,7 +37,7 @@ use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 pub struct NAM;
 

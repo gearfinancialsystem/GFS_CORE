@@ -1,4 +1,4 @@
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 

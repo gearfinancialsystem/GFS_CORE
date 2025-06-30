@@ -1,3 +1,6 @@
+use std::str::FromStr;
+use crate::define_struct_f64;
 
-#[derive(PartialEq, Debug, Clone)]
-pub struct CreditLineAmount(f64);
+define_struct_f64!(CreditLineAmount, |value| {
+    (value >= 0.0) => "value must be positive"
+}, {});

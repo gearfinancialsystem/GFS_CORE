@@ -19,7 +19,7 @@ use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 
 pub struct CEG;

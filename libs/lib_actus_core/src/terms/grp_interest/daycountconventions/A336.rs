@@ -1,4 +1,4 @@
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -25,7 +25,7 @@ impl TraitDayCountConvention for A336 {
 mod tests {
     use super::*;
     use crate::terms::grp_interest::daycountconventions::A336::A336;
-    use crate::types::isoDatetime::IsoDatetime;
+    use crate::types::IsoDatetime::IsoDatetime;
     
     fn set_vars() -> (IsoDatetime, IsoDatetime, IsoDatetime) {
         let local_date1 = IsoDatetime::parse_from_str("2019-02-01 00:00:00", "%Y-%m-%d %H:%M:%S").expect("");

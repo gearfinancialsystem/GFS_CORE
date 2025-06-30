@@ -9,18 +9,15 @@ use crate::util::Value::Value;
 pub type IsoDatetime = NaiveDateTime;
 
 pub trait TraitNaiveDateTimeExtension {
-    fn double(&self) -> Self;
     fn is_last_day_of_month(&self) -> bool;
     fn last_date_of_month(&self) -> Self;
-    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<NaiveDateTime>;
-    fn provide_rc(sm: &HashMap<String, Value>, key: &str) -> Option<Rc<NaiveDateTime>>;
-    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<NaiveDateTime>>;
+    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<IsoDatetime>;
+    fn provide_rc(sm: &HashMap<String, Value>, key: &str) -> Option<Rc<IsoDatetime>>;
+    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<IsoDatetime>>;
 }
 
-impl TraitNaiveDateTimeExtension for NaiveDateTime {
-    fn double(&self) -> Self {
-        *self
-    }
+impl TraitNaiveDateTimeExtension for IsoDatetime {
+
     fn is_last_day_of_month(&self) -> bool {
         // Add one day to the given date
         let first_day_of_next_month = {
@@ -40,7 +37,8 @@ impl TraitNaiveDateTimeExtension for NaiveDateTime {
         }
 
     }
-    fn last_date_of_month(&self) -> NaiveDateTime {
+
+    fn last_date_of_month(&self) -> IsoDatetime {
         let year = self.year();
         let month = self.month();
         let hour = self.hour();
@@ -63,11 +61,16 @@ impl TraitNaiveDateTimeExtension for NaiveDateTime {
             .unwrap()
     }
 
-    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<NaiveDateTime> {
+    fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<IsoDatetime> {
         string_map.get(key).and_then(|s| s.as_string().unwrap().parse::<NaiveDateTime>().ok())
     }
 
-    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<NaiveDateTime>> {
+    fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<IsoDatetime>> {
+
+        string_map.get(key).and_then(|s| s.as_string().unwrap().parse::<NaiveDateTime>().ok()).map(|b| Rc::new(b))
+    }
+
+    fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<IsoDatetime>> {
         string_map.get(key).and_then(|s| {
             let dates: Vec<NaiveDateTime> = s.as_string().unwrap().split(',')
                 .map(|date_str| date_str.trim())
@@ -79,10 +82,6 @@ impl TraitNaiveDateTimeExtension for NaiveDateTime {
                 Some(dates)
             }
         })
-    }
-    fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<Self>> {
-
-        string_map.get(key).and_then(|s| s.as_string().unwrap().parse::<NaiveDateTime>().ok()).map(|b| Rc::new(b))
     }
 
 }

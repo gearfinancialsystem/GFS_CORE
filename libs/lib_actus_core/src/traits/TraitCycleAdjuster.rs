@@ -1,5 +1,5 @@
 
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitCycleAdjuster {
     fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime;

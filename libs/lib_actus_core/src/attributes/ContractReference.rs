@@ -14,7 +14,7 @@ use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
 
 #[derive(Debug, Clone, PartialEq)]

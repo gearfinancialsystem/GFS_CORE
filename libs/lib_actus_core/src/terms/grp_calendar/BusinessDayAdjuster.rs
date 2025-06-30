@@ -13,7 +13,7 @@ use crate::terms::grp_calendar::businessday::conventions::Scmp::SCMP;
 use crate::terms::grp_calendar::businessday::conventions::Csp::CSP;
 use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -119,7 +119,7 @@ impl BusinessDayAdjuster {
 
 #[cfg(test)]
 mod tests_period_cycle_adjuster {
-    use crate::types::isoDatetime::IsoDatetime;
+    use crate::types::IsoDatetime::IsoDatetime;
     use super::*;
     use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
     use std::rc::Rc;

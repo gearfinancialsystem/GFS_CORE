@@ -1,4 +1,7 @@
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::types::IsoPeriod::IsoPeriod;
+use chrono::NaiveDateTime;
+use chrono::ParseResult;
 
-#[derive(PartialEq, Debug, Clone)]
-pub struct CycleAnchorDateOfScalingIndex(IsoDatetime);
+use crate::define_struct_isodatetime;
+define_struct_isodatetime!(CycleAnchorDateOfScalingIndex);

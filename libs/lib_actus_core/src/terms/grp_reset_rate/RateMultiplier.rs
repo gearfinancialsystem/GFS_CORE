@@ -1,2 +1,4 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct RateMultiplier(f64);
+use std::str::FromStr;
+use crate::define_struct_f64;
+define_struct_f64!(RateMultiplier, |value| {
+}, {1.0});

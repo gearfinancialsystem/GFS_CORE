@@ -1,6 +1,6 @@
 use chrono::Datelike;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 /// Monday to Friday Calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]

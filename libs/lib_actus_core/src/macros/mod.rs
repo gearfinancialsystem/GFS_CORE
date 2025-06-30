@@ -1,1 +1,2 @@
-pub mod macro_struct_f64;
+mod macro_struct_f64;
+mod macro_struct_isodatetime;

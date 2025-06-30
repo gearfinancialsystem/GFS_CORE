@@ -6,7 +6,7 @@ use regex::Regex;
 use std::fmt;
 use std::ops::Add;
 use std::ops::Sub;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Days;
 use crate::util::Value::Value;
 
@@ -35,7 +35,7 @@ impl IsoPeriod {
         let date_with_days = new_date.checked_add_days(chrono::Days::new(self.days as u64))?;
 
         // Combine the new date with the original time
-        let new_datetime = NaiveDateTime::new(
+        let new_datetime = IsoDatetime::new(
             date_with_days,
             reference.time(),
         );

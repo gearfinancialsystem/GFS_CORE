@@ -17,7 +17,7 @@ use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct UMP;
 

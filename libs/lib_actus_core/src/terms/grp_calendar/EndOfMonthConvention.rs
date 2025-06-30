@@ -5,7 +5,7 @@ use crate::exceptions::AttributeConversionException::AttributeConversionExceptio
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
-use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
+use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::util::Value::Value;
 use crate::util::CycleUtils::CycleUtils;
 

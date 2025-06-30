@@ -1,4 +1,4 @@
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]

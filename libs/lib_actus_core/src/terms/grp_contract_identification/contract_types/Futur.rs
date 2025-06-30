@@ -6,7 +6,7 @@ use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractModel::ContractModel;
 use crate::functions::futur::pof::POF_MD_FUTUR::POF_MD_FUTUR;
 use crate::functions::futur::pof::POF_XD_FUTUR::POF_XD_FUTUR;

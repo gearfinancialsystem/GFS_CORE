@@ -24,7 +24,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct SWPPV;
 

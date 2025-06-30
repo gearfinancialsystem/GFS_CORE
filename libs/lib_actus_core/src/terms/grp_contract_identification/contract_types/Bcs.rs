@@ -24,7 +24,7 @@ use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
 use crate::terms::grp_boundary::boundary_effect::Out::OUT;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct BCS;
 

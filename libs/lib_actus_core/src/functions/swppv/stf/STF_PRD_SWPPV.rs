@@ -6,7 +6,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 
 #[allow(non_camel_case_types)]

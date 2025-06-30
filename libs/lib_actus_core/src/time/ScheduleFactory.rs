@@ -1,7 +1,7 @@
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use chrono::Duration;
 use std::collections::HashSet;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::{CycleUtils, LONG_STUB};
 
 pub struct ScheduleFactory;

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
-use lib_actus_core::types::isoDatetime::IsoDatetime;
+use lib_actus_core::types::IsoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;

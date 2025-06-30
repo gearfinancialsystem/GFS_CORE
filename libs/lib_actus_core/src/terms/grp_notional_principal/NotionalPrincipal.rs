@@ -1,2 +1,6 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct NotionalPrincipal(f64);
+use std::str::FromStr;
+use crate::define_struct_f64;
+
+define_struct_f64!(NotionalPrincipal, |value| {
+    (value >= 0.0) => "value must be positive"
+}, {});

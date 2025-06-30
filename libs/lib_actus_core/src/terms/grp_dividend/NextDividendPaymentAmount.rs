@@ -1,2 +1,6 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct NextDividendPaymentAmount(f64);
+use std::str::FromStr;
+use crate::define_struct_f64;
+
+define_struct_f64!(NextDividendPaymentAmount, |value| {
+    (value >= 0.0) => "value must be positive"
+}, {0.0});

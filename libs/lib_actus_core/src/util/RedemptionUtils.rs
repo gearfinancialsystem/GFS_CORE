@@ -3,7 +3,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;
 

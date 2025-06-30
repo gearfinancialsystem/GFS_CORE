@@ -31,7 +31,7 @@ use crate::functions::pam::stf::{
 };
 
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
 

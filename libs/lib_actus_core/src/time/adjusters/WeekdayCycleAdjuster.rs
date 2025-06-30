@@ -1,4 +1,4 @@
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
@@ -46,7 +46,7 @@ impl TraitCycleAdjuster for WeekdayCycleAdjuster {
 #[cfg(test)]
 mod tests_period_cycle_adjuster {
     use crate::time::adjusters::PeriodCycleAdjuster::PeriodCycleAdjuster;
-    use crate::types::isoDatetime::IsoDatetime;
+    use crate::types::IsoDatetime::IsoDatetime;
     use super::*;
     #[test]
     fn test_plus_1MonShort(){

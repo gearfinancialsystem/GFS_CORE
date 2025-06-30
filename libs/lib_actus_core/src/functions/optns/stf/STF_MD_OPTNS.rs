@@ -7,7 +7,7 @@ use crate::terms::grp_optionality::OptionType::OptionType;
 use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_MD_OPTNS;

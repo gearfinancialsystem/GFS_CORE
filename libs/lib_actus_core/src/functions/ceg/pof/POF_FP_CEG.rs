@@ -6,7 +6,7 @@ use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 
 #[allow(non_camel_case_types)]

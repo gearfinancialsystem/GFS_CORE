@@ -5,7 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 
 #[allow(non_camel_case_types)]

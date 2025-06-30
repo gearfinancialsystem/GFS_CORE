@@ -20,7 +20,7 @@ use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
 use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
 use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 
 pub struct CLM;

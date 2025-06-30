@@ -4,7 +4,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_RRF_LAM;

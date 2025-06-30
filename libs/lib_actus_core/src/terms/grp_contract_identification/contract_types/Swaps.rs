@@ -17,7 +17,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 
 pub struct SWAPS;

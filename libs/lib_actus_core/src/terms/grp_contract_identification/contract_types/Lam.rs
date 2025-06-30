@@ -39,7 +39,7 @@ use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 use crate::util::RedemptionUtils::RedemptionUtils;
 

@@ -20,7 +20,7 @@ use crate::terms::grp_contract_identification::contract_types::Stk::STK;
 use crate::terms::grp_contract_identification::contract_types::Swppv::SWPPV;
 use crate::terms::grp_contract_identification::contract_types::Ump::UMP;
 
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 

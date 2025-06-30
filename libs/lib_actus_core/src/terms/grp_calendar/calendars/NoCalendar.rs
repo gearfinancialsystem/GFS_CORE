@@ -1,5 +1,5 @@
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 /// No holiday calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -22,7 +22,7 @@ impl TraitBusinessDayCalendar for NC {
 
 #[cfg(test)]
 mod tests_calendars_NoCalendar {
-    use crate::types::isoDatetime::IsoDatetime;
+    use crate::types::IsoDatetime::IsoDatetime;
     use super::*;
     #[test]
     fn test_SAME_NoHolidaysCalendar() {

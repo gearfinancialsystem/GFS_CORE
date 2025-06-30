@@ -1,6 +1,6 @@
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub type BoundaryLeg1ActiveFlag = bool;
 pub type BoundaryLeg2ActiveFlag = bool;

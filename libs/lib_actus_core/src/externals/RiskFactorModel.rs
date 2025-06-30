@@ -1,7 +1,7 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct RiskFactorModel;
 

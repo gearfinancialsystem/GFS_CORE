@@ -47,7 +47,7 @@ use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 
 

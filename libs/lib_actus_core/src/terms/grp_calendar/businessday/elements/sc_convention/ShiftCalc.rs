@@ -1,6 +1,6 @@
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 /// Component that represents the Shift-first-Calculate-Second convention
 ///

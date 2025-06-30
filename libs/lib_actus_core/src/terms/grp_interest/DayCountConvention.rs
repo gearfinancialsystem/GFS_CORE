@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use crate::terms::grp_calendar::{Calendar::Calendar};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::daycountconventions::A336::A336;

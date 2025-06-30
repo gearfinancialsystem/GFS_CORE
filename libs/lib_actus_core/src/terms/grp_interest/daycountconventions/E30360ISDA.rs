@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::types::isoDatetime::TraitNaiveDateTimeExtension;
+use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct E30360ISDA {

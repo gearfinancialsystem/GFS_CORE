@@ -7,7 +7,7 @@ use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
-use crate::types::isoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
