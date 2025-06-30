@@ -1,44 +1,125 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 use crate::attributes::ContractReference::ContractReference;
+use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
 use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
 use crate::terms::grp_boundary::BoundaryLegInitiallyActive::BoundaryLegInitiallyActive;
+use crate::terms::grp_boundary::BoundaryMonitoringAnchorDate::BoundaryMonitoringAnchorDate;
+use crate::terms::grp_boundary::BoundaryMonitoringCycle::BoundaryMonitoringCycle;
+use crate::terms::grp_boundary::BoundaryMonitoringEndDate::BoundaryMonitoringEndDate;
+use crate::terms::grp_boundary::BoundaryValue::BoundaryValue;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::CreatorID::CreatorID;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
 use crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
+use crate::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
+use crate::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
+use crate::terms::grp_counterparty::GracePeriod::GracePeriod;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use crate::terms::grp_counterparty::PrepaymentPeriod::PrepaymentPeriod;
 use crate::terms::grp_counterparty::Seniority::Seniority;
+use crate::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
+use crate::terms::grp_dividend::CycleAnchorDateOfDividendPayment::CycleAnchorDateOfDividendPayment;
+use crate::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
+use crate::terms::grp_dividend::ExDividendDate::ExDividendDate;
+use crate::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_fees::FeeRate::FeeRate;
+use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::ArrayCycleOfInterestPayment::ArrayCycleOfInterestPayment;
+use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestCalculationBase::CycleAnchorDateOfInterestCalculationBase;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestCalculationBase::CycleOfInterestCalculationBase;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
 use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_notional_principal::AmortizationDate::AmortizationDate;
-use crate::terms::grp_notional_principal::ArrayCycleAnchorDateOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::ArrayCycleAnchorDateOfPrincipalRedemption::ArrayCycleAnchorDateOfPrincipalRedemtion;
 use crate::terms::grp_notional_principal::ArrayCycleOfPrincipalRedemption::ArrayCycleOfPrincipalRedemption;
 use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
+use crate::terms::grp_notional_principal::ArrayNextPrincipalRedemptionPayment::ArrayNextPrincipalRedemptionPayment;
+use crate::terms::grp_notional_principal::Currency2::Currency2;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
+use crate::terms::grp_notional_principal::CycleOfPrincipalRedemption::CycleOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MarketObjectCodeOfScalingIndex::MarketObjectCodeOfScalingIndex;
+use crate::terms::grp_notional_principal::MarketValueObserved::MarketValueObserved;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::Quantity::Quantity;
 use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+use crate::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::terms::grp_notional_principal::XDayNotice::XDayNotice;
+use crate::terms::grp_optionality::CycleAnchorDateOfOptionality::CycleAnchorDateOfOptionality;
+use crate::terms::grp_optionality::CycleOfOptionality::CycleOfOptionality;
+use crate::terms::grp_optionality::OptionStrike1::OptionStrike1;
+use crate::terms::grp_optionality::OptionStrike2::OptionStrike2;
 use crate::terms::grp_optionality::OptionType::OptionType;
+use crate::terms::grp_optionality::PenaltyRate::PenaltyRate;
 use crate::terms::grp_optionality::PenaltyType::PenaltyType;
+use crate::terms::grp_reset_rate::ArrayCycleAnchorDateOfRateReset::ArrayCycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::ArrayCycleOfRateReset::ArrayCycleOfRateReset;
 use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::terms::grp_reset_rate::ArrayRate::ArrayRate;
+use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
 use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
+use crate::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use crate::terms::grp_reset_rate::LifeCap::LifeCap;
+use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use crate::terms::grp_reset_rate::RateSpread::RateSpread;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::terms::grp_settlement::FuturesPrice::FuturesPrice;
+use crate::terms::grp_settlement::SettlementCurrency::SettlementCurrency;
+use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
 use crate::types::isoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::CommonUtils::CommonUtils;
 use crate::util::Value::Value;
 
-#[allow(non_camel_case_types)]
 #[derive(PartialEq, Debug, Clone)]
 pub enum FieldValue {
-    vString(String),
+    Vstring(String),
     vF64(f64),
     vIsoDatetime(IsoDatetime),
     vIsoPeriod(IsoPeriod),
@@ -75,7 +156,7 @@ pub enum FieldValue {
 impl FieldValue {
     pub fn extract_vString(&self) -> Option<String> {
         match self {
-            Self::vString(s) => Some(s.clone()),
+            Self::Vstring(s) => Some(s.clone()),
             _ => None,
         }
     }
@@ -101,269 +182,152 @@ impl FieldValue {
 
 
 #[derive(PartialEq, Debug, Clone)]
+#[derive(Default)] // Toutes les options sont None
 pub struct ContractModel {
-    pub accruedInterest: Option<AccruedInterest>, // obligatoire
-    pub accruedInterest2: Option<AccruedInterest2>,
-    pub amortizationDate: Option<AmortizationDate>,
-    pub arrayCycleAnchorDateOfInterestPayment: Option<ArrayCycleAnchorDateOfInterestPayment>,
-    pub arrayCycleAnchorDateOfPrincipalRedemption: Option<ArrayCycleAnchorDateOfPrincipalRedemption>,
-    pub arrayCycleAnchorDateOfRateReset: Option<ArrayCycleAnchorDateOfRateReset>,
-    pub arrayCycleOfInterestPayment: Option<ArrayCycleOfInterestPayment>,
-    pub arrayCycleOfPrincipalRedemption: Option<ArrayCycleOfPrincipalRedemption>,
-    pub arrayCycleOfRateReset: Option<ArrayCycleOfRateReset>,
-    pub arrayFixedVariable: Option<ArrayFixedVariable>,
-    pub arrayIncreaseDecrease: Option<Vec<ArrayIncreaseDecrease>>,
-    pub arrayNextPrincipalRedemptionPayment: Option<ArrayNextPrincipalRedemptionPayment>,
-    pub arrayRate: Option<ArrayRate>,
-    pub boundaryCrossedFlag: Option<BoundaryCrossedFlag>,
-    pub boundaryDirection: Option<BoundaryDirection>,
-    pub boundaryEffect: Option<BoundaryEffect>,
-    pub boundaryLegInitiallyActive: Option<BoundaryLegInitiallyActive>,
-    pub boundaryMonitoringAnchorDate: Option<BoundaryMonitoringAnchorDate>,
-    pub boundaryMonitoringCycle: Option<BoundaryMonitoringCycle>,
-    pub boundaryMonitoringEndDate: Option<BoundaryMonitoringEndDate>,
-    pub boundaryValue: Option<BoundaryValue>,
-    pub businessDayAdjuster: Option<BusinessDayAdjuster>,
-    pub calendar: Option<Rc<Calendar>>, // oblig                                            atoire
-    pub capitalizationEndDate: Option<IsoDatetime>,
-    pub contractID: Option<ContractID>,
-    pub contractPerformance: Option<ContractPerformance>,
-    pub contractRole: Option<ContractRole>,
-    pub contractStructure: Option<Vec<ContractReference>>,
-    pub contractType: Option<String>, // obligatoire
-    pub counterpartyID: Option<String>,
-    pub coverageOfCreditEnhancement: Option<f64>,
-    pub creatorID: Option<String>,
-    pub creditEventTypeCovered: Option<Vec<CreditEventTypeCovered>>,
-    pub currency: Option<String>, // obligatoire
-    pub currency2: Option<String>,
-    pub cycleAnchorDateOfDividend: Option<IsoDatetime>,
-    pub cycleAnchorDateOfDividendPayment: Option<IsoDatetime>,
-    pub cycleAnchorDateOfFee: Option<IsoDatetime>,
-    pub cycleAnchorDateOfInterestCalculationBase: Option<IsoDatetime>,
-    pub cycleAnchorDateOfInterestPayment: Option<IsoDatetime>,
-    pub cycleAnchorDateOfOptionality: Option<IsoDatetime>,
-    pub cycleAnchorDateOfPrincipalRedemption: Option<IsoDatetime>,
-    pub cycleAnchorDateOfRateReset: Option<IsoDatetime>,
-    pub cycleAnchorDateOfScalingIndex: Option<IsoDatetime>,
-    pub cycleOfDividend: Option<String>,
-    pub cycleOfDividendPayment: Option<String>,
-    pub cycleOfFee: Option<String>,
-    pub cycleOfInterestCalculationBase: Option<String>,
-    pub cycleOfInterestPayment: Option<String>,
-    pub cycleOfOptionality: Option<String>,
-    pub cycleOfPrincipalRedemption: Option<String>,
-    pub cycleOfRateReset: Option<String>,
-    pub cycleOfScalingIndex: Option<String>,
-    pub cyclePointOfInterestPayment: Option<CyclePointOfInterestPayment>,
-    pub cyclePointOfRateReset: Option<CyclePointOfRateReset>,
-    pub dayCountConvention: Option<DayCountConvention>,
-    pub delinquencyPeriod: Option<IsoPeriod>,
-    pub delinquencyRate: Option<f64>,
-    pub deliverySettlement: Option<DeliverySettlement>,
-    pub endOfMonthConvention: Option<EndOfMonthConvention>,
-    pub exDividendDate: Option<IsoDatetime>,
-    pub exerciseAmount: Option<f64>,
-    pub exerciseDate: Option<IsoDatetime>,
-    pub feeAccrued: Option<f64>,
-    pub feeBasis: Option<FeeBasis>,
-    pub feeRate: Option<f64>,
-    pub fixingPeriod: Option<IsoPeriod>,
-    pub futuresPrice: Option<f64>,
-    pub gracePeriod: Option<IsoPeriod>,
-    pub guaranteedExposure: Option<GuaranteedExposure>,
-    pub initialExchangeDate: Option<IsoDatetime>,
-    pub interestCalculationBase: Option<InterestCalculationBase>,
-    pub interestCalculationBaseAmount: Option<f64>,
-    pub interestScalingMultiplier: Option<f64>,
-    pub lifeCap: Option<f64>,
-    pub lifeFloor: Option<f64>,
-    pub marketObjectCode: Option<String>,
-    pub marketObjectCodeOfDividends: Option<String>,
-    pub marketObjectCodeOfRateReset: Option<String>,
-    pub marketObjectCodeOfScalingIndex: Option<String>,
-    pub marketValueObserved: Option<f64>,
-    pub maturityDate: Option<Rc<IsoDatetime>>, // obligatoire
-    pub nominalInterestRate: Option<f64>,
-    pub nominalInterestRate2: Option<f64>,
-    pub nonPerformingDate: Option<IsoDatetime>,
-    pub notionalPrincipal: Option<f64>,
-    pub notionalPrincipal2: Option<f64>,
-    pub nextDividendPaymentAmount: Option<f64>,
-    pub nextPrincipalRedemptionPayment: Option<f64>,
-    pub nextResetRate: Option<f64>,
-    pub objectCodeOfPrepaymentModel: Option<String>,
-    pub optionStrike1: Option<f64>,
-    pub optionStrike2: Option<f64>,
-    pub optionType: Option<OptionType>,
-    pub penaltyRate: Option<f64>,
-    pub penaltyType: Option<PenaltyType>,
-    pub periodCap: Option<f64>,
-    pub periodFloor: Option<f64>,
-    pub prepaymentPeriod: Option<IsoPeriod>,
-    pub premiumDiscountAtIED: Option<f64>,
-    pub priceAtPurchaseDate: Option<f64>,
-    pub priceAtTerminationDate: Option<f64>,
-    pub purchaseDate: Option<IsoDatetime>,
-    pub quantity: Option<f64>,
-    pub rateMultiplier: Option<f64>, // obligatoire
-    pub rateSpread: Option<f64>,
-    pub scalingEffect: Option<ScalingEffect>,
-    pub scalingIndexAtContractDealDate: Option<f64>,
+    pub accrued_interest: Option<AccruedInterest>,
+    pub accrued_interest2: Option<AccruedInterest2>,
+    pub amortization_date: Option<AmortizationDate>,
+    pub array_cycle_anchor_date_of_interest_payment: Option<ArrayCycleAnchorDateOfInterestPayment>,
+    pub array_cycle_anchor_date_of_principal_redemption: Option<ArrayCycleAnchorDateOfPrincipalRedemtion>,
+    pub array_cycle_anchor_date_of_rate_reset: Option<ArrayCycleAnchorDateOfRateReset>,
+    pub array_cycle_of_interest_payment: Option<ArrayCycleOfInterestPayment>,
+    pub array_cycle_of_principal_redemption: Option<ArrayCycleOfPrincipalRedemption>,
+    pub array_cycle_of_rate_reset: Option<ArrayCycleOfRateReset>,
+    pub array_fixed_variable: Option<ArrayFixedVariable>,
+    pub array_increase_decrease: Option<Vec<ArrayIncreaseDecrease>>,
+    pub array_next_principal_redemption_payment: Option<ArrayNextPrincipalRedemptionPayment>,
+    pub array_rate: Option<ArrayRate>,
+    pub boundary_crossed_flag: Option<BoundaryCrossedFlag>,
+    pub boundary_direction: Option<BoundaryDirection>,
+    pub boundary_effect: Option<BoundaryEffect>,
+    pub boundary_leg_initially_active: Option<BoundaryLegInitiallyActive>,
+    pub boundary_monitoring_anchor_date: Option<BoundaryMonitoringAnchorDate>,
+    pub boundary_monitoring_cycle: Option<BoundaryMonitoringCycle>,
+    pub boundary_monitoring_end_date: Option<BoundaryMonitoringEndDate>,
+    pub boundary_value: Option<BoundaryValue>,
+    pub business_day_adjuster: Option<BusinessDayAdjuster>,
+    pub calendar: Option<Rc<Calendar>>,
+    pub capitalization_end_date: Option<CapitalizationEndDate>,
+    pub contract_id: Option<ContractID>,
+    pub contract_performance: Option<ContractPerformance>,
+    pub contract_role: Option<ContractRole>,
+    pub contract_structure: Option<Vec<ContractReference>>,
+    pub contract_type: Option<ContractType>,
+    pub counterparty_id: Option<CounterpartyID>,
+    pub coverage_of_credit_enhancement: Option<CoverageOfCreditEnhancement>,
+    pub creator_id: Option<CreatorID>,
+    pub credit_event_type_covered: Option<CreditEventTypeCovered>,
+    pub currency: Option<Currency>,
+    pub currency2: Option<Currency2>,
+    pub cycle_anchor_date_of_dividend: Option<CycleAnchorDateOfDividend>,
+    pub cycle_anchor_date_of_dividend_payment: Option<CycleAnchorDateOfDividendPayment>,
+    pub cycle_anchor_date_of_fee: Option<CycleAnchorDateOfFee>,
+    pub cycle_anchor_date_of_interest_calculation_base: Option<CycleAnchorDateOfInterestCalculationBase>,
+    pub cycle_anchor_date_of_interest_payment: Option<CycleAnchorDateOfInterestPayment>,
+    pub cycle_anchor_date_of_optionality: Option<CycleAnchorDateOfOptionality>,
+    pub cycle_anchor_date_of_principal_redemption: Option<CycleAnchorDateOfPrincipalRedemption>,
+    pub cycle_anchor_date_of_rate_reset: Option<CycleAnchorDateOfRateReset>,
+    pub cycle_anchor_date_of_scaling_index: Option<CycleAnchorDateOfScalingIndex>,
+    pub cycle_of_dividend: Option<CycleOfDividend>,
+    pub cycle_of_fee: Option<CycleOfFee>,
+    pub cycle_of_interest_calculation_base: Option<CycleOfInterestCalculationBase>,
+    pub cycle_of_interest_payment: Option<CycleOfInterestPayment>,
+    pub cycle_of_optionality: Option<CycleOfOptionality>,
+    pub cycle_of_principal_redemption: Option<CycleOfPrincipalRedemption>,
+    pub cycle_of_rate_reset: Option<CycleOfRateReset>,
+    pub cycle_of_scaling_index: Option<CycleOfScalingIndex>,
+    pub cycle_point_of_interest_payment: Option<CyclePointOfInterestPayment>,
+    pub cycle_point_of_rate_reset: Option<CyclePointOfRateReset>,
+    pub day_count_convention: Option<DayCountConvention>,
+    pub delinquency_period: Option<DelinquencyPeriod>,
+    pub delinquency_rate: Option<DelinquencyRate>,
+    pub delivery_settlement: Option<DeliverySettlement>,
+    pub end_of_month_convention: Option<EndOfMonthConvention>,
+    pub ex_dividend_date: Option<ExDividendDate>,
+    pub exercise_amount: Option<ExerciseAmount>,
+    pub exercise_date: Option<ExerciseDate>,
+    pub fee_accrued: Option<FeeAccrued>,
+    pub fee_basis: Option<FeeBasis>,
+    pub fee_rate: Option<FeeRate>,
+    pub fixing_period: Option<FixingPeriod>,
+    pub futures_price: Option<FuturesPrice>,
+    pub grace_period: Option<GracePeriod>,
+    pub guaranteed_exposure: Option<GuaranteedExposure>,
+    pub initial_exchange_date: Option<InitialExchangeDate>,
+    pub interest_calculation_base: Option<InterestCalculationBase>,
+    pub interest_calculation_base_amount: Option<InterestCalculationBaseAmount>,
+    pub interest_scaling_multiplier: Option<InterestScalingMultiplier>,
+    pub life_cap: Option<LifeCap>,
+    pub life_floor: Option<LifeFloor>,
+    pub market_object_code: Option<MarketObjectCode>,
+    pub market_object_code_of_rate_reset: Option<MarketObjectCodeOfRateReset>,
+    pub market_object_code_of_scaling_index: Option<MarketObjectCodeOfScalingIndex>,
+    pub market_value_observed: Option<MarketValueObserved>,
+    pub maturity_date: Option<Rc<MaturityDate>>,
+    pub nominal_interest_rate: Option<NominalInterestRate>,
+    pub nominal_interest_rate2: Option<NominalInterestRate2>,
+    pub non_performing_date: Option<NonPerformingDate>,
+    pub notional_principal: Option<NotionalPrincipal>,
+    pub notional_principal2: Option<NotionalPrincipal2>,
+    pub next_dividend_payment_amount: Option<NextDividendPaymentAmount>,
+    pub next_principal_redemption_payment: Option<NextPrincipalRedemptionPayment>,
+    pub next_reset_rate: Option<NextResetRate>,
+    pub option_strike1: Option<OptionStrike1>,
+    pub option_strike2: Option<OptionStrike2>,
+    pub option_type: Option<OptionType>,
+    pub penalty_rate: Option<PenaltyRate>,
+    pub penalty_type: Option<PenaltyType>,
+    pub period_cap: Option<PeriodCap>,
+    pub period_floor: Option<PeriodFloor>,
+    pub prepayment_period: Option<PrepaymentPeriod>,
+    pub premium_discount_at_ied: Option<PremiumDiscountAtIED>,
+    pub price_at_purchase_date: Option<PriceAtPurchaseDate>,
+    pub price_at_termination_date: Option<PriceAtTerminationDate>,
+    pub purchase_date: Option<PurchaseDate>,
+    pub quantity: Option<Quantity>,
+    pub rate_multiplier: Option<RateMultiplier>,
+    pub rate_spread: Option<RateSpread>,
+    pub scaling_effect: Option<ScalingEffect>,
+    pub scaling_index_at_contract_deal_date: Option<ScalingIndexAtContractDealDate>,
     pub seniority: Option<Seniority>,
-    pub settlementCurrency: Option<String>,
-    pub settlementPeriod: Option<IsoPeriod>,
-    pub statusDate: Option<IsoDatetime>,
-    pub terminationDate: Option<IsoDatetime>,
-    pub xDayNotice: Option<IsoPeriod>,
+    pub settlement_currency: Option<SettlementCurrency>,
+    pub settlement_period: Option<SettlementPeriod>,
+    pub status_date: Option<StatusDate>,
+    pub termination_date: Option<TerminationDate>,
+    pub x_day_notice: Option<XDayNotice>,
 }
 
+
+
+
 impl ContractModel {
-    pub fn init() -> Self {
-        ContractModel {
-            accruedInterest: None,
-            accruedInterest2: None,
-            amortizationDate: None,
-            arrayCycleAnchorDateOfInterestPayment: None,
-            arrayCycleAnchorDateOfPrincipalRedemption: None,
-            arrayCycleAnchorDateOfRateReset: None,
-            arrayCycleOfInterestPayment: None,
-            arrayCycleOfPrincipalRedemption: None,
-            arrayCycleOfRateReset: None,
-            arrayFixedVariable: None,
-            arrayIncreaseDecrease: None,
-            arrayNextPrincipalRedemptionPayment: None,
-            arrayRate: None,
-            boundaryCrossedFlag: None,
-            boundaryDirection: None,
-            boundaryEffect: None,
-            boundaryLegInitiallyActive: None,
-            boundaryMonitoringAnchorDate: None,
-            boundaryMonitoringCycle: None,
-            boundaryMonitoringEndDate: None,
-            boundaryValue: None,
-            businessDayAdjuster: None,
-            calendar: None,
-            capitalizationEndDate: None,
-            contractID: None,
-            contractPerformance: None,
-            contractRole: None,
-            contractStructure: None,
-            contractType: None,
-            counterpartyID: None,
-            coverageOfCreditEnhancement: None,
-            creditEventTypeCovered: None,
-            creatorID: None,
-            currency: None,
-            currency2: None,
-            cycleAnchorDateOfDividend: None,
-            cycleAnchorDateOfDividendPayment: None,
-            cycleAnchorDateOfFee: None,
-            cycleAnchorDateOfInterestCalculationBase: None,
-            cycleAnchorDateOfInterestPayment: None,
-            cycleAnchorDateOfOptionality: None,
-            cycleAnchorDateOfPrincipalRedemption: None,
-            cycleAnchorDateOfRateReset: None,
-            cycleAnchorDateOfScalingIndex: None,
-            cycleOfDividend: None,
-            cycleOfDividendPayment: None,
-            cycleOfFee: None,
-            cycleOfInterestCalculationBase: None,
-            cycleOfInterestPayment: None,
-            cycleOfOptionality: None,
-            cycleOfPrincipalRedemption: None,
-            cycleOfRateReset: None,
-            cycleOfScalingIndex: None,
-            cyclePointOfInterestPayment: None,
-            cyclePointOfRateReset: None,
-            dayCountConvention: None,
-            delinquencyPeriod: None,
-            delinquencyRate: None,
-            deliverySettlement: None,
-            endOfMonthConvention: None,
-            exDividendDate: None,
-            exerciseAmount: None,
-            exerciseDate: None,
-            feeAccrued: None,
-            feeBasis: None,
-            feeRate: None,
-            fixingPeriod: None,
-            futuresPrice: None,
-            gracePeriod: None,
-            guaranteedExposure: None,
-            initialExchangeDate: None,
-            interestCalculationBase: None,
-            interestCalculationBaseAmount: None,
-            interestScalingMultiplier: None,
-            lifeCap: None,
-            lifeFloor: None,
-            marketObjectCode: None,
-            marketObjectCodeOfDividends: None,
-            marketObjectCodeOfRateReset: None,
-            marketObjectCodeOfScalingIndex: None,
-            marketValueObserved: None,
-            maturityDate: None,
-            nextDividendPaymentAmount: None,
-            nextPrincipalRedemptionPayment: None,
-            nextResetRate: None,
-            nominalInterestRate: None,
-            nominalInterestRate2: None,
-            nonPerformingDate: None,
-            notionalPrincipal: None,
-            notionalPrincipal2: None,
-            objectCodeOfPrepaymentModel: None,
-            optionStrike1: None,
-            optionStrike2: None,
-            optionType: None,
-            penaltyRate: None,
-            penaltyType: None,
-            periodCap: None,
-            periodFloor: None,
-            premiumDiscountAtIED: None,
-            prepaymentPeriod: None,
-            priceAtPurchaseDate: None,
-            priceAtTerminationDate: None,
-            purchaseDate: None,
-            quantity: None,
-            rateMultiplier: None,
-            rateSpread: None,
-            scalingEffect: None,
-            scalingIndexAtContractDealDate: None,
-            seniority: None,
-            settlementCurrency: None,
-            settlementPeriod: None,
-            statusDate: None,
-            terminationDate: None,
-            xDayNotice: None
-        }
-    }
 
     pub fn get_field(&self, field_name: &str) -> Option<FieldValue> {
         match field_name {
             "calendar" => Some(FieldValue::vCalendar(self.calendar.clone().unwrap())) , // pas d'option, champs obligatoire
             "businessDayAdjuster" => Some(FieldValue::vBusinessDayAdjuster(self.businessDayAdjuster.clone().unwrap())),
             "endOfMonthConvention" => Some(FieldValue::vEndOfMonthConvention(self.endOfMonthConvention?)),
-            "contractType" => Some(FieldValue::vString(self.contractType.clone().unwrap())), // obligatoire
-            "contractID" => Some(FieldValue::vString(self.contractID.clone().unwrap())),
+            "contractType" => Some(FieldValue::Vstring(self.contractType.clone().unwrap())), // obligatoire
+            "contractID" => Some(FieldValue::Vstring(self.contractID.clone().unwrap())),
             "statusDate" => Some(FieldValue::vIsoDatetime(self.statusDate?)),
             "contractRole" => Some(FieldValue::vContractRole(self.contractRole.clone().unwrap())),
-            "counterpartyID" => Some(FieldValue::vString(self.counterpartyID.clone().unwrap())),
-            "creatorID" => Some(FieldValue::vString(self.creatorID.clone().unwrap())),
-            "marketObjectCode" => Some(FieldValue::vString(self.marketObjectCode.clone().unwrap())),
+            "counterpartyID" => Some(FieldValue::Vstring(self.counterpartyID.clone().unwrap())),
+            "creatorID" => Some(FieldValue::Vstring(self.creatorID.clone().unwrap())),
+            "marketObjectCode" => Some(FieldValue::Vstring(self.marketObjectCode.clone().unwrap())),
             "cycleAnchorDateOfFee" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfFee?)),
             "cycleAnchorDateOfDividend" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfDividend?)),
-            "cycleOfFee" => Some(FieldValue::vString(self.cycleOfFee.clone().unwrap())),
+            "cycleOfFee" => Some(FieldValue::Vstring(self.cycleOfFee.clone().unwrap())),
             "feeBasis" => Some(FieldValue::vFeeBasis(self.feeBasis.clone().unwrap())),
             "feeRate" => Some(FieldValue::vF64(self.feeRate?)),
             "feeAccrued" => Some(FieldValue::vF64(self.feeAccrued?)),
             "cycleAnchorDateOfInterestPayment" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfInterestPayment?)),
-            "cycleOfInterestPayment" => Some(FieldValue::vString(self.cycleOfInterestPayment.clone().unwrap())),
+            "cycleOfInterestPayment" => Some(FieldValue::Vstring(self.cycleOfInterestPayment.clone().unwrap())),
             "nominalInterestRate" => Some(FieldValue::vF64(self.nominalInterestRate?)),
             "dayCountConvention" => Some(FieldValue::vDayCountConvention(self.dayCountConvention.clone().unwrap())),
             "accruedInterest" => Some(FieldValue::vF64(self.accruedInterest?)),
             "capitalizationEndDate" => Some(FieldValue::vIsoDatetime(self.capitalizationEndDate?)),
             "cyclePointOfInterestPayment" =>Some(FieldValue::vCyclePointOfInterestPayment(self.cyclePointOfInterestPayment.clone().unwrap())),
-            "currency" => Some(FieldValue::vString(self.currency.clone().unwrap())), // obligatoire
+            "currency" => Some(FieldValue::Vstring(self.currency.clone().unwrap())), // obligatoire
             "initialExchangeDate" => Some(FieldValue::vIsoDatetime(self.initialExchangeDate?)),
             "premiumDiscountAtIED" => Some(FieldValue::vF64(self.premiumDiscountAtIED?)),
             "notionalPrincipal" => Some(FieldValue::vF64(self.notionalPrincipal?)),
@@ -371,24 +335,24 @@ impl ContractModel {
             "priceAtPurchaseDate" => Some(FieldValue::vF64(self.priceAtPurchaseDate?)),
             "terminationDate" => Some(FieldValue::vIsoDatetime(self.terminationDate?)),
             "priceAtTerminationDate" => Some(FieldValue::vF64(self.priceAtTerminationDate?)),
-            "marketObjectCodeOfScalingIndex" => Some(FieldValue::vString(self.marketObjectCodeOfScalingIndex.clone().unwrap())),
+            "marketObjectCodeOfScalingIndex" => Some(FieldValue::Vstring(self.marketObjectCodeOfScalingIndex.clone().unwrap())),
             "seniority" => Some(FieldValue::vSeniority(self.seniority.clone().unwrap())),
             "scalingIndexAtContractDealDate" => Some(FieldValue::vF64(self.scalingIndexAtContractDealDate?)),
             "notionalScalingMultiplier" => Some(FieldValue::vF64(self.notionalScalingMultiplier?)),
             "interestScalingMultiplier" => Some(FieldValue::vF64(self.interestScalingMultiplier?)),
             "cycleAnchorDateOfScalingIndex" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfScalingIndex?)),
-            "cycleOfScalingIndex" => Some(FieldValue::vString(self.cycleOfScalingIndex.clone().unwrap())),
+            "cycleOfScalingIndex" => Some(FieldValue::Vstring(self.cycleOfScalingIndex.clone().unwrap())),
             "scalingEffect" => Some(FieldValue::vScalingEffect(self.scalingEffect.clone().unwrap())),
             // TODO=> review prepayment mechanism and attributes
             "cycleAnchorDateOfOptionality" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfOptionality?)),
-            "cycleOfOptionality" => Some(FieldValue::vString(self.cycleOfOptionality.clone().unwrap())),
+            "cycleOfOptionality" => Some(FieldValue::Vstring(self.cycleOfOptionality.clone().unwrap())),
             "penaltyType" => Some(FieldValue::vPenaltyType(self.penaltyType.clone().unwrap())),
             "penaltyRate" => Some(FieldValue::vF64(self.penaltyRate?)),
-            "objectCodeOfPrepaymentModel" => Some(FieldValue::vString(self.objectCodeOfPrepaymentModel.clone().unwrap())),
+            "objectCodeOfPrepaymentModel" => Some(FieldValue::Vstring(self.objectCodeOfPrepaymentModel.clone().unwrap())),
             "cycleAnchorDateOfRateReset" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfRateReset?)),
-            "cycleOfRateReset" => Some(FieldValue::vString(self.cycleOfRateReset.clone().unwrap())),
+            "cycleOfRateReset" => Some(FieldValue::Vstring(self.cycleOfRateReset.clone().unwrap())),
             "rateSpread" => Some(FieldValue::vF64(self.rateSpread?)),
-            "marketObjectCodeOfRateReset" => Some(FieldValue::vString(self.marketObjectCodeOfRateReset.clone().unwrap())),
+            "marketObjectCodeOfRateReset" => Some(FieldValue::Vstring(self.marketObjectCodeOfRateReset.clone().unwrap())),
             "lifeCap" => Some(FieldValue::vF64(self.lifeCap?)),
             "lifeFloor" => Some(FieldValue::vF64(self.lifeFloor?)),
             "periodCap" => Some(FieldValue::vF64(self.periodCap?)),
@@ -402,9 +366,9 @@ impl ContractModel {
             "deliverySettlement" => Some(FieldValue::vDeliverySettlement(self.deliverySettlement.clone().unwrap())),
             "quantity" => Some(FieldValue::vF64(self.quantity.clone().unwrap())),
             "marketValueObserved" => Some(FieldValue::vF64(self.marketValueObserved.clone().unwrap())),
-            "cycleOfDividendPayment" => Some(FieldValue::vString(self.cycleOfDividendPayment.clone().unwrap())),
+            "cycleOfDividendPayment" => Some(FieldValue::Vstring(self.cycleOfDividendPayment.clone().unwrap())),
             "cycleAnchorDateOfDividendPayment" => Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfDividendPayment.clone().unwrap())),
-            "marketObjectCodeOfDividends" => Some(FieldValue::vString(self.marketObjectCodeOfDividends.clone().unwrap())),
+            "marketObjectCodeOfDividends" => Some(FieldValue::Vstring(self.marketObjectCodeOfDividends.clone().unwrap())),
             "nonPerformingDate" => Some(FieldValue::vIsoDatetime(self.nonPerformingDate.clone().unwrap())),
             "prepaymentPeriod" => Some(FieldValue::vIsoPeriod(self.prepaymentPeriod.clone().unwrap())),
             "gracePeriod" => Some(FieldValue::vIsoPeriod(self.gracePeriod.clone().unwrap())),
@@ -412,7 +376,7 @@ impl ContractModel {
             "delinquencyRate" => Some(FieldValue::vF64(self.delinquencyRate.clone().unwrap())),
             "guaranteedExposure" => Some(FieldValue::vGuaranteedExposure(self.guaranteedExposure.clone().unwrap())),
             "coverageOfCreditEnhancement" =>Some(FieldValue::vF64(self.coverageOfCreditEnhancement.clone().unwrap())),
-            "cycleOfDividend" =>Some(FieldValue::vString(self.cycleOfDividend.clone().unwrap())),
+            "cycleOfDividend" =>Some(FieldValue::Vstring(self.cycleOfDividend.clone().unwrap())),
             "nextDividendPaymentAmount" =>Some(FieldValue::vF64(self.nextDividendPaymentAmount.clone().unwrap())),
             "exDividendDate" => Some(FieldValue::vIsoDatetime(self.exDividendDate.clone().unwrap())),
             "arrayCycleAnchorDateOfInterestPayment" =>Some(FieldValue::vVecIsoDatetime(self.arrayCycleAnchorDateOfInterestPayment.clone().unwrap())),
@@ -425,11 +389,11 @@ impl ContractModel {
             "optionStrike2" =>Some(FieldValue::vF64(self.optionStrike2.clone().unwrap())),
             "xDayNotice"=>Some(FieldValue::vIsoPeriod(self.xDayNotice.clone().unwrap())),
             "cycleAnchorDateOfInterestCalculationBase"=>Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfInterestCalculationBase.clone().unwrap())),
-            "cycleOfInterestCalculationBase"=>Some(FieldValue::vString(self.cycleOfInterestCalculationBase.clone().unwrap())),
+            "cycleOfInterestCalculationBase"=>Some(FieldValue::Vstring(self.cycleOfInterestCalculationBase.clone().unwrap())),
             "interestCalculationBase"=>Some(FieldValue::vInterestCalculationBase(self.interestCalculationBase.clone().unwrap())),
             "interestCalculationBaseAmount" =>Some(FieldValue::vF64(self.interestCalculationBaseAmount.clone().unwrap())),
             "cycleAnchorDateOfPrincipalRedemption"=>Some(FieldValue::vIsoDatetime(self.cycleAnchorDateOfPrincipalRedemption.clone().unwrap())),
-            "cycleOfPrincipalRedemption"=>Some(FieldValue::vString(self.cycleOfPrincipalRedemption.clone().unwrap())),
+            "cycleOfPrincipalRedemption"=>Some(FieldValue::Vstring(self.cycleOfPrincipalRedemption.clone().unwrap())),
             "nextPrincipalRedemptionPayment" =>Some(FieldValue::vF64(self.nextPrincipalRedemptionPayment.clone().unwrap())),
             "amortizationDate"=>Some(FieldValue::vIsoDatetime(self.amortizationDate.clone().unwrap())),
             "boundaryValue" => Some(FieldValue::vF64(self.boundaryValue.clone().unwrap())),
@@ -438,7 +402,7 @@ impl ContractModel {
             "boundaryLegInitiallyActive"=>Some(FieldValue::vBoundaryLegInitiallyActive(self.boundaryLegInitiallyActive.clone().unwrap())),
             "boundaryMonitoringAnchorDate" => Some(FieldValue::vIsoDatetime(self.boundaryMonitoringAnchorDate.clone().unwrap())),
             "boundaryMonitoringEndDate" => Some(FieldValue::vIsoDatetime(self.boundaryMonitoringEndDate.clone().unwrap())),
-            "boundaryMonitoringCycle"=>Some(FieldValue::vString(self.boundaryMonitoringCycle.clone().unwrap())),
+            "boundaryMonitoringCycle"=>Some(FieldValue::Vstring(self.boundaryMonitoringCycle.clone().unwrap())),
             "boundaryCrossedFlag"=>Some(FieldValue::vBool(self.boundaryCrossedFlag.clone().unwrap())),
 
             "arrayCycleAnchorDateOfPrincipalRedemption" => Some(FieldValue::vVecIsoDatetime(self.arrayCycleAnchorDateOfPrincipalRedemption.clone().unwrap())),
@@ -451,11 +415,11 @@ impl ContractModel {
             "arrayFixedVariable" => Some(FieldValue::vArrayFixedVariable(self.arrayFixedVariable.clone().unwrap())),
             "accruedInterest2" =>Some(FieldValue::vF64(self.accruedInterest2.clone().unwrap())),
             "nominalInterestRate2" =>Some(FieldValue::vF64(self.nominalInterestRate2.clone().unwrap())),
-            "currency2" =>Some(FieldValue::vString(self.currency2.clone().unwrap())),
+            "currency2" =>Some(FieldValue::Vstring(self.currency2.clone().unwrap())),
             "notionalPrincipal2" =>Some(FieldValue::vF64(self.notionalPrincipal2.clone().unwrap())),
             "creditEventTypeCovered"=>Some(FieldValue::vVecCreditEventTypeCovered(self.creditEventTypeCovered.clone().unwrap())),
             "futuresPrice" =>Some(FieldValue::vF64(self.futuresPrice.clone().unwrap())),
-            "settlementCurrency"=>Some(FieldValue::vString(self.settlementCurrency.clone().unwrap())),
+            "settlementCurrency"=>Some(FieldValue::Vstring(self.settlementCurrency.clone().unwrap())),
             _ => None,
         }
     }
@@ -464,85 +428,85 @@ impl ContractModel {
         let ct = sm.get("contractType").unwrap();
         match ct.as_string().unwrap().as_str() {
             "PAM" => {
-                let mut cm = ContractModel::init();
+                //let mut cm = ContractModel::init();
+                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let calendar = Calendar::provide_rc(sm, "calendar");
 
-                //let mut cm = PAM::default();
-                cm.maturityDate = IsoDatetime::provide_rc(sm, "maturityDate");
-                cm.calendar = Calendar::provide_rc(sm, "calendar");
-
-                if let Some(calendar) = &cm.calendar {
+                let business_day_adjuster = if let Some(calendar) = &calendar {
                     // Clone seulement l'Rc, pas le calendrier lui-même
                     let calendar_clone = Some(Rc::clone(calendar));
-                    cm.businessDayAdjuster = BusinessDayAdjuster::provide(
+                    BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
                         calendar_clone.expect("te")
                     );
-                }
+                };
 
                 // Clonez simplement les Rc existantes
-                if let (Some(maturity_date), Some(calendar)) = (&cm.maturityDate, &cm.calendar) {
-                    cm.dayCountConvention = DayCountConvention::provide(
+                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
+                     DayCountConvention::provide(
                         sm,
                         "dayCountConvention",
                         Some(Rc::clone(maturity_date)),
                         Some(Rc::clone(calendar))
                     );
-                }
-
-                cm.endOfMonthConvention = EndOfMonthConvention::provide(sm, "endOfMonthConvention");
-                cm.contractType = CommonUtils::provide_string(sm, "contractType");
-                cm.contractID = CommonUtils::provide_string(sm, "contractID");
-                cm.statusDate = IsoDatetime::provide(sm, "statusDate");
-                cm.contractRole = ContractRole::provide(sm, "contractRole");
-                cm.counterpartyID = CommonUtils::provide_string(sm, "counterpartyID");
-                cm.marketObjectCode = CommonUtils::provide_string(sm, "marketObjectCode");
-                cm.cycleAnchorDateOfFee = IsoDatetime::provide(sm, "cycleAnchorDateOfFee");
-                cm.cycleOfFee = CommonUtils::provide_string(sm, "cycleOfFee");
-                cm.feeBasis = FeeBasis::provide(sm, "feeBasis");
-                cm.feeRate = CommonUtils::provide_f64default(sm, "feeRate", 0.0);
-                cm.feeAccrued = CommonUtils::provide_f64default(sm, "feeAccrued", 0.0);
-                cm.cycleAnchorDateOfInterestPayment = IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment");
-                cm.cycleOfInterestPayment = CommonUtils::provide_string(sm, "cycleOfInterestPayment");
-                cm.nominalInterestRate = CommonUtils::provide_f64(sm, "nominalInterestRate");
-                cm.accruedInterest = CommonUtils::provide_f64default(sm, "accruedInterest", 0.0);// obligatoire
-                cm.capitalizationEndDate = IsoDatetime::provide(sm, "capitalizationEndDate");
-                cm.cyclePointOfInterestPayment = CyclePointOfInterestPayment::provide(sm, "cyclePointOfInterestPayment");
-                cm.currency = CommonUtils::provide_string(sm, "currency"); // obligatoire
-                cm.initialExchangeDate = IsoDatetime::provide(sm, "initialExchangeDate");
-                cm.premiumDiscountAtIED = CommonUtils::provide_f64(sm, "premiumDiscountAtIED");
-                cm.notionalPrincipal = CommonUtils::provide_f64(sm, "notionalPrincipal");
-                cm.purchaseDate = IsoDatetime::provide(sm, "purchaseDate");
-                cm.priceAtPurchaseDate = CommonUtils::provide_f64(sm, "priceAtPurchaseDate");
-                cm.terminationDate = IsoDatetime::provide(sm, "terminationDate");
-                cm.priceAtTerminationDate = CommonUtils::provide_f64(sm, "priceAtTerminationDate");
-                cm.marketObjectCodeOfScalingIndex = CommonUtils::provide_string(sm, "marketObjectCodeOfScalingIndex");
-                cm.scalingIndexAtContractDealDate = CommonUtils::provide_f64(sm, "scalingIndexAtContractDealDate");
-                cm.notionalScalingMultiplier = CommonUtils::provide_f64default(sm, "notionalScalingMultiplier", 1.0);
-                cm.interestScalingMultiplier = CommonUtils::provide_f64default(sm, "interestScalingMultiplier", 1.0);
-                cm.cycleAnchorDateOfScalingIndex = IsoDatetime::provide(sm, "cycleAnchorDateOfScalingIndex");
-                cm.cycleOfScalingIndex = CommonUtils::provide_string(sm, "cycleOfScalingIndex");
-                cm.scalingEffect = ScalingEffect::provide(sm, "scalingEffect");
-                // TODO: review prepayment mechanism and attributes
-                cm.cycleAnchorDateOfOptionality = IsoDatetime::provide(sm, "cycleAnchorDateOfOptionality");
-                cm.cycleOfOptionality = CommonUtils::provide_string(sm, "cycleOfOptionality");
-                cm.penaltyType = PenaltyType::provide(sm, "penaltyType");
-                cm.penaltyRate = CommonUtils::provide_f64default(sm, "penaltyRate", 0.0);
-                cm.objectCodeOfPrepaymentModel = CommonUtils::provide_string(sm, "objectCodeOfPrepaymentModel");
-                cm.cycleAnchorDateOfRateReset = IsoDatetime::provide(sm, "cycleAnchorDateOfRateReset");
-                cm.cycleOfRateReset = CommonUtils::provide_string(sm, "cycleOfRateReset");
-                cm.rateSpread = CommonUtils::provide_f64default(sm, "rateSpread", 0.0);
-                cm.marketObjectCodeOfRateReset = CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset");
-                cm.lifeCap = CommonUtils::provide_f64(sm, "lifeCap");
-                cm.lifeFloor = CommonUtils::provide_f64(sm, "lifeFloor");
-                cm.periodCap = CommonUtils::provide_f64(sm, "periodCap");
-                cm.periodFloor = CommonUtils::provide_f64(sm, "periodFloor");
-                cm.cyclePointOfRateReset = CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset");
-                cm.fixingPeriod = IsoPeriod::provide(sm, "fixingPeriod");
-                cm.nextResetRate = CommonUtils::provide_f64(sm, "nextResetRate");
-                cm.rateMultiplier = CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0); // obligatoire
-                cm.contractPerformance = ContractPerformance::provide(sm, "contractPerformance");
+                };
                 
+                let cm = ContractModel {
+                    accrued_interest:                       Some(CommonUtils::provide_f64default(sm, "accruedInterest", 0.0)),
+                    capitalization_end_date:                Some(IsoDatetime::provide(sm, "capitalizationEndDate")),
+                    contract_id:                        Some(CommonUtils::provide_string(sm, "contractID")),
+                    contract_performance: Some(ContractPerformance::provide(sm, "contractPerformance")),
+                    contract_role: Some(ContractRole::provide(sm, "contractRole")),
+                    contract_type: Some(CommonUtils::provide_string(sm, "contractType")),
+                    counterparty_id: Some(CommonUtils::provide_string(sm, "counterpartyID")),
+                    currency: Some(CommonUtils::provide_string(sm, "currency")),
+                    cycle_anchor_date_of_fee: Some(IsoDatetime::provide(sm, "cycleAnchorDateOfFee")),
+                    cycle_anchor_date_of_interest_payment: Some(IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment")),
+                    cycle_anchor_date_of_optionality: Some(IsoDatetime::provide(sm, "cycleAnchorDateOfOptionality")),
+                    cycle_anchor_date_of_rate_reset: Some(IsoDatetime::provide(sm, "cycleAnchorDateOfRateReset")),
+                    cycle_anchor_date_of_scaling_index: Some(IsoDatetime::provide(sm, "cycleAnchorDateOfScalingIndex")),
+                    cycle_of_fee: Some(CommonUtils::provide_string(sm, "cycleOfFee")),
+                    cycle_of_interest_payment: Some(CommonUtils::provide_string(sm, "cycleOfInterestPayment")),
+                    cycle_of_optionality: Some(CommonUtils::provide_string(sm, "cycleOfOptionality")),
+                    cycle_of_rate_reset: Some(CommonUtils::provide_string(sm, "cycleOfRateReset")),
+                    cycle_of_scaling_index: Some(CommonUtils::provide_string(sm, "cycleOfScalingIndex")),
+                    cycle_point_of_interest_payment: Some(CyclePointOfInterestPayment::provide(sm, "cyclePointOfInterestPayment")),
+                    cycle_point_of_rate_reset: Some(CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")),
+                    end_of_month_convention: Some(EndOfMonthConvention::provide(sm, "endOfMonthConvention")),
+                    fee_accrued: Some(CommonUtils::provide_f64default(sm, "feeAccrued", 0.0)),
+                    fee_basis: Some(FeeBasis::provide(sm, "feeBasis")),
+                    fee_rate: Some(CommonUtils::provide_f64default(sm, "feeRate", 0.0)),
+                    fixing_period: Some(IsoPeriod::provide(sm, "fixingPeriod")),
+                    initial_exchange_date: Some(IsoDatetime::provide(sm, "initialExchangeDate")),
+                    interest_scaling_multiplier: Some(CommonUtils::provide_f64default(sm, "interestScalingMultiplier", 1.0)),
+                    life_cap: Some(CommonUtils::provide_f64(sm, "lifeCap")),
+                    life_floor: Some(CommonUtils::provide_f64(sm, "lifeFloor")),
+                    market_object_code: Some(CommonUtils::provide_string(sm, "marketObjectCode")),
+                    market_object_code_of_rate_reset: Some(CommonUtils::provide_string(sm, "marketObjectCodeOfRateReset")),
+                    market_object_code_of_scaling_index: Some(CommonUtils::provide_string(sm, "marketObjectCodeOfScalingIndex")),
+                    next_reset_rate: Some(CommonUtils::provide_f64(sm, "nextResetRate")),
+                    nominal_interest_rate: Some(CommonUtils::provide_f64(sm, "nominalInterestRate")),
+                    notional_principal: Some(CommonUtils::provide_f64(sm, "notionalPrincipal")),
+                    notional_scaling_multiplier: Some(CommonUtils::provide_f64default(sm, "notionalScalingMultiplier", 1.0)),
+                    object_code_of_prepayment_model: Some(CommonUtils::provide_string(sm, "objectCodeOfPrepaymentModel")),
+                    penalty_rate: Some(CommonUtils::provide_f64default(sm, "penaltyRate", 0.0)),
+                    penalty_type: Some(PenaltyType::provide(sm, "penaltyType")),
+                    period_cap: Some(CommonUtils::provide_f64(sm, "periodCap")),
+                    period_floor: Some(CommonUtils::provide_f64(sm, "periodFloor")),
+                    premium_discount_at_ied: Some(CommonUtils::provide_f64(sm, "premiumDiscountAtIED")),
+                    price_at_purchase_date: Some(CommonUtils::provide_f64(sm, "priceAtPurchaseDate")),
+                    price_at_termination_date: Some(CommonUtils::provide_f64(sm, "priceAtTerminationDate")),
+                    purchase_date: Some(IsoDatetime::provide(sm, "purchaseDate")),
+                    rate_multiplier: Some(CommonUtils::provide_f64default(sm, "rateMultiplier", 1.0)),
+                    rate_spread: Some(CommonUtils::provide_f64default(sm, "rateSpread", 0.0)),
+                    scaling_effect: Some(ScalingEffect::provide(sm, "scalingEffect")),
+                    scaling_index_at_contract_deal_date: Some(CommonUtils::provide_f64(sm, "scalingIndexAtContractDealDate")),
+                    status_date: Some(IsoDatetime::provide(sm, "statusDate")),
+                    termination_date: Some(IsoDatetime::provide(sm, "terminationDate")),
+                    ..Default::default()
+                };
+
                 Ok(cm)
             },
             "SWAPS" => {

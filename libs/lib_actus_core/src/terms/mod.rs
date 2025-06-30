@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 
+
 pub mod grp_interest;
 pub mod grp_calendar;
 pub mod grp_boundary;
@@ -11,3 +12,4 @@ pub mod grp_notional_principal;
 pub mod grp_optionality;
 pub mod grp_reset_rate;
 pub mod grp_settlement;
+pub mod grp_dividend;

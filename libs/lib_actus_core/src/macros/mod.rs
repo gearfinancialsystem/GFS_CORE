@@ -1,0 +1,1 @@
+pub mod macro_struct_f64;

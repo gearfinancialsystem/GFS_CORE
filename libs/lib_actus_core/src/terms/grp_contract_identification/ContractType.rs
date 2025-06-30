@@ -24,7 +24,7 @@ use crate::types::isoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct ContractType;
 
 impl ContractType {

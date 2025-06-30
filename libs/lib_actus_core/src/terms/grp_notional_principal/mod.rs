@@ -12,6 +12,7 @@ pub mod ContractDealDate;
 pub mod CreditLineAmount;
 pub mod Currency;
 pub mod Currency2;
+
 pub mod CycleAnchorDateOfPrincipalRedemption;
 pub mod CycleAnchorDateOfScalingIndex;
 pub mod CycleOfPrincipalRedemption;
@@ -19,6 +20,7 @@ pub mod CycleOfScalingIndex;
 pub mod InitialExchangeDate;
 pub mod InterestScalingMultiplier;
 pub mod MarketObjectCodeOfScalingIndex;
+pub mod MarketValueObserved;
 pub mod MaturityDate;
 pub mod NextPrincipalRedemptionPayment;
 pub mod NotionalPrincipal;

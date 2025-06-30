@@ -4,7 +4,10 @@ pub mod InterestCalculationBase;
 pub mod CyclePointOfInterestPayment;
 pub mod DayCountConvention;
 pub mod AccruedInterest;
+pub mod AccruedInterest2;
 pub mod ArrayCycleAnchorDateOfInterestPayment;
+
+pub mod ArrayCycleOfInterestPayment;
 pub mod CapitalizationEndDate;
 pub mod CycleAnchorDateOfInterestCalculationBase;
 pub mod CycleAnchorDateOfInterestPayment;

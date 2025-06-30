@@ -1,1 +1,0 @@
-pub struct NextResetDate(f64);

@@ -5,6 +5,7 @@ pub mod BoundaryDirection;
 pub mod BoundaryEffect;
 pub mod BoundaryLegInitiallyActive;
 pub mod BoundaryCrossedFlag;
+pub mod BoundaryMonitoringEndDate;
 pub mod BoundaryMonitoringAnchorDate;
 pub mod BoundaryMonitoringCycle;
 pub mod BoundaryValue;

@@ -1,3 +1,3 @@
 use crate::types::isoDatetime::IsoDatetime;
-
-pub struct CycleAnchorDateOfPrincipalRedemtion(IsoDatetime);
+#[derive(PartialEq, Debug, Clone)]
+pub struct CycleAnchorDateOfPrincipalRedemption(IsoDatetime);

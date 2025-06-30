@@ -6,7 +6,7 @@ pub mod DelinquencyPeriod;
 pub mod DelinquencyRate;
 pub mod GracePeriod;
 pub mod NonPerformingDate;
-
+pub mod PrepaymentPeriod;
 pub mod ContractPerformance;
 pub mod CreditEventTypeCovered;
 pub mod Seniority;

@@ -1,2 +1,3 @@
+use crate::macros::macro_struct_f64;
 
-pub struct BoundaryValue(f64);
+define_struct_f64!(DelinquencyRate);

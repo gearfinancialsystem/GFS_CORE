@@ -12,7 +12,7 @@ pub mod FixingPeriod;
 pub mod LifeCap;
 pub mod LifeFloor;
 pub mod MarketObjectCodeOfRateReset;
-pub mod NextResetDate;
+pub mod NextResetRate;
 pub mod PeriodCap;
 pub mod PeriodFloor;
 pub mod RateMultiplier;
