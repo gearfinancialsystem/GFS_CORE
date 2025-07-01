@@ -1,3 +1,4 @@
+
 use crate::types::IsoDatetime::IsoDatetime;
-#[derive(PartialEq, Debug, Clone)]
-pub struct ContractDealDate(IsoDatetime);
+use crate::define_struct_isodatetime;
+define_struct_isodatetime!(ContractDealDate);

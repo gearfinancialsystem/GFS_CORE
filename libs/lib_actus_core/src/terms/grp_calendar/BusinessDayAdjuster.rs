@@ -127,7 +127,7 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_SAME_NoHolidaysCalendar() {
         // list of unadjusted times
-        // let mut adjuster = new BusinessDayAdjuster(BusinessDayConventionEnum.NOS, new NoHolidaysCalendar());
+        // let mut cycle_adjuster = new BusinessDayAdjuster(BusinessDayConventionEnum.NOS, new NoHolidaysCalendar());
         let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
         let adjuster = BusinessDayAdjuster::new("NOS", calendar.clone()).expect("Adjuster good");
 
@@ -162,9 +162,9 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_SAME_MondayToFridayCalendar() {
-        // Create a calendar and adjuster for Monday to Friday
+        // Create a calendar and cycle_adjuster for Monday to Friday
         let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
-        //let adjuster = BusinessDayAdjuster::new_NOS(calendar.clone());
+        //let cycle_adjuster = BusinessDayAdjuster::new_NOS(calendar.clone());
         let adjuster = BusinessDayAdjuster::new("NOS", calendar.clone()).expect("Adjuster good");
         // List of unadjusted times
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
@@ -237,7 +237,7 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_SCF_MondayToFridayCalendar() {
         let calendar = Rc::new(Calendar::new("MF").expect("good cal"));
-        //let adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
+        //let cycle_adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
         let adjuster = BusinessDayAdjuster::new("SCF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));

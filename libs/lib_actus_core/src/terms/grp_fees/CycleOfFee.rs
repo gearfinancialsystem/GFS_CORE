@@ -1,2 +1,4 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct CycleOfFee(String);
+
+use crate::types::IsoCycle::IsoCycle;
+use crate::define_struct_isocycle;
+define_struct_isocycle!(CycleOfFee);

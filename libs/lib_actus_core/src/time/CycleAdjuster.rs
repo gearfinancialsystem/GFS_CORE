@@ -1,9 +1,8 @@
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
-use crate::time::adjusters::{PeriodCycleAdjuster::PeriodCycleAdjuster,
-                             WeekdayCycleAdjuster::WeekdayCycleAdjuster};
-
+use crate::types::adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster;
+use crate::types::adjuster::WeekdayCycleAdjuster::WeekdayCycleAdjuster;
 
 pub struct CycleAdjuster {
     pub adjuster: Box<dyn TraitCycleAdjuster>,

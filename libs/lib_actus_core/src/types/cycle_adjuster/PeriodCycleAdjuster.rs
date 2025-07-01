@@ -1,18 +1,19 @@
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
-use crate::util::CycleUtils::CycleUtils;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
+use crate::types::IsoCycle::{LONG_STUB, SHORT_STUB};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PeriodCycleAdjuster {
     pub period: IsoPeriod,
     pub stub: char,
 }
 
 impl PeriodCycleAdjuster {
-    pub fn new(cycle: &String) -> Result<Self, AttributeConversionException> {
-        let period = CycleUtils::parse_period(cycle);
-        let stub = CycleUtils::parse_stub(cycle);
+    pub fn new(cycle: String) -> Result<Self, AttributeConversionException> {
+        let period = Self::parse_period(cycle.clone());
+        let stub = Self::parse_stub(cycle);
 
         match (period, stub) {
             (Ok(val_period), Ok(val_stub)) => {
@@ -24,6 +25,31 @@ impl PeriodCycleAdjuster {
             }
         }
     }
+    /**
+    * Parses a period from a cycle string.
+    */
+    pub fn parse_period(cycle: String) -> Result<IsoPeriod, AttributeConversionException> {
+        let period_part = cycle.split('L').next().unwrap();
+        match IsoPeriod::parsex(period_part) {
+            Some(period) => Ok(period),
+            None => Err(AttributeConversionException),
+        }
+    }
+
+    /**
+    * Parses the stub from the cycle string.
+    */
+    pub fn parse_stub(cycle: String) -> Result<char, AttributeConversionException> {
+        let stub_part = cycle.split('L').nth(1).ok_or(AttributeConversionException)?;
+        let stub = stub_part.chars().next().ok_or(AttributeConversionException)?;
+        if stub == LONG_STUB || stub == SHORT_STUB {
+            Ok(stub)
+        } else {
+            Err(AttributeConversionException)
+        }
+    }
+
+
 }
 
 impl TraitCycleAdjuster for PeriodCycleAdjuster {
@@ -45,7 +71,7 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_plus_1Ws(){
         println!("P1WL1");
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1WL1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1WL1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2016-01-08T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
 
@@ -55,7 +81,7 @@ mod tests_period_cycle_adjuster {
 
     #[test]
     fn test_minus_1Ws(){
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1WL1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1WL1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2015-12-25T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     
@@ -64,7 +90,7 @@ mod tests_period_cycle_adjuster {
     }
     #[test]
     fn test_plus_1Ms() {
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1ML1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1ML1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-31T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2016-02-29T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     
@@ -74,7 +100,7 @@ mod tests_period_cycle_adjuster {
     
     #[test]
     fn test_minus_1Ms() {
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1ML1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1ML1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2015-12-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     
@@ -83,7 +109,7 @@ mod tests_period_cycle_adjuster {
     }
     #[test]
     fn test_plus_1Ys(){
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1YL1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1YL1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2017-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     
@@ -92,7 +118,7 @@ mod tests_period_cycle_adjuster {
     }
     #[test]
     fn test_minus_1Ys(){
-        let mut p_adjuster = PeriodCycleAdjuster::new(&"P1YL1".to_string()).unwrap();
+        let mut p_adjuster = PeriodCycleAdjuster::new("P1YL1".to_string()).unwrap();
         let mut t0 = IsoDatetime::parse_from_str("2016-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         let mut t1 = IsoDatetime::parse_from_str("2015-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
     

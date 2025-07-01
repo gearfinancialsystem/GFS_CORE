@@ -1,4 +1,3 @@
-use crate::types::IsoPeriod::IsoPeriod;
-
-#[derive(PartialEq, Debug, Clone)]
-pub struct BoundaryMonitoringCycle(IsoPeriod);
+use crate::types::IsoCycle::IsoCycle;
+use crate::define_struct_isocycle;
+define_struct_isocycle!(BoundaryMonitoringCycle);

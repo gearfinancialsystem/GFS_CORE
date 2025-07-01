@@ -1,5 +1,3 @@
-
-
 #[macro_export]
 macro_rules! define_struct_f64 {
     // Case with validation conditions and a default value

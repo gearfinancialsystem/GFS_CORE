@@ -1,2 +1,4 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct CycleOfInterestCalculationBase(String);
+
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::define_struct_isodatetime;
+define_struct_isodatetime!(CycleOfInterestCalculationBase);
