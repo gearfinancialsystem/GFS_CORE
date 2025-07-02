@@ -27,7 +27,7 @@ impl TraitStateTransitionFunction for STF_PR_LAX2 {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let role = &model.contractRole.clone().unwrap().role_sign();
+        let role = &model.contract_role.clone().unwrap().role_sign();
         let redemption = role * self.pr_payment - role * (self.pr_payment.abs() - states.notionalPrincipal.unwrap_or(0.0).abs()).max(0.0);
 
         let status_date = states.statusDate.expect("statusDate should always be Some");
@@ -44,7 +44,7 @@ impl TraitStateTransitionFunction for STF_PR_LAX2 {
         });
 
         states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
-            let fee_rate = model.feeRate.unwrap_or(0.0);
+            let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued + fee_rate * states.notionalPrincipal.unwrap_or(0.0) * time_from_last_event
         });
 

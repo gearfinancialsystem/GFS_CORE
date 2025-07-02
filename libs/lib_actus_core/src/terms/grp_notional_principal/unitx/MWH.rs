@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::unitx::GLN::GLN;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -6,10 +7,13 @@ pub struct MWH;
 
 impl MWH {
     pub fn new() -> Self {
-        return MWH;
+        MWH
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for MWH {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "MWH")
+    }
+}

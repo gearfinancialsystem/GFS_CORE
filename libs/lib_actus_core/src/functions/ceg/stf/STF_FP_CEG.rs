@@ -21,7 +21,7 @@ impl TraitStateTransitionFunction for STF_FP_CEG {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        if model.notionalPrincipal.is_none() {
+        if model.notional_principal.is_none() {
             states.notionalPrincipal = Some(CEG::calculate_notional_principal(
                 states,
                 model,

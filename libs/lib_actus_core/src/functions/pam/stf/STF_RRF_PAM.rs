@@ -23,7 +23,7 @@ impl TraitStateTransitionFunction for STF_RRF_PAM {
         let status_date = states.statusDate.expect("status date should always be some");
         let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be None");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be None");
-        let fee_rate = model.feeRate.expect("fee rate should always be None");
+        let fee_rate = model.fee_rate.expect("fee rate should always be None");
         let next_reset_rate = model.nextResetRate.expect("next_reset_rate should always be None");
 
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),

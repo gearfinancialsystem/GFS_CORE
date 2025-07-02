@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_optionality::penalty_type::A::A;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -13,3 +14,9 @@ impl I {
     }
 }
 
+
+impl fmt::Display for I {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "I")
+    }
+}

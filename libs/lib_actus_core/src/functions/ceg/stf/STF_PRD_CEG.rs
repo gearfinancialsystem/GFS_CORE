@@ -21,7 +21,7 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // Set notionalPrincipal if it is not already set
-        if model.notionalPrincipal.is_none() {
+        if model.notional_principal.is_none() {
             states.notionalPrincipal = Some(CEG::calculate_notional_principal(
                 states,
                 model,
@@ -31,7 +31,7 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
         }
 
         // Set feeAccrued based on feeRate or existing feeAccrued
-        if let Some(fee_rate) = model.feeRate {
+        if let Some(fee_rate) = model.fee_rate {
             states.feeAccrued = Some(fee_rate);
         } else if let Some(fee_accrued) = model.feeAccrued {
             states.feeAccrued = Some(fee_accrued);

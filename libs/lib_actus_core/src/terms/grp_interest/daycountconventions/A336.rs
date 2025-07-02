@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
@@ -18,6 +20,11 @@ impl TraitDayCountConvention for A336 {
     /// Calculates the day count fraction between two dates using the A/336 convention
     fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         Self::day_count(&self, start_time, end_time) as f64 / 336.0
+    }
+}
+impl fmt::Display for A336 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "A336")
     }
 }
 

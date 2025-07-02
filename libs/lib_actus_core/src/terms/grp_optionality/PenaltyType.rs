@@ -1,6 +1,10 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_optionality::option_type::C::C;
+use crate::terms::grp_optionality::option_type::CP::CP;
+use crate::terms::grp_optionality::option_type::P::P;
 use crate::terms::grp_optionality::OptionType::OptionType;
 use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
@@ -18,14 +22,7 @@ pub enum PenaltyType {
 }
 
 impl PenaltyType {
-    pub fn description(&self) -> String {
-        match self {
-            Self::N(N) => N.type_str(),
-            Self::A(A) => A.type_str(),
-            Self::R(R) => R.type_str(),
-            Self::I(I) => I.type_str(),
-        }
-    }
+
 
     pub fn new(element: &str) -> Result<Self, ParseError> {
         PenaltyType::from_str(element)
@@ -33,6 +30,17 @@ impl PenaltyType {
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -55,3 +63,13 @@ impl Default for PenaltyType {
     }
 }
 
+impl fmt::Display for PenaltyType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::N(N) => write!(f, "PenaltyType: {}", N.to_string()),
+            Self::A(A) => write!(f, "PenaltyType: {}", A.to_string()),
+            Self::R(R) => write!(f, "PenaltyType: {}", R.to_string()),
+            Self::I(I) => write!(f, "PenaltyType: {}", I.to_string()),
+        }
+    }
+}

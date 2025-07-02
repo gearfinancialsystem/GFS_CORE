@@ -1,6 +1,10 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_fees::fee_basis::A::A;
+use crate::terms::grp_fees::fee_basis::N::N;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
 use crate::util::CommonUtils::CommonUtils as cu;
@@ -13,12 +17,7 @@ pub enum CyclePointOfInterestPayment {
 }
 
 impl CyclePointOfInterestPayment {
-    pub fn description(&self) -> String {
-        match self {
-            CyclePointOfInterestPayment::B(B) => B.type_str(),
-            CyclePointOfInterestPayment::E(E) => E.type_str(),
-        }
-    }
+
 
     pub fn new(element: &str) -> Result<Self, ParseError> {
         CyclePointOfInterestPayment::from_str(element)
@@ -26,6 +25,17 @@ impl CyclePointOfInterestPayment {
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         cu::provide(string_map, key)
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -46,3 +56,11 @@ impl Default for CyclePointOfInterestPayment {
     }
 }
 
+impl fmt::Display for CyclePointOfInterestPayment {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::B(B) => write!(f, "FeeBasis: {}", B.to_string()),
+            Self::E(E) => write!(f, "FeeBasis: {}", E.to_string()),
+        }
+    }
+}

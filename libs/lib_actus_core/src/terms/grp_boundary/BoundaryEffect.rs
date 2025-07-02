@@ -35,6 +35,17 @@ impl BoundaryEffect {
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
     }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
 }
 
 impl FromStr for BoundaryEffect {

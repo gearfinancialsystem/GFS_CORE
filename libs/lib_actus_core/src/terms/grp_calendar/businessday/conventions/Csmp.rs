@@ -1,3 +1,4 @@
+use std::fmt;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::ModifiedPreceeding::ModifiedPreceeding;
 use crate::terms::grp_calendar::Calendar::Calendar;
@@ -18,9 +19,7 @@ impl CSMP {
         return CSMP {    scConvention: CalcShift, 
                         bdConvention: ModifiedPreceeding::new(calendar)};
     }
-    pub fn type_str(&self) -> String {
-        return "CSMP day convention".to_string();
-    }
+
     pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         self.scConvention.shift(date, convention)
     }
@@ -30,3 +29,8 @@ impl CSMP {
     }
 }
 
+impl fmt::Display for CSMP {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CSMP (scConvention: {}, bdConvention: {})", self.scConvention.to_string(), self.bdConvention.to_string() )
+    }
+}

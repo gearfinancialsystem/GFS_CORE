@@ -1,3 +1,4 @@
+use std::fmt;
 
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -6,10 +7,13 @@ pub struct E;
 
 impl E {
     pub fn new() -> Self {
-        return E;
+        E
     }
-    pub fn type_str(&self) -> String {
-        return "E Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for E {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "E")
+    }
+}

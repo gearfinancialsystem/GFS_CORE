@@ -21,7 +21,7 @@ impl TraitPayOffFunction for POF_PP_PAM {
     ) -> f64 {
         
             let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
-            let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+            let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
                 risk_factor_model,

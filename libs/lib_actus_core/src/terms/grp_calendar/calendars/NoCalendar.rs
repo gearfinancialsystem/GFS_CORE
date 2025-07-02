@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -9,9 +11,7 @@ impl NC {
     pub fn new() -> Self {
         NC
     }
-    pub fn type_str(&self) -> String {
-        return "NC (No calendar) calendar".to_string();
-    }
+
 }
 
 impl TraitBusinessDayCalendar for NC {
@@ -19,6 +19,14 @@ impl TraitBusinessDayCalendar for NC {
         true
     }
 }
+
+
+impl fmt::Display for NC {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", "NC")
+    }
+}
+
 
 #[cfg(test)]
 mod tests_calendars_NoCalendar {

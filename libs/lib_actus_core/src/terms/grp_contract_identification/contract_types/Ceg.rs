@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -15,6 +16,7 @@ use crate::functions::ceg::stf::STF_STD_CEG::STF_STD_CEG;
 use crate::functions::ceg::stf::STF_XD_CEG::STF_XD_CEG;
 use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
@@ -45,11 +47,11 @@ impl CEG {
         }
 
         // Fees (if specified)
-        if !(model.feeRate.is_none() || model.feeRate.unwrap() == 0.0) {
-            let start_date = if model.cycleAnchorDateOfFee.is_none() && model.cycleOfFee.is_none() {
+        if !(model.fee_rate.is_none() || model.fee_rate.unwrap() == 0.0) {
+            let start_date = if model.cycleAnchorDateOfFee.is_none() && model.cycle_of_fee.is_none() {
                 None
             } else if model.cycleAnchorDateOfFee.is_none() {
-                Some(model.purchaseDate.unwrap() + CycleUtils::parse_period(&model.cycleOfFee.as_ref().unwrap()).unwrap())
+                Some(model.purchaseDate.unwrap() + CycleUtils::parse_period(&model.cycle_of_fee.as_ref().unwrap()).unwrap())
 
 
             } else {
@@ -66,7 +68,7 @@ impl CEG {
                 &ScheduleFactory::create_schedule(
                     start_date,
                     end_date,
-                    model.cycleOfFee.clone(),
+                    model.cycle_of_fee.clone(),
                     model.endOfMonthConvention.clone().unwrap(),
                     false,
                 ),
@@ -149,7 +151,7 @@ impl CEG {
         if let Some(maturity_date) = model.maturityDate.clone().map(|rc| (*rc).clone()) {
             maturity_date.clone()
         } else {
-            let covered_contract_refs = model.contractStructure.clone().unwrap()
+            let covered_contract_refs = model.contract_structure.clone().unwrap()
                 .iter()
                 .filter(|e| e.reference_role == ReferenceRole::COVE)
                 .map(|cr| cr.clone())
@@ -176,12 +178,12 @@ impl CEG {
 
         if states.statusDate.unwrap() > states.maturityDate.unwrap() {
             states.notionalPrincipal = Some(0.0);
-        } else if model.notionalPrincipal.is_some() {
-            let role_sign = &model.contractRole.clone().unwrap().role_sign();
+        } else if model.notional_principal.is_some() {
+            let role_sign = &model.contract_role.clone().unwrap().role_sign();
             states.notionalPrincipal = Some(
                 model.coverageOfCreditEnhancement.unwrap()
                     * role_sign
-                    * model.notionalPrincipal.unwrap()
+                    * model.notional_principal.unwrap()
             );
         } else {
             states.notionalPrincipal = Some(Self::calculate_notional_principal(
@@ -192,7 +194,7 @@ impl CEG {
             ));
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
@@ -211,7 +213,7 @@ impl CEG {
         time: &IsoDatetime,
     ) -> f64 {
 
-        let covered_contract_refs = model.contractStructure.clone().unwrap()
+        let covered_contract_refs = model.contract_structure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -222,7 +224,7 @@ impl CEG {
             .map(|c| c.get_state_space_at_time_point(time.clone(), observer))
             .collect();
 
-        let role_sign = &model.contractRole.clone().unwrap().role_sign();
+        let role_sign = &model.contract_role.clone().unwrap().role_sign();
         let coverage = model.coverageOfCreditEnhancement.unwrap();
 
         match model.guaranteedExposure {
@@ -264,7 +266,7 @@ impl CEG {
         observer: &RiskFactorModel,
         maturity: &IsoDatetime,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let contract_identifiers: Vec<String> = model.contractStructure.clone().unwrap()
+        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap()
             .iter()
             .map(|c| c.get_contract_attribute("contractID").unwrap().to_string())
             .collect();
@@ -311,5 +313,10 @@ impl CEG {
         }
 
         Ok(events)
+    }
+}
+impl fmt::Display for CEG {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CEG")
     }
 }

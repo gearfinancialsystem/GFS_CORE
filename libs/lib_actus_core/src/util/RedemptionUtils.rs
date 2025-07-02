@@ -37,7 +37,7 @@ impl RedemptionUtils {
 
         redemption_amount = match model.contractType.clone().unwrap().as_str() {
             "LAM" => {
-                model.notionalPrincipal.clone().unwrap() / event_times.len() as f64 // on est sur que cest len ?
+                model.notional_principal.clone().unwrap() / event_times.len() as f64 // on est sur que cest len ?
             },
             "ANN" => {
                 0.0 // a implementer

@@ -20,8 +20,8 @@ impl TraitPayOffFunction for POF_IED_CLM {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-        let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
-        let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always exist");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
+        let notional_principal = model.notional_principal.expect("notionalPrincipal should always exist");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
             model,

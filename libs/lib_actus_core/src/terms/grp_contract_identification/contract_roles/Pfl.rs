@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_contract_identification::contract_roles::Pf::PF;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -7,11 +9,14 @@ impl PFL {
     pub fn new() -> Self {
         return PFL;
     }
-    pub fn type_str(&self) -> String {
-        return "PFL contract cont_type".to_string();
-    }
+
     pub fn role_sign(&self) -> f64 {
         return -1.0
     }
 }
 
+impl fmt::Display for PFL {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "PFL")
+    }
+}

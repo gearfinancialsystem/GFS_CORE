@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
@@ -36,6 +37,8 @@ use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
 use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+use crate::terms::grp_contract_identification::contract_types::Lam::LAM;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
@@ -274,7 +277,7 @@ impl LAX {
         }
 
         // Fee schedule
-        if let Some(fee_cycle) = &model.cycleOfFee {
+        if let Some(fee_cycle) = &model.cycle_of_fee {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
@@ -426,7 +429,7 @@ impl LAX {
 
         //let day_counter = model.dayCountConvention.as_ref().unwrap();
         let time_adjuster = model.businessDayAdjuster.as_ref().unwrap();
-        let notional_principal = model.notionalPrincipal.unwrap();
+        let notional_principal = model.notional_principal.unwrap();
         let pr_anchor_dates = model.arrayCycleAnchorDateOfPrincipalRedemption.as_ref().unwrap();
         let pr_inc_dec: Vec<i32> = model.arrayIncreaseDecrease.as_ref().unwrap().iter().map(|s| if s.clone() == ArrayIncreaseDecrease::INC(INC) { 1 } else { -1 }).collect();
         let pr_payments = model.arrayNextPrincipalRedemptionPayment.as_ref().unwrap();
@@ -503,8 +506,8 @@ impl LAX {
             states.nominalInterestRate = Some(0.0);
             states.interestCalculationBaseAmount = Some(0.0);
         } else {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = Some(model.nominalInterestRate.unwrap());
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap_or(0.0));
             states.feeAccrued = Some(model.feeAccrued.unwrap_or(0.0));
@@ -517,5 +520,10 @@ impl LAX {
         }
 
         states
+    }
+}
+impl fmt::Display for LAX {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "LAX")
     }
 }

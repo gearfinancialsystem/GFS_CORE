@@ -22,7 +22,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
     ) -> f64 {
         
         let penalty_type = model.penaltyType.as_ref().expect("penaltyType should be Some");
-        let contract_role = model.contractRole.as_ref().expect("contract role should be Some");
+        let contract_role = model.contract_role.as_ref().expect("contract role should be Some");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

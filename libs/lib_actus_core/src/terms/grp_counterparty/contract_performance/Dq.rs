@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 
@@ -8,8 +9,14 @@ impl DQ {
     pub fn new() -> Self {
         return DQ;
     }
-    pub fn type_str(&self) -> String {
-        return "DQ contract cont_type".to_string();
-    }
+
 }
 
+impl fmt::Display for DQ {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+        write!(f, "DQ")
+
+
+    }
+}

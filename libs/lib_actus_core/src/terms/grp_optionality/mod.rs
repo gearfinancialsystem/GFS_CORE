@@ -18,3 +18,4 @@ pub mod penalty_type;
 pub mod option_exercise_type;
 pub mod option_type;
 pub mod prepayment_effect;
+pub mod ObjectCodeOfPrepaymentModel;

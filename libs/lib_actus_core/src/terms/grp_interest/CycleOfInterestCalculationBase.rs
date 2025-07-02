@@ -1,4 +1,7 @@
 
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::define_struct_isodatetime;
-define_struct_isodatetime!(CycleOfInterestCalculationBase);
+use crate::types::IsoCycle::IsoCycle;
+use std::str::FromStr;
+use crate::define_struct_isocycle;
+use std::collections::HashMap;
+use crate::util::Value::Value;
+define_struct_isocycle!(CycleOfInterestCalculationBase);

@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::Unit::Unit;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -6,11 +7,14 @@ pub struct INO;
 
 impl INO {
     pub fn new() -> Self {
-        return INO;
+        INO
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
+
 }
 
 
+impl fmt::Display for INO {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "INO")
+    }
+}

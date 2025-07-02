@@ -3,6 +3,7 @@ use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_margining::ClearingHouse::ClearingHouse;
 use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
 use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
@@ -20,14 +21,7 @@ pub enum ScalingEffect {
 }
 
 impl ScalingEffect {
-    pub fn description(&self) -> String {
-        match self {
-            ScalingEffect::OOO(OOO) => OOO.type_str(),
-            ScalingEffect::IOO(IOO) => IOO.type_str(),
-            ScalingEffect::ONO(ONO) => ONO.type_str(),
-            ScalingEffect::INO(INO) => INO.type_str(),
-        }
-    }
+
     
     pub fn new(element: &str) -> Result<Self, ParseError> {
         ScalingEffect::from_str(element)
@@ -37,18 +31,19 @@ impl ScalingEffect {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
         cu::provide(string_map, key)
     }
-}
-
-impl fmt::Display for ScalingEffect {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            ScalingEffect::OOO(_) => write!(f, "OOO"),
-            ScalingEffect::IOO(_) => write!(f, "IOO"),
-            ScalingEffect::ONO(_) => write!(f, "ONO"),
-            ScalingEffect::INO(_) => write!(f, "INO"),
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
         }
     }
 }
+
 impl FromStr for ScalingEffect {
     type Err = ParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -68,3 +63,13 @@ impl Default for ScalingEffect {
     }
 }
 
+impl fmt::Display for ScalingEffect {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::OOO(OOO) => write!(f, "ScalingEffect: {}", OOO.to_string()),
+            Self::IOO(IOO) => write!(f, "ScalingEffect: {}", IOO.to_string()),
+            Self::ONO(ONO) => write!(f, "ScalingEffect: {}", ONO.to_string()),
+            Self::INO(INO) => write!(f, "ScalingEffect: {}", INO.to_string()),
+        }
+    }
+}

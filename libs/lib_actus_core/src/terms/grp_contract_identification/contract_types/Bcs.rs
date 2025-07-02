@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -22,6 +23,7 @@ use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
 use crate::terms::grp_boundary::boundary_effect::Infil::INFIL;
 use crate::terms::grp_boundary::boundary_effect::Insel::INSEL;
 use crate::terms::grp_boundary::boundary_effect::Out::OUT;
+use crate::terms::grp_contract_identification::contract_types::Ann::ANN;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -114,7 +116,7 @@ impl BCS {
         }
 
         // First leg model
-        let first_leg_model = model.contractStructure.clone().unwrap().iter()
+        let first_leg_model = model.contract_structure.clone().unwrap().iter()
             .find(|c| c.reference_role == ReferenceRole::FIL)
             .and_then(|c| c.object.clone().as_cm())
             .unwrap();
@@ -122,7 +124,7 @@ impl BCS {
         let mut first_leg_schedule = Vec::new();
 
         // Second leg model
-        let second_leg = model.contractStructure.clone().unwrap().iter()
+        let second_leg = model.contract_structure.clone().unwrap().iter()
             .find(|c| c.reference_role == ReferenceRole::SEL)
             .and_then(|c| c.object.clone().as_cm());
 
@@ -326,5 +328,10 @@ impl BCS {
         }
 
         states
+    }
+}
+impl fmt::Display for BCS {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BCS")
     }
 }

@@ -1,7 +1,8 @@
 
-use std::ptr;
+use std::{fmt, ptr};
 use chrono::Duration;
 use std::rc::Rc;
+use crate::terms::grp_calendar::businessday::elements::bd_convention::ModifiedPreceeding::ModifiedPreceeding;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
@@ -53,5 +54,10 @@ impl TraitBusinessDayAdjuster for Preceeding {
             shifted_date -= Duration::days(1);
         }
         shifted_date
+    }
+}
+impl fmt::Display for Preceeding {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Preceeding (Calendar : {})", self.calendar.to_string())
     }
 }

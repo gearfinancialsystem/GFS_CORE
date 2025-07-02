@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_contract_identification::contract_roles::{
@@ -17,24 +18,6 @@ pub enum ContractRole {
     UDLM(UDLM), None
 }
 impl ContractRole {
-    pub fn description(&self) -> String {
-        match self {
-            Self::RPA(RPA) => RPA.type_str(),
-            Self::RPL(RPL) => RPL.type_str(),
-            Self::RFL(RFL) => RFL.type_str(),
-            Self::PFL(PFL) => PFL.type_str(),
-            Self::RF(RF) => RF.type_str(),
-            Self::PF(PF) => PF.type_str(),
-            Self::BUY(BUY) => BUY.type_str(),
-            Self::SEL(SEL) => SEL.type_str(),
-            Self::COL(COL) => COL.type_str(),
-            Self::CNO(CNO) => CNO.type_str(),
-            Self::UDL(UDL) => UDL.type_str(),
-            Self::UDLP(UDLP) => UDLP.type_str(),
-            Self::UDLM(UDLM) => UDLM.type_str(),
-            Self::None => "None".to_string(),
-        }
-    }
 
     pub fn role_sign(&self) -> f64 {
         match self {
@@ -54,7 +37,6 @@ impl ContractRole {
             Self::None => 0.0,
         }
     }
-    
 
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {
@@ -70,6 +52,17 @@ impl ContractRole {
                 Self::from_str(s.as_string().unwrap().as_str()).ok()
             })
             .map(|b| b) // On stocke la convention dans une Box
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -91,6 +84,27 @@ impl FromStr for ContractRole {
             "UDLP" => Ok(Self::UDLP(UDLP::new())),
             "UDLM" => Ok(Self::UDLM(UDLM::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+        }
+    }
+}
+
+impl fmt::Display for ContractRole {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::RPA(RPA) => write!(f, "{}", RPA.to_string()),
+            Self::RPL(RPL) => write!(f, "{}", RPL.to_string()),
+            Self::RFL(RFL) => write!(f, "{}", RFL.to_string()),
+            Self::PFL(PFL) => write!(f, "{}", PFL.to_string()),
+            Self::RF(RF) => write!(f, "{}", RF.to_string()),
+            Self::PF(PF) => write!(f, "{}", PF.to_string()),
+            Self::BUY(BUY) => write!(f, "{}", BUY.to_string()),
+            Self::SEL(SEL) => write!(f, "{}", SEL.to_string()),
+            Self::COL(COL) => write!(f, "{}", COL.to_string()),
+            Self::CNO(CNO) => write!(f, "{}", CNO.to_string()),
+            Self::UDL(UDL) => write!(f, "{}", UDL.to_string()),
+            Self::UDLP(UDLP) => write!(f, "{}", UDLP.to_string()),
+            Self::UDLM(UDLM) => write!(f, "{}", UDLM.to_string()),
+            Self::None => write!(f, "None")
         }
     }
 }

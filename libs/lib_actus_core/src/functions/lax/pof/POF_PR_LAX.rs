@@ -27,7 +27,7 @@ impl TraitPayOffFunction for POF_PR_LAX {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let role = contract_role.role_sign();
         let notional_scaling_multiplier = model.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");

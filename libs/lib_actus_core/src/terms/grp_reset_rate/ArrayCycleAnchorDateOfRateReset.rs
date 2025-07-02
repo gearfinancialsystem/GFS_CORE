@@ -1,3 +1,9 @@
+
+use std::ops::{Add, Sub};
+use crate::types::IsoPeriod::IsoPeriod;
 use crate::types::IsoDatetime::IsoDatetime;
-#[derive(PartialEq, Debug, Clone)]
-pub struct ArrayCycleAnchorDateOfRateReset(Vec<IsoDatetime>);
+use chrono::NaiveDateTime;
+
+use chrono::ParseResult;
+use crate::define_struct_vec_isodatetime;
+define_struct_vec_isodatetime!(ArrayCycleAnchorDateOfRateReset);

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::rc::Rc;
 
 
@@ -34,21 +35,7 @@ impl BusinessDayAdjuster {
     pub fn new(element: &str, calendar: Rc<Calendar>) -> Result<Self, ParseError> {
         BusinessDayAdjuster::parse(element, calendar)
     }
-
-    pub fn description(&self) -> String {
-        match self {
-            Self::NOS(v)   => v.type_str(),
-            Self::SCF(v)   => v.type_str(),
-            Self::SCMF(v)  => v.type_str(),
-            Self::CSF(v)   => v.type_str(),
-            Self::CSMF(v)  => v.type_str(),
-            Self::SCP(v)   => v.type_str(),
-            Self::SCMP(v)  => v.type_str(),
-            Self::CSP(v)   => v.type_str(),
-            Self::CSMP(v)  => v.type_str(),
-        }
-    }
-
+    
     pub fn shift_bd(&self, date: &IsoDatetime) -> IsoDatetime {
         match self {
             Self::NOS(v)   => v.shift_bd(date),
@@ -113,6 +100,22 @@ impl BusinessDayAdjuster {
                     Err(_) => None,
                 }
             }
+        }
+    }
+}
+
+impl fmt::Display for BusinessDayAdjuster {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::NOS(v)   => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::SCF(v)   => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::SCMF(v)  => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::CSF(v)   => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::CSMF(v)  => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::SCP(v)   => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::SCMP(v)  => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::CSP(v)   => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
+            Self::CSMP(v)  => write!(f, "BusinessDayAdjuster: {}", v.to_string()),
         }
     }
 }

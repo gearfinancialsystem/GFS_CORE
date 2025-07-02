@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +9,11 @@ impl ONO {
     pub fn new() -> Self {
         return ONO;
     }
-    pub fn type_str(&self) -> String {
-        return "ONO Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for ONO {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "ONO")
+    }
+}

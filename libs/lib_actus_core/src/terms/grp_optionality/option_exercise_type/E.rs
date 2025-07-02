@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_optionality::option_exercise_type::B::B;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -8,8 +9,11 @@ impl E {
     pub fn new() -> Self {
         return E;
     }
-    pub fn type_str(&self) -> String {
-        return "A Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for E {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "E")
+    }
+}

@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
@@ -15,6 +16,7 @@ use crate::functions::optns::stf::STF_XD_OPTNS::STF_XD_OPTNS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct OPTNS;
@@ -174,5 +176,10 @@ impl OPTNS {
         states.contractPerformance = model.contractPerformance;
 
         states
+    }
+}
+impl fmt::Display for OPTNS {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "OPTNS")
     }
 }

@@ -1,7 +1,9 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, fmt, str::FromStr};
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_fees::fee_basis::N::N;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::seniority::J::J;
+use crate::terms::grp_counterparty::seniority::S::S;
 use crate::terms::grp_counterparty::Seniority::Seniority;
 use crate::util::Value::Value;
 
@@ -13,13 +15,6 @@ pub enum FeeBasis {
 }
 
 impl FeeBasis {
-    pub fn description(&self) -> String {
-        match self {
-            Self::A(A) => A.type_str(),
-            Self::N(N) => N.type_str(),
-            Self::None => "".to_string()
-        }
-    }
 
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {
@@ -38,6 +33,17 @@ impl FeeBasis {
             .map(|b|b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
 }
 
 
@@ -55,6 +61,15 @@ impl FromStr for FeeBasis {
 impl Default for FeeBasis {
     fn default() -> Self {
         FeeBasis::None
+    }
+}
+impl fmt::Display for FeeBasis {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::A(A) => write!(f, "FeeBasis: {}", A.to_string()),
+            Self::N(N) => write!(f, "FeeBasis: {}", N.to_string()),
+            Self::None => write!(f, "GuaranteedExposure: No value was given")
+        }
     }
 }
 

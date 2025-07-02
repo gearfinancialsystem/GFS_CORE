@@ -1,10 +1,15 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_optionality::prepayment_effect::A::A;
 use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_optionality::OptionType::OptionType;
+use crate::terms::grp_optionality::penalty_type::I::I;
+use crate::terms::grp_optionality::penalty_type::R::R;
+use crate::terms::grp_optionality::PenaltyType::PenaltyType;
+use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq)]
 pub enum PrepaymentEffect {
@@ -14,16 +19,21 @@ pub enum PrepaymentEffect {
 }
 
 impl PrepaymentEffect {
-    pub fn description(&self) -> String {
-        match self {
-            PrepaymentEffect::N(N) => N.type_str(),
-            PrepaymentEffect::A(A) => A.type_str(),
-            PrepaymentEffect::M(M) => M.type_str(),
-        }
-    }
-
+    
     pub fn new(element: &str) -> Result<Self, ParseError> {
         PrepaymentEffect::from_str(element)
+    }
+    
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -44,4 +54,16 @@ impl Default for PrepaymentEffect {
         Self::N(N::new())
     }
 }
+
+impl fmt::Display for PrepaymentEffect {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::N(v) => write!(f, "PrepaymentEffect: {}", v.to_string()),
+            Self::A(v) => write!(f, "PrepaymentEffect: {}", v.to_string()),
+            Self::M(v) => write!(f, "PrepaymentEffect: {}", v.to_string()),
+
+        }
+    }
+}
+
 

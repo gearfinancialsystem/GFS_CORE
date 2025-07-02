@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::unitx::TON::TON;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -8,9 +9,12 @@ impl TRO {
     pub fn new() -> Self {
         return TRO;
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
+
 }
 
 
+impl fmt::Display for TRO {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "TRO")
+    }
+}

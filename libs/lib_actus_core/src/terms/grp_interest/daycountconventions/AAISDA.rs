@@ -1,6 +1,7 @@
-
+use std::fmt;
 use crate::types::IsoDatetime::IsoDatetime;
 use chrono::{Datelike, NaiveDate};
+use crate::terms::grp_interest::daycountconventions::A365::A365;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -47,6 +48,13 @@ impl TraitDayCountConvention for AAISDA {
             + (y2 - y1 - 1) as f64
     }
 }
+
+impl fmt::Display for AAISDA {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "AAISDA")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

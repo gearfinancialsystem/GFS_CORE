@@ -1,4 +1,6 @@
-
+use std::fmt;
+use crate::terms::grp_margining::ClearingHouse::ClearingHouse;
+use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +10,11 @@ impl DEC {
     pub fn new() -> Self {
         DEC
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for DEC {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "DEC")
+    }
+}

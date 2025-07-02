@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
@@ -14,6 +15,7 @@ use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
@@ -443,6 +445,13 @@ impl SWAPS {
         netting
     }
 }
+
+impl fmt::Display for SWAPS {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "SWAPS")
+    }
+}
+
 //
 // #[cfg(test)]
 // mod tests {

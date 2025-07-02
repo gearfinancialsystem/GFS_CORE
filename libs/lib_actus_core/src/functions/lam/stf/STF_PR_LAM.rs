@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_PR_LAM {
         let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.nextPrincipalRedemptionPayment.expect("nextPrincipalRedemptionPayment should always be Some");
-        let contract_role = model.contractRole.clone().expect("contractRole should always be Some");
+        let contract_role = model.contract_role.clone().expect("contractRole should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
@@ -36,11 +36,11 @@ impl TraitStateTransitionFunction for STF_PR_LAM {
         });
 
         states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
-            let fee_rate = model.feeRate.unwrap_or(0.0);
+            let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued + fee_rate * notional_principal * time_from_last_event
         });
 
-        let contract_role = model.contractRole.as_ref().expect("contractRole should always be Some");
+        let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
 
         let redemption = next_principal_redemption_payment - role_sign * (next_principal_redemption_payment.abs() - notional_principal.abs()).max(0.0);

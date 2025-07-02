@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -16,6 +17,7 @@ use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_DV_STK::STF_DV_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::types::IsoPeriod::IsoPeriod;
 
@@ -152,5 +154,10 @@ impl STK {
         states.statusDate = model.statusDate;
 
         states
+    }
+}
+impl fmt::Display for STK {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "STK")
     }
 }

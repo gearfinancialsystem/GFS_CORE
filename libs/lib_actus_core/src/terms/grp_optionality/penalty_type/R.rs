@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_optionality::penalty_type::N::N;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +9,11 @@ impl R {
     pub fn new() -> Self {
         return R;
     }
-    pub fn type_str(&self) -> String {
-        return "R Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for R {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "R")
+    }
+}

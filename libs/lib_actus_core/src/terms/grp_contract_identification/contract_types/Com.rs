@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::events::ContractEvent::ContractEvent;
@@ -12,6 +13,7 @@ use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -83,5 +85,10 @@ impl COM {
 
         // Return evaluated events
         Ok(events)
+    }
+}
+impl fmt::Display for COM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "COM")
     }
 }

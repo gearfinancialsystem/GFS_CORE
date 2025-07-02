@@ -20,10 +20,28 @@ macro_rules! define_struct_isocycle {
                 self.0 = value;
             }
 
-            // Parse an IsoCycle from a string
-            pub fn parse_from_string(s: &str) -> Result<IsoCycle, String> {
-                IsoCycle::from_str(s)
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
             }
         }
+        impl FromStr for $struct_name {
+            type Err = String;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                match s.parse::<f64>() {
+                    Ok(value) => $struct_name::new(value),
+                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                }
+            }
+        }
+
     };
 }

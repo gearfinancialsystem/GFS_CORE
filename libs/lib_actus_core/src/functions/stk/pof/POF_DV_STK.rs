@@ -21,7 +21,7 @@ impl TraitPayOffFunction for POF_DV_STK {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
         let quantity = model.quantity.expect("quantity should always be some");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

@@ -1,80 +1,127 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::contract_performance::Ma::MA;
+use crate::terms::grp_counterparty::contract_performance::Pf::PF;
+use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum CreditEventTypeCovered {
+pub enum CreditEventTypeCoveredElement {
     DL(DL),
     DQ(DQ),
     DF(DF)
 }
-impl CreditEventTypeCovered {
-    pub fn description(&self) -> String {
-        match self {
-            Self::DL(DL) => DL.type_str(),
-            Self::DQ(DQ) => DQ.type_str(),
-            Self::DF(DF) => DF.type_str(),
+impl CreditEventTypeCoveredElement {
+    pub fn new(value: &str) -> Result<Self, ParseError> {
+        let a = CreditEventTypeCoveredElement::from_str(value);
+        match a {
+            Ok(a) => Ok(a),
+            Err(e) => Err(e)
         }
-    }
-
-    pub fn new(element: &str) -> Result<Self, ParseError> {
-        CreditEventTypeCovered::from_str(element)
-    }
-
-    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
-    }
-    pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
-        match string_map.get(key) {
-            None => None, // Clé absente : valeur par défaut dans un Some
-            Some(s) => {
-
-                let  a =  s.as_vec().unwrap();
-                //let a2 = CreditEventTypeCovered::from_str(a.get(0)?.as_str()).unwrap();
-
-                let b0: Vec<CreditEventTypeCovered> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.to_string().as_str()).unwrap()   }).collect();
-                let b: Vec<Result<CreditEventTypeCovered, ParseError>> = a.iter().map(|s| {    CreditEventTypeCovered::from_str(s.to_string().as_str())   }).collect();
-                let c = b.iter().any(|r| r.is_err());
-
-                if c == true {
-                    panic!("Erreur de parsing pour la clé  avec la valeur ")
-                } else {
-                    Some(b0)
-                }
-
-            }
-        }
-    }
-    pub fn to_stringx(&self) -> Result<String, ParseError> {
-        match self {
-            Self::DL(DL) => Ok("DL".to_string()),
-            Self::DQ(DQ) => Ok("DQ".to_string()),
-            Self::DF(DF) => Ok("DF".to_string()),
-        }
-
     }
 }
 
-impl FromStr for CreditEventTypeCovered {
+impl FromStr for CreditEventTypeCoveredElement {
     type Err = ParseError;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "DL" => Ok(Self::DL(DL::new())),
-            "DQ" => Ok( Self::DQ(DQ::new())),
-            "DF" => Ok(Self::DF(DF::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            "DL" => Ok(CreditEventTypeCoveredElement::DL(DL::new())),
+            "DQ" => Ok(CreditEventTypeCoveredElement::DQ(DQ::new())),
+            "DF" => Ok(CreditEventTypeCoveredElement::DF(DF::new())),
+            _ => Err(ParseError { message: format!("Invalid CreditEventTypeCoveredElement: {}", s) }),
         }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CreditEventTypeCovered(Vec<CreditEventTypeCoveredElement>);
+
+impl CreditEventTypeCovered {
+
+    pub fn new(value: &str) -> Result<Self, ParseError> {
+        let a = CreditEventTypeCoveredElement::from_str(value);
+        match a {
+            Ok(a) => {
+                let mut n = Vec::new();
+                n.push(a);
+                Ok(CreditEventTypeCovered(n))
+            }
+            Err(e) => return Err(e)
+        }
+    }
+
+
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+
+        let a: Vec<Value> = match string_map.get(key) {
+            Some(value) => match value.as_vec() {
+                Some(vec) => vec.to_vec(),
+                None => Vec::new(), // Handle the case where the value is not a vector
+            },
+            None => Vec::new(), // Handle the case where the key is not found
+        };
+
+        let b: Vec<Result<CreditEventTypeCoveredElement, ParseError>> = a.iter()
+            .filter_map(|e| e.as_string().map(|s| CreditEventTypeCoveredElement::from_str(s).unwrap()))
+            .flatten() // Flatten the nested Results
+            .collect();
+
+        let c: Vec< crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCoveredElement > = b.into_iter()
+            .filter_map(|result| result.ok())
+            .collect();
+        c
+
+    }
+
+    pub fn to_string_vec(&self) -> Vec<String> {
+        self.0.iter().map(|elem| {
+            match elem {
+                CreditEventTypeCoveredElement::DL(_) => "DL".to_string(),
+                CreditEventTypeCoveredElement::DQ(_) => "DQ".to_string(),
+                CreditEventTypeCoveredElement::DF(_) => "DF".to_string(),
+            }
+        }).collect()
+    }
+
+    pub fn push(&mut self, element: CreditEventTypeCoveredElement) {
+        self.0.push(element);
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    pub fn contains(&self, element: &CreditEventTypeCoveredElement) -> bool {
+        self.0.contains(element)
     }
 }
 
 impl Default for CreditEventTypeCovered {
     fn default() -> Self {
-        Self::DF(DF::new())
+        CreditEventTypeCovered::new("DF").unwrap()
     }
 }
 
+impl fmt::Display for CreditEventTypeCovered {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for elem in &self.0 {
+            match elem {
+                CreditEventTypeCoveredElement::DL(dl) => writeln!(f, "CreditEventTypeCovered: {}", dl.to_string())?,
+                CreditEventTypeCoveredElement::DQ(dq) => writeln!(f, "CreditEventTypeCovered: {}", dq.to_string())?,
+                CreditEventTypeCoveredElement::DF(df) => writeln!(f, "CreditEventTypeCovered: {}", df.to_string())?,
+            }
+        }
+        Ok(())
+    }
+}

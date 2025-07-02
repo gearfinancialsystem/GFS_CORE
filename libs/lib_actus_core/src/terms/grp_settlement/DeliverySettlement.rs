@@ -1,9 +1,13 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_optionality::OptionType::OptionType;
+use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
+use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::E::E;
+use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::util::Value::Value;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
@@ -13,13 +17,7 @@ pub enum DeliverySettlement {
 }
 
 impl DeliverySettlement {
-    /// Décrit l'état actuel de l'enum en appelant `presentation` si nécessaire
-    pub fn description(&self) -> String {
-        match self {
-            DeliverySettlement::S(S) => S.type_str(),
-            DeliverySettlement::D(D) => D.type_str(),
-        }
-    }
+
     
     pub fn new(element: &str) -> Result<Self, ParseError> {
         DeliverySettlement::from_str(element)
@@ -31,6 +29,17 @@ impl DeliverySettlement {
             None => Some(DeliverySettlement::default()), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
                 match DeliverySettlement::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
                     Ok(value) => Some(value), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
@@ -56,5 +65,14 @@ impl FromStr for DeliverySettlement {
 impl Default for DeliverySettlement {
     fn default() -> Self {
         DeliverySettlement::D(D)
+    }
+}
+
+impl fmt::Display for DeliverySettlement {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::S(S) => write!(f, "DeliverySettlement: {}", S.to_string()),
+            Self::D(D) => write!(f, "DeliverySettlement: {}", D.to_string()),
+        }
     }
 }

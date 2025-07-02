@@ -23,8 +23,8 @@ impl TraitPayOffFunction for POF_FP_PAM {
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-        let fee_basis = model.feeBasis.as_ref().expect("feebasis should always be some");
-        let fee_rate = model.feeRate.expect("fee rate should always be some");
+        let fee_basis = model.fee_basis.as_ref().expect("feebasis should always be some");
+        let fee_rate = model.fee_rate.expect("fee rate should always be some");
         
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -33,11 +33,11 @@ impl TraitPayOffFunction for POF_FP_PAM {
             states
         );
         if fee_basis.eq(&FeeBasis::A(A)) {
-            let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+            let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
             settlement_currency_fx_rate * contract_role.role_sign() * fee_rate
         } 
         else {
-            let notional_principal = model.notionalPrincipal.as_ref().expect("notionalPrincipal should always be some");
+            let notional_principal = model.notional_principal.as_ref().expect("notionalPrincipal should always be some");
             let fee_accrued = states.feeAccrued.expect("fee accrued should always be some");
             let status_date = states.statusDate.expect("status date should always be some");
             

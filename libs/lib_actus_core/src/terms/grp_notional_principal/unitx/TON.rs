@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::unitx::STN::STN;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -13,3 +14,8 @@ impl TON {
     }
 }
 
+impl fmt::Display for TON {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "TON")
+    }
+}

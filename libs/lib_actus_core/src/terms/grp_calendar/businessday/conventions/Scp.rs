@@ -1,5 +1,5 @@
+use std::fmt;
 use std::rc::Rc;
-
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Preceeding::Preceeding;
 use crate::terms::grp_calendar::Calendar::Calendar;
@@ -19,9 +19,7 @@ impl SCP {
         return SCP {    scConvention: ShiftCalc, 
                         bdConvention: Preceeding::new(calendar)};
     }
-    pub fn type_str(&self) -> String {
-        return "SCP day convention".to_string();
-    }
+
     pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         self.scConvention.shift(date, convention)
     }
@@ -30,3 +28,8 @@ impl SCP {
     }
 }
 
+impl fmt::Display for SCP {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "SCP (scConvention: {}, bdConvention: {})", self.scConvention.to_string(), self.bdConvention.to_string() )
+    }
+}

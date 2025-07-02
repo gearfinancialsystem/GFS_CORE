@@ -1,3 +1,5 @@
-
-#[derive(PartialEq, Debug, Clone)]
-pub struct MarketObjectCodeOfScalingIndex(String);
+use std::str::FromStr;
+use std::collections::HashMap;
+use crate::util::Value::Value;
+use crate::define_struct_string;
+define_struct_string!(MarketObjectCodeOfScalingIndex, "normale");

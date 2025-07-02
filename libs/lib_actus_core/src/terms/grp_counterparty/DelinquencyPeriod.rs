@@ -1,3 +1,5 @@
 use crate::types::IsoPeriod::IsoPeriod;
-#[derive(PartialEq, Debug, Clone)]
-pub struct DelinquencyPeriod(IsoPeriod);
+
+
+use crate::define_struct_isoperiod;
+define_struct_isoperiod!(DelinquencyPeriod);

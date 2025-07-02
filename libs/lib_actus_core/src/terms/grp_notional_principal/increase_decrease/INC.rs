@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +9,11 @@ impl INC {
     pub fn new() -> Self {
         INC
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for INC {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "INC")
+    }
+}

@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -34,6 +35,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct PAM;
@@ -207,12 +209,12 @@ impl PAM {
         events.extend(rate_reset_events);
 
         // Fee payment events (FP), if specified
-        if model.cycleOfFee.is_some() {
+        if model.cycle_of_fee.is_some() {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
                     model.maturityDate.clone().map(|rc| (*rc).clone()),
-                    model.cycleOfFee.clone(),
+                    model.cycle_of_fee.clone(),
                     model.endOfMonthConvention.unwrap(),
                     true,
                 ),
@@ -348,8 +350,8 @@ impl PAM {
             states.nominalInterestRate = Some(0.0);
         } else {
 
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |a| a.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
         }
 
@@ -388,7 +390,7 @@ impl PAM {
 
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
@@ -398,7 +400,11 @@ impl PAM {
         states
     }
 }
-
+impl fmt::Display for PAM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "PAM")
+    }
+}
 // #[cfg(test)]
 // mod tests {
 //     use super::*;

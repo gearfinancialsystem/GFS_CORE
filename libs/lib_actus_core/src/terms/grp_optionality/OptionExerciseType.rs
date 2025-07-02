@@ -1,10 +1,17 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_optionality::option_exercise_type::A::A;
 use crate::terms::grp_optionality::option_exercise_type::B::B;
 use crate::terms::grp_optionality::option_exercise_type::E::E;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
+use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
+use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
+use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
+use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum OptionExerciseType {
@@ -15,19 +22,23 @@ pub enum OptionExerciseType {
 }
 
 impl OptionExerciseType {
-    pub fn description(&self) -> String {
-        match self {
-            OptionExerciseType::E(E) => E.type_str(),
-            OptionExerciseType::B(B) => B.type_str(),
-            OptionExerciseType::A(A) => A.type_str(),
-            OptionExerciseType::None => "".to_string(),
-        }
-    }
+
 
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {
             Some(n) => OptionExerciseType::from_str(n),
             None => Ok(OptionExerciseType::None),
+        }
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
         }
     }
 }
@@ -50,4 +61,13 @@ impl Default for OptionExerciseType {
     }
 }
 
-
+impl fmt::Display for OptionExerciseType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::E(E) => write!(f, "OptionExerciseType: {}", E.to_string()),
+            Self::B(B) => write!(f, "OptionExerciseType: {}", B.to_string()),
+            Self::A(A) => write!(f, "OptionExerciseType: {}", A.to_string()),
+            Self::None => write!(f, "OptionExerciseType: None"),
+        }
+    }
+}

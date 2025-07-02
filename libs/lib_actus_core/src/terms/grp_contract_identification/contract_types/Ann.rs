@@ -1,4 +1,4 @@
-use std::{error::Error, rc::Rc, collections::HashSet};
+use std::{error::Error, rc::Rc, collections::HashSet, fmt};
 
 use chrono::Days;
 
@@ -31,7 +31,7 @@ use crate::functions::{
     pam::pof::{POF_FP_PAM::POF_FP_PAM, POF_IED_PAM::POF_IED_PAM, POF_IPCI_PAM::POF_IPCI_PAM, POF_MD_PAM::POF_MD_PAM, POF_RR_PAM::POF_RR_PAM, POF_SC_PAM::POF_SC_PAM,},
     pam::stf::{STF_IP_PAM::STF_IP_PAM, STF_TD_PAM::STF_TD_PAM}
 };
-
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 pub struct ANN;
 
@@ -98,7 +98,7 @@ impl ANN {
         }
 
         // Fees (FP)
-        if model.cycleOfFee.is_some() {
+        if model.cycle_of_fee.is_some() {
             events.extend(EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
@@ -439,8 +439,8 @@ impl ANN {
         };
 
         let time_from_last_event_plus_one_cycle = model.dayCountConvention.as_ref().unwrap().day_count_fraction(last_event, last_event + prcl.clone());
-        let redemption_per_cycle = model.nextPrincipalRedemptionPayment.unwrap() - (time_from_last_event_plus_one_cycle * model.nominalInterestRate.unwrap() * model.notionalPrincipal.unwrap());
-        let remaining_periods = ((model.notionalPrincipal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
+        let redemption_per_cycle = model.nextPrincipalRedemptionPayment.unwrap() - (time_from_last_event_plus_one_cycle * model.nominalInterestRate.unwrap() * model.notional_principal.unwrap());
+        let remaining_periods = ((model.notional_principal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
 
         model.clone().businessDayAdjuster.unwrap().shift_bd(&(last_event.clone() + prcl.multiplied_by(remaining_periods)))
     }
@@ -458,7 +458,7 @@ impl ANN {
             states.nominalInterestRate = Some(0.0);
             states.interestCalculationBaseAmount = Some(0.0);
         } else {
-            states.notionalPrincipal = Some(&model.clone().contractRole.unwrap().role_sign() * model.notionalPrincipal.unwrap());
+            states.notionalPrincipal = Some(&model.clone().contractRole.unwrap().role_sign() * model.notional_principal.unwrap());
             states.nominalInterestRate = Some(model.nominalInterestRate.unwrap());
 
             if model.interestCalculationBase == Some(InterestCalculationBase::NT(NT)) {
@@ -495,7 +495,7 @@ impl ANN {
             ) * states.notionalPrincipal.clone().unwrap() * states.nominalInterestRate.clone().unwrap());
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued.clone();
@@ -515,5 +515,10 @@ impl ANN {
     }
 }
 
+impl fmt::Display for ANN {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "ANN")
+    }
+}
 
 

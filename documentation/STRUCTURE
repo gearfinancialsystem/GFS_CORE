@@ -1,0 +1,16 @@
+- CHAQUE 'TERM' appartient a un groupe tel que defini dans la norme
+- Chaque 'TERM' est definie par un Struct enveloppante ; evitant que les termes soient definies seulement par des types
+    primitifs qui creent de lambiguite
+- CHAQUE 'TERM' doit venir avec un certain nombre de methodes, definis dans un trait
+- Comme il y a beaucoup de termes, et beaucoup avec une structure similaire, les macros suivantes sont utilisees pour
+    generer le code :
+    - macro_struct_f64              pour representer les struct du type MaStruct(f64)
+        f64 peut venir avec des conditions de validite et/ou des valeurs par default
+    - macro_struct_isocycle         pour representer les struct du type MaStruct(IsoCycle)
+    - macro_struct_isodatetime      pour representer les struct du type MaStruct(IsoDatetime)
+    - macro_struct_isoperiod        pour representer les struct du type MaStruct(IsoPeriod)
+    - macro_struct_vec_isodatetime
+    - macro_struct_vec_isocycle
+    - macro_struct_vec_f64
+
+il faut implemter le trait Display pour pouvoir utiliser to_string

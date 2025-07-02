@@ -37,12 +37,12 @@ impl TraitStateTransitionFunction for STF_PR_NAM {
         });
 
         states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
-            let fee_rate = model.feeRate.unwrap_or(0.0);
+            let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });
 
-        let contract_role = model.contractRole.as_ref().expect("contractRole should always be Some");
+        let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
         let redemption_amount = next_principal_redemption_payment - role_sign * states.accruedInterest.unwrap_or(0.0);
         let redemption = redemption_amount - redemption_amount.max(0.0).min(notional_principal.abs());

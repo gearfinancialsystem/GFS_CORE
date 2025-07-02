@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -18,6 +19,7 @@ use crate::functions::fxout::stf::STF_MD2_FXOUT::STF_MD2_FXOUT;
 use crate::functions::fxout::stf::STF_STD_FXOUT::STF_STD_FXOUT;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
@@ -142,5 +144,10 @@ impl FXOUT {
         let mut states = StateSpace::default();
         states.statusDate = model.statusDate;
         states
+    }
+}
+impl fmt::Display for FXOUT {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "FXOUT")
     }
 }

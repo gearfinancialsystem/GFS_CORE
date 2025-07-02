@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NTL;
@@ -9,3 +10,8 @@ impl NTL {
     }
 }
 
+impl fmt::Display for NTL {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "NTL")
+    }
+}

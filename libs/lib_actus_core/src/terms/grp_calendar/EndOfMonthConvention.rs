@@ -1,10 +1,13 @@
 use crate::exceptions::ParseError::ParseError;
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
+use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
+use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::util::Value::Value;
 use crate::util::CycleUtils::CycleUtils;
@@ -16,12 +19,6 @@ pub enum EndOfMonthConvention {
 }
 
 impl EndOfMonthConvention {
-    pub fn description(&self) -> String {
-        match self {
-            EndOfMonthConvention::SD(SD) => SD.type_str(),
-            EndOfMonthConvention::EOM(EOM) => EOM.type_str()
-        }
-    }
 
     pub fn shift(&self, date: IsoDatetime) -> IsoDatetime {
         match self {
@@ -30,10 +27,10 @@ impl EndOfMonthConvention {
         }
     }
 
-    pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: String) -> Result<Self, AttributeConversionException> {
+    pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: IsoCycle) -> Result<Self, AttributeConversionException> {
         match end_of_month_convention {
             Self::EOM(EOM) => {
-                if ref_date == ref_date.last_date_of_month() && CycleUtils::parse_period(&cycle).unwrap().get_months() > 0{ //ok
+                if ref_date == ref_date.last_date_of_month() && CycleUtils::parse_period(&cycle).unwrap().get_months() > 0 { //ok
                     Ok(EndOfMonthConvention::EOM(EOM))
                 }
                 else {
@@ -66,6 +63,17 @@ impl EndOfMonthConvention {
             }
         }
     }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
 }
 
 impl FromStr for EndOfMonthConvention {
@@ -82,6 +90,15 @@ impl FromStr for EndOfMonthConvention {
 impl Default for EndOfMonthConvention {
     fn default() -> Self {
         Self::new_SD()
+    }
+}
+
+impl fmt::Display for EndOfMonthConvention {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::SD(sd) => write!(f, "{}", sd.to_string()),
+            Self::EOM(eom) => write!(f, "{}", eom.to_string()),
+        }
     }
 }
 

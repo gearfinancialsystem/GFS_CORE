@@ -1,6 +1,8 @@
+use std::fmt;
 use crate::types::IsoDatetime::IsoDatetime;
 
 use chrono::{Datelike, Duration, NaiveDate};
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -10,9 +12,7 @@ impl EOM {
     pub fn new() -> Self {
         return EOM;
     }
-    pub fn type_str(&self) -> String {
-        return "EOM eom".to_string();
-    }
+
 }
 
 impl TraitEndOfMonthConvention for EOM {
@@ -39,6 +39,12 @@ impl TraitEndOfMonthConvention for EOM {
     }
 }
 
+
+impl fmt::Display for EOM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", "EOM")
+    }
+}
 
 
 

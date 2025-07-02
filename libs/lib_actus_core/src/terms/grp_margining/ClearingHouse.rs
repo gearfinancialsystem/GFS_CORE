@@ -1,10 +1,15 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_margining::clearing_house::N::N;
 use crate::terms::grp_margining::clearing_house::Y::Y;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
+use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq)]
 pub enum ClearingHouse {
@@ -14,18 +19,22 @@ pub enum ClearingHouse {
 }
 
 impl ClearingHouse {
-    pub fn description(&self) -> String {
-        match self {
-            Self::Y(Y) => Y.type_str(),
-            Self::N(N) => N.type_str(),
-            Self::None => "".to_string(),
-        }
-    }
     
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {
             Some(n) => ClearingHouse::from_str(n),
             None => Ok(ClearingHouse::None),
+        }
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
         }
     }
 }
@@ -48,6 +57,14 @@ impl FromStr for ClearingHouse {
     }
 }
 
-
+impl fmt::Display for ClearingHouse {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::Y(Y) => write!(f, "ClearingHouse: {}", Y.to_string()),
+            Self::N(N) => write!(f, "ClearingHouse: {}", N.to_string()),
+            Self::None => write!(f, "ClearingHouse: None"),
+        }
+    }
+}
 
 

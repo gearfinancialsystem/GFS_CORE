@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::unitx::BSH::BSH;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -13,3 +14,8 @@ impl CUU {
     }
 }
 
+impl fmt::Display for CUU {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CUU")
+    }
+}

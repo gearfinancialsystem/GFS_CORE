@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_fees::fee_basis::A::A;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,7 +9,12 @@ impl N {
     pub fn new() -> Self {
         return N;
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
+
+}
+impl fmt::Display for N {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+        write!(f, "N")
+
     }
 }

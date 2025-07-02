@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::rc::Rc;
-
+use std::fmt;
 
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
@@ -18,13 +17,6 @@ pub enum Calendar {
 }
 
 impl Calendar {
-    /// Décrit l'état actuel de l'enum en appelant `presentation` si nécessaire
-    pub fn description(&self) -> String {
-        match self {
-            Self::NC(NC) => NC.type_str(),
-            Self::MF(MF) => MF.type_str()
-        }
-    }
     
     pub fn new(element: &str) -> Result<Self, ParseError> {
         Calendar::from_str(element)
@@ -63,6 +55,15 @@ impl FromStr for Calendar {
             _ => Err(ParseError {
                 message: format!("Invalid Calendar cont_type: {}", s),
             }),
+        }
+    }
+}
+
+impl fmt::Display for Calendar {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::NC(nc) => write!(f, "{}", nc.to_string()),
+            Self::MF(mf) => write!(f, "{}", mf.to_string()),
         }
     }
 }

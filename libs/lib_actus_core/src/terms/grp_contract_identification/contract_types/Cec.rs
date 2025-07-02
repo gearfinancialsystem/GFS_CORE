@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -11,6 +12,7 @@ use crate::functions::cec::stf::STF_XD_CEC::STF_XD_CEC;
 use crate::functions::ceg::pof::POF_MD_CEG::POF_MD_CEG;
 use crate::functions::ceg::stf::STF_MD_CEG::STF_MD_CEG;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
@@ -93,7 +95,7 @@ impl CEC {
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
 
-        let covered_contract_refs = model.contractStructure.clone().unwrap()
+        let covered_contract_refs = model.contract_structure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -140,7 +142,7 @@ impl CEC {
         time: &IsoDatetime,
     ) -> f64 {
 
-        let covered_contract_refs = model.contractStructure.clone().unwrap()
+        let covered_contract_refs = model.contract_structure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -151,7 +153,7 @@ impl CEC {
             .map(|c| c.get_state_space_at_time_point(time.clone(), observer))
             .collect();
 
-        let role_sign = &model.contractRole.clone().unwrap().role_sign();
+        let role_sign = &model.contract_role.clone().unwrap().role_sign();
         let coverage = model.coverageOfCreditEnhancement.clone().unwrap();
 
         match model.guaranteedExposure {
@@ -192,7 +194,7 @@ impl CEC {
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covering_contract_refs = model.contractStructure.clone().unwrap()
+        let covering_contract_refs = model.contract_structure.clone().unwrap()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVI)
             .map(|cr| cr.clone())
@@ -214,7 +216,7 @@ impl CEC {
         observer: &RiskFactorModel,
         maturity: &IsoDatetime,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let contract_identifiers: Vec<String> = model.contractStructure.clone().unwrap()
+        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap()
             .iter()
             .map(|c| c.get_contract_attribute("contractID").unwrap())
             .collect();
@@ -266,5 +268,10 @@ impl CEC {
         }
 
         Ok(events)
+    }
+}
+impl fmt::Display for CEC {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CEC")
     }
 }

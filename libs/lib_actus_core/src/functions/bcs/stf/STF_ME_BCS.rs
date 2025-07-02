@@ -25,7 +25,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         if states.boundaryMonitoringFlag.unwrap_or(false) {
-            if let Some(contract_structure) = &model.contractStructure {
+            if let Some(contract_structure) = &model.contract_structure {
                 if let Some(contract_reference) = contract_structure.iter().find(|e| {
                     e.reference_role == ReferenceRole::externalReferenceIndex
                 }) {

@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::rc::Rc;
 use std::collections::HashMap;
-
+use std::fmt;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
@@ -15,6 +15,7 @@ use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -28,7 +29,7 @@ impl CAPFL {
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         // Compute underlying event schedule
-        let underlying_model = model.contractStructure.clone().unwrap()
+        let underlying_model = model.contract_structure.clone().unwrap()
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone().as_cm()))
@@ -104,7 +105,7 @@ impl CAPFL {
         observer: &RiskFactorModel,
     ) -> Vec<ContractEvent> {
         // Evaluate events of underlying without cap/floor applied
-        let underlying_model = model.contractStructure.clone().unwrap()
+        let underlying_model = model.contract_structure.clone().unwrap()
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone()))
@@ -189,5 +190,10 @@ impl CAPFL {
         );
 
         e
+    }
+}
+impl fmt::Display for CAPFL {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CAPFL")
     }
 }

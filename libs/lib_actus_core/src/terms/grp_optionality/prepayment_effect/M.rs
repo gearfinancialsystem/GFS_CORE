@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_optionality::prepayment_effect::A::A;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -8,8 +9,9 @@ impl M {
     pub fn new() -> Self {
         return M;
     }
-    pub fn type_str(&self) -> String {
-        return "A Scaling Effect".to_string();
+}
+impl fmt::Display for M {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "M")
     }
 }
-

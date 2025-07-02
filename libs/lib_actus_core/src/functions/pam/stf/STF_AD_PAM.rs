@@ -34,7 +34,7 @@ impl TraitStateTransitionFunction for STF_AD_PAM {
         });
 
         states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
-            let fee_rate = model.feeRate.unwrap_or(0.0);
+            let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });

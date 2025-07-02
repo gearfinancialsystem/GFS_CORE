@@ -1,10 +1,11 @@
-use std::ptr;
+use std::{fmt, ptr};
 use std::rc::Rc;
 
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use chrono::Duration;
 use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_interest::daycountconventions::AAISDA::AAISDA;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, Debug)]
@@ -49,5 +50,11 @@ impl TraitDayCountConvention for B252 {
     /// Calculates the day count fraction based on the Business-252 convention
     fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         self.day_count(start_time, end_time) as f64 / 252.0
+    }
+}
+
+impl fmt::Display for B252 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "B252")
     }
 }

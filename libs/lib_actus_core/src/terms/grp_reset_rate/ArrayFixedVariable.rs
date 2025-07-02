@@ -14,13 +14,7 @@ pub enum ArrayFixedVariable {
 }
 
 impl ArrayFixedVariable {
-    pub fn description(&self) -> String {
-        match self {
-            Self::F(F) => F.type_str(),
-            Self::V(V) => V.type_str(),
-            Self::None => "None".to_string(),
-        }
-    }
+
     
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {

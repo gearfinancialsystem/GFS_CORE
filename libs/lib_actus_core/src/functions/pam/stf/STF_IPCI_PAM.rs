@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         let accrued_interest = states.accruedInterest.expect("accruedInterest should always be Some");
         let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
-        let fee_rate = model.feeRate.expect("fee rate should always be Some");
+        let fee_rate = model.fee_rate.expect("fee rate should always be Some");
         
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(

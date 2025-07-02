@@ -21,9 +21,9 @@ impl TraitStateTransitionFunction for STF_MD_FUTUR {
     ) {
         // Placeholder for risk factor model state retrieval
         let st = RiskFactorModel.state_at(
-            &model.contractStructure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap().marketObjectCode.clone().unwrap(),
+            &model.contract_structure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap().marketObjectCode.clone().unwrap(),
             time, states, model, true).expect("correct risk factor model");
-        let futures_price = model.futuresPrice.unwrap_or(0.0);
+        let futures_price = model.futures_price.unwrap_or(0.0);
         let x = st - futures_price;
 
         if x == 0.0 {

@@ -22,7 +22,7 @@ impl TraitStateTransitionFunction for STF_PY_PAM {
         let status_date = states.statusDate.expect("status date should be some");
         let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should be some");
-        let fee_rate = model.feeRate.expect("feeRate should be some");
+        let fee_rate = model.fee_rate.expect("feeRate should be some");
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
                                                                   time_adjuster.shift_sc(time));
 

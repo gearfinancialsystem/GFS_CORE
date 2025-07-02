@@ -1,5 +1,6 @@
 
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
@@ -34,6 +35,7 @@ use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
@@ -233,7 +235,7 @@ impl LAM {
         events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
-        if let Some(cycle_of_fee) = &model.cycleOfFee {
+        if let Some(cycle_of_fee) = &model.cycle_of_fee {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
@@ -410,12 +412,12 @@ impl LAM {
             });
 
             last_event = previous_events.iter().next().unwrap().clone();
-            remaining_periods = (model.notionalPrincipal.unwrap()
+            remaining_periods = (model.notional_principal.unwrap()
                 / model.nextPrincipalRedemptionPayment.unwrap())
                 .ceil() as i32;
         } else {
             last_event = cycle_anchor_date;
-            remaining_periods = ((model.notionalPrincipal.unwrap()
+            remaining_periods = ((model.notional_principal.unwrap()
                 / model.nextPrincipalRedemptionPayment.unwrap())
                 .ceil() as i32)
                 - 1;
@@ -443,8 +445,8 @@ impl LAM {
             states.nominalInterestRate = Some(0.0);
             states.interestCalculationBaseAmount = Some(0.0);
         } else {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
 
             if model.interestCalculationBase == Some(InterestCalculationBase::NT(NT)) {
@@ -462,7 +464,7 @@ impl LAM {
             states.accruedInterest = model.accruedInterest;
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
@@ -481,5 +483,10 @@ impl LAM {
         }
 
         states
+    }
+}
+impl fmt::Display for LAM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "LAM")
     }
 }

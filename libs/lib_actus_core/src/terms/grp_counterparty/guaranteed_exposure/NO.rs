@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_counterparty::guaranteed_exposure::MV::MV;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +9,10 @@ impl NO {
     pub fn new() -> Self {
         return NO;
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
 }
 
+impl fmt::Display for NO {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "NO")
+    }
+}

@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_optionality::option_type::C::C;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +9,11 @@ impl CP {
     pub fn new() -> Self {
         return CP;
     }
-    pub fn type_str(&self) -> String {
-        return "A Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for CP {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CP")
+    }
+}

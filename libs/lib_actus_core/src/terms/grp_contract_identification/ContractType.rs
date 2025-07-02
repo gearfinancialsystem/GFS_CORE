@@ -1,3 +1,4 @@
+use std::fmt;
 use crate::attributes::ContractModel::ContractModel;
 
 use crate::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
@@ -23,6 +24,7 @@ use crate::terms::grp_contract_identification::contract_types::Ump::UMP;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::terms::grp_calendar::Calendar::Calendar;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ContractType;
@@ -32,7 +34,7 @@ impl ContractType {
 
     pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent>> {
 
-        match cm.clone().contractType.unwrap().as_str() {
+        match cm.clone().contract_type.value().as_str() {
             "PAM" => Some(PAM::schedule(&to.unwrap(), cm).unwrap()),
             "LAM" => Some(LAM::schedule(&to.unwrap(),cm).unwrap()),
             "NAM" => Some(NAM::schedule(&to.unwrap(),cm).unwrap()),
@@ -83,5 +85,12 @@ impl ContractType {
 }
 
 
-
+// impl fmt::Display for ContractType {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         match self {
+//             Self::NC(nc) => write!(f, "{}", nc.to_string()),
+//             Self::MF(mf) => write!(f, "{}", mf.to_string()),
+//         }
+//     }
+// }
 

@@ -524,12 +524,12 @@ impl PrincipalAtMaturity {
         events.extend(rate_reset_events);
 
         // Fee payment events (FP), if specified
-        if model.cycleOfFee.is_some() {
+        if model.cycle_of_fee.is_some() {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee,
                     model.maturityDate.clone().map(|rc| (*rc).clone()),
-                    model.cycleOfFee.clone(),
+                    model.cycle_of_fee.clone(),
                     model.endOfMonthConvention.unwrap(),
                     true,
                 ),
@@ -670,7 +670,7 @@ impl PrincipalAtMaturity {
         } else {
 
             let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
         }
 
@@ -709,7 +709,7 @@ impl PrincipalAtMaturity {
 
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;

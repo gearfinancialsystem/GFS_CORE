@@ -28,10 +28,10 @@ impl TraitPayOffFunction for POF_FP_CEG {
             time,
             states
         );
-        let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
-        let fee_rate = model.feeRate.expect("feeRate should always exist");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
+        let fee_rate = model.fee_rate.expect("feeRate should always exist");
 
-        let payoff = if FeeBasis::A(A) == model.feeBasis.clone().unwrap() {
+        let payoff = if FeeBasis::A(A) == model.fee_basis.clone().unwrap() {
             settlement_currency_fx_rate * contract_role.role_sign() * fee_rate
         } else {
             let time_from_last_event = day_counter.day_count_fraction(

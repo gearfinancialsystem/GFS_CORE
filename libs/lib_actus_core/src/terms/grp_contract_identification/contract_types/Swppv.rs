@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
@@ -21,6 +22,7 @@ use crate::functions::swppv::stf::STF_PRD_SWPPV::STF_PRD_SWPPV;
 use crate::functions::swppv::stf::STF_RR_SWPPV::STF_RR_SWPPV;
 use crate::functions::swppv::stf::STF_TD_SWPPV::STF_TD_SWPPV;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::time::ScheduleFactory::ScheduleFactory;
@@ -229,8 +231,8 @@ impl SWPPV {
         states.statusDate = model.statusDate;
 
         if model.initialExchangeDate <= model.statusDate {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
             states.nominalInterestRate2 = model.nominalInterestRate2;
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
@@ -239,5 +241,10 @@ impl SWPPV {
         }
 
         states
+    }
+}
+impl fmt::Display for SWPPV {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "SMPPV")
     }
 }

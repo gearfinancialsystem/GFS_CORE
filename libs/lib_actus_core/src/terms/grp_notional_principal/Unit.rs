@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_notional_principal::unitx::BRL::BRL;
 use crate::terms::grp_notional_principal::unitx::BSH::BSH;
@@ -11,6 +12,12 @@ use crate::terms::grp_notional_principal::unitx::TON::TON;
 use crate::terms::grp_notional_principal::unitx::TRO::TRO;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
+use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
+use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
+use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
+use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+use crate::util::Value::Value;
 
 pub enum Unit {
     BRL(BRL),
@@ -26,25 +33,23 @@ pub enum Unit {
 }
 
 impl Unit {
-    pub fn description(&self) -> String {
-        match self {
-            Self::BRL(BRL) => BRL.type_str(),
-            Self::BSH(BSH) => BSH.type_str(),
-            Self::GLN(GLN) => GLN.type_str(),
-            Self::CUU(CUU) => CUU.type_str(),
-            Self::MWH(MWH) => MWH.type_str(),
-            Self::PND(PND) => PND.type_str(),
-            Self::STN(STN) => STN.type_str(),
-            Self::TON(TON) => TON.type_str(),
-            Self::TRO(TRO) => TRO.type_str(),
-            Self::None => "".to_string(),
-        }
-    }
 
     pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
         match element {
             Some(n) => Unit::from_str(n),
             None => Ok(Unit::None),
+        }
+    }
+
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
         }
     }
 }
@@ -69,6 +74,22 @@ impl FromStr for Unit {
             "TON" => Ok(Self::TON(TON::new())),
             "TRO" => Ok(Self::TRO(TRO::new())),
             _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+        }
+    }
+}
+impl fmt::Display for Unit {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::BRL(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::BSH(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::GLN(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::CUU(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::MWH(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::PND(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::STN(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::TON(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::TRO(v) => write!(f, "Unit: {}", v.to_string()),
+            Self::None => write!(f, "Unit: None"),
         }
     }
 }

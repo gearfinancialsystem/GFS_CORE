@@ -1,4 +1,4 @@
-
+use std::fmt;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 
@@ -8,8 +8,11 @@ impl P {
     pub fn new() -> Self {
         return P;
     }
-    pub fn type_str(&self) -> String {
-        return "A Scaling Effect".to_string();
-    }
+
 }
 
+impl fmt::Display for P {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "P")
+    }
+}

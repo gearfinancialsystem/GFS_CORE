@@ -21,7 +21,7 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
     ) {
         
         let status_date = states.statusDate.expect("status date should be some");
-        let fee_rate = model.feeRate.expect("fee rate should be some");
+        let fee_rate = model.fee_rate.expect("fee rate should be some");
         let notional_principal = states.notionalPrincipal.expect("notional principal should be some");
 
         states.accruedInterest = Some(0.0);

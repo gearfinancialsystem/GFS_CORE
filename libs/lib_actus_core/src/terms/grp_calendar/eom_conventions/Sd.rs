@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
@@ -8,9 +10,6 @@ impl SD {
     pub fn new() -> Self {
         SD
     }
-    pub fn type_str(&self) -> String {
-        "SD eom".to_string()
-    }
 }
 
 impl TraitEndOfMonthConvention for SD {
@@ -20,3 +19,8 @@ impl TraitEndOfMonthConvention for SD {
     }
 }
 
+impl fmt::Display for SD {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", "SD")
+    }
+}

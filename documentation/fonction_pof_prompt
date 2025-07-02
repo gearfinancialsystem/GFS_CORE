@@ -66,7 +66,7 @@ impl TraitPayOffFunction for POF_PRD_PAM {
             let accrued_interest = model.accruedInterest.expect("accruedInterest should always exist");
             let status_date = model.statusDate.expect("status date should always exist");
             let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always exist");
-            let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always exist");
+            let notional_principal = model.notional_principal.expect("notionalPrincipal should always exist");
 
             1.0 * contract_role.role_sign() * -1.0 * (
                     price_at_purchase_date +

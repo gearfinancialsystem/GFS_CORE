@@ -1,3 +1,4 @@
+use std::fmt;
 use std::rc::Rc;
 use crate::terms::grp_calendar::businessday::elements::sc_convention::ShiftCalc::ShiftCalc;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Same::Same;
@@ -16,9 +17,6 @@ impl NOS {
     pub fn new(_calendar: Rc<Calendar>) -> Self {
         NOS { scConvention: ShiftCalc, bdConvention: Same}
     }
-    pub fn type_str(&self) -> String {
-        return "NOS day convention".to_string();
-    }
 
     pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         self.scConvention.shift(date, convention)
@@ -29,3 +27,9 @@ impl NOS {
     }
 }
 
+
+impl fmt::Display for NOS {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "NOS (scConvention: {}, bdConvention: {})", self.scConvention.to_string(), self.bdConvention.to_string() )
+    }
+}

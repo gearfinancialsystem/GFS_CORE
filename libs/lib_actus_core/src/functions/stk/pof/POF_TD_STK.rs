@@ -22,7 +22,7 @@ impl TraitPayOffFunction for POF_TD_STK {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
         let quantity = model.quantity.expect("quantity should always be some");
         let price_at_termination_date = model.priceAtTerminationDate.expect("priceAtTermination date should always be some");
 

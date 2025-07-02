@@ -19,7 +19,7 @@ impl TraitPayOffFunction for POF_PR_NAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let status_date = states.statusDate.as_ref().expect("status date should always exist");
         let next_principal_redemption_payment = states.nextPrincipalRedemptionPayment.expect("nextPrincipalRedemptionPayment should always exist");
         let accrued_interest = states.accruedInterest.expect("accruedInterest should always exist");

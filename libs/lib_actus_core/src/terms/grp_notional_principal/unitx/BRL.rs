@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_notional_principal::Unit::Unit;
 
 #[derive(Debug, Eq, PartialEq)]
 
@@ -7,8 +8,10 @@ impl BRL {
     pub fn new() -> Self {
         return BRL;
     }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
-    }
 }
 
+impl fmt::Display for BRL {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "BRL")
+    }
+}

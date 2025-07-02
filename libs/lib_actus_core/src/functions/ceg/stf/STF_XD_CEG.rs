@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
         time_adjuster: &BusinessDayAdjuster,
     ) {
         // Set notionalPrincipal if it is not already set
-        if model.notionalPrincipal.is_none() {
+        if model.notional_principal.is_none() {
             states.notionalPrincipal = Some(CEG::calculate_notional_principal(
                 states,
                 model,
@@ -40,12 +40,12 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
         let shifted_status_date = time_adjuster.shift_sc(&status_date);
         let shifted_time = time_adjuster.shift_sc(time);
 
-        let fee_rate = model.feeRate.unwrap_or(0.0);
+        let fee_rate = model.fee_rate.unwrap_or(0.0);
 
         if fee_rate == 0.0 {
             // No change to feeAccrued if feeRate is 0.0
-        } else if let Some(FeeBasis::A(A)) = model.feeBasis {
-            if let Some(cycle_of_fee) = &model.cycleOfFee {
+        } else if let Some(FeeBasis::A(A)) = model.fee_basis {
+            if let Some(cycle_of_fee) = &model.cycle_of_fee {
                 let time_from_last_event = day_counter.day_count_fraction(shifted_status_date, shifted_time);
 
                 let cycle_period = CycleUtils::parse_period(cycle_of_fee);
@@ -54,7 +54,7 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
 
                 let time_full_fee_cycle = day_counter.day_count_fraction(shifted_status_date, shifted_future_status_date);
 
-                let contract_role = model.contractRole.as_ref().expect("contractRole should always be Some");
+                let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
                 let role_sign = contract_role.role_sign();
 
                 states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {

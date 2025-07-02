@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
@@ -20,7 +22,11 @@ impl TraitDayCountConvention for A365 {
         Self::day_count(&self, start_time, end_time) as f64 / 365.0
     }
 }
-
+impl fmt::Display for A365 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "A365")
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;

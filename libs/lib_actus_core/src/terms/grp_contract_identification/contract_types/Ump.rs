@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
@@ -16,6 +17,7 @@ use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -98,7 +100,7 @@ impl UMP {
         events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
-        if let Some(cycle_of_fee) = &model.cycleOfFee {
+        if let Some(cycle_of_fee) = &model.cycle_of_fee {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee.clone(),
@@ -194,13 +196,18 @@ impl UMP {
         states.statusDate = model.statusDate;
 
         if model.initialExchangeDate <= model.statusDate {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
             states.feeAccrued = model.feeAccrued;
         }
 
         states
+    }
+}
+impl fmt::Display for UMP {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "UMP")
     }
 }

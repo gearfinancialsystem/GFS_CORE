@@ -1,10 +1,15 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_optionality::option_exercise_type::A::A;
+use crate::terms::grp_optionality::option_exercise_type::B::B;
+use crate::terms::grp_optionality::option_exercise_type::E::E;
+use crate::terms::grp_optionality::OptionExerciseType::OptionExerciseType;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -15,20 +20,24 @@ pub enum OptionType {
 }
 
 impl OptionType {
-    pub fn description(&self) -> String {
-        match self {
-            Self::C(C) => C.type_str(),
-            Self::P(P) => P.type_str(),
-            Self::CP(CP) => CP.type_str(),
-        }
-    }
-
+    
     pub fn new(element: &str) -> Result<Self, ParseError> {
         OptionType::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         crate::util::CommonUtils::CommonUtils::provide(string_map, key)
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
     }
 }
 
@@ -49,4 +58,12 @@ impl Default for OptionType {
         Self::C(C::new())
     }
 }
-
+impl fmt::Display for OptionType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::C(C) => write!(f, "OptionType: {}", C.to_string()),
+            Self::P(P) => write!(f, "OptionType: {}", P.to_string()),
+            Self::CP(CP) => write!(f, "OptionType: {}", CP.to_string()),
+        }
+    }
+}

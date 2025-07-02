@@ -1,4 +1,5 @@
-
+use std::fmt;
+use crate::terms::grp_counterparty::seniority::J::J;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 
@@ -6,10 +7,11 @@ pub struct S;
 
 impl S {
     pub fn new() -> Self {
-        return S;
-    }
-    pub fn type_str(&self) -> String {
-        return "INO Scaling Effect".to_string();
+        S
     }
 }
-
+impl fmt::Display for S {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "S")
+    }
+}

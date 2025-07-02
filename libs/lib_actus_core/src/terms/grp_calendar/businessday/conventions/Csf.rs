@@ -1,7 +1,9 @@
+use std::fmt;
 use std::rc::Rc;
 
 use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
@@ -21,10 +23,6 @@ impl CSF {
             bdConvention: Following::new(calendar),
         }
     }
-
-    pub fn type_str(&self) -> String {
-        "CSF day convention".to_string()
-    }
     
     /// Applique le décalage selon la convention de shift (scConvention)
     /// en passant un trait object pour la BDC.
@@ -38,3 +36,8 @@ impl CSF {
     }
 }
 
+impl fmt::Display for CSF {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CSF (scConvention: {}, bdConvention: {})", self.scConvention.to_string(), self.bdConvention.to_string() )
+    }
+}

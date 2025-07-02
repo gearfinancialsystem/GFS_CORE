@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_IED_SWPPV {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        let contract_role = model.contractRole.as_ref().expect("contractRole should always be Some");
+        let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
 
-        let notional_principal = model.notionalPrincipal.unwrap_or(0.0);
+        let notional_principal = model.notional_principal.unwrap_or(0.0);
         states.notionalPrincipal = Some(role_sign * notional_principal);
 
         let nominal_interest_rate = model.nominalInterestRate2.unwrap_or(0.0);

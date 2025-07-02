@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -20,6 +21,7 @@ use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
 use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
 use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::CycleUtils::CycleUtils;
 
@@ -134,12 +136,12 @@ impl CLM {
         events.extend(rate_reset_events);
 
         // Fees (if specified)
-        if model.cycleOfFee.is_some() {
+        if model.cycle_of_fee.is_some() {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee.clone(),
                     Some(maturity.clone()),
-                    model.cycleOfFee.clone(),
+                    model.cycle_of_fee.clone(),
                     model.endOfMonthConvention.clone().unwrap(),
                     false,
                 ),
@@ -221,13 +223,18 @@ impl CLM {
         states.statusDate = model.statusDate.clone();
 
         if model.initialExchangeDate.clone().unwrap() <= model.statusDate.clone().unwrap() {
-            let role_sign = model.contractRole.as_ref().unwrap().role_sign();
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().unwrap().role_sign();
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
             states.feeAccrued = model.feeAccrued;
         }
 
         states
+    }
+}
+impl fmt::Display for CLM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CLM")
     }
 }

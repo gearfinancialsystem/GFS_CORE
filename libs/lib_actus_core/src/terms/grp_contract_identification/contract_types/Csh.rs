@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use crate::events::ContractEvent::ContractEvent;
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
@@ -6,6 +7,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 
 pub struct CSH;
 
@@ -25,7 +27,7 @@ impl CSH {
         // Initialize state space per status date
         let mut states = StateSpace::default();
         states.statusDate = model.statusDate.clone();
-        states.notionalPrincipal = Some(&model.contractRole.clone().unwrap().role_sign() * model.notionalPrincipal.clone().unwrap());
+        states.notionalPrincipal = Some(&model.contract_role.clone().unwrap().role_sign() * model.notional_principal.clone().unwrap());
 
         // Sort the events according to their time sequence
         events.sort();
@@ -43,5 +45,10 @@ impl CSH {
 
         // Return evaluated events
         events
+    }
+}
+impl fmt::Display for CSH {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CSH")
     }
 }

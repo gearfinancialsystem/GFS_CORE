@@ -1,3 +1,5 @@
+use std::fmt;
+use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -21,5 +23,11 @@ impl TraitShiftCalcConvention for ShiftCalc {
     /// Returns the `time` shifted according to the respective `BusinessDayAdjuster`
     fn shift(&self, time: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
         convention.shift(time)
+    }
+}
+
+impl fmt::Display for ShiftCalc {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "ShiftCalc")
     }
 }

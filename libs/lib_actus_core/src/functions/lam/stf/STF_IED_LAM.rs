@@ -22,8 +22,8 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let contract_role = model.contractRole.as_ref().expect("contractRole should always be Some");
-        let notional_principal = model.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
+        let notional_principal = model.notional_principal.expect("notionalPrincipal should always be Some");
         let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always be Some");
 
         states.statusDate = Some(*time);

@@ -1,2 +1,5 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct MarketObjectCodeOfRateReset(String);
+use std::str::FromStr;
+use std::collections::HashMap;
+use crate::util::Value::Value;
+use crate::define_struct_string;
+define_struct_string!(MarketObjectCodeOfRateReset, "normale");

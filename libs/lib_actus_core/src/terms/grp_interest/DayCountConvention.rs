@@ -1,10 +1,14 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::rc::Rc;
 use crate::terms::grp_calendar::{Calendar::Calendar};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::types::IsoDatetime::IsoDatetime;
 
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
+use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
+use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use crate::terms::grp_interest::daycountconventions::A336::A336;
 use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::terms::grp_interest::daycountconventions::A365::A365;
@@ -97,6 +101,17 @@ impl DayCountConvention {
             .map(|b| b) // On stocke la convention dans une Box
         //.unwrap_or_default()
     }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
 }
 
 impl Default for DayCountConvention {
@@ -106,4 +121,20 @@ impl Default for DayCountConvention {
 }
 
 
+impl fmt::Display for DayCountConvention {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::AAISDA(AAISDA) => write!(f, "DayCountConvention: {}", AAISDA.to_string()),
+            Self::A360(A360) => write!(f, "DayCountConvention: {}", A360.to_string()),
+            Self::A365(A365) => write!(f, "DayCountConvention: {}", A365.to_string()),
+            Self::A336(A336) => write!(f, "DayCountConvention: {}", A336.to_string()),
+            Self::E30360ISDA(E30360ISDA) => write!(f, "DayCountConvention: {}", E30360ISDA.to_string()),
+            Self::E30360(E30360) => write!(f, "DayCountConvention: {}", E30360.to_string()),
+            Self::B252(B252) => write!(f, "DayCountConvention: {}", B252.to_string()),
+            Self::E283666(E283666) => write!(f, "DayCountConvention: {}", E283666.to_string()),
+            Self::None => write!(f, "DayCountConvention: None"),
+        
+        }
+    }
+}
 

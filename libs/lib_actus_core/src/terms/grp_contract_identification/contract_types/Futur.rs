@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -18,6 +19,7 @@ use crate::functions::optns::pof::POF_TD_OPTNS::POF_TD_OPTNS;
 use crate::functions::optns::stf::STF_STD_OPTNS::STF_STD_OPTNS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 
 pub struct FUTUR;
 
@@ -169,5 +171,10 @@ impl FUTUR {
         states.contractPerformance = model.contractPerformance;
 
         states
+    }
+}
+impl fmt::Display for FUTUR {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "FUTUR")
     }
 }

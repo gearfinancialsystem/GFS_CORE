@@ -1,7 +1,8 @@
 use crate::terms::grp_calendar::Calendar::Calendar;
 use chrono::{Datelike, Duration};
-use std::ptr;
+use std::{fmt, ptr};
 use std::rc::Rc;
+use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -66,5 +67,11 @@ impl TraitBusinessDayAdjuster for ModifiedFollowing {
             }
         }
         shifted_date
+    }
+}
+
+impl fmt::Display for ModifiedFollowing {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Modified Following (Calendar : {})", self.calendar.to_string())
     }
 }

@@ -29,7 +29,7 @@ impl TraitPayOffFunction for POF_NET_CAPFL {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let settlement_currency_fx_rate = cu::settlementCurrencyFxRate(
             risk_factor_model,
             model,

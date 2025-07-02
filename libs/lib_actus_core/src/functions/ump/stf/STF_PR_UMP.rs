@@ -41,12 +41,12 @@ impl TraitStateTransitionFunction for STF_PR_UMP {
             accrued_interest
         });
 
-        let contract_role = model.contractRole.clone().expect("contractRole should always be Some");
+        let contract_role = model.contract_role.clone().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
         states.notionalPrincipal = Some(notional_principal - role_sign * self.payoff);
 
         states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
-            let fee_rate = model.feeRate.unwrap_or(0.0);
+            let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued += fee_rate * states.notionalPrincipal.unwrap_or(0.0) * time_from_last_event;
             fee_accrued
         });

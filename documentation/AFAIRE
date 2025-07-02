@@ -3,3 +3,8 @@
 sils sont optionels ou pas.
 sil ne sont pas optionnels :
     voir s'ils sont essentiel a lexecution de tous les types de contrats (dans ce cas ), ils doivent etre spécifiés par l'utilisateur ?
+
+- faire les tests dintegrations dans le dossier tests
+
+
+- creer un traits terms : avec les methodes obligatoire a implementer qqsoit le term (111 termes)

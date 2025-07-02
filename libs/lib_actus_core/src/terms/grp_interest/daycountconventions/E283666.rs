@@ -1,8 +1,10 @@
+use std::fmt;
 use std::rc::Rc;
 
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 use chrono::Datelike;
+use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 
@@ -51,7 +53,11 @@ impl TraitDayCountConvention for E283666 {
         self.day_count(start_time, end_time) / 336.0
     }
 }
-
+impl fmt::Display for E283666 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "E283666")
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;

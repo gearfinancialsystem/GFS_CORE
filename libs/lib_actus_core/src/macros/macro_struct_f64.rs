@@ -56,6 +56,19 @@ macro_rules! define_struct_f64 {
                 let truncated = (self.0 * factor).trunc() / factor;
                 format!("{:.1$}", truncated, decimals)
             }
+
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => Some(Self::default()), // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
+            }
+
         }
 
         impl Default for $struct_name {
@@ -130,6 +143,17 @@ macro_rules! define_struct_f64 {
                 let truncated = (self.0 * factor).trunc() / factor;
                 format!("{:.1$}", truncated, decimals)
             }
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
+            }
         }
         impl FromStr for $struct_name {
             type Err = String;
@@ -184,6 +208,17 @@ macro_rules! define_struct_f64 {
                 let factor = 10f64.powi(decimals as i32);
                 let truncated = (self.0 * factor).trunc() / factor;
                 format!("{:.1$}", truncated, decimals)
+            }
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => Some(Self::default()), // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
             }
         }
 
@@ -246,6 +281,18 @@ macro_rules! define_struct_f64 {
                 let factor = 10f64.powi(decimals as i32);
                 let truncated = (self.0 * factor).trunc() / factor;
                 format!("{:.1$}", truncated, decimals)
+            }
+
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
             }
         }
         impl FromStr for $struct_name {

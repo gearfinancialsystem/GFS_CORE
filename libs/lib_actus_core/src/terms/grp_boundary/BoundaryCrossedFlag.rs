@@ -1,2 +1,3 @@
-#[derive(PartialEq, Debug, Clone)]
-pub struct BoundaryCrossedFlag(bool);
+
+use crate::define_struct_bool;
+define_struct_bool!(BoundaryCrossedFlag);

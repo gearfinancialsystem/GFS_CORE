@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_RRF_LAM {
         let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
 
-        let fee_rate = model.feeRate.clone().expect("fee rate should always be Some");
+        let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
         let next_reset_rate = model.nextResetRate.clone().expect("fee rate should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(

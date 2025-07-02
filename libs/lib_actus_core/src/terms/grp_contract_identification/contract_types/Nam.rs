@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::fmt;
 use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
@@ -32,6 +33,7 @@ use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
 use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
@@ -290,7 +292,7 @@ impl NAM {
         events.append(&mut rate_reset_events.into_iter().collect());
 
         // Fee events (if specified)
-        if let Some(cycle_of_fee) = &model.cycleOfFee {
+        if let Some(cycle_of_fee) = &model.cycle_of_fee {
             let fee_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule(
                     model.cycleAnchorDateOfFee.clone(),
@@ -475,9 +477,9 @@ impl NAM {
         );
 
         let redemption_per_cycle = model.nextPrincipalRedemptionPayment.unwrap()
-            - (time_from_last_event_plus_one_cycle * model.nominalInterestRate.unwrap() * model.notionalPrincipal.unwrap());
+            - (time_from_last_event_plus_one_cycle * model.nominalInterestRate.unwrap() * model.notional_principal.unwrap());
 
-        let remaining_periods = ((model.notionalPrincipal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
+        let remaining_periods = ((model.notional_principal.unwrap() / redemption_per_cycle).ceil() - 1.0) as i32;
 
         model.businessDayAdjuster.as_ref().unwrap().shift_bd(
             &(last_event + prcl.multiplied_by(remaining_periods)),
@@ -498,8 +500,8 @@ impl NAM {
             states.nominalInterestRate = Some(0.0);
             states.interestCalculationBaseAmount = Some(0.0);
         } else {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notionalPrincipal.unwrap());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
             states.nominalInterestRate = model.nominalInterestRate;
 
             if model.interestCalculationBase == Some(InterestCalculationBase::NT(NT)) {
@@ -512,7 +514,7 @@ impl NAM {
         if model.nominalInterestRate.is_none() {
             states.accruedInterest = Some(0.0);
         } else if model.accruedInterest.is_some() {
-            let role_sign = model.contractRole.as_ref().map_or(1.0, |role| role.role_sign());
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
             states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
         } else {
             let day_counter = model.dayCountConvention.as_ref().unwrap();
@@ -535,12 +537,17 @@ impl NAM {
             ) * states.notionalPrincipal.unwrap() * states.nominalInterestRate.unwrap());
         }
 
-        if model.feeRate.is_none() {
+        if model.fee_rate.is_none() {
             states.feeAccrued = Some(0.0);
         } else if model.feeAccrued.is_some() {
             states.feeAccrued = model.feeAccrued;
         }
 
         states
+    }
+}
+impl fmt::Display for NAM {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "NAM")
     }
 }

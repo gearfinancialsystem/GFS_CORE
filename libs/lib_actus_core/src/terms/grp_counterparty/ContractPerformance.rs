@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
@@ -22,19 +24,7 @@ pub enum ContractPerformance {
 }
 
 impl ContractPerformance {
-
-    pub fn description(&self) -> String {
-        match self {
-            Self::PF(PF) => PF.type_str(),
-            Self::DL(DL) => DL.type_str(),
-            Self::DQ(DQ) => DQ.type_str(),
-            Self::DF(DF) => DF.type_str(),
-            Self::MA(MA) => MA.type_str(),
-            Self::TE(TE) => TE.type_str()
-        }
-    }
-
-
+    
     pub fn new(element: &str) -> Result<Self, ParseError> {
         ContractPerformance::from_str(element)
     }
@@ -54,6 +44,17 @@ impl ContractPerformance {
         }
 
     }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
 }
 
 impl FromStr for ContractPerformance {
@@ -71,6 +72,19 @@ impl FromStr for ContractPerformance {
     }
 }
 
+impl fmt::Display for ContractPerformance {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::PF(PF) => write!(f, "Contract Performance: {}", PF.to_string()),
+            Self::DL(DL) => write!(f, "Contract Performance: {}", DL.to_string()),
+            Self::DQ(DQ) => write!(f, "Contract Performance: {}", DQ.to_string()),
+            Self::DF(DF) => write!(f, "Contract Performance: {}", DF.to_string()),
+            Self::MA(MA) => write!(f, "Contract Performance: {}", MA.to_string()),
+            Self::TE(TE) => write!(f, "Contract Performance: {}", TE.to_string()),
+
+        }
+    }
+}
 impl Default for ContractPerformance {
     fn default() -> Self {
         Self::PF(PF::new())

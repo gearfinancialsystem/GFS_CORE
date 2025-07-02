@@ -20,7 +20,7 @@ impl TraitPayOffFunction for POF_TD_PAM {
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-        let contract_role = model.contractRole.as_ref().expect("contract role should always be some");
+        let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
         let price_at_termination_date = model.priceAtTerminationDate.expect("priceAtTerminationDate should always exist");
         let accrued_interest = states.accruedInterest.expect("accruedInterest should always exist");
         let status_date = states.statusDate.expect("status date should always exist");
