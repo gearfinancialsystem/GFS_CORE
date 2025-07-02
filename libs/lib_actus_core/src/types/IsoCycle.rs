@@ -1,12 +1,9 @@
 
 
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
-use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::types::cycle_adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster;
 use crate::types::cycle_adjuster::WeekdayCycleAdjuster::WeekdayCycleAdjuster;
-
+use crate::types::IsoPeriod::IsoPeriod;
 
 pub const LONG_STUB: char = '0';
 pub const SHORT_STUB: char = '1';
@@ -27,6 +24,12 @@ impl IsoCycle {
     */
     pub fn is_period(cycle: &String) -> bool {
         cycle.starts_with('P')
+    }
+    pub fn extract_period(&self) -> Option<IsoPeriod> {
+        match self {
+            IsoCycle::PeriodCycleAdjuster(pca) => Some(pca.period.clone()),
+            IsoCycle::WeekdayCycleAdjuster(wca) => None
+        }
     }
 }
 

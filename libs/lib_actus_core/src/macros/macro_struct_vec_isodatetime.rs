@@ -1,8 +1,7 @@
-
 #[macro_export]
 macro_rules! define_struct_vec_isodatetime {
     ($struct_name:ident) => {
-        #[derive(PartialEq, Debug, Clone)]
+        #[derive(Debug, Clone, PartialEq, Eq)]
         pub struct $struct_name(Vec<IsoDatetime>);
 
         impl $struct_name {
@@ -38,46 +37,40 @@ macro_rules! define_struct_vec_isodatetime {
                 self.0.contains(value)
             }
 
-            pub fn sort(&mut self) {
-                self.0.sort();
-            }
-
-            pub fn filter_by_month(&self, month: u32) -> Vec<IsoDatetime> {
-                self.0.iter().filter(|&date| date.month() == month).cloned().collect()
-            }
-
-            pub fn filter_by_year(&self, year: i32) -> Vec<IsoDatetime> {
-                self.0.iter().filter(|&date| date.year() == year).cloned().collect()
-            }
-
-            pub fn parse_from_string(s: &str, fmt: &str) -> ParseResult<Vec<IsoDatetime>> {
-                s.split(',')
-                    .map(|date_str| date_str.trim())
-                    .map(|date_str| NaiveDateTime::parse_from_str(date_str, fmt))
-                    .collect()
-            }
-
-            pub fn add_period(&mut self, period: IsoPeriod) {
-                self.0 = self.0.iter().map(|&date| date.add(period)).collect();
-            }
-
-            pub fn sub_period(&mut self, period: IsoPeriod) {
-                self.0 = self.0.iter().map(|&date| date.sub(period)).collect();
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_cycles: Vec<IsoDatetime> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| IsoDatetime::from_str(&s).ok()))
+                            .collect();
+        
+                        if !parsed_cycles.is_empty() {
+                            Some($struct_name(parsed_cycles))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
             }
         }
-
+   
         impl Add<IsoPeriod> for $struct_name {
             type Output = Self;
             fn add(self, other: IsoPeriod) -> Self {
-                $struct_name(self.0.into_iter().map(|date| date.add(other)).collect())
+                $struct_name(self.0.into_iter().map(|date| date.add(other.clone())).collect())
             }
         }
 
         impl Sub<IsoPeriod> for $struct_name {
             type Output = Self;
             fn sub(self, other: IsoPeriod) -> Self {
-                $struct_name(self.0.into_iter().map(|date| date.sub(other)).collect())
+                $struct_name(self.0.into_iter().map(|date| date.sub(other.clone())).collect())
             }
         }
+   
+   
     };
 }

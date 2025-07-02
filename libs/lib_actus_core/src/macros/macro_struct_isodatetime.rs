@@ -20,13 +20,7 @@ macro_rules! define_struct_isodatetime {
                 NaiveDateTime::parse_from_str(s, fmt)
             }
 
-            // pub fn is_last_day_of_month(&self) -> bool {
-            //     self.0.is_last_day_of_month()
-            // }
 
-            // pub fn last_date_of_month(&self) -> Self {
-            //     $struct_name(self.0.last_date_of_month())
-            // }
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
                     None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some

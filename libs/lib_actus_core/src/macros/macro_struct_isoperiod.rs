@@ -41,9 +41,9 @@ macro_rules! define_struct_isoperiod {
             type Err = String;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match s.parse::<f64>() {
-                    Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                match IsoPeriod::parsex(s)  { //s.parse::<f64>()
+                    Some(p) => Ok($struct_name(p)),
+                    None => Err(format!("Unable to parse IsoDuration"))
                 }
             }
         }

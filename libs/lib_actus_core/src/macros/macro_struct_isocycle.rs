@@ -1,3 +1,5 @@
+use crate::types::IsoCycle::IsoCycle;
+
 #[macro_export]
 macro_rules! define_struct_isocycle {
     ($struct_name:ident) => {
@@ -7,7 +9,8 @@ macro_rules! define_struct_isocycle {
         impl $struct_name {
             // Create a new instance of the struct with an IsoCycle
             pub fn new(cycle: String) -> Result<Self, String> {
-                IsoCycle::from_str(cycle.as_str()).map($struct_name)
+                //IsoCycle::from_str(cycle.as_str()).map($struct_name)
+                $struct_name::from_str(cycle.as_str())
             }
 
             // Get the IsoCycle value
@@ -24,7 +27,7 @@ macro_rules! define_struct_isocycle {
                 match string_map.get(key) {
                     None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
                     Some(s) => {
-                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                        match $struct_name::from_str(s.as_string().unwrap().as_str()) {
                             Ok(value) => Some(value), // Valeur valide
                             Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                         }
@@ -36,9 +39,9 @@ macro_rules! define_struct_isocycle {
             type Err = String;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match s.parse::<f64>() {
-                    Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                match IsoCycle::from_str(s) {
+                    Ok(value) => Ok($struct_name(value)),
+                    Err(_) => Err(format!("Unable to parse {} as IsoCycle", s)),
                 }
             }
         }

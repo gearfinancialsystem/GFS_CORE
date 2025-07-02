@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! define_struct_string {
     ($struct_name:ident, "normale") => {
-        #[derive(PartialEq, Debug, Clone)]
+        #[derive(PartialEq, Debug, Clone, Hash)]
         pub struct $struct_name(String);
 
         impl $struct_name {
@@ -39,7 +39,7 @@ macro_rules! define_struct_string {
         }
     };
     ($struct_name:ident, "currency") => {
-        #[derive(PartialEq, Debug, Clone)]
+        #[derive(PartialEq, Debug, Clone, Hash)]
         pub struct $struct_name(String);
 
         impl $struct_name {
@@ -82,5 +82,9 @@ macro_rules! define_struct_string {
                 $struct_name::new(value)
             }
         }
+
+        // Implement Display trait for IsoPeriod to enable to_string method
+
+
     };
 }

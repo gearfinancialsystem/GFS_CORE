@@ -11,10 +11,10 @@ macro_rules! define_struct_vec_f64 {
             }
 
             pub fn with_values(values: Vec<f64>) -> Result<Self, String> {
-                for $value in &values {
+                for $value in values.clone() {
                     if !$value.is_finite() {
                         return Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string());
-                    } else if *$value > f64::MAX {
+                    } else if $value > f64::MAX {
                         return Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string());
                     }
                     $(else if !($condition) {
@@ -44,10 +44,10 @@ macro_rules! define_struct_vec_f64 {
             }
 
             pub fn set_values(&mut self, values: Vec<f64>) -> Result<(), String> {
-                for $value in &values {
+                for $value in values.clone() {
                     if !$value.is_finite() {
                         return Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string());
-                    } else if *$value > f64::MAX {
+                    } else if $value > f64::MAX {
                         return Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string());
                     }
                     $(else if !($condition) {
@@ -70,6 +70,18 @@ macro_rules! define_struct_vec_f64 {
                 self.0.contains(value)
             }
 
+
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                match string_map.get(key) {
+                    None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+                    Some(s) => {
+                        match Self::from_str(s.as_string().unwrap().as_str()) {
+                            Ok(value) => Some(value), // Valeur valide
+                            Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                        }
+                    }
+                }
+            }
             pub fn parse_from_string(s: &str) -> Result<Self, String> {
                 let values: Result<Vec<f64>, String> = s.split(',')
                     .map(|val_str| val_str.trim())
@@ -97,7 +109,24 @@ macro_rules! define_struct_vec_f64 {
                     Err(e) => Err(e),
                 }
             }
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_v: Vec<f64> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| s.parse::<f64>().ok() ))
+                            .collect();
 
+                        if !parsed_v.is_empty() {
+                            Some($struct_name(parsed_v))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
+            }
             pub fn to_string_rounded(&self, decimals: usize) -> Vec<String> {
                 let factor = 10f64.powi(decimals as i32);
                 self.0.iter().map(|&value| {
@@ -139,10 +168,10 @@ macro_rules! define_struct_vec_f64 {
             }
 
             pub fn with_values(values: Vec<f64>) -> Result<Self, String> {
-                for $value in &values {
+                for $value in values.clone() {
                     if !$value.is_finite() {
                         return Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string());
-                    } else if *$value > f64::MAX {
+                    } else if $value > f64::MAX {
                         return Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string());
                     }
                     $(else if !($condition) {
@@ -172,10 +201,10 @@ macro_rules! define_struct_vec_f64 {
             }
 
             pub fn set_values(&mut self, values: Vec<f64>) -> Result<(), String> {
-                for $value in &values {
+                for $value in values.clone() {
                     if !$value.is_finite() {
                         return Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string());
-                    } else if *$value > f64::MAX {
+                    } else if $value > f64::MAX {
                         return Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string());
                     }
                     $(else if !($condition) {
@@ -240,6 +269,25 @@ macro_rules! define_struct_vec_f64 {
                     let truncated = (value * factor).trunc() / factor;
                     format!("{:.1$}", truncated, decimals)
                 }).collect()
+            }
+
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_v: Vec<f64> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| s.parse::<f64>().ok()))
+                            .collect();
+
+                        if !parsed_v.is_empty() {
+                            Some($struct_name(parsed_v))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
             }
         }
 
@@ -348,6 +396,24 @@ macro_rules! define_struct_vec_f64 {
                     let truncated = (value * factor).trunc() / factor;
                     format!("{:.1$}", truncated, decimals)
                 }).collect()
+            }
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_v: Vec<f64> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| s.parse::<f64>().ok()))
+                            .collect();
+
+                        if !parsed_v.is_empty() {
+                            Some($struct_name(parsed_v))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
             }
         }
 
@@ -463,6 +529,24 @@ macro_rules! define_struct_vec_f64 {
                     format!("{:.1$}", truncated, decimals)
                 }).collect()
             }
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_v: Vec<f64> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| s.parse::<f64>().ok()  ))
+                            .collect();
+
+                        if !parsed_v.is_empty() {
+                            Some($struct_name(parsed_v))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
+            }
         }
 
         impl FromStr for $struct_name {
@@ -471,5 +555,6 @@ macro_rules! define_struct_vec_f64 {
                 $struct_name::parse_from_string(s)
             }
         }
+
     };
 }

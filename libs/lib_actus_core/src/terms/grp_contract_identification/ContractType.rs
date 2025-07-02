@@ -34,7 +34,7 @@ impl ContractType {
 
     pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent>> {
 
-        match cm.clone().contract_type.value().as_str() {
+        match cm.contract_type.clone().as_str() {
             "PAM" => Some(PAM::schedule(&to.unwrap(), cm).unwrap()),
             "LAM" => Some(LAM::schedule(&to.unwrap(),cm).unwrap()),
             "NAM" => Some(NAM::schedule(&to.unwrap(),cm).unwrap()),
@@ -60,7 +60,7 @@ impl ContractType {
     }
     pub fn apply(events: Vec<ContractEvent>, cm: &ContractModel, observer: &RiskFactorModel) -> Option<Vec<ContractEvent>> {
 
-        match cm.clone().contractType.unwrap().as_str() {
+        match cm.contract_type.clone().as_str() {
             "ANN" => Some(ANN::apply(events, cm, observer)),
             "BCS" => Some(BCS::apply(events, cm, observer)),
             "CPFL" => Some(CAPFL::apply(events, cm, observer)),

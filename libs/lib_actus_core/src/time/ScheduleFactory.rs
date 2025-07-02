@@ -1,8 +1,10 @@
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use chrono::Duration;
 use std::collections::HashSet;
+use crate::types::IsoCycle::{IsoCycle, LONG_STUB};
+use crate::types::IsoCycle::SHORT_STUB;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::util::CycleUtils::{CycleUtils, LONG_STUB};
+
 
 pub struct ScheduleFactory;
 
@@ -11,7 +13,7 @@ impl ScheduleFactory {
 
     pub fn create_schedule_end_time_true(start_time: Option<IsoDatetime>,
                                          end_time: Option<IsoDatetime>,
-                                         cycle: Option<String>,
+                                         cycle: Option<IsoCycle>,
                                          end_of_month_convention: EndOfMonthConvention) -> HashSet<IsoDatetime> {
         Self::create_schedule(start_time, end_time, cycle, end_of_month_convention, true)
     }
@@ -19,7 +21,7 @@ impl ScheduleFactory {
     pub fn create_schedule(
         start_time: Option<IsoDatetime>,
         end_time: Option<IsoDatetime>,
-        cycle: Option<String>,
+        cycle: Option<IsoCycle>,
         end_of_month_convention: EndOfMonthConvention,
         add_end_time: bool,
     ) -> HashSet<IsoDatetime> {
@@ -79,8 +81,8 @@ impl ScheduleFactory {
     /// Crée un calendrier composé de sous-calendriers pour chaque paire start_time/cycle.
     pub fn create_array_schedule(
         start_times: Vec<IsoDatetime>,
-        end_time: IsoDatetime,
-        cycles: Vec<Option<String>>,
+        end_time: Option<IsoDatetime>,
+        cycles: Vec<IsoCycle>,
         end_of_month_convention: EndOfMonthConvention,
     ) -> HashSet<IsoDatetime> {
         let mut times_set = HashSet::new();

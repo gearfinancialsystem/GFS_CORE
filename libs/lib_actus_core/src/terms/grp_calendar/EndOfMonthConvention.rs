@@ -2,11 +2,13 @@ use crate::exceptions::ParseError::ParseError;
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
+use chrono::format::Numeric::IsoWeek;
 use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
+use crate::types::cycle_adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster as pc;
 use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::util::Value::Value;
@@ -29,15 +31,21 @@ impl EndOfMonthConvention {
     pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: IsoCycle) -> Result<Self, AttributeConversionException> {
         match end_of_month_convention {
             Self::EOM(EOM) => {
-                if ref_date == ref_date.last_date_of_month() && CycleUtils::parse_period(&cycle).unwrap().get_months() > 0 { //ok
-                    Ok(EndOfMonthConvention::EOM(EOM))
+                if ref_date == ref_date.last_date_of_month() &&
+                    matches!(cycle, IsoCycle::PeriodCycleAdjuster(_)) { 
+                    if cycle.extract_period().unwrap().get_months() > 0 {
+                        Ok(EndOfMonthConvention::EOM(EOM))
+                    }
+                    else { 
+                        Ok(EndOfMonthConvention::SD(SD))
+                    }
                 }
                 else {
                     Ok(EndOfMonthConvention::SD(SD))
                 }
             },
             Self::SD(SD) => Ok(EndOfMonthConvention::SD(SD)),
-            _ => Err(AttributeConversionException) // a virer ?
+
         }
     }
 
@@ -116,9 +124,10 @@ mod tests {
     #[test]
     fn test_sd_start_date_is_not_eom_cycle_m() {
         // let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::SD(SD),
-                                                             parse_date("2016-02-01T00:00:00"),
-                                                        "P1ML1".to_string()).expect("Failed to parse date");
+        let adjuster = EndOfMonthConvention::new(   
+            EndOfMonthConvention::SD(SD),
+            parse_date("2016-02-01T00:00:00"),
+            IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
 
 
         let unadjusted_times = vec![
@@ -138,10 +147,11 @@ mod tests {
 
     #[test]
     fn test_sd_start_date_is_eom_cycle_d() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::SD(SD),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    "P1DL1".to_string()).expect("Failed to parse date");
-
+        let adjuster = EndOfMonthConvention::new(   
+            EndOfMonthConvention::SD(SD),
+            parse_date("2016-02-29T00:00:00"),
+            IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -159,10 +169,11 @@ mod tests {
 
     #[test]
     fn test_sd_start_date_is_eom_cycle_w() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::SD(SD),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    "P1WL1".to_string()).expect("Failed to parse date");
-
+        let adjuster = EndOfMonthConvention::new(   
+            EndOfMonthConvention::SD(SD),
+            parse_date("2016-02-29T00:00:00"),
+            IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -180,10 +191,11 @@ mod tests {
 
     #[test]
     fn test_sd_start_date_is_eom_cycle_m() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::SD(SD),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    "P1ML1".to_string()).expect("Failed to parse date");
-
+        let adjuster = EndOfMonthConvention::new(   
+            EndOfMonthConvention::SD(SD),
+            parse_date("2016-02-29T00:00:00"),
+            IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -203,8 +215,8 @@ mod tests {
     fn test_eom_start_date_is_not_eom_cycle_m() {
         let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
                                                     parse_date("2016-02-01T00:00:00"),
-                                                    "P1ML1".to_string()).expect("Failed to parse date");
-
+                                                    IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -225,7 +237,8 @@ mod tests {
 
         let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
                                                     parse_date("2016-02-29T00:00:00"),
-                                                    "P1DL1".to_string()).expect("Failed to parse date");
+                                                    IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -245,8 +258,8 @@ mod tests {
     fn test_eom_start_date_is_eom_cycle_w() {
         let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
                                                     parse_date("2016-02-29T00:00:00"),
-                                                    "P1WL1".to_string()).expect("Failed to parse date");
-
+                                                    IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),
@@ -266,8 +279,8 @@ mod tests {
     fn test_eom_start_date_is_eom_cycle_m() {
         let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
                                                     parse_date("2016-02-29T00:00:00"),
-                                                    "P1ML1".to_string()).expect("Failed to parse date");
-
+                                                    IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+        
         let unadjusted_times = vec![
             parse_date("2016-04-30T00:00:00"),
             parse_date("2016-05-30T00:00:00"),

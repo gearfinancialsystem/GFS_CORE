@@ -43,7 +43,24 @@ macro_rules! define_struct_vec_isocycle {
                     .map(|cycle_str| IsoCycle::from_str(cycle_str))
                     .collect()
             }
-
+            pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+                string_map.get(key).and_then(|s| {
+                    if let Some(values) = s.as_vec() {
+                        let parsed_cycles: Vec<IsoCycle> = values
+                            .iter()
+                            .filter_map(|v| v.as_string().and_then(|s| IsoCycle::from_str(&s).ok()))
+                            .collect();
+        
+                        if !parsed_cycles.is_empty() {
+                            Some($struct_name(parsed_cycles))
+                        } else {
+                            None
+                        }
+                    } else {
+                        None // Not a vector type
+                    }
+                })
+            }
             pub fn filter_by_period(&self) -> Vec<IsoCycle> {
                 self.0.iter().filter(|cycle| matches!(cycle, IsoCycle::PeriodCycleAdjuster(_))).cloned().collect()
             }

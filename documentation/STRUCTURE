@@ -14,3 +14,13 @@
     - macro_struct_vec_f64
 
 il faut implemter le trait Display pour pouvoir utiliser to_string
+
+
+dans les fichiers de tests, tous ce qui commence par Array ou tout ce qui est cense etre un
+array doit etre saisi comme tel, exemple :
+"arrayCycleAnchorDateOfInterestPayment": "2021-01-01T00:00:00",
+doit etre ecrit : "arrayCycleAnchorDateOfInterestPayment": ["2021-01-01T00:00:00"],
+
+"creditEventTypeCovered": "DF", doit etre ecrit "creditEventTypeCovered": ["DF"],
+
+pour eviter toute ambiguite quant au type

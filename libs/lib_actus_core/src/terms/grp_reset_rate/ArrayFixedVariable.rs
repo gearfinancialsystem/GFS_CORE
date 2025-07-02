@@ -3,64 +3,84 @@ use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::contract_performance::Df::DF;
+use crate::terms::grp_counterparty::contract_performance::Dl::DL;
+use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
+use crate::terms::grp_counterparty::CreditEventTypeCovered::{CreditEventTypeCovered, CreditEventTypeCoveredElement};
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum ArrayFixedVariable {
+pub enum FixedVariableElement {
     F(F),
     V(V),
     None
 }
-
-impl ArrayFixedVariable {
-
-    
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
-        match element {
-            Some(n) => ArrayFixedVariable::from_str(n),
-            None => Ok(ArrayFixedVariable::None),
-        }
-    }
-
-    pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
-        match string_map.get(key) {
-            None => None, // Clé absente : valeur par défaut dans un Some
-            Some(s) => {
-
-                let  a =  s.as_vec().unwrap();
-                //let a2 = ArrayFixedVariable::from_str(a.get(0)?.as_str()).unwrap();
-
-                let b0: Vec<ArrayFixedVariable> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.to_string().as_str()).unwrap()   }).collect();
-                let b: Vec<Result<ArrayFixedVariable, ParseError>> = a.iter().map(|s| {    ArrayFixedVariable::from_str(s.to_string().as_str())   }).collect();
-                let c = b.iter().any(|r| r.is_err());
-
-                if c == true {
-                    panic!("Erreur de parsing pour la clé  avec la valeur ")
-                } else {
-                    Some(b0)
-                }
-
-            }
+impl FixedVariableElement {
+    pub fn new(value: &str) -> Result<Self, ParseError> {
+        let a = FixedVariableElement::from_str(value);
+        match a {
+            Ok(a) => Ok(a),
+            Err(e) => Err(e)
         }
     }
 }
 
-impl FromStr for ArrayFixedVariable {
+impl FromStr for FixedVariableElement {
     type Err = ParseError;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "F" => Ok(Self::F(F::new())),
-            "V" => Ok(Self::V(V::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            "F" => Ok(FixedVariableElement::F(F::new())),
+            "V" => Ok(FixedVariableElement::V(V::new())),
+            _ => Err(ParseError { message: format!("Invalid CreditEventTypeCoveredElement: {}", s) }),
         }
     }
 }
-
-impl Default for ArrayFixedVariable {
+impl Default for FixedVariableElement {
     fn default() -> Self {
         Self::None
     }
 }
+
+pub struct ArrayFixedVariable(Vec<FixedVariableElement>);
+
+
+impl ArrayFixedVariable {
+
+    pub fn new(value: &str) -> Result<Self, ParseError> {
+        let a = FixedVariableElement::from_str(value);
+        match a {
+            Ok(a) => {
+                let mut n = Vec::new();
+                n.push(a);
+                Ok(ArrayFixedVariable(n))
+            }
+            Err(e) => return Err(e)
+        }
+    }
+    
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        string_map.get(key).and_then(|s| {
+            if let Some(values) = s.as_vec() {
+                let parsed_v: Vec<FixedVariableElement> = values
+                    .iter()
+                    .filter_map(|v| v.as_string().and_then(|s| FixedVariableElement::from_str(&s).ok()))
+                    .collect();
+
+                if !parsed_v.is_empty() {
+                    Some(ArrayFixedVariable(parsed_v))
+                } else {
+                    None
+                }
+            } else {
+                None // Not a vector type
+            }
+        })
+    }
+}
+
+
+
 
 

@@ -71,12 +71,15 @@ impl fmt::Display for E30360ISDA {
 }
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use super::*;
     use chrono::NaiveDateTime;
     use super::E30360ISDA;
     //use super::E30360ISDA;
-    fn parse_date(date_str: &str) -> NaiveDateTime {
-        NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date")
+    fn parse_date(date_str: &str) -> MaturityDate {
+
+        let a = NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date");
+        MaturityDate::new(a).ok().unwrap()
     }
 
     #[test]
@@ -87,7 +90,7 @@ mod tests {
         let start1 = parse_date("2006-01-31T00:00:00");
         let end1 = parse_date("2006-02-28T00:00:00");
         let result = 30.0;
-        assert_eq!(result, convention.day_count(start1, end1) as f64);
+        assert_eq!(result, convention.day_count(start1.value(), end1.value()) as f64);
     }
 
     #[test]
@@ -99,7 +102,7 @@ mod tests {
         let start2 = parse_date("2006-01-30T00:00:00");
         let end2 = parse_date("2006-02-28T00:00:00");
         let result = 30.0;
-        assert_eq!(result, convention.day_count(start2, end2) as f64);
+        assert_eq!(result, convention.day_count(start2.value(), end2.value()) as f64);
     }
 
     #[test]
@@ -110,7 +113,7 @@ mod tests {
         let start3 = parse_date("2006-02-28T00:00:00");
         let end3 = parse_date("2006-03-03T00:00:00");
         let result = 3.0;
-        assert_eq!(result, convention.day_count(start3, end3) as f64);
+        assert_eq!(result, convention.day_count(start3.value(), end3.value()) as f64);
     }
 
     #[test]
@@ -121,7 +124,7 @@ mod tests {
         let start4 = parse_date("2006-02-14T00:00:00");
         let end4 = parse_date("2006-02-28T00:00:00");
         let result = 16.0;
-        assert_eq!(result, convention.day_count(start4, end4) as f64);
+        assert_eq!(result, convention.day_count(start4.value(), end4.value()) as f64);
     }
 
     #[test]
@@ -132,7 +135,7 @@ mod tests {
         let start5 = parse_date("2006-09-30T00:00:00");
         let end5 = parse_date("2006-10-31T00:00:00");
         let result = 30.0;
-        assert_eq!(result, convention.day_count(start5, end5) as f64);
+        assert_eq!(result, convention.day_count(start5.value(), end5.value()) as f64);
     }
 
     #[test]
@@ -143,7 +146,7 @@ mod tests {
         let start6 = parse_date("2006-10-31T00:00:00");
         let end6 = parse_date("2006-11-28T00:00:00");
         let result = 28.0;
-        assert_eq!(result, convention.day_count(start6, end6) as f64);
+        assert_eq!(result, convention.day_count(start6.value(), end6.value()) as f64);
     }
 
     #[test]
@@ -154,7 +157,7 @@ mod tests {
         let start7 = parse_date("2007-08-31T00:00:00");
         let end7 = parse_date("2008-02-28T00:00:00");
         let result = 178.0;
-        assert_eq!(result, convention.day_count(start7, end7) as f64);
+        assert_eq!(result, convention.day_count(start7.value(), end7.value()) as f64);
     }
 
     #[test]
@@ -165,7 +168,7 @@ mod tests {
         let start8 = parse_date("2008-02-28T00:00:00");
         let end8 = parse_date("2008-08-28T00:00:00");
         let result = 180.0;
-        assert_eq!(result, convention.day_count(start8, end8) as f64);
+        assert_eq!(result, convention.day_count(start8.value(), end8.value()) as f64);
     }
 
     #[test]
@@ -176,7 +179,7 @@ mod tests {
         let start9 = parse_date("2008-02-28T00:00:00");
         let end9 = parse_date("2008-08-30T00:00:00");
         let result = 182.0;
-        assert_eq!(result, convention.day_count(start9, end9) as f64);
+        assert_eq!(result, convention.day_count(start9.value(), end9.value()) as f64);
     }
 
     #[test]
@@ -187,7 +190,7 @@ mod tests {
         let start10 = parse_date("2008-02-28T00:00:00");
         let end10 = parse_date("2008-08-31T00:00:00");
         let result = 182.0;
-        assert_eq!(result, convention.day_count(start10, end10) as f64);
+        assert_eq!(result, convention.day_count(start10.value(), end10.value()) as f64);
     }
 
     #[test]
@@ -198,7 +201,7 @@ mod tests {
         let start11 = parse_date("2007-02-28T00:00:00");
         let end11 = parse_date("2008-02-28T00:00:00");
         let result = 358.0;
-        assert_eq!(result, convention.day_count(start11, end11) as f64);
+        assert_eq!(result, convention.day_count(start11.value(), end11.value()) as f64);
     }
 
     #[test]
@@ -209,7 +212,7 @@ mod tests {
         let start12 = parse_date("2007-02-28T00:00:00");
         let end12 = parse_date("2008-02-29T00:00:00");
         let result = 359.0;
-        assert_eq!(result, convention.day_count(start12, end12) as f64);
+        assert_eq!(result, convention.day_count(start12.value(), end12.value()) as f64);
     }
 
     #[test]
@@ -220,7 +223,7 @@ mod tests {
         let start13 = parse_date("2008-02-29T00:00:00");
         let end13 = parse_date("2009-02-28T00:00:00");
         let result = 360.0;
-        assert_eq!(result, convention.day_count(start13, end13) as f64);
+        assert_eq!(result, convention.day_count(start13.value(), end13.value()) as f64);
     }
 
     #[test]
@@ -231,7 +234,7 @@ mod tests {
         let start14 = parse_date("2008-02-29T00:00:00");
         let end14 = parse_date("2008-03-30T00:00:00");
         let result = 30.0;
-        assert_eq!(result, convention.day_count(start14, end14) as f64);
+        assert_eq!(result, convention.day_count(start14.value(), end14.value()) as f64);
     }
 
     #[test]
@@ -242,7 +245,7 @@ mod tests {
         let start15 = parse_date("2008-02-29T00:00:00");
         let end15 = parse_date("2008-03-31T00:00:00");
         let result = 30.0;
-        assert_eq!(result, convention.day_count(start15, end15) as f64);
+        assert_eq!(result, convention.day_count(start15.value(), end15.value()) as f64);
     }
 
     #[test]
@@ -253,7 +256,7 @@ mod tests {
         let start1 = parse_date("2006-01-31T00:00:00");
         let end1 = parse_date("2006-02-28T00:00:00");
         let result = 30.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start1, end1));
+        assert_eq!(result, convention.day_count_fraction(start1.value(), end1.value()));
     }
 
     #[test]
@@ -264,7 +267,7 @@ mod tests {
         let start2 = parse_date("2006-01-30T00:00:00");
         let end2 = parse_date("2006-02-28T00:00:00");
         let result = 30.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start2, end2));
+        assert_eq!(result, convention.day_count_fraction(start2.value(), end2.value()));
     }
 
     #[test]
@@ -275,7 +278,7 @@ mod tests {
         let start3 = parse_date("2006-02-28T00:00:00");
         let end3 = parse_date("2006-03-03T00:00:00");
         let result = 3.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start3, end3));
+        assert_eq!(result, convention.day_count_fraction(start3.value(), end3.value()));
     }
 
     #[test]
@@ -286,7 +289,7 @@ mod tests {
         let start4 = parse_date("2006-02-14T00:00:00");
         let end4 = parse_date("2006-02-28T00:00:00");
         let result = 16.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start4, end4));
+        assert_eq!(result, convention.day_count_fraction(start4.value(), end4.value()));
     }
 
     #[test]
@@ -297,7 +300,7 @@ mod tests {
         let start5 = parse_date("2006-09-30T00:00:00");
         let end5 = parse_date("2006-10-31T00:00:00");
         let result = 30.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start5, end5));
+        assert_eq!(result, convention.day_count_fraction(start5.value(), end5.value()));
     }
 
     #[test]
@@ -308,7 +311,7 @@ mod tests {
         let start6 = parse_date("2006-10-31T00:00:00");
         let end6 = parse_date("2006-11-28T00:00:00");
         let result = 28.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start6, end6));
+        assert_eq!(result, convention.day_count_fraction(start6.value(), end6.value()));
     }
 
     #[test]
@@ -319,7 +322,7 @@ mod tests {
         let start7 = parse_date("2007-08-31T00:00:00");
         let end7 = parse_date("2008-02-28T00:00:00");
         let result = 178.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start7, end7));
+        assert_eq!(result, convention.day_count_fraction(start7.value(), end7.value()));
     }
 
     #[test]
@@ -330,7 +333,7 @@ mod tests {
         let start8 = parse_date("2008-02-28T00:00:00");
         let end8 = parse_date("2008-08-28T00:00:00");
         let result = 180.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start8, end8));
+        assert_eq!(result, convention.day_count_fraction(start8.value(), end8.value()));
     }
 
     #[test]
@@ -341,7 +344,7 @@ mod tests {
         let start9 = parse_date("2008-02-28T00:00:00");
         let end9 = parse_date("2008-08-30T00:00:00");
         let result = 182.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start9, end9));
+        assert_eq!(result, convention.day_count_fraction(start9.value(), end9.value()));
     }
 
     #[test]
@@ -352,7 +355,7 @@ mod tests {
         let start10 = parse_date("2008-02-28T00:00:00");
         let end10 = parse_date("2008-08-31T00:00:00");
         let result = 182.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start10, end10));
+        assert_eq!(result, convention.day_count_fraction(start10.value(), end10.value()));
     }
 
     #[test]
@@ -363,7 +366,7 @@ mod tests {
         let start11 = parse_date("2007-02-28T00:00:00");
         let end11 = parse_date("2008-02-28T00:00:00");
         let result = 358.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start11, end11));
+        assert_eq!(result, convention.day_count_fraction(start11.value(), end11.value()));
     }
 
     #[test]
@@ -374,7 +377,7 @@ mod tests {
         let start12 = parse_date("2007-02-28T00:00:00");
         let end12 = parse_date("2008-02-29T00:00:00");
         let result = 359.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start12, end12));
+        assert_eq!(result, convention.day_count_fraction(start12.value(), end12.value()));
     }
 
     #[test]
@@ -385,7 +388,7 @@ mod tests {
         let start13 = parse_date("2008-02-29T00:00:00");
         let end13 = parse_date("2009-02-28T00:00:00");
         let result = 360.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start13, end13));
+        assert_eq!(result, convention.day_count_fraction(start13.value(), end13.value()));
     }
 
     #[test]
@@ -396,7 +399,7 @@ mod tests {
         let start14 = parse_date("2008-02-29T00:00:00");
         let end14 = parse_date("2008-03-30T00:00:00");
         let result = 30.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start14, end14));
+        assert_eq!(result, convention.day_count_fraction(start14.value(), end14.value()));
     }
 
     #[test]
@@ -407,6 +410,6 @@ mod tests {
         let start15 = parse_date("2008-02-29T00:00:00");
         let end15 = parse_date("2008-03-31T00:00:00");
         let result = 30.0 / 360.0;
-        assert_eq!(result, convention.day_count_fraction(start15, end15));
+        assert_eq!(result, convention.day_count_fraction(start15.value(), end15.value()));
     }
 }

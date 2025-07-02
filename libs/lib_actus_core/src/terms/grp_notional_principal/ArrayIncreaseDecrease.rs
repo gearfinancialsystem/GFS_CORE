@@ -3,58 +3,67 @@ use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::exceptions::ParseError::ParseError;
+use crate::terms::grp_counterparty::contract_performance::Df::DF;
+use crate::terms::grp_counterparty::contract_performance::Dl::DL;
+use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
+use crate::terms::grp_counterparty::CreditEventTypeCovered::{CreditEventTypeCovered, CreditEventTypeCoveredElement};
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::util::Value::Value;
 
+
 #[derive(Clone, PartialEq, Eq, Debug)]
-pub enum ArrayIncreaseDecrease {
+pub enum IncreaseDecreaseElement {
     INC(INC),
     DEC(DEC),
 }
 
-impl ArrayIncreaseDecrease {
-    pub fn description(&self) -> String {
-        match self {
-            Self::INC(INC) => INC.type_str(),
-            Self::DEC(DEC) => DEC.type_str(),
-        }
-    }
 
-    pub fn new(element: &str) -> Result<Self, ParseError> {
-        ArrayIncreaseDecrease::from_str(element)
-    }
-    
-    pub fn provide_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<Self>> {
-        match string_map.get(key) {
-            None => None, // Clé absente : valeur par défaut dans un Some
-            Some(s) => {
-
-                let  a =  s.as_vec().unwrap();
-                //let a2 = ArrayIncreaseDecrease::from_str(a.get(0)?.as_str()).unwrap();
-
-                let b0: Vec<ArrayIncreaseDecrease> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.to_string().as_str()).unwrap()   }).collect();
-                let b: Vec<Result<ArrayIncreaseDecrease, ParseError>> = a.iter().map(|s| {    ArrayIncreaseDecrease::from_str(s.to_string().as_str())   }).collect();
-                let c = b.iter().any(|r| r.is_err());
-
-                if c == true {
-                    panic!("Erreur de parsing pour la clé  avec la valeur ")
-                } else {
-                    Some(b0)
-                }
-                
-            }
-        }
-    }
-}
-
-impl FromStr for ArrayIncreaseDecrease {
+impl FromStr for IncreaseDecreaseElement {
     type Err = ParseError;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
-            "INC" => Ok(Self::INC(INC::new())),
-            "DEC" => Ok(Self::DEC(DEC::new())),
-            _ => Err(ParseError { message: format!("Invalid ArrayIncreaseDecrease: {}", s)})
+            "INC" => Ok(IncreaseDecreaseElement::INC(INC::new())),
+            "DEC" => Ok(IncreaseDecreaseElement::DEC(DEC::new())),
+            _ => Err(ParseError { message: format!("Invalid IncreaseDecreaseElement: {}", s) }),
         }
     }
 }
 
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct ArrayIncreaseDecrease(Vec<IncreaseDecreaseElement>);
+
+impl ArrayIncreaseDecrease {
+
+    pub fn new(value: &str) -> Result<Self, ParseError> {
+        let a = IncreaseDecreaseElement::from_str(value);
+        match a {
+            Ok(a) => {
+                let mut n = Vec::new();
+                n.push(a);
+                Ok(ArrayIncreaseDecrease(n))
+            }
+            Err(e) => return Err(e)
+        }
+    }
+
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        string_map.get(key).and_then(|s| {
+            if let Some(values) = s.as_vec() {
+                let parsed_inc_dec: Vec<IncreaseDecreaseElement> = values
+                    .iter()
+                    .filter_map(|v| v.as_string().and_then(|s| IncreaseDecreaseElement::from_str(&s).ok()))
+                    .collect();
+
+                if !parsed_inc_dec.is_empty() {
+                    Some(ArrayIncreaseDecrease(parsed_inc_dec))
+                } else {
+                    None
+                }
+            } else {
+                None // Not a vector type
+            }
+        })
+    }
+
+}

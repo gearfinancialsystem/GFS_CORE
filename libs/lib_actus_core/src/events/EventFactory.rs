@@ -3,6 +3,8 @@ use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -14,19 +16,19 @@ impl EventFactory {
     pub fn create_event(
         schedule_time: Option<IsoDatetime>,
         event_type: EventType,
-        currency: Option<&String>,
+        currency: Option<Currency>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
-        contract_id: Option<&String>,
+        contract_id: Option<ContractID>,
     ) -> ContractEvent {
         ContractEvent::new(
             schedule_time,
             schedule_time,
             event_type,
-            currency.cloned(),
+            currency,
             pay_off,
             state_trans,
-            contract_id.cloned(),
+            contract_id,
         )
     }
 
@@ -35,20 +37,20 @@ impl EventFactory {
     pub fn create_event_with_convention(
         schedule_time: Option<IsoDatetime>,
         event_type: EventType,
-        currency: Option<&String>,
+        currency: Option<Currency>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         convention: &BusinessDayAdjuster,
-        contract_id: Option<&String>,
+        contract_id: Option<ContractID>,
     ) -> ContractEvent {
         ContractEvent::new(
             schedule_time,
             Some(convention.shift_bd(schedule_time.as_ref().unwrap())),
             event_type,
-            currency.cloned(),
+            currency,
             pay_off,
             state_trans,
-            contract_id.cloned(),
+            contract_id,
         )
 
     }
@@ -57,10 +59,10 @@ impl EventFactory {
     pub fn create_events(
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
-        currency: Option<&String>,
+        currency: Option<Currency>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
-        contract_id: Option<&String>,
+        contract_id: Option<ContractID>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
@@ -69,10 +71,10 @@ impl EventFactory {
                     Some(time),
                     Some(time),
                     event_type.clone(),
-                    currency.cloned(),
+                    currency.clone(),
                     pay_off.clone(),
                     state_trans.clone(),
-                    contract_id.cloned(),
+                    contract_id.clone(),
                 )
             }).collect()
     }
@@ -90,11 +92,11 @@ impl EventFactory {
     pub fn create_events_with_convention(
         event_schedule: &HashSet<IsoDatetime>,
         event_type: EventType,
-        currency: Option<&String>,
+        currency: Option<Currency>,
         pay_off: Option<Rc<dyn TraitPayOffFunction>>,
         state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
         convention: &BusinessDayAdjuster,
-        contract_id: Option<&String>,
+        contract_id: Option<ContractID>,
     ) -> HashSet<ContractEvent> {
         event_schedule
             .iter()
@@ -104,10 +106,10 @@ impl EventFactory {
                     Some(time),
                     Some(convention.shift_bd(&time)),
                     event_type.clone(),
-                    currency.cloned(),
+                    currency.clone(),
                     pay_off.clone(),
                     state_trans.clone(),
-                    contract_id.cloned(),
+                    contract_id.clone(),
                 )
             })
             .collect()

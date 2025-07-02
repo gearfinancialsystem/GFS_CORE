@@ -9,6 +9,7 @@ use crate::terms::grp_counterparty::contract_performance::Ma::MA;
 use crate::terms::grp_counterparty::contract_performance::Pf::PF;
 use crate::terms::grp_counterparty::contract_performance::Te::TE;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::{ArrayIncreaseDecrease, IncreaseDecreaseElement};
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -57,27 +58,23 @@ impl CreditEventTypeCovered {
         }
     }
 
-
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        string_map.get(key).and_then(|s| {
+            if let Some(values) = s.as_vec() {
+                let parsed_v: Vec<CreditEventTypeCoveredElement> = values
+                    .iter()
+                    .filter_map(|v| v.as_string().and_then(|s| CreditEventTypeCoveredElement::from_str(&s).ok()))
+                    .collect();
 
-        let a: Vec<Value> = match string_map.get(key) {
-            Some(value) => match value.as_vec() {
-                Some(vec) => vec.to_vec(),
-                None => Vec::new(), // Handle the case where the value is not a vector
-            },
-            None => Vec::new(), // Handle the case where the key is not found
-        };
-
-        let b: Vec<Result<CreditEventTypeCoveredElement, ParseError>> = a.iter()
-            .filter_map(|e| e.as_string().map(|s| CreditEventTypeCoveredElement::from_str(s).unwrap()))
-            .flatten() // Flatten the nested Results
-            .collect();
-
-        let c: Vec< crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCoveredElement > = b.into_iter()
-            .filter_map(|result| result.ok())
-            .collect();
-        c
-
+                if !parsed_v.is_empty() {
+                    Some(CreditEventTypeCovered(parsed_v))
+                } else {
+                    None
+                }
+            } else {
+                None // Not a vector type
+            }
+        })
     }
 
     pub fn to_string_vec(&self) -> Vec<String> {

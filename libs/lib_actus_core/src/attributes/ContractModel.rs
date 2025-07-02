@@ -199,7 +199,7 @@ pub struct ContractModel {
     pub array_cycle_of_principal_redemption: Option<ArrayCycleOfPrincipalRedemption>,
     pub array_cycle_of_rate_reset: Option<ArrayCycleOfRateReset>,
     pub array_fixed_variable: Option<ArrayFixedVariable>,
-    pub array_increase_decrease: Option<Vec<ArrayIncreaseDecrease>>,
+    pub array_increase_decrease: Option<ArrayIncreaseDecrease>,
     pub array_next_principal_redemption_payment: Option<ArrayNextPrincipalRedemptionPayment>,
     pub array_rate: Option<ArrayRate>,
     pub boundary_crossed_flag: Option<BoundaryCrossedFlag>,
@@ -410,10 +410,17 @@ impl ContractModel {
 
                 let contract_role = ContractRole::provide(sm, "contractRole");
 
-                let v = sm.get("contractStructure").unwrap().as_vec().unwrap();
-                let contract_structure: Vec<ContractReference> = v.iter().map(|d| {
-                    ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap())
-                }).collect();
+                let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
+                    if let Some(structure_vec) = contract_structure.as_vec() {
+                        let contract_structure: Vec<ContractReference> = structure_vec.iter()
+                            .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
+                            .collect();
+                        Some(ContractStructure::new(contract_structure))
+                    } else {
+                        None
+                    }
+
+                } else {None};
 
                 let cm = ContractModel {
                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
@@ -1494,13 +1501,12 @@ impl ContractModel {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
                             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
                             .collect();
-                        Some(contract_structure)
+                        Some(ContractStructure::new(contract_structure))
                     } else {
                         None
                     }
-                } else {
-                    None
-                };
+
+                } else {None};
 
                 let cm = ContractModel {
                     calendar: calendar,
@@ -1600,13 +1606,12 @@ impl ContractModel {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
                             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
                             .collect();
-                        Some(contract_structure)
+                        Some(ContractStructure::new(contract_structure))
                     } else {
                         None
                     }
-                } else {
-                    None
-                };
+
+                } else {None};
 
                 let cm = ContractModel {
                     calendar: calendar,
@@ -1741,24 +1746,30 @@ impl ContractModel {
             },
             "BCS" => {
                 let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
-                let maturity_date = if let Some(a) = maturity_date_tmp {
+                let maturity_date = if let Some(a) = maturity_date_tmp.clone() {
                     Some(Rc::new(a))
                 } else {
                     None
                 };
                 let calendar = Calendar::provide_rc(sm, "calendar");
                 let contract_role = ContractRole::provide(sm, "contractRole");
-                let purchase_date = IsoDatetime::provide(sm, "purchaseDate");
+                let purchase_date = PurchaseDate::provide_from_input_dict(sm, "purchaseDate");
 
-                let boundary_monitoring_anchor_date = if let Some(boundary_monitoring_anchor_date) = IsoDatetime::provide(sm, "boundaryMonitoringAnchorDate") {
+
+                let w = BoundaryMonitoringAnchorDate::provide_from_input_dict(sm, "boundaryMonitoringAnchorDate");
+                let boundary_monitoring_anchor_date = if let Some(boundary_monitoring_anchor_date) = w {
                     Some(boundary_monitoring_anchor_date)
                 } else {
-                    purchase_date.clone()
+                    let aa = purchase_date.clone().unwrap().value().to_string();
+                    BoundaryMonitoringAnchorDate::from_str(&aa).ok()
                 };
-                let boundary_monitoring_end_date = if let Some(boundary_monitoring_end_date) = IsoDatetime::provide(sm, "boundaryMonitoringEndDate") {
+
+                let a = BoundaryMonitoringEndDate::provide_from_input_dict(sm, "BoundaryMonitoringEndDate");
+                let boundary_monitoring_end_date = if let Some(boundary_monitoring_end_date) = a {
                     Some(boundary_monitoring_end_date)
                 } else {
-                    maturity_date.clone().map(|rc| (*rc).clone())
+
+                    Some(BoundaryMonitoringEndDate::from_str(maturity_date_tmp.unwrap().value().to_string().as_str()).unwrap())
                 };
 
 
@@ -1786,13 +1797,12 @@ impl ContractModel {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
                             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
                             .collect();
-                        Some(contract_structure)
+                        Some(ContractStructure::new(contract_structure))
                     } else {
                         None
                     }
-                } else {
-                    None
-                };
+
+                } else {None};
 
                 let cm = ContractModel {
                     maturity_date: maturity_date,
@@ -1877,13 +1887,12 @@ impl ContractModel {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
                             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
                             .collect();
-                        Some(contract_structure)
+                        Some(ContractStructure::new(contract_structure))
                     } else {
                         None
                     }
-                } else {
-                    None
-                };
+
+                } else {None};
 
                 let cm = ContractModel {
                     maturity_date: maturity_date,
@@ -1943,13 +1952,12 @@ impl ContractModel {
                         let contract_structure: Vec<ContractReference> = structure_vec.iter()
                             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
                             .collect();
-                        Some(contract_structure)
+                        Some(ContractStructure::new(contract_structure))
                     } else {
                         None
                     }
-                } else {
-                    None
-                };
+
+                } else {None};
 
                 let cm = ContractModel {
                     contract_type: ct_str.clone().to_string(),
