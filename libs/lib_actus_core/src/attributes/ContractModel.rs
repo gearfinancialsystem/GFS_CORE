@@ -34,8 +34,9 @@ use crate::terms::grp_counterparty::Seniority::Seniority;
 use crate::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
 use crate::terms::grp_dividend::CycleAnchorDateOfDividendPayment::CycleAnchorDateOfDividendPayment;
 use crate::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
-use crate::terms::grp_dividend::CycleOfDividendPayment;
+use crate::terms::grp_dividend::CycleOfDividendPayment::CycleOfDividendPayment;
 use crate::terms::grp_dividend::ExDividendDate::ExDividendDate;
+use crate::terms::grp_dividend::MarketObjectCodeOfDividends::MarketObjectCodeOfDividends;
 use crate::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
 use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
 use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
@@ -233,6 +234,7 @@ pub struct ContractModel {
     pub cycle_anchor_date_of_rate_reset: Option<CycleAnchorDateOfRateReset>,
     pub cycle_anchor_date_of_scaling_index: Option<CycleAnchorDateOfScalingIndex>,
     pub cycle_of_dividend: Option<CycleOfDividend>,
+    pub cycle_of_dividend_payment: Option<CycleOfDividendPayment>,
     pub cycle_of_fee: Option<CycleOfFee>,
     pub cycle_of_interest_calculation_base: Option<CycleOfInterestCalculationBase>,
     pub cycle_of_interest_payment: Option<CycleOfInterestPayment>,
@@ -264,6 +266,7 @@ pub struct ContractModel {
     pub life_cap: Option<LifeCap>,
     pub life_floor: Option<LifeFloor>,
     pub market_object_code: Option<MarketObjectCode>,
+    pub market_object_code_of_dividends: Option<MarketObjectCodeOfDividends>, // nest pas dans la liste des champs sur le site, mais dans le code
     pub market_object_code_of_rate_reset: Option<MarketObjectCodeOfRateReset>,
     pub market_object_code_of_scaling_index: Option<MarketObjectCodeOfScalingIndex>,
     pub market_value_observed: Option<MarketValueObserved>,
@@ -306,152 +309,42 @@ pub struct ContractModel {
 
 impl ContractModel {
 
-    pub fn get_field(&self, field_name: &str) -> Option<FieldValue> {
-        match field_name {
-            "accrued_interest" => Some(FieldValue::vF64(self.accrued_interest?)),
-            "accrued_interest2" => Some(FieldValue::vF64(self.accrued_interest2.clone().unwrap())),
-            "amortization_date" => Some(FieldValue::vIsoDatetime(self.amortization_date.clone().unwrap())),
-            "array_cycle_anchor_date_of_interest_payment" => Some(FieldValue::vVecIsoDatetime(self.array_cycle_anchor_date_of_interest_payment.clone().unwrap())),
-            "array_cycle_anchor_date_of_principal_redemption" => Some(FieldValue::vVecIsoDatetime(self.array_cycle_anchor_date_of_principal_redemption.clone().unwrap())),
-            "array_cycle_anchor_date_of_rate_reset" => Some(FieldValue::vVecIsoDatetime(self.array_cycle_anchor_date_of_rate_reset.clone().unwrap())),
-            "array_cycle_of_interest_payment" => Some(FieldValue::vVecString(self.array_cycle_of_interest_payment.clone().unwrap())),
-            "array_cycle_of_principal_redemption" => Some(FieldValue::vVecString(self.array_cycle_of_principal_redemption.clone().unwrap())),
-            "array_cycle_of_rate_reset" => Some(FieldValue::vVecString(self.array_cycle_of_rate_reset.clone().unwrap())),
-            "array_fixed_variable" => Some(FieldValue::vArrayFixedVariable(self.array_fixed_variable.clone().unwrap())),
-            "array_increase_decrease" => Some(FieldValue::vArrayIncreaseDecrease(self.array_increase_decrease.clone().unwrap())),
-            "array_next_principal_redemption_payment" => Some(FieldValue::vVecF64(self.array_next_principal_redemption_payment.clone().unwrap())),
-            "array_rate" => Some(FieldValue::vVecF64(self.array_rate.clone().unwrap())),
-            "boundary_crossed_flag" => Some(FieldValue::vBool(self.boundary_crossed_flag.clone().unwrap())),
-            "boundary_direction" => Some(FieldValue::vBoundaryDirection(self.boundary_direction.clone().unwrap())),
-            "boundary_effect" => Some(FieldValue::vBoundaryEffect(self.boundary_effect.clone().unwrap())),
-            "boundary_leg_initially_active" => Some(FieldValue::vBoundaryLegInitiallyActive(self.boundary_leg_initially_active.clone().unwrap())),
-            "boundary_monitoring_anchor_date" => Some(FieldValue::vIsoDatetime(self.boundary_monitoring_anchor_date.clone().unwrap())),
-            "boundary_monitoring_cycle" => Some(FieldValue::Vstring(self.boundary_monitoring_cycle.clone().unwrap())),
-            "boundary_monitoring_end_date" => Some(FieldValue::vIsoDatetime(self.boundary_monitoring_end_date.clone().unwrap())),
-            "boundary_value" => Some(FieldValue::vF64(self.boundary_value.clone().unwrap())),
-            "business_day_adjuster" => Some(FieldValue::vBusinessDayAdjuster(self.business_day_adjuster.clone().unwrap())),
-            "calendar" => Some(FieldValue::vCalendar(self.calendar.clone().unwrap())),
-            "capitalization_end_date" => Some(FieldValue::vIsoDatetime(self.capitalization_end_date?)),
-            "contract_id" => Some(FieldValue::Vstring(self.contract_id.clone().unwrap())),
-            "contract_performance" => Some(FieldValue::vContractPerformance(self.contract_performance?)),
-            "contract_role" => Some(FieldValue::vContractRole(self.contract_role.clone().unwrap())),
-            "contract_type" => Some(FieldValue::Vstring(self.contract_type.clone())),
-            "counterparty_id" => Some(FieldValue::Vstring(self.counterparty_id.clone().unwrap())),
-            "coverage_of_credit_enhancement" => Some(FieldValue::vF64(self.coverage_of_credit_enhancement.clone().unwrap())),
-            "creator_id" => Some(FieldValue::Vstring(self.creator_id.clone().unwrap())),
-            "credit_event_type_covered" => Some(FieldValue::vVecCreditEventTypeCovered(self.credit_event_type_covered.clone().unwrap())),
-            "currency" => Some(FieldValue::Vstring(self.currency.clone().unwrap())),
-            "currency2" => Some(FieldValue::Vstring(self.currency2.clone().unwrap())),
-            "cycle_anchor_date_of_dividend" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_dividend?)),
-            "cycle_anchor_date_of_dividend_payment" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_dividend_payment.clone().unwrap())),
-            "cycle_anchor_date_of_fee" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_fee?)),
-            "cycle_anchor_date_of_interest_calculation_base" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_interest_calculation_base.clone().unwrap())),
-            "cycle_anchor_date_of_interest_payment" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_interest_payment?)),
-            "cycle_anchor_date_of_optionality" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_optionality?)),
-            "cycle_anchor_date_of_principal_redemption" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_principal_redemption.clone().unwrap())),
-            "cycle_anchor_date_of_rate_reset" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_rate_reset?)),
-            "cycle_anchor_date_of_scaling_index" => Some(FieldValue::vIsoDatetime(self.cycle_anchor_date_of_scaling_index?)),
-            "cycle_of_dividend" => Some(FieldValue::Vstring(self.cycle_of_dividend.clone().unwrap())),
-            "cycle_of_dividend_payment" => Some(FieldValue::Vstring(self.cycle_of_dividend_payment.clone().unwrap())),
-            "cycle_of_fee" => Some(FieldValue::Vstring(self.cycle_of_fee.clone().unwrap())),
-            "cycle_of_interest_calculation_base" => Some(FieldValue::Vstring(self.cycle_of_interest_calculation_base.clone().unwrap())),
-            "cycle_of_interest_payment" => Some(FieldValue::Vstring(self.cycle_of_interest_payment.clone().unwrap())),
-            "cycle_of_optionality" => Some(FieldValue::Vstring(self.cycle_of_optionality.clone().unwrap())),
-            "cycle_of_principal_redemption" => Some(FieldValue::Vstring(self.cycle_of_principal_redemption.clone().unwrap())),
-            "cycle_of_rate_reset" => Some(FieldValue::Vstring(self.cycle_of_rate_reset.clone().unwrap())),
-            "cycle_of_scaling_index" => Some(FieldValue::Vstring(self.cycle_of_scaling_index.clone().unwrap())),
-            "cycle_point_of_interest_payment" => Some(FieldValue::vCyclePointOfInterestPayment(self.cycle_point_of_interest_payment.clone().unwrap())),
-            "cycle_point_of_rate_reset" => Some(FieldValue::vCyclePointOfRateReset(self.cycle_point_of_rate_reset.clone().unwrap())),
-            "day_count_convention" => Some(FieldValue::vDayCountConvention(self.day_count_convention.clone().unwrap())),
-            "delinquency_period" => Some(FieldValue::vIsoPeriod(self.delinquency_period.clone().unwrap())),
-            "delinquency_rate" => Some(FieldValue::vF64(self.delinquency_rate.clone().unwrap())),
-            "delivery_settlement" => Some(FieldValue::vDeliverySettlement(self.delivery_settlement.clone().unwrap())),
-            "exercise_amount" => Some(FieldValue::vF64(self.exercise_amount.clone().unwrap())),
-            "exercise_date" => Some(FieldValue::vIsoDatetime(self.exercise_date.clone().unwrap())),
-            "ex_dividend_date" => Some(FieldValue::vIsoDatetime(self.ex_dividend_date.clone().unwrap())),
-            "fee_accrued" => Some(FieldValue::vF64(self.fee_accrued?)),
-            "fee_basis" => Some(FieldValue::vFeeBasis(self.fee_basis.clone().unwrap())),
-            "fee_rate" => Some(FieldValue::vF64(self.fee_rate?)),
-            "fixing_period" => Some(FieldValue::vIsoPeriod(self.fixing_period.clone().unwrap())),
-            "futures_price" => Some(FieldValue::vF64(self.futures_price.clone().unwrap())),
-            "guaranteed_exposure" => Some(FieldValue::vGuaranteedExposure(self.guaranteed_exposure.clone().unwrap())),
-            "grace_period" => Some(FieldValue::vIsoPeriod(self.grace_period.clone().unwrap())),
-            "interest_calculation_base" => Some(FieldValue::vInterestCalculationBase(self.interest_calculation_base.clone().unwrap())),
-            "interest_calculation_base_amount" => Some(FieldValue::vF64(self.interest_calculation_base_amount.clone().unwrap())),
-            "interest_scaling_multiplier" => Some(FieldValue::vF64(self.interest_scaling_multiplier?)),
-            "initial_exchange_date" => Some(FieldValue::vIsoDatetime(self.initial_exchange_date?)),
-            "life_cap" => Some(FieldValue::vF64(self.life_cap?)),
-            "life_floor" => Some(FieldValue::vF64(self.life_floor?)),
-            "market_object_code" => Some(FieldValue::Vstring(self.market_object_code.clone().unwrap())),
-            "market_object_code_of_dividends" => Some(FieldValue::Vstring(self.market_object_code_of_dividends.clone().unwrap())),
-            "market_object_code_of_rate_reset" => Some(FieldValue::Vstring(self.market_object_code_of_rate_reset.clone().unwrap())),
-            "market_object_code_of_scaling_index" => Some(FieldValue::Vstring(self.market_object_code_of_scaling_index.clone().unwrap())),
-            "market_value_observed" => Some(FieldValue::vF64(self.market_value_observed.clone().unwrap())),
-            "maturity_date" => Some(FieldValue::vMaturityDate(self.maturity_date.clone().unwrap())),
-            "next_dividend_payment_amount" => Some(FieldValue::vF64(self.next_dividend_payment_amount.clone().unwrap())),
-            "next_principal_redemption_payment" => Some(FieldValue::vF64(self.next_principal_redemption_payment.clone().unwrap())),
-            "next_reset_rate" => Some(FieldValue::vF64(self.next_reset_rate?)),
-            "nominal_interest_rate" => Some(FieldValue::vF64(self.nominal_interest_rate?)),
-            "nominal_interest_rate2" => Some(FieldValue::vF64(self.nominal_interest_rate2.clone().unwrap())),
-            "non_performing_date" => Some(FieldValue::vIsoDatetime(self.non_performing_date.clone().unwrap())),
-            "notional_principal" => Some(FieldValue::vF64(self.notional_principal?)),
-            "notional_principal2" => Some(FieldValue::vF64(self.notional_principal2.clone().unwrap())),
-            "notional_scaling_multiplier" => Some(FieldValue::vF64(self.notional_scaling_multiplier?)),
-            "object_code_of_prepayment_model" => Some(FieldValue::Vstring(self.object_code_of_prepayment_model.clone().unwrap())),
-            "option_strike1" => Some(FieldValue::vF64(self.option_strike1.clone().unwrap())),
-            "option_strike2" => Some(FieldValue::vF64(self.option_strike2.clone().unwrap())),
-            "option_type" => Some(FieldValue::vOptionType(self.option_type.clone().unwrap())),
-            "penalty_rate" => Some(FieldValue::vF64(self.penalty_rate?)),
-            "penalty_type" => Some(FieldValue::vPenaltyType(self.penalty_type.clone().unwrap())),
-            "prepayment_period" => Some(FieldValue::vIsoPeriod(self.prepayment_period.clone().unwrap())),
-            "premium_discount_at_ied" => Some(FieldValue::vF64(self.premium_discount_at_ied?)),
-            "price_at_purchase_date" => Some(FieldValue::vF64(self.price_at_purchase_date?)),
-            "price_at_termination_date" => Some(FieldValue::vF64(self.price_at_termination_date?)),
-            "purchase_date" => Some(FieldValue::vIsoDatetime(self.purchase_date?)),
-            "quantity" => Some(FieldValue::vF64(self.quantity.clone().unwrap())),
-            "rate_multiplier" => Some(FieldValue::vF64(self.rate_multiplier?)),
-            "rate_spread" => Some(FieldValue::vF64(self.rate_spread?)),
-            "scaling_effect" => Some(FieldValue::vScalingEffect(self.scaling_effect.clone().unwrap())),
-            "scaling_index_at_contract_deal_date" => Some(FieldValue::vF64(self.scaling_index_at_contract_deal_date?)),
-            "seniority" => Some(FieldValue::vSeniority(self.seniority.clone().unwrap())),
-            "settlement_currency" => Some(FieldValue::Vstring(self.settlement_currency.clone().unwrap())),
-            "settlement_period" => Some(FieldValue::vIsoPeriod(self.settlement_period.clone().unwrap())),
-            "status_date" => Some(FieldValue::vIsoDatetime(self.status_date?)),
-            "termination_date" => Some(FieldValue::vIsoDatetime(self.termination_date?)),
-            "x_day_notice" => Some(FieldValue::vIsoPeriod(self.x_day_notice.clone().unwrap())),
-            _ => None,
-        }
-    }
-
     pub fn new(sm: &HashMap<String, Value>) -> Result<ContractModel, String> {
         let ct = sm.get("contractType").unwrap();
-        let ct_str = ct.as_string().unwrap().as_str()
+        let ct_str = ct.as_string().unwrap().as_str();
         match ct_str {
             "PAM" => {
                 //let mut cm = ContractModel::init();
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-
+                let business_day_adjuster: Option<BusinessDayAdjuster> = if let Some(calendar) = &calendar {
                     let calendar_clone = Some(Rc::clone(calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
                         calendar_clone.expect("te")
                     )
+                } else {
+                    None
                 };
 
-                // Clonez simplement les Rc existantes
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                     DayCountConvention::provide(
+                    DayCountConvention::provide_from_input_dict(
                         sm,
                         "dayCountConvention",
                         Some(Rc::clone(maturity_date)),
                         Some(Rc::clone(calendar))
                     )
+                } else {
+                    None
                 };
-                
+
                 let cm = ContractModel {
                     accrued_interest:                       AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
                     business_day_adjuster:                  business_day_adjuster,
@@ -549,8 +442,7 @@ impl ContractModel {
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
                 //VERIFIER PAS PRESENT DANS LA LISTE DES TERMES
-                let cycle_of_dividend_payment = CommonUtils::provide_string(sm, "cycleOfDividendPayment");
-
+                let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(sm, "cycleOfDividendPayment");
 
                 let business_day_adjuster = if let Some(calendar) = &calendar {
                     let calendar_clone = Some(Rc::clone(calendar));
@@ -601,7 +493,12 @@ impl ContractModel {
             },
             "LAM" => {
                 let calendar = Calendar::provide_rc(sm, "calendar");
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 let cycle_of_fee = CycleOfFee::provide_from_input_dict(sm, "cycleOfFee");
                 let cycle_anchor_date_of_fee = if cycle_of_fee.is_none() {
@@ -624,7 +521,7 @@ impl ContractModel {
 
                 let day_count_convention =
                     if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -701,7 +598,7 @@ impl ContractModel {
                     cycle_point_of_interest_payment: CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),
                     initial_exchange_date: InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
-                    premium_discount_at_ied: PremiumDiscountAtIed::provide_from_input_dict(sm, "premiumDiscountAtIed"),
+                    premium_discount_at_ied: PremiumDiscountAtIED::provide_from_input_dict(sm, "premiumDiscountAtIed"),
                     notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
                     purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
                     price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
@@ -739,7 +636,12 @@ impl ContractModel {
             "ANN" => {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 // Champs qui dépendent d'autres champs
                 let cycle_of_fee = CycleOfFee::provide_from_input_dict (sm, "cycleOfFee");
@@ -759,7 +661,7 @@ impl ContractModel {
                 };
 
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -859,10 +761,10 @@ impl ContractModel {
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
                     cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
                     nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
-                    day_count_convention: DayCountConvention::provide_from_input_dict(sm, "dayCountConvention"),
+                    day_count_convention: day_count_convention,
                     accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
                     capitalization_end_date: CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
-                    cycle_point_of_rate_reset: CyclePointOfRateReset::provide_from_input_dict(sm, "cyclePointOfRateReset"),
+                    cycle_point_of_rate_reset: cycle_point_of_rate_reset,
                     cycle_point_of_interest_payment: CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),
                     initial_exchange_date: InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
@@ -913,11 +815,16 @@ impl ContractModel {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 // Champs qui dépendent d'autres champs
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1007,7 +914,12 @@ impl ContractModel {
      
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
  
 
                 // Champs qui dépendent d'autres champs
@@ -1020,7 +932,7 @@ impl ContractModel {
                 };
 
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1076,7 +988,7 @@ impl ContractModel {
                     day_count_convention: day_count_convention,
                     currency: Currency::provide_from_input_dict(sm, "currency"),
                     initial_exchange_date: InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
-                    maturity_date: MaturityDate::provide_from_input_dict(sm, "maturityDate"),
+                    maturity_date: maturity_date,
                     notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
                     purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
                     price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
@@ -1101,6 +1013,12 @@ impl ContractModel {
             "FXOUT" => {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 // Gestion des dépendances
                 let business_day_adjuster = if let Some(calendar) = &calendar {
@@ -1126,7 +1044,7 @@ impl ContractModel {
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),
                     currency2: Currency2::provide_from_input_dict(sm, "currency2"),
-                    maturity_date: MaturityDate::provide_from_input_dict(sm, "maturityDate"),
+                    maturity_date: maturity_date,
                     notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
                     notional_principal2: NotionalPrincipal2::provide_from_input_dict(sm, "notionalPrincipal2"),
                     purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
@@ -1181,8 +1099,12 @@ impl ContractModel {
             "UMP" => {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
-
-
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 let cycle_of_fee = CycleOfFee::provide_from_input_dict(sm, "cycleOfFee");
                 let cycle_anchor_date_of_fee = if cycle_of_fee.is_none() {
@@ -1201,8 +1123,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&IsoDatetime::provide_rc(sm, "maturityDate"), &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1226,10 +1148,16 @@ impl ContractModel {
                     None
                 };
 
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
                 let cm = ContractModel {
-                    calendar: Calendar::provide_from_input_dict(sm, "calendar"),
+                    calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
@@ -1275,7 +1203,12 @@ impl ContractModel {
             "CLM" => {
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
 
                 let cycle_of_fee = CycleOfFee::provide_from_input_dict(sm, "cycleOfFee");
@@ -1295,7 +1228,7 @@ impl ContractModel {
                 };
 
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1365,7 +1298,12 @@ impl ContractModel {
             "NAM" => {
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
 
                 let cycle_of_fee = CycleOfFee::provide_from_input_dict(sm, "cycleOfFee");
@@ -1385,7 +1323,7 @@ impl ContractModel {
                 };
 
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1511,7 +1449,12 @@ impl ContractModel {
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
                 let contract_role = ContractRole::provide(sm, "contractRole");
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
 
 
                 let credit_event_type_covered_tmp  = CreditEventTypeCovered::provide_from_input_dict(sm, "creditEventTypeCovered");
@@ -1530,7 +1473,7 @@ impl ContractModel {
                 };
 
                 let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1611,7 +1554,12 @@ impl ContractModel {
             "CEG" => {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
-
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
                 let contract_role = ContractRole::provide(sm, "contractRole");
 
 
@@ -1630,8 +1578,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&IsoDatetime::provide_rc(sm, "maturityDate"), &calendar) {
-                    DayCountConvention::provide(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
                 } else {
                     None
                 };
@@ -1708,7 +1656,12 @@ impl ContractModel {
                 Ok(cm)
             },
             "FUTUR" => {
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
 
@@ -1720,10 +1673,14 @@ impl ContractModel {
                 };
 
 
-                let cycle_anchor_date_of_interest_payment = if CommonUtils::provide_string(sm, "cycleOfInterestPayment").is_none() {
-                    IsoDatetime::provide(sm, "initialExchangeDate")
+                let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
+                let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
+                    //IsoDatetime::provide(sm, "initialExchangeDate")
+                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+                    CycleAnchorDateOfInterestPayment::from_str(&a).ok()
+
                 } else {
-                    IsoDatetime::provide(sm, "cycleAnchorDateOfInterestPayment")
+                    CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
                 let business_day_adjuster = if let Some(calendar) = &calendar {
@@ -1783,7 +1740,12 @@ impl ContractModel {
                 Ok(cm)
             },
             "BCS" => {
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
                 let calendar = Calendar::provide_rc(sm, "calendar");
                 let contract_role = ContractRole::provide(sm, "contractRole");
                 let purchase_date = IsoDatetime::provide(sm, "purchaseDate");
@@ -1882,7 +1844,12 @@ impl ContractModel {
                 Ok(cm)
             },
             "OPTNS" => {
-                let maturity_date = IsoDatetime::provide_rc(sm, "maturityDate");
+                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+                let maturity_date = if let Some(a) = maturity_date_tmp {
+                    Some(Rc::new(a))
+                } else {
+                    None
+                };
                 let calendar = Calendar::provide_rc(sm, "calendar");
                 let contract_role = ContractRole::provide(sm, "contractRole");
 

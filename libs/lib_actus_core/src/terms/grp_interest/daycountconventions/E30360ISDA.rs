@@ -4,16 +4,17 @@ use std::rc::Rc;
 use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Datelike;
 use crate::terms::grp_interest::daycountconventions::E30360::E30360;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct E30360ISDA {
-    pub maturity_date: Option<Rc<IsoDatetime>>,
+    pub maturity_date: Option<Rc<MaturityDate>>,
 }
 
 impl E30360ISDA {
-    pub fn new(maturity_date: Option<Rc<IsoDatetime>>) -> Self {
+    pub fn new(maturity_date: Option<Rc<MaturityDate>>) -> Self {
         E30360ISDA {maturity_date}
     }
 }
@@ -35,7 +36,7 @@ impl TraitDayCountConvention for E30360ISDA {
             let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
             if let maturity = a {
                 // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
-                if end_time == maturity && is_february {
+                if end_time == maturity.value() && is_february {
                     // pas d'ajustement, on laisse d2
                 }
                 else if end_time.is_last_day_of_month() {

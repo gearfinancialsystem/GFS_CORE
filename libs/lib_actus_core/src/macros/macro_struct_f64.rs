@@ -307,3 +307,72 @@ macro_rules! define_struct_f64 {
         }
     };
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*; // Importe tout de la portée parente dans la portée du module de test
+
+    use std::collections::HashMap;
+    use std::str::FromStr;
+    use crate::util::Value::Value;
+
+    #[test]
+    fn test_new_valid_value() {
+        define_struct_f64!(TestStruct, |value| {value >= 0.0 => "Value must be non-negative"}, {0.0});
+        let result = TestStruct::new(5.0);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().value(), 5.0);
+    }
+
+    #[test]
+    fn test_new_invalid_value() {
+        define_struct_f64!(TestStruct, |value| {value >= 0.0 => "Value must be non-negative"}, {0.0});
+        let result = TestStruct::new(-1.0);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_set_value() {
+        define_struct_f64!(TestStruct, |value| {value >= 0.0 => "Value must be non-negative"}, {0.0});
+        let mut test_struct = TestStruct::new(5.0).unwrap();
+        let result = test_struct.set_value(10.0);
+        assert!(result.is_ok());
+        assert_eq!(test_struct.value(), 10.0);
+    }
+
+    #[test]
+    fn test_set_invalid_value() {
+        define_struct_f64!(TestStruct, |value| {value >= 0.0 => "Value must be non-negative"}, {0.0});
+        let mut test_struct = TestStruct::new(5.0).unwrap();
+        let result = test_struct.set_value(-1.0);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_to_string_rounded() {
+        define_struct_f64!(TestStruct, |value| {}, {0.0});
+        let test_struct = TestStruct::new(5.678).unwrap();
+        assert_eq!(test_struct.to_string_rounded(2), "5.68");
+    }
+
+    #[test]
+    fn test_to_string_truncated() {
+        define_struct_f64!(TestStruct, |value| {}, {0.0});
+        let test_struct = TestStruct::new(5.678).unwrap();
+        assert_eq!(test_struct.to_string_truncated(2), "5.67");
+    }
+
+    #[test]
+    fn test_provide_from_input_dict() {
+        use serde_json::Value;
+        let mut map = HashMap::new();
+        map.insert("key".to_string(), Value::from("5.0"));
+
+        define_struct_f64!(TestStruct, |value| {}, {0.0});
+        let result = TestStruct::provide_from_input_dict(&map, "key");
+        assert!(result.is_some());
+        assert_eq!(result.unwrap().value(), 5.0);
+    }
+
+}

@@ -10,7 +10,6 @@ use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
 use crate::util::Value::Value;
-use crate::util::CycleUtils::CycleUtils;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum EndOfMonthConvention {

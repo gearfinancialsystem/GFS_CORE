@@ -5,16 +5,17 @@ use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 use chrono::Datelike;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct E283666 {
-    pub maturity_date: Option<Rc<IsoDatetime>>,
+    pub maturity_date: Option<Rc<MaturityDate>>,
 }
 
 impl E283666 {
-    pub fn new(maturity_date: Option<Rc<IsoDatetime>>) -> Self {
+    pub fn new(maturity_date: Option<Rc<MaturityDate>>) -> Self {
         E283666 {maturity_date}
     }
 }
@@ -32,7 +33,7 @@ impl TraitDayCountConvention for E283666 {
 
         if self.maturity_date.is_some() {
             let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
-            if !(end_time == a || end_time.month() == 2)
+            if !(end_time == a.value() || end_time.month() == 2)
             && end_time.is_last_day_of_month() {
                 d2 = 28;
             }

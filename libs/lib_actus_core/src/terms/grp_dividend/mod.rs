@@ -5,4 +5,5 @@ pub mod CycleOfDividendPayment;
 
 pub mod NextDividendPaymentAmount;
 pub mod ExDividendDate;
+pub mod MarketObjectCodeOfDividends;
 

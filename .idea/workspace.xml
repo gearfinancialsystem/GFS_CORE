@@ -18,338 +18,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="sss">
-      <change afterPath="$PROJECT_DIR$/documentation/STRUCTURE" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_bool.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_string.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_vec_f64.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_vec_isocycle.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_vec_isodatetime.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/ObjectCodeOfPrepaymentModel.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/documentation/OLD GET FIELDS FROM MODEL" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/MarketObjectCodeOfDividends.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/AFAIRE" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/AFAIRE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/EN COURS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/actus-dictionary-terms.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/actus-tests-lax.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/actus-tests-pam.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/actus-tests-swaps.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/contract conversion" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/contract conversion" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/fonction_pof_prompt" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/fonction_pof_prompt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/fonction_stf_prompt" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/fonction_stf_prompt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/attributes/ContractModel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/bcs/stf/STF_ME_BCS.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/pof/POF_NET_CAPFL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/capfl/pof/POF_NET_CAPFL.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_FP_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/pof/POF_FP_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_AD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_AD_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_FP_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_PRD_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ceg/stf/STF_XD_CEG.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IED_CLM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/clm/pof/POF_IED_CLM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/stf/STF_MD_FUTUR.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/stf/STF_MD_FUTUR.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/stf/STF_XD_FUTUR.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/futur/stf/STF_XD_FUTUR.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_MD1_FXOUT.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_MD1_FXOUT.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_MD2_FXOUT.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_MD2_FXOUT.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_PRD_FXOUT.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_PRD_FXOUT.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_STD_FXOUT.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/fxout/pof/POF_STD_FXOUT.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_CD_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_CD_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IED_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IED_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPBC_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPBC_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPCI2_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPCI2_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPCI_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_IPCI_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PP_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PP_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PR2_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PR2_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PRD_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PRD_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PR_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PR_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PY_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_PY_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RRF_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RRF_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RR_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_RR_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_SC_LAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lam/stf/STF_SC_LAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/pof/POF_PI_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/pof/POF_PI_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/pof/POF_PR_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/pof/POF_PR_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PI_LAX2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_PR_LAX2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRF_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RRF_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RR_LAX.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/lax/stf/STF_RR_LAX.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/pof/POF_PR_NAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/pof/POF_PR_NAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR2_NAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR2_NAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR_NAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/nam/stf/STF_PR_NAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_PRD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_PRD_OPTNS.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_STD_OPTNS.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/optns/pof/POF_STD_OPTNS.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_FP_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_FP_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_IED_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_IED_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PP_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PP_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PRD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PRD_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PY_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_PY_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_TD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/pof/POF_TD_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_AD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_AD_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_CD_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_CD_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IED_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IED_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IPCI_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IPCI_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IP_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_IP_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PP_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PP_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PY_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_PY_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_RRF_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_RRF_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_SC_PAM.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/pam/stf/STF_SC_PAM.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_DV_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_DV_STK.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_PRD_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_PRD_STK.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_TD_STK.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/stk/pof/POF_TD_STK.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_IED_SWPPV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/swppv/stf/STF_IED_SWPPV.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/pof/POF_PR_UMP.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/pof/POF_PR_UMP.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/stf/STF_PR_UMP.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/ump/stf/STF_PR_UMP.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_f64.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_f64.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isocycle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isocycle.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isodatetime.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isodatetime.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isoperiod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isoperiod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryCrossedFlag.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryCrossedFlag.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryDirection.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryDirection.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryEffect.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryEffect.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryLegInitiallyActive.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringAnchorDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringAnchorDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringCycle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringCycle.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringEndDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryMonitoringEndDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryValue.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_boundary/BoundaryValue.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/BusinessDayAdjuster.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/BusinessDayAdjuster.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/Calendar.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/Calendar.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/EndOfMonthConvention.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/EndOfMonthConvention.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csmf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csmf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csmp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csmp.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Csp.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Nos.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Nos.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scmf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scmf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scmp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scmp.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/conventions/Scp.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Following.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Following.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/ModifiedFollowing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/ModifiedFollowing.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/ModifiedPreceeding.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/ModifiedPreceeding.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Preceeding.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Preceeding.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Same.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/bd_convention/Same.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/sc_convention/CalcShift.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/sc_convention/CalcShift.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/sc_convention/ShiftCalc.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/businessday/elements/sc_convention/ShiftCalc.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/calendars/MondayToFriday.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/calendars/MondayToFriday.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/calendars/NoCalendar.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/calendars/NoCalendar.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/eom_conventions/Eom.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/eom_conventions/Eom.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/eom_conventions/Sd.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_calendar/eom_conventions/Sd.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractID.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractID.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractRole.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractRole.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/CreatorID.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/CreatorID.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/MarketObjectCode.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/MarketObjectCode.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/StatusDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/StatusDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Buy.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Buy.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Cno.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Cno.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Col.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Col.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Pf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Pf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Pfl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Pfl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rfl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rfl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rpa.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rpa.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rpl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Rpl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Sel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Sel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udlm.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udlm.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udlp.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_roles/Udlp.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ann.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ann.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Bcs.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Bcs.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Capfl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Capfl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Cec.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Cec.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ceg.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ceg.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Clm.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Clm.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Com.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Com.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Csh.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Csh.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Futur.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Futur.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Fxout.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Fxout.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lam.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lam.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lax.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lax.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Nam.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Nam.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Optns.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Optns.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Pam.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Pam.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Stk.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Stk.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Swaps.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Swaps.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Swppv.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Swppv.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ump.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Ump.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/ContractPerformance.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/ContractPerformance.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CounterpartyID.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CounterpartyID.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CoverageOfCreditEnhancement.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CoverageOfCreditEnhancement.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/CreditEventTypeCovered.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/DelinquencyPeriod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/DelinquencyPeriod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/DelinquencyRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/DelinquencyRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/GuaranteedExposure.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/GuaranteedExposure.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/NonPerformingDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/NonPerformingDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/Seniority.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/Seniority.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Df.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Df.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Dl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Dl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Dq.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Dq.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Ma.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Ma.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Pf.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Pf.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Te.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/contract_performance/Te.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DF.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DF.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DL.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DQ.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/credit_event_type_covered/DQ.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/MV.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/MV.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/NI.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/NI.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/NO.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/guaranteed_exposure/NO.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/seniority/J.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/seniority/J.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/seniority/S.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_counterparty/seniority/S.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleAnchorDateOfDividend.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleAnchorDateOfDividend.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleAnchorDateOfDividendPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleAnchorDateOfDividendPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleOfDividend.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleOfDividend.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/ExDividendDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/ExDividendDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/NextDividendPaymentAmount.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/NextDividendPaymentAmount.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/CycleAnchorDateOfFee.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/CycleAnchorDateOfFee.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/CycleOfFee.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/CycleOfFee.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeAccrued.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeAccrued.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeBasis.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeBasis.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/FeeRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/fee_basis/A.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/fee_basis/A.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/fee_basis/N.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_fees/fee_basis/N.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/AccruedInterest.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/AccruedInterest.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/AccruedInterest2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/AccruedInterest2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/ArrayCycleAnchorDateOfInterestPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/ArrayCycleAnchorDateOfInterestPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/ArrayCycleOfInterestPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/ArrayCycleOfInterestPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CapitalizationEndDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CapitalizationEndDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleAnchorDateOfInterestCalculationBase.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleAnchorDateOfInterestCalculationBase.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleAnchorDateOfInterestPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleAnchorDateOfInterestPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleOfInterestCalculationBase.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleOfInterestCalculationBase.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleOfInterestPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CycleOfInterestPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CyclePointOfInterestPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/CyclePointOfInterestPayment.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleOfDividendPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/CycleOfDividendPayment.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_dividend/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/DayCountConvention.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/DayCountConvention.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/InterestCalculationBase.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/InterestCalculationBase.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/InterestCalculationBaseAmount.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/InterestCalculationBaseAmount.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/NominalInterestRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/NominalInterestRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/NominalInterestRate2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/NominalInterestRate2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/cycle_point_of_interest_payment/B.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/cycle_point_of_interest_payment/B.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/cycle_point_of_interest_payment/E.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/cycle_point_of_interest_payment/E.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A336.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A336.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A360.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A360.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A365.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/A365.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/AAISDA.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/AAISDA.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/B252.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/B252.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E283666.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E283666.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360ISDA.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/E30360ISDA.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/daycountconventions/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Nt.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Nt.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Ntied.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Ntied.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Ntl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_interest/interest_calculation_base/Ntl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/ClearingHouse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/ClearingHouse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/CycleAnchorDateOfMargining.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/CycleAnchorDateOfMargining.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/CycleOfMargining.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/CycleOfMargining.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/InitialMargin.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/InitialMargin.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/MaintenanceMarginLowerBound.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/MaintenanceMarginLowerBound.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/MaintenanceMarginUpperBound.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/MaintenanceMarginUpperBound.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/VariationMargin.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/VariationMargin.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/clearing_house/N.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/clearing_house/N.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/clearing_house/Y.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_margining/clearing_house/Y.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/AmortizationDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/AmortizationDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayCycleAnchorDateOfPrincipalRedemption.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayCycleAnchorDateOfPrincipalRedemption.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayCycleOfPrincipalRedemption.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayCycleOfPrincipalRedemption.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayNextPrincipalRedemptionPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayNextPrincipalRedemptionPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ContractDealDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ContractDealDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CreditLineAmount.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CreditLineAmount.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Currency.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Currency.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Currency2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Currency2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleAnchorDateOfPrincipalRedemption.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleAnchorDateOfPrincipalRedemption.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleAnchorDateOfScalingIndex.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleAnchorDateOfScalingIndex.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleOfPrincipalRedemption.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleOfPrincipalRedemption.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleOfScalingIndex.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/CycleOfScalingIndex.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/InitialExchangeDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/InitialExchangeDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/InterestScalingMultiplier.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/InterestScalingMultiplier.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MarketObjectCodeOfScalingIndex.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MarketObjectCodeOfScalingIndex.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MarketValueObserved.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MarketValueObserved.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MaturityDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/MaturityDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NextPrincipalRedemptionPayment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NextPrincipalRedemptionPayment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalPrincipal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalPrincipal.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalPrincipal2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalPrincipal2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalScalingMultiplier.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/NotionalScalingMultiplier.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PremiumDiscountAtIED.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PremiumDiscountAtIED.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PriceAtPurchaseDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PriceAtPurchaseDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PriceAtTerminationDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PriceAtTerminationDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PurchaseDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/PurchaseDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Quantity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Quantity.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ScalingEffect.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ScalingEffect.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ScalingIndexAtContractDealDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ScalingIndexAtContractDealDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/TerminationDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/TerminationDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Unit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/Unit.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/increase_decrease/DEC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/increase_decrease/DEC.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/increase_decrease/INC.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/increase_decrease/INC.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ino.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ino.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ioo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ioo.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ono.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ono.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ooo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/scaling_effect/Ooo.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/BRL.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/BRL.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/BSH.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/BSH.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/CUU.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/CUU.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/GLN.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/GLN.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/MWH.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/MWH.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/PND.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/PND.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/STN.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/STN.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/TON.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/TON.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/TRO.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/unitx/TRO.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/CycleAnchorDateOfOptionality.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/CycleAnchorDateOfOptionality.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/CycleOfOptionality.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/CycleOfOptionality.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/MaximumPenaltyFreeDisbursement.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/MaximumPenaltyFreeDisbursement.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionExerciceEndDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionExerciceEndDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionExerciseType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionExerciseType.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionStrike1.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionStrike1.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionStrike2.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionStrike2.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/OptionType.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PenaltyRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PenaltyRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PenaltyType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PenaltyType.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PrepaymentEffect.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/PrepaymentEffect.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/A.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/A.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/B.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/B.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/E.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_exercise_type/E.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/C.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/C.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/CP.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/CP.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/P.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/option_type/P.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/A.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/A.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/I.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/I.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/N.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/N.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/R.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/penalty_type/R.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/A.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/A.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/M.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/M.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/N.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_optionality/prepayment_effect/N.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayCycleAnchorDateOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayCycleAnchorDateOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayCycleOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayCycleOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayFixedVariable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/ArrayRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CycleAnchorDateOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CycleAnchorDateOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CycleOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CycleOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CyclePointOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/CyclePointOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/FixingPeriod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/FixingPeriod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/LifeCap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/LifeCap.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/LifeFloor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/LifeFloor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/MarketObjectCodeOfRateReset.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/MarketObjectCodeOfRateReset.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/NextResetRate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/NextResetRate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/PeriodCap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/PeriodCap.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/PeriodFloor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/PeriodFloor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/RateMultiplier.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/RateMultiplier.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/RateSpread.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/RateSpread.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/cycle_point_of_rate_reset/B.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/cycle_point_of_rate_reset/B.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/cycle_point_of_rate_reset/E.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/cycle_point_of_rate_reset/E.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/fixed_variable/F.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/fixed_variable/F.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/fixed_variable/V.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_reset_rate/fixed_variable/V.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/DeliverySettlement.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/DeliverySettlement.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/ExerciseAmount.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/ExerciseAmount.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/ExerciseDate.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/ExerciseDate.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/FuturesPrice.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/FuturesPrice.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/SettlementCurrency.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/SettlementCurrency.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/delivery_settlement/D.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/delivery_settlement/D.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/delivery_settlement/S.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_settlement/delivery_settlement/S.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/CommonUtils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/CommonUtils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/util/RedemptionUtils.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -397,6 +84,7 @@
     "Cargo.Test Swap::tests.executor": "Debug",
     "Cargo.Test contracts::Swap::tests::test_pam_contracts.executor": "Run",
     "Cargo.Test contracts::Swap::tests::test_swap_contracts.executor": "Run",
+    "Cargo.Test macros::macro_struct_f64::tests::test_new_valid_value.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
@@ -426,7 +114,7 @@
       <recent name="$PROJECT_DIR$/libs/lib_actus_core/src/types/adjuster" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.Run main">
+  <component name="RunManager" selected="Cargo.Test macros::macro_struct_f64::tests::test_new_valid_value">
     <configuration name="Run main" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package main --bin main" />
@@ -515,8 +203,27 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test macros::macro_struct_f64::tests::test_new_valid_value" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="buildProfileId" value="test" />
+      <option name="command" value="test --package lib_actus_core --lib macros::macro_struct_f64::tests::test_new_valid_value -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <envs />
+      <option name="emulateTerminal" value="true" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Cargo.Test macros::macro_struct_f64::tests::test_new_valid_value" />
         <item itemvalue="Cargo.Test contracts::Swap::tests::test_swap_contracts" />
         <item itemvalue="Cargo.Test Swap::tests" />
         <item itemvalue="Cargo.Test contracts::Swap::tests::test_pam_contracts" />
@@ -548,7 +255,7 @@
       <workItem from="1751296780295" duration="20000" />
       <workItem from="1751296853613" duration="60000" />
       <workItem from="1751296927449" duration="21090000" />
-      <workItem from="1751381075411" duration="36597000" />
+      <workItem from="1751381075411" duration="39756000" />
     </task>
     <task id="LOCAL-00001" summary="sss">
       <option name="closed" value="true" />
@@ -622,7 +329,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751381172399</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="sss">
+      <option name="closed" value="true" />
+      <created>1751424460711</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1751424460711</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
