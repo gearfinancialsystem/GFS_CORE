@@ -79,7 +79,7 @@ impl ContractReference {
                 Object::ContractModel(ContractModel::new(&child_model).unwrap())
             },
             ReferenceType::CID => {
-                Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("contractIdentifier").unwrap().to_string())
+                Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("contract_identifier").unwrap().to_string())
             },
             ReferenceType::MOC => {
                 Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("marketObjectCode").unwrap().to_string())
@@ -118,7 +118,7 @@ impl ContractReference {
                 model.currency.as_ref(),
                 Some(Rc::new(POF_AD_PAM)),
                 Some(Rc::new(STF_AD_PAM)),
-                model.contractID.as_ref()
+                model.contract_id.as_ref()
             );
             events.push(analysis_event.clone());
             events.sort();

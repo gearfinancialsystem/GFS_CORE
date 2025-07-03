@@ -31,6 +31,12 @@ impl IsoCycle {
             IsoCycle::WeekdayCycleAdjuster(wca) => None
         }
     }
+    pub fn extract_stub(&self) -> Option<char> {
+        match self {
+            IsoCycle::PeriodCycleAdjuster(pca) => Some(pca.stub.clone()),
+            IsoCycle::WeekdayCycleAdjuster(wca) => Some(wca.stub.clone())
+        }
+    }
 }
 
 impl FromStr for IsoCycle {

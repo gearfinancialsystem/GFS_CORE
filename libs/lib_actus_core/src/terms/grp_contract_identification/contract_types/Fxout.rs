@@ -31,74 +31,74 @@ impl FXOUT {
         let mut events = Vec::new();
 
         // Purchase event
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             events.push(EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_FXOUT)),
                 Some(Rc::new(STF_PRD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Termination event
-        if let Some(termination_date) = &model.terminationDate {
+        if let Some(termination_date) = &model.termination_date {
             events.push(EventFactory::create_event(
                 Some(termination_date.clone()),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_FXOUT)),
                 Some(Rc::new(STF_TD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         } else {
             // Settlement events
             if model.deliverySettlement == Some(DeliverySettlement::D(D)) || model.deliverySettlement.is_none() {
                 events.push(EventFactory::create_event_with_convention(
-                    model.maturityDate.clone().map(|rc| (*rc).clone()),
+                    model.maturity_date.clone().map(|rc| (*rc).clone()),
                     EventType::MD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     Some(Rc::new(POF_MD1_FXOUT)),
                     Some(Rc::new(STF_MD1_FXOUT)),
-                    model.businessDayAdjuster.as_ref().unwrap(),
-                    model.contractID.as_ref(),
+                    model.business_day_adjuster.as_ref().unwrap(),
+                    &model.contract_id,
                 ));
 
                 events.push(EventFactory::create_event_with_convention(
-                    model.maturityDate.clone().map(|rc| (*rc).clone()),
+                    model.maturity_date.clone().map(|rc| (*rc).clone()),
                     EventType::MD,
                     model.currency2.as_ref(),
                     Some(Rc::new(POF_MD2_FXOUT)),
                     Some(Rc::new(STF_MD2_FXOUT)),
-                    model.businessDayAdjuster.as_ref().unwrap(),
-                    model.contractID.as_ref(),
+                    model.business_day_adjuster.as_ref().unwrap(),
+                    &model.contract_id,
                 ));
             } else {
-                let shifted_maturity_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-                    &(model.maturityDate.clone().map(|rc| (*rc).clone()).unwrap() + model.settlementPeriod.clone().unwrap())
+                let shifted_maturity_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
+                    &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap() + model.settlement_period.clone().unwrap())
                 );
 
                 events.push(EventFactory::create_event_with_convention(
                     Some(shifted_maturity_date),
                     EventType::STD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     Some(Rc::new(POF_STD_FXOUT)),
                     Some(Rc::new(STF_STD_FXOUT)),
-                    model.businessDayAdjuster.as_ref().unwrap(),
-                    model.contractID.as_ref(),
+                    model.business_day_adjuster.as_ref().unwrap(),
+                    &model.contract_id,
                 ));
             }
         }
 
         // Remove all pre-status date events
         let status_event = EventFactory::create_event(
-            model.statusDate,
+            model.status_date,
             EventType::AD,
-            model.currency.as_ref(),
+            &model.currency,
             None,
             None,
-            model.contractID.as_ref(),
+            &model.contract_id,
         );
 
         events.retain(|e| e >= &status_event);
@@ -107,10 +107,10 @@ impl FXOUT {
         let to_event = EventFactory::create_event(
             Some(to.clone()),
             EventType::AD,
-            model.currency.as_ref(),
+            &model.currency,
             None,
             None,
-            model.contractID.as_ref(),
+            &model.contract_id,
         );
 
         events.retain(|e| e <= &to_event);
@@ -133,7 +133,7 @@ impl FXOUT {
                 model,
                 observer,
                 &DayCountConvention::new(Some("AAISDA"), None, None).expect(""),
-                model.businessDayAdjuster.as_ref().unwrap(),
+                model.business_day_adjuster.as_ref().unwrap(),
             );
         }
 
@@ -142,7 +142,7 @@ impl FXOUT {
 
     fn init_state_space(model: &ContractModel) -> StateSpace {
         let mut states = StateSpace::default();
-        states.statusDate = model.statusDate;
+        states.status_date = model.status_date;
         states
     }
 }

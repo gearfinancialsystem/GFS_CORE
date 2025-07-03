@@ -51,7 +51,7 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
 
         states.notionalPrincipal = Some(notional_principal - prepayment_factor * notional_principal);
 
-        if let Some(interest_calculation_base) = &model.interestCalculationBase {
+        if let Some(interest_calculation_base) = &model.interest_calculation_base {
             if *interest_calculation_base == InterestCalculationBase::NTL(NTL) {
                 states.interestCalculationBaseAmount = states.notionalPrincipal;
             }

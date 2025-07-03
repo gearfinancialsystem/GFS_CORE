@@ -4,23 +4,29 @@ macro_rules! define_struct_isodatetime {
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(IsoDatetime);
 
-        impl $struct_name {
-            pub fn new(value: IsoDatetime) -> Result<Self, String> {
-                Ok($struct_name(value))
-            }
+        impl TraitMarqueurIsoDatetime for $struct_name {
 
-            pub fn value(&self) -> IsoDatetime {
+            fn value(&self) -> IsoDatetime {
                 self.0
             }
 
-            pub fn set_value(&mut self, value: IsoDatetime) {
-                self.0 = value;
+            fn set_value(&mut self, value: &IsoDatetime) {
+                self.0 = value.clone();
             }
-            pub fn parse_from_string(s: &str, fmt: &str) -> ParseResult<IsoDatetime> {
+
+            fn parse_from_string(s: &str, fmt: &str) -> ParseResult<IsoDatetime> {
                 NaiveDateTime::parse_from_str(s, fmt)
             }
 
+        }
 
+        impl $struct_name {
+            fn new(value: IsoDatetime) -> Result<Self, String> {
+                Ok($struct_name(value))
+            }
+            pub fn to_opt_isodatetime(option_s: &Option<$struct_name>) -> Option<IsoDatetime> {
+                option_s.clone().map(|mons| mons.value())
+            }
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
                     None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
@@ -33,6 +39,25 @@ macro_rules! define_struct_isodatetime {
                 }
             }
 
+        }
+        //Implémentation du trait From<IsoDatetime>
+        impl From<IsoDatetime> for $struct_name {
+            fn from(iso_datetime: IsoDatetime) -> Self {
+                $struct_name(iso_datetime)
+            }
+        }
+
+        impl TraitConvertContractToAnyEvent for ContractEvent<$struct_name, $struct_name> {
+            fn convert_to_any(self) -> Result<AnyContractEvent, String> {
+                Ok(AnyContractEvent::$struct_name)(self)
+            }
+        }
+        
+        // Implémentation du trait Hash
+        impl std::hash::Hash for $struct_name {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.0.hash(state);
+            }
         }
 
         impl FromStr for $struct_name {

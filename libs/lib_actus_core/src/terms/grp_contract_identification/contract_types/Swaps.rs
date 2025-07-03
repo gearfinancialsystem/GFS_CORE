@@ -43,8 +43,8 @@ impl SWAPS {
         let mut first_leg_schedule: Vec<ContractEvent> = vec![];
         let mut second_leg_schedule: Vec<ContractEvent> = vec![];
 
-        let mat1 = first_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
-        let mat2 = second_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
+        let mat1 = first_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
+        let mat2 = second_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
 
         first_leg_schedule = ContractType::schedule(mat1, &first_leg_model).unwrap();
         second_leg_schedule = ContractType::schedule(mat2, &second_leg_model).unwrap();
@@ -52,25 +52,25 @@ impl SWAPS {
         events.extend(first_leg_schedule);
         events.extend(second_leg_schedule);
 
-        if model.purchaseDate.is_some() {
+        if model.purchase_date.is_some() {
             events.push(
-                EventFactory::create_event(model.purchaseDate,
+                EventFactory::create_event(model.purchase_date,
                                            EventType::PRD,
-                                           model.currency.as_ref(),
+                                           &model.currency,
                                            Some(Rc::new(POF_PRD_SWAPS)),
                                            Some(Rc::new(STF_PRD_SWAPS)),
-                                           model.contractID.as_ref())
+                                           &model.contract_id)
             )
         }
 
-        if model.terminationDate.is_some() {
+        if model.termination_date.is_some() {
             let termination = EventFactory::create_event(
-                model.terminationDate.clone(),
+                model.termination_date.clone(),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_SWAPS)),
                 Some(Rc::new(STF_TD_STK)),
-                model.contractID.as_ref()
+                &model.contract_id
             );
             events.retain(|e| e.compare_to(&termination) == 1);
             events.push(termination);
@@ -78,21 +78,21 @@ impl SWAPS {
 
         events.retain(|e| e.compare_to(
             &EventFactory::create_event(
-                model.statusDate.clone(),
+                model.status_date.clone(),
                 EventType::AD,
-                model.currency.as_ref(),
+                &model.currency,
                 None,
                 None,
-                model.contractID.as_ref()) ) != -1);
+                &model.contract_id) ) != -1);
 
         events.retain(|e| e.compare_to(
             &EventFactory::create_event(
                 Some(to.clone()),
                 EventType::AD,
-                model.currency.as_ref(),
+                &model.currency,
                 None,
                 None,
-                model.contractID.as_ref()) ) != 1);
+                &model.contract_id) ) != 1);
         Ok(events)
     }
 
@@ -111,7 +111,7 @@ impl SWAPS {
         let first_leg_schedule: Vec<ContractEvent> = events
             .iter()
             .filter(|event| {
-                first_leg_model.clone().contractID.unwrap_or_default() == event.get_contractID()
+                first_leg_model.clone().contract_id.unwrap_or_default() == event.get_contract_id()
             })
             .cloned()
             .collect();
@@ -119,7 +119,7 @@ impl SWAPS {
         let second_leg_schedule: Vec<ContractEvent> = events.clone()
             .iter()
             .filter(|event| {
-                second_leg_model.clone().contractID.unwrap_or_default() == event.get_contractID()
+                second_leg_model.clone().contract_id.unwrap_or_default() == event.get_contract_id()
             })
             .cloned()
             .collect();
@@ -127,8 +127,8 @@ impl SWAPS {
 
         // Remove the filtered events from the main events list
         events.retain(|e| {
-            !first_leg_schedule.iter().any(|first_leg_event| first_leg_event.contractID == e.contractID) &&
-                !second_leg_schedule.iter().any(|second_leg_event| second_leg_event.contractID == e.contractID)
+            !first_leg_schedule.iter().any(|first_leg_event| first_leg_event.contract_id == e.contract_id) &&
+                !second_leg_schedule.iter().any(|second_leg_event| second_leg_event.contract_id == e.contract_id)
         });
 
         /// PROBLEM A REGLER ?? first_leg_schedule modifiee passer events en reference ?
@@ -139,7 +139,7 @@ impl SWAPS {
             let a = SWAPS::filter_and_nett_congruent_events(
                 first_leg_events.clone().unwrap(),
                 second_leg_events.clone().unwrap(),
-                model.contractID.clone().unwrap()
+                model.contract_id.clone().unwrap()
             );
             events.extend(a);
         } else {
@@ -148,14 +148,14 @@ impl SWAPS {
         }
 
         events.iter().for_each(|event| {
-            if event.get_contractID() == model.contractID.clone().unwrap() {
-                if event.eventType == EventType::PRD || event.eventType == EventType::TD {
+            if event.get_contract_id() == model.contract_id.clone().unwrap() {
+                if event.event_type == EventType::PRD || event.event_type == EventType::TD {
                     let mut parent_state = StateSpace::default();
                     let f_l_events_at_timepoint = first_leg_events.clone().unwrap().iter().filter(|e| {
-                        e.eventTime == event.eventTime
+                        e.event_time == event.event_time
                     }).map(|e| e.clone()).collect::<Vec<_>>();
                     let s_l_events_at_timepoint = second_leg_events.clone().unwrap().iter().filter(|e| {
-                        e.eventTime == event.eventTime
+                        e.event_time == event.event_time
                     }).map(|e| e.clone()).collect::<Vec<_>>();
 
                     let mut fl_ipac: f64;
@@ -164,11 +164,11 @@ impl SWAPS {
                         fl_ipac = 0.0;
                     }
                     else {
-                        fl_ipac = if f_l_events_at_timepoint.iter().any(|e| e.eventType == EventType::IP) {
+                        fl_ipac = if f_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
                             0.0
                         } else {
                             f_l_events_at_timepoint.iter()
-                                .find(|e| e.eventType == EventType::PR)
+                                .find(|e| e.event_type == EventType::PR)
                                 .map(|e| e.states().accruedInterest.clone().unwrap())
                                 .unwrap_or(0.0)
                         };
@@ -176,11 +176,11 @@ impl SWAPS {
                     sl_ipac = if s_l_events_at_timepoint.is_empty() {
                         0.0
                     } else {
-                        if s_l_events_at_timepoint.iter().any(|e| e.eventType == EventType::IP) {
+                        if s_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
                             0.0
                         } else {
                             s_l_events_at_timepoint.iter()
-                                .find(|e| e.eventType == EventType::PR)
+                                .find(|e| e.event_type == EventType::PR)
                                 .map(|e| e.states().accruedInterest.clone().unwrap())
                                 .unwrap_or(0.0)
                         }
@@ -194,14 +194,14 @@ impl SWAPS {
                 }
             }
         });
-        if model.purchaseDate.is_some(){
+        if model.purchase_date.is_some(){
             let purchase = EventFactory::create_event(
-                model.purchaseDate.clone(),
+                model.purchase_date.clone(),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_SWAPS)),
                 Some(Rc::new(STF_PRD_STK)), // WHY ?
-                model.contractID.as_ref()
+                &model.contract_id
             );
             // Remove the filtered events from the main events list
             events.retain(|e| {
@@ -226,29 +226,29 @@ impl SWAPS {
             StateSpace::default()
         } else { event_at_t0.states() };
 
-        states.statusDate = model.statusDate.clone();
-        states.contractPerformance = if model.contractPerformance.is_some() {
-            model.contractPerformance
+        states.status_date = model.status_date.clone();
+        states.contract_performance = if model.contract_performance.is_some() {
+            model.contract_performance
         } else { None };
-        let mat1 = first_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
-        let mat2 = second_leg_model.maturityDate.clone().map(|rc| (*rc).clone());
-        states.maturityDate = if mat1 > mat2 { mat1 } else { mat2 };
-        states.accruedInterest = event_at_t0.states().accruedInterest;
+        let mat1 = first_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
+        let mat2 = second_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
+        states.maturity_date = if mat1 > mat2 { mat1 } else { mat2 };
+        states.accrued_interest = event_at_t0.states().accruedInterest;
         states
     }
 
     pub fn filter_and_nett_congruent_events(first_leg_events: Vec<ContractEvent>, second_leg_events: Vec<ContractEvent>, parent_contract_ID: String)-> Vec<ContractEvent> {
         let mut first_leg_events = first_leg_events;
         let mut second_leg_events = second_leg_events;
-        first_leg_events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
-        second_leg_events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
+        first_leg_events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        second_leg_events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         let mut events = Vec::new();
 
         // Helper function to filter events by type
         let filter_events = |events: &[ContractEvent], event_type: EventType| -> Vec<ContractEvent> {
             events.iter()
-                .filter(|event| event.eventType == event_type)
+                .filter(|event| event.event_type == event_type)
                 .cloned()
                 .collect()
         };
@@ -304,7 +304,7 @@ impl SWAPS {
             let first_leg_event = &list_first_leg.clone()[0];
             let second_leg_event = &list_second_leg.clone()[0];
 
-            if first_leg_event.eventTime == second_leg_event.eventTime {
+            if first_leg_event.event_time == second_leg_event.event_time {
                 // Remove from events list - but we can't do exact object matching
                 // So we'll use a more functional approach: filter events not matching our two
                 let mut new_events = Vec::new();
@@ -312,11 +312,11 @@ impl SWAPS {
                 let mut second_found = false;
 
                 for event in events.drain(..) {
-                    if !first_found && event.eventTime == first_leg_event.eventTime {
+                    if !first_found && event.event_time == first_leg_event.event_time {
                         first_found = true;
                         continue; // Skip this event (don't add to new_events)
                     }
-                    if !second_found && event.eventTime == second_leg_event.eventTime {
+                    if !second_found && event.event_time == second_leg_event.event_time {
                         second_found = true;
                         continue; // Skip this event
                     }
@@ -349,8 +349,8 @@ impl SWAPS {
         let mut second_leg = second_leg_events;
 
         // Sort both lists by event time
-        first_leg.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
-        second_leg.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
+        first_leg.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        second_leg.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         let mut i = 0;
         let mut j = 0;
@@ -366,7 +366,7 @@ impl SWAPS {
                 let first_event = &first_leg[i];
                 let second_event = &second_leg[j];
 
-                if first_event.eventTime == second_event.eventTime {
+                if first_event.event_time == second_event.event_time {
                     // Found matching events, create a netting event
                     let netting_event = SWAPS::netting_event(
                         Some(first_event.clone()),
@@ -386,7 +386,7 @@ impl SWAPS {
                     // If we found a match, break out of inner loop
                     // equivalent to the 'break' in the Java code
                     break;
-                } else if second_event.eventTime < first_event.eventTime {
+                } else if second_event.event_time < first_event.event_time {
                     // Second event is earlier, move to next in second leg
                     j += 1;
                 } else {
@@ -435,8 +435,8 @@ impl SWAPS {
         parent_contract_id: Option<String>,
     ) -> ContractEvent {
         let netting = EventFactory::create_event(
-            e1.clone().unwrap().eventTime,
-            e1.clone().unwrap().eventType,
+            e1.clone().unwrap().event_time,
+            e1.clone().unwrap().event_type,
             e1.clone().unwrap().currency.as_ref(),
             Some(Rc::new(POF_NET_SWAPS::new(e1.clone().unwrap(), e2.clone().unwrap()))),
             Some(Rc::new(STF_NET_SWAPS::new(e1.clone().unwrap(), e2.clone().unwrap()))),
@@ -710,18 +710,18 @@ impl fmt::Display for SWAPS {
 //
 //                     for ce in events2.iter() {
 //                         let mut sub_res_hm: HashMap<String, Value> = HashMap::new();
-//                         sub_res_hm.insert("eventDate".to_string(), Value::String( ce.eventTime.unwrap().format("%Y-%m-%dT%H:%M:%S").to_string() ));
-//                         sub_res_hm.insert("eventType".to_string(), Value::String( ce.eventType.clone().to_string() ));
+//                         sub_res_hm.insert("eventDate".to_string(), Value::String( ce.event_time.unwrap().format("%Y-%m-%dT%H:%M:%S").to_string() ));
+//                         sub_res_hm.insert("eventType".to_string(), Value::String( ce.event_type.clone().to_string() ));
 //                         sub_res_hm.insert("payoff".to_string(), Value::F64( ce.payoff.unwrap() ));
 //                         sub_res_hm.insert("currency".to_string(),Value::String( ce.currency.clone().unwrap() ));
-//                         let ci = ce.contractID.clone().unwrap();
+//                         let ci = ce.contract_id.clone().unwrap();
 //
 //                         let vContRef: Vec<ContractReference> = cm.contractStructure.clone()
 //                             .unwrap_or_default()
 //                             .iter()
 //                             .filter(|cr| {
 //                                 cr.object.as_cm()
-//                                     .and_then(|cm_obj| cm_obj.contractID.clone())
+//                                     .and_then(|cm_obj| cm_obj.contract_id.clone())
 //                                     .map_or(false, |id| id == ci)
 //                             })
 //                             .cloned()
@@ -746,7 +746,7 @@ impl fmt::Display for SWAPS {
 //                             .unwrap_or_default();
 //                         sub_res_hm.insert("accruedInterest".to_string(), Value::F64( accInt  ));
 //
-//                         println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.eventTime.unwrap(), ce.eventType, ce.payoff, ce.state.accruedInterest);
+//                         println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accruedInterest);
 //                         vec_results.push(sub_res_hm);
 //                     }
 //

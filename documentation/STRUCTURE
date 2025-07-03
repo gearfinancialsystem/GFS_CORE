@@ -24,3 +24,7 @@ doit etre ecrit : "arrayCycleAnchorDateOfInterestPayment": ["2021-01-01T00:00:00
 "creditEventTypeCovered": "DF", doit etre ecrit "creditEventTypeCovered": ["DF"],
 
 pour eviter toute ambiguite quant au type
+
+A FAIRE :
+les supertraits : faire en sorte que TraitisodateTime soit un supertrait de Partialeq, clone, debug ect
+et n'appeler que Traitisodatetime

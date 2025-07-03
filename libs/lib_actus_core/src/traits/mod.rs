@@ -12,3 +12,6 @@ pub mod TraitCalcConvention;
 pub mod TraitPayOffFunction;
 // pub mod RiskFactorModelTrait;
 pub mod TraitStateTransitionFunction;
+pub mod TraitMarqueurIsoDatetime;
+pub mod TraitMarqueurIsoCycle;
+pub mod TraitConvertContractToAnyEvent;

@@ -38,32 +38,32 @@ impl BCS {
         let mut events = Vec::new();
 
         // Purchase date event of master contract
-        if model.purchaseDate.is_some() {
+        if model.purchase_date.is_some() {
             events.push(EventFactory::create_event(
-                model.purchaseDate.clone(),
-                EventType::PRD,
-                model.currency.as_ref(),
+                &model.purchase_date.clone(),
+                &EventType::PRD,
+                &model.currency,
                 Some(Rc::new(POF_PRD_OPTNS)),
                 Some(Rc::new(STF_PRD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Raw monitoring events
         let monitoring_events = EventFactory::create_events_with_convention(
             &ScheduleFactory::create_schedule(
-                model.boundaryMonitoringAnchorDate.clone(),
-                model.boundaryMonitoringEndDate.clone(),
-                model.boundaryMonitoringCycle.clone(),
-                model.endOfMonthConvention.clone().unwrap(),
+                &model.boundary_monitoring_anchor_date,
+                &model.boundary_monitoring_end_date,
+                &model.boundary_monitoring_cycle,
+                &model.end_of_month_convention.clone().unwrap(),
                 true,
             ),
             EventType::ME,
-            model.currency.as_ref(),
+            &model.currency,
             Some(Rc::new(POF_AD_PAM)),
             Some(Rc::new(STF_ME_BCS)),
-            model.businessDayAdjuster.as_ref().unwrap(),
-            model.contractID.as_ref(),
+            model.business_day_adjuster.as_ref().unwrap(),
+            &model.contract_id,
         );
 
         events.extend(monitoring_events);
@@ -88,28 +88,28 @@ impl BCS {
                 &mut states,
                 model,
                 observer,
-                &model.dayCountConvention.clone().unwrap(),
-                &model.businessDayAdjuster.clone().unwrap(),
+                &model.day_count_convention.clone().unwrap(),
+                &model.business_day_adjuster.clone().unwrap(),
             );
         }
 
         // Remove monitoring events
-        events.retain(|e| e.eventType != EventType::ME);
+        events.retain(|e| e.event_type != EventType::ME);
 
         // Activating child legs based on boundaryEffect
-        if states.boundaryCrossedFlag.unwrap() {
+        if states.boundary_crossed_flag.unwrap() {
             match model.boundaryEffect.as_ref().unwrap() {
                 BoundaryEffect::INFIL(INFIL) => {
-                    states.boundaryLeg1ActiveFlag = Some(true);
-                    states.boundaryLeg2ActiveFlag = Some(false);
+                    states.boundary_leg1_active_flag = Some(true);
+                    states.boundary_leg2_active_flag = Some(false);
                 }
                 BoundaryEffect::INSEL(INSEL) => {
-                    states.boundaryLeg2ActiveFlag = Some(true);
-                    states.boundaryLeg1ActiveFlag = Some(false);
+                    states.boundary_leg2_active_flag = Some(true);
+                    states.boundary_leg1_active_flag = Some(false);
                 }
                 BoundaryEffect::OUT(OUT) => {
-                    states.boundaryLeg1ActiveFlag = Some(false);
-                    states.boundaryLeg2ActiveFlag = Some(false);
+                    states.boundary_leg1_active_flag = Some(false);
+                    states.boundary_leg2_active_flag = Some(false);
                 }
                 _ => {}
             }
@@ -132,65 +132,65 @@ impl BCS {
         let second_leg_model = second_leg.unwrap();
 
         // Create children event schedule based on boundary conditions
-        if states.boundaryLeg1ActiveFlag.unwrap() == true {
+        if states.boundary_leg1_active_flag.unwrap() == true {
             first_leg_schedule = ContractType::schedule(
-                first_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
+                first_leg_model.maturity_date.clone().map(|rc| (*rc).clone()),
                 &first_leg_model,
             ).unwrap();
 
             if first_leg_model.contractType.clone().unwrap() != "PAM" {
                 first_leg_schedule.push(EventFactory::create_event(
-                    states.statusDate.clone(),
+                    states.status_date.clone(),
                     EventType::PRD,
-                    first_leg_model.currency.as_ref(),
+                    first_leg_&model.currency,
                     Some(Rc::new(POF_PRD_BCS)),
                     Some(Rc::new(STF_PRD_STK)),
-                    first_leg_model.contractID.as_ref(),
+                    first_leg_&model.contract_id,
                 ));
             } else {
-                first_leg_schedule.retain(|e| e.eventType != EventType::IED);
+                first_leg_schedule.retain(|e| e.event_type != EventType::IED);
                 first_leg_schedule.push(EventFactory::create_event(
-                    states.statusDate.clone(),
+                    states.status_date.clone(),
                     EventType::IED,
-                    first_leg_model.currency.as_ref(),
+                    first_leg_schedule&model.currency,
                     Some(Rc::new(POF_IED_PAM)),
                     Some(Rc::new(STF_IED_PAM)),
-                    first_leg_model.contractID.as_ref(),
+                    first_leg_&model.contract_id,
                 ));
             }
 
-            first_leg_schedule.retain(|e| e.eventTime >= states.statusDate);
+            first_leg_schedule.retain(|e| e.event_time >= states.status_date);
 
             // Apply schedule of children
             let first_leg_events = ContractType::apply(first_leg_schedule, &first_leg_model, observer).unwrap();
             events.extend(first_leg_events);
-        } else if states.boundaryLeg1ActiveFlag.clone().unwrap() == false
-            && model.boundaryLegInitiallyActive.is_some()
-            && model.boundaryLegInitiallyActive.clone().unwrap().to_stringx().unwrap() == ReferenceRole::FIL.to_stringx().unwrap()
+        } else if states.boundary_leg1_active_flag.clone().unwrap() == false
+            && model.boundary_leg_initially_active.is_some()
+            && model.boundary_leg_initially_active.clone().unwrap().to_stringx().unwrap() == ReferenceRole::FIL.to_stringx().unwrap()
         {
             first_leg_schedule = ContractType::schedule(
-                first_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
+                first_leg_model.maturity_date.clone().map(|rc| (*rc).clone()),
                 &first_leg_model,
             ).unwrap();
 
             if first_leg_model.contractType.clone().unwrap() != "PAM" {
                 first_leg_schedule.push(EventFactory::create_event(
-                    model.purchaseDate.clone(),
+                    model.purchase_date.clone(),
                     EventType::PRD,
-                    first_leg_model.currency.as_ref(),
+                    first_leg_&model.currency,
                     Some(Rc::new(POF_PRD_BCS)),
                     Some(Rc::new(STF_PRD_STK)),
-                    first_leg_model.contractID.as_ref(),
+                    first_leg_&model.contract_id,
                 ));
             }
 
             let td_event = EventFactory::create_event(
-                states.statusDate.clone(),
+                states.status_date.clone(),
                 EventType::TD,
-                first_leg_model.currency.as_ref(),
+                first_leg_&model.currency,
                 Some(Rc::new(POF_TD_BCS)),
                 Some(Rc::new(STF_TD_BCS)),
-                first_leg_model.contractID.as_ref(),
+                first_leg_&model.contract_id,
             );
 
             first_leg_schedule.retain(|e| e.compare_to(&td_event) != 1);
@@ -201,67 +201,67 @@ impl BCS {
             events.extend(first_leg_events.unwrap());
         }
 
-        if states.boundaryLeg2ActiveFlag.clone().unwrap() == true {
+        if states.boundary_leg2_active_flag.clone().unwrap() == true {
             second_leg_schedule = ContractType::schedule(
-                second_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
+                second_leg_model.maturity_date.clone().map(|rc| (*rc).clone()),
                 &second_leg_model,
             ).unwrap();
 
             if second_leg_model.contractType.clone().unwrap().to_string() != "PAM"{
                 second_leg_schedule.push(EventFactory::create_event(
-                    states.statusDate.clone(),
+                    states.status_date.clone(),
                     EventType::PRD,
-                    second_leg_model.currency.as_ref(),
+                    second_leg_&model.currency,
                     Some(Rc::new(POF_PRD_BCS)),
                     Some(Rc::new(STF_PRD_STK)),
-                    second_leg_model.contractID.as_ref(),
+                    second_leg_&model.contract_id,
                 ));
             } else {
-                second_leg_schedule.retain(|e| e.eventType != EventType::IED);
+                second_leg_schedule.retain(|e| e.event_type != EventType::IED);
                 second_leg_schedule.push(EventFactory::create_event(
-                    states.statusDate.clone(),
+                    states.status_date.clone(),
                     EventType::IED,
-                    second_leg_model.currency.as_ref(),
+                    second_leg_&model.currency,
                     Some(Rc::new(POF_IED_PAM)),
                     Some(Rc::new(STF_IED_PAM)),
-                    second_leg_model.contractID.as_ref(),
+                    second_leg_&model.contract_id,
                 ));
             }
 
-            second_leg_schedule.retain(|e| e.eventTime >= states.statusDate);
+            second_leg_schedule.retain(|e| e.event_time >= states.status_date);
 
             // Apply schedule of children
             let second_leg_events = ContractType::apply(second_leg_schedule, &second_leg_model, observer);
             events.extend(second_leg_events.unwrap());
-        } else if states.boundaryLeg2ActiveFlag.clone().unwrap() == false
-            && model.boundaryLegInitiallyActive.is_some()
-            && model.boundaryLegInitiallyActive.as_ref().unwrap().to_stringx().unwrap() == ReferenceRole::SEL.to_stringx().unwrap()
+        } else if states.boundary_leg2_active_flag.clone().unwrap() == false
+            && model.boundary_leg_initially_active.is_some()
+            && model.boundary_leg_initially_active.as_ref().unwrap().to_stringx().unwrap() == ReferenceRole::SEL.to_stringx().unwrap()
         {
             if second_leg_model.contractType.clone().unwrap() != "PAM" {
                 second_leg_schedule.push(EventFactory::create_event(
-                    model.purchaseDate.clone(),
+                    model.purchase_date.clone(),
                     EventType::PRD,
-                    second_leg_model.currency.as_ref(),
+                    second_leg_&model.currency,
                     Some(Rc::new(POF_PRD_BCS)),
                     Some(Rc::new(STF_PRD_STK)),
-                    second_leg_model.contractID.as_ref(),
+                    second_leg_&model.contract_id,
                 ));
             }
 
             let td_event = EventFactory::create_event(
-                states.statusDate.clone(),
+                states.status_date.clone(),
                 EventType::TD,
-                second_leg_model.currency.as_ref(),
+                second_leg_&model.currency,
                 Some(Rc::new(POF_TD_BCS)),
                 Some(Rc::new(STF_TD_BCS)),
-                second_leg_model.contractID.as_ref(),
+                second_leg_&model.contract_id,
             );
 
             second_leg_schedule.retain(|e| e.compare_to(&td_event) != 1);
             second_leg_schedule.push(td_event);
 
             second_leg_schedule = ContractType::schedule(
-                second_leg_model.maturityDate.clone().map(|rc| (*rc).clone()),
+                second_leg_model.maturity_date.clone().map(|rc| (*rc).clone()),
                 &second_leg_model,
             ).unwrap();
 
@@ -271,23 +271,23 @@ impl BCS {
         }
 
         // Termination of master contract
-        if states.boundaryCrossedFlag.clone().unwrap() == true && model.boundaryEffect.clone().unwrap() != BoundaryEffect::INFIL(INFIL) {
+        if states.boundary_crossed_flag.clone().unwrap() == true && model.boundaryEffect.clone().unwrap() != BoundaryEffect::INFIL(INFIL) {
             events.push(EventFactory::create_event(
-                states.statusDate.clone(),
+                states.status_date.clone(),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_BCS)),
                 Some(Rc::new(STF_TD_BCS)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         } else {
             events.push(EventFactory::create_event(
-                model.boundaryMonitoringEndDate.clone(),
+                model.boundary_monitoring_end_date.clone(),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_BCS)),
                 Some(Rc::new(STF_TD_BCS)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
@@ -302,29 +302,29 @@ impl BCS {
         let mut states = StateSpace::default();
 
         // Initialize state variables
-        states.statusDate = model.statusDate;
-        states.contractPerformance = model.contractPerformance;
-        states.boundaryCrossedFlag = Some(false);
-        states.boundaryMonitoringFlag = Some(true);
+        states.status_date = model.status_date;
+        states.contract_performance = model.contract_performance;
+        states.boundary_crossed_flag = Some(false);
+        states.boundary_monitoring_flag = Some(true);
 
-        if let role = &model.boundaryLegInitiallyActive.clone().unwrap().to_stringx().unwrap() {
+        if let role = &model.boundary_leg_initially_active.clone().unwrap().to_stringx().unwrap() {
             match role.as_str() {
                 "FIL" => {
-                    states.boundaryLeg1ActiveFlag = Some(true);
-                    states.boundaryLeg2ActiveFlag = Some(false);
+                    states.boundary_leg1_active_flag = Some(true);
+                    states.boundary_leg2_active_flag = Some(false);
                 }
                 "SEL" => {
-                    states.boundaryLeg2ActiveFlag = Some(true);
-                    states.boundaryLeg1ActiveFlag = Some(false);
+                    states.boundary_leg2_active_flag = Some(true);
+                    states.boundary_leg1_active_flag = Some(false);
                 }
                 _ => {
-                    states.boundaryLeg1ActiveFlag = Some(false);
-                    states.boundaryLeg2ActiveFlag = Some(false);
+                    states.boundary_leg1_active_flag = Some(false);
+                    states.boundary_leg2_active_flag = Some(false);
                 }
             }
         } else {
-            states.boundaryLeg1ActiveFlag = Some(false);
-            states.boundaryLeg2ActiveFlag = Some(false);
+            states.boundary_leg1_active_flag = Some(false);
+            states.boundary_leg2_active_flag = Some(false);
         }
 
         states

@@ -30,11 +30,11 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         states.notionalPrincipal = Some(contract_role.role_sign() * notional_principal);
         states.nominalInterestRate = Some(nominal_interest_rate);
 
-        if let Some(interest_calculation_base) = &model.interestCalculationBase {
+        if let Some(interest_calculation_base) = &model.interest_calculation_base {
             if *interest_calculation_base == InterestCalculationBase::NT(NT) {
                 states.interestCalculationBaseAmount = states.notionalPrincipal;
             } else {
-                let interest_calculation_base_amount = model.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
+                let interest_calculation_base_amount = model.interest_calculation_baseAmount.expect("interestCalculationBaseAmount should always be Some");
                 states.interestCalculationBaseAmount = Some(contract_role.role_sign() * interest_calculation_base_amount);
             }
         }

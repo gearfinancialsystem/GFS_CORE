@@ -12,7 +12,7 @@ use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::business_day_adjuster::business_day_adjuster;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -25,9 +25,9 @@ impl COM {
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let mut events = Vec::new();
-        let status_date = model.statusDate.clone().unwrap();
-        let purchase_date = model.purchaseDate.clone();
-        let termination_date = model.terminationDate.clone();
+        let status_date = model.status_date.clone().unwrap();
+        let purchase_date = model.purchase_date.clone();
+        let termination_date = model.termination_date.clone();
 
         // Purchase
         if let Some(pd) = purchase_date {
@@ -35,10 +35,10 @@ impl COM {
                 events.push(EventFactory::create_event(
                     Some(pd),
                     EventType::PRD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     Some(Rc::new(POF_PRD_STK)),
                     Some(Rc::new(STF_PRD_STK)),
-                    model.contractID.as_ref(),
+                    &model.contract_id,
                 ));
             }
         }
@@ -49,10 +49,10 @@ impl COM {
                 events.push(EventFactory::create_event(
                     Some(td),
                     EventType::TD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     Some(Rc::new(POF_TD_STK)),
                     Some(Rc::new(STF_TD_STK)),
-                    model.contractID.as_ref(),
+                    &model.contract_id,
                 ));
             }
         }
@@ -67,7 +67,7 @@ impl COM {
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
-        states.statusDate = model.statusDate.clone();
+        states.status_date = model.status_date.clone();
 
         // Sort the events according to their time sequence
         events.sort();
@@ -79,7 +79,7 @@ impl COM {
                 model,
                 observer,
                 &DayCountConvention::new(Some("AAISDA"), None, None).expect("etet"),
-                &BusinessDayAdjuster::new("NOS", model.calendar.clone().unwrap()).expect("good NOS"),
+                &business_day_adjuster::new("NOS", model.calendar.clone().unwrap()).expect("good NOS"),
             );
         }
 

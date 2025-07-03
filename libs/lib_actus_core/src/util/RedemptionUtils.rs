@@ -26,7 +26,7 @@ impl RedemptionUtils {
 
         // determine remaining PR schedule
         let mut event_times: HashSet<IsoDatetime> = ScheduleFactory::create_schedule(
-            model.cycleAnchorDateOfPrincipalRedemption,
+            model.cycle_anchor_date_of_principal_redemption,
             Some(maturity),
             model.cycleOfPrincipalRedemption.clone(),
             model.endOfMonthConvention.unwrap(),

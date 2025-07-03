@@ -13,7 +13,7 @@ use crate::terms::grp_boundary::BoundaryValue::BoundaryValue;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::contract_id::contract_id;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
@@ -213,7 +213,7 @@ pub struct ContractModel {
     pub business_day_adjuster: Option<BusinessDayAdjuster>,
     pub calendar: Option<Rc<Calendar>>,
     pub capitalization_end_date: Option<CapitalizationEndDate>,
-    pub contract_id: Option<ContractID>,
+    pub contract_id: Option<contract_id>,
     pub contract_performance: Option<ContractPerformance>,
     pub contract_role: Option<ContractRole>,
     pub contract_structure: Option<ContractStructure>,
@@ -350,7 +350,7 @@ impl ContractModel {
                     business_day_adjuster:                  business_day_adjuster,
                     calendar:                               calendar,
                     capitalization_end_date:                CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
-                    contract_id:                            ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id:                            contract_id::provide_from_input_dict(sm, "contract_id"),
                     contract_performance:                   ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
                     contract_role:                          ContractRole::provide_from_input_dict(sm, "contractRole"),
                     contract_type:                          ct_str.clone().to_string(),
@@ -423,7 +423,7 @@ impl ContractModel {
                 } else {None};
 
                 let cm = ContractModel {
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -475,7 +475,7 @@ impl ContractModel {
 
                 let cm = ContractModel {
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -585,7 +585,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -755,7 +755,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -874,7 +874,7 @@ impl ContractModel {
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -985,7 +985,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
@@ -1044,7 +1044,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1070,7 +1070,7 @@ impl ContractModel {
 
                 let cm = ContractModel {
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1092,7 +1092,7 @@ impl ContractModel {
 
                 let cm = ContractModel {
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
@@ -1168,7 +1168,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1265,7 +1265,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1396,7 +1396,7 @@ impl ContractModel {
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
                     contract_type: ct_str.clone().to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1516,7 +1516,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1621,7 +1621,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1708,7 +1708,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1813,7 +1813,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1903,7 +1903,7 @@ impl ContractModel {
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1963,7 +1963,7 @@ impl ContractModel {
                     contract_type: ct_str.clone().to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
-                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+                    contract_id: contract_id::provide_from_input_dict(sm, "contract_id"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),

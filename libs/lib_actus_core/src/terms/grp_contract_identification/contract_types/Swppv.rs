@@ -38,67 +38,67 @@ impl SWPPV {
         let mut events = Vec::new();
 
         // Purchase event
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             events.push(EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_FXOUT)),
                 Some(Rc::new(STF_PRD_SWPPV)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Initial exchange event
         events.push(EventFactory::create_event(
-            model.initialExchangeDate.clone(),
+            model.initial_exchange_date.clone(),
             EventType::IED,
-            model.currency.as_ref(),
+            &model.currency,
             Some(Rc::new(POF_IED_SWPPV)),
             Some(Rc::new(STF_IED_SWPPV)),
-            model.contractID.as_ref(),
+            &model.contract_id,
         ));
 
         // Principal redemption event
         events.push(EventFactory::create_event(
-            model.maturityDate.clone().map(|rc| (*rc).clone()),
+            model.maturity_date.clone().map(|rc| (*rc).clone()),
             EventType::MD,
-            model.currency.as_ref(),
+            &model.currency,
             Some(Rc::new(POF_MD_SWPPV)),
             Some(Rc::new(STF_MD_SWPPV)),
-            model.contractID.as_ref(),
+            &model.contract_id,
         ));
 
         // Interest payment events
         if model.deliverySettlement == Some(DeliverySettlement::D(D)) || model.deliverySettlement.is_none() {
             // In case of physical delivery (delivery of individual cash flows)
             let interest_schedule = ScheduleFactory::create_schedule_end_time_true(
-                model.cycleAnchorDateOfInterestPayment.clone(),
-                model.maturityDate.clone().map(|rc| (*rc).clone()),
-                model.cycleOfInterestPayment.clone(),
-                model.endOfMonthConvention.clone().unwrap(),
+                model.cycle_anchor_date_of_Interest_payment.clone(),
+                model.maturity_date.clone().map(|rc| (*rc).clone()),
+                model.cycle_of_interest_payment.clone(),
+                model.end_of_month_convention.clone().unwrap(),
             );
 
             // Fixed rate events
             let fixed_rate_events = EventFactory::create_events_with_convention(
                 &interest_schedule,
                 EventType::IPFX,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_IPFix_SWPPV)),
                 Some(Rc::new(STF_IPFix_SWPPV)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             );
 
             // Floating rate events
             let floating_rate_events = EventFactory::create_events_with_convention(
                 &interest_schedule,
                 EventType::IPFL,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_IPFloat_SWPPV)),
                 Some(Rc::new(STF_IPFloat_SWPPV)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             );
 
             events.extend(fixed_rate_events);
@@ -107,17 +107,17 @@ impl SWPPV {
             // In case of cash delivery (cash settlement)
             let interest_events = EventFactory::create_events_with_convention(
                 &ScheduleFactory::create_schedule_end_time_true(
-                    model.cycleAnchorDateOfInterestPayment.clone(),
-                    model.maturityDate.clone().map(|rc| (*rc).clone()),
-                    model.cycleOfInterestPayment.clone(),
-                    model.endOfMonthConvention.clone().unwrap(),
+                    model.cycle_anchor_date_of_Interest_payment.clone(),
+                    model.maturity_date.clone().map(|rc| (*rc).clone()),
+                    model.cycle_of_interest_payment.clone(),
+                    model.end_of_month_convention.clone().unwrap(),
                 ),
                 EventType::IP,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_IP_SWPPV)),
                 Some(Rc::new(STF_IP_SWPPV)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             );
 
             events.extend(interest_events);
@@ -126,63 +126,63 @@ impl SWPPV {
         // Rate reset events
         let rate_reset_events = EventFactory::create_events_with_convention(
             &ScheduleFactory::create_schedule(
-                model.cycleAnchorDateOfRateReset.clone(),
-                model.maturityDate.clone().map(|rc| (*rc).clone()),
-                model.cycleOfRateReset.clone(),
-                model.endOfMonthConvention.clone().unwrap(),
+                model.cycle_anchor_date_of_rate_reset.clone(),
+                model.maturity_date.clone().map(|rc| (*rc).clone()),
+                model.cycle_of_rate_reset.clone(),
+                model.end_of_month_convention.clone().unwrap(),
                 false,
             ),
             EventType::RR,
-            model.currency.as_ref(),
+            &model.currency,
             Some(Rc::new(POF_RR_PAM)),
             Some(Rc::new(STF_RR_SWPPV)),
-            model.businessDayAdjuster.as_ref().unwrap(),
-            model.contractID.as_ref(),
+            model.business_day_adjuster.as_ref().unwrap(),
+            &model.contract_id,
         );
 
         events.extend(rate_reset_events);
 
         // Termination event
-        if let Some(termination_date) = &model.terminationDate {
+        if let Some(termination_date) = &model.termination_date {
             let termination = EventFactory::create_event(
                 Some(termination_date.clone()),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_FXOUT)),
                 Some(Rc::new(STF_TD_SWPPV)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             );
 
-            events.retain(|e| e.eventTime <= termination.eventTime);
+            events.retain(|e| e.event_time <= termination.event_time);
             events.push(termination);
         }
 
         // Remove all pre-status date events
         let status_event = EventFactory::create_event(
-            model.statusDate.clone(),
+            model.status_date.clone(),
             EventType::AD,
-            model.currency.as_ref(),
+            &model.currency,
             None,
             None,
-            model.contractID.as_ref(),
+            &model.contract_id,
         );
 
-        events.retain(|e| e.eventTime >= status_event.eventTime);
+        events.retain(|e| e.event_time >= status_event.event_time);
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
             Some(to.clone()),
             EventType::AD,
-            model.currency.as_ref(),
+            &model.currency,
             None,
             None,
-            model.contractID.as_ref(),
+            &model.contract_id,
         );
 
-        events.retain(|e| e.eventTime <= to_event.eventTime);
+        events.retain(|e| e.event_time <= to_event.event_time);
 
         // Sort events according to their time of occurrence
-        events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
+        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         Ok(events)
     }
@@ -195,30 +195,30 @@ impl SWPPV {
         let mut states = Self::init_state_space(model);
         let mut events = events.clone();
 
-        events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
+        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         for event in events.iter_mut() {
             event.eval(
                 &mut states,
                 model,
                 observer,
-                model.dayCountConvention.as_ref().unwrap(),
-                model.businessDayAdjuster.as_ref().unwrap(),
+                model.day_count_convention.as_ref().unwrap(),
+                model.business_day_adjuster.as_ref().unwrap(),
             );
         }
 
         // Remove pre-purchase events if purchase date is set
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             let purchase_event = EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 None,
                 None,
-                model.contractID.as_ref(),
+                &model.contract_id,
             );
 
-            events.retain(|e| e.eventType == EventType::AD || e.eventTime >= purchase_event.eventTime);
+            events.retain(|e| e.event_type == EventType::AD || e.event_time >= purchase_event.event_time);
         }
 
         events
@@ -227,16 +227,16 @@ impl SWPPV {
     fn init_state_space(model: &ContractModel) -> StateSpace {
         let mut states = StateSpace::default();
 
-        states.notionalScalingMultiplier = Some(1.0);
-        states.statusDate = model.statusDate;
+        states.notional_scaling_multiplier = Some(1.0);
+        states.status_date = model.status_date;
 
-        if model.initialExchangeDate <= model.statusDate {
+        if model.initial_exchange_date <= model.status_date {
             let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
-            states.nominalInterestRate = model.nominalInterestRate;
-            states.nominalInterestRate2 = model.nominalInterestRate2;
-            states.accruedInterest = Some(role_sign * model.accruedInterest.unwrap());
-            states.accruedInterest2 = Some(role_sign * model.accruedInterest2.unwrap());
+            states.notional_principal = Some(role_sign * model.notional_principal.unwrap());
+            states.nominal_interest_rate = model.nominal_interest_rate;
+            states.nominal_interest_rate2 = model.nominal_interest_rate2;
+            states.accrued_interest = Some(role_sign * model.accrued_interest.unwrap());
+            states.accrued_interest2 = Some(role_sign * model.accrued_interest2.unwrap());
             states.lastInterestPeriod = Some(0.0);
         }
 

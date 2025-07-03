@@ -32,7 +32,7 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
 
         if let (Some(cycle_anchor_date), Some(initial_exchange_date)) = (
             model.cycleAnchorDateOfInterestPayment.as_ref(),
-            model.initialExchangeDate.as_ref(),
+            model.initial_exchange_date.as_ref(),
         ) {
             if cycle_anchor_date < initial_exchange_date {
                 states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {

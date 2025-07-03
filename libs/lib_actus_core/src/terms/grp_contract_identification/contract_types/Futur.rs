@@ -28,83 +28,83 @@ impl FUTUR {
         let mut events = Vec::new();
 
         // Purchase event
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             events.push(EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_OPTNS)),
                 Some(Rc::new(STF_PRD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Exercise and Settlement events
-        if let Some(exercise_date) = &model.exerciseDate {
+        if let Some(exercise_date) = &model.exercise_date {
             events.push(EventFactory::create_event(
                 Some(exercise_date.clone()),
                 EventType::XD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_XD_FUTUR)),
                 Some(Rc::new(STF_XD_FUTUR)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-                &(exercise_date.clone() + model.settlementPeriod.clone().unwrap())
+            let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
+                &(exercise_date.clone() + model.settlement_period.clone().unwrap())
             );
 
             events.push(EventFactory::create_event(
                 Some(settlement_date),
                 EventType::STD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_STD_OPTNS)),
                 Some(Rc::new(STF_STD_OPTNS)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         } else {
             events.push(EventFactory::create_event(
-                model.maturityDate.clone().map(|rc| (*rc).clone()),
+                model.maturity_date.clone().map(|rc| (*rc).clone()),
                 EventType::XD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_XD_FUTUR)),
                 Some(Rc::new(STF_XD_FUTUR)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
 
-            let settlement_date = model.businessDayAdjuster.as_ref().unwrap().shift_bd(
-                &(model.maturityDate.clone().map(|rc| (*rc).clone()).unwrap().clone() + model.settlementPeriod.clone().unwrap())
+            let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
+                &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().clone() + model.settlement_period.clone().unwrap())
             );
 
             events.push(EventFactory::create_event(
                 Some(settlement_date),
                 EventType::STD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_STD_OPTNS)),
                 Some(Rc::new(STF_STD_OPTNS)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Maturity event
         events.push(EventFactory::create_event(
-            model.maturityDate.clone().map(|rc| (*rc).clone()),
+            model.maturity_date.clone().map(|rc| (*rc).clone()),
             EventType::MD,
-            model.currency.as_ref(),
+            &model.currency,
             Some(Rc::new(POF_MD_FUTUR)),
             Some(Rc::new(STF_MD_FUTUR)),
-            model.contractID.as_ref(),
+            &model.contract_id,
         ));
 
         // Termination event
-        if let Some(termination_date) = &model.terminationDate {
+        if let Some(termination_date) = &model.termination_date {
             let termination = EventFactory::create_event(
                 Some(termination_date.clone()),
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_OPTNS)),
                 Some(Rc::new(STF_TD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             );
 
             events.retain(|e| e <= &termination);
@@ -113,12 +113,12 @@ impl FUTUR {
 
         // Remove all pre-status date events
         let status_event = EventFactory::create_event(
-            model.statusDate,
+            model.status_date,
             EventType::AD,
-            model.currency.as_ref(),
+            &model.currency,
             None,
             None,
-            model.contractID.as_ref(),
+            &model.contract_id,
         );
 
         events.retain(|e| e >= &status_event);
@@ -140,23 +140,23 @@ impl FUTUR {
                 &mut states,
                 model,
                 observer,
-                &model.dayCountConvention.as_ref().unwrap(),
-                &model.businessDayAdjuster.as_ref().unwrap(),
+                &model.day_count_convention.as_ref().unwrap(),
+                &model.business_day_adjuster.as_ref().unwrap(),
             );
         }
 
         // Remove pre-purchase events if purchase date is set
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             let purchase_event = EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 None,
                 None,
-                model.contractID.as_ref(),
+                &model.contract_id,
             );
 
-            events.retain(|e| e.eventType == EventType::AD || e >= &purchase_event);
+            events.retain(|e| e.event_type == EventType::AD || e >= &purchase_event);
         }
 
         events
@@ -165,10 +165,10 @@ impl FUTUR {
     fn init_state_space(model: &ContractModel) -> StateSpace {
         let mut states = StateSpace::default();
 
-        states.statusDate = model.statusDate;
-        states.exerciseAmount = model.exerciseAmount;
-        states.exerciseDate = model.exerciseDate;
-        states.contractPerformance = model.contractPerformance;
+        states.status_date = model.status_date;
+        states.exercise_amount = model.exerciseAmount;
+        states.exerciseDate = model.exercise_date;
+        states.contract_performance = model.contract_performance;
 
         states
     }

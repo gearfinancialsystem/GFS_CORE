@@ -33,32 +33,32 @@ impl STK {
         let mut events = Vec::new();
 
 
-        if model.purchaseDate.is_some(){
+        if model.purchase_date.is_some(){
             events.push(EventFactory::create_event(
-                model.purchaseDate,
+                model.purchase_date,
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_STK)),
                 Some(Rc::new(STF_PRD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
         if model.cycleOfDividendPayment.is_some(){
-            if model.terminationDate.is_none(){
+            if model.termination_date.is_none(){
                 events.extend(
                     EventFactory::create_events_with_convention(
                         &ScheduleFactory::create_schedule_end_time_true(
                             model.cycleAnchorDateOfDividendPayment,
                             Some(model.cycleAnchorDateOfDividendPayment.clone().unwrap() + IsoPeriod::of_years(10)), // definir les constantes
                             model.cycleOfDividendPayment.clone(),
-                            model.endOfMonthConvention.clone().unwrap()
+                            model.end_of_month_convention.clone().unwrap()
                         ),
                         EventType::DV,
-                        model.currency.as_ref(),
+                        &model.currency,
                         Some(Rc::new(POF_DV_STK)),
                         Some(Rc::new(STF_DV_STK)),
-                        &model.businessDayAdjuster.clone().unwrap(),
-                        model.contractID.as_ref())
+                        &model.business_day_adjuster.clone().unwrap(),
+                        &model.contract_id)
                 );
             }
             else {
@@ -66,26 +66,26 @@ impl STK {
                     EventFactory::create_events_with_convention(
                         &ScheduleFactory::create_schedule_end_time_true(
                             model.cycleAnchorDateOfDividendPayment,
-                            model.terminationDate.clone(),
+                            model.termination_date.clone(),
                             model.cycleOfDividendPayment.clone(),
-                            model.endOfMonthConvention.unwrap()),
+                            model.end_of_month_convention.unwrap()),
                         EventType::DV,
-                        model.currency.as_ref(),
+                        &model.currency,
                         Some(Rc::new(POF_DV_STK)),
                         Some(Rc::new(STF_DV_STK)),
-                        &model.businessDayAdjuster.clone().unwrap(),
-                        model.contractID.as_ref())
+                        &model.business_day_adjuster.clone().unwrap(),
+                        &model.contract_id)
                 )
             }
         }
-        if model.terminationDate.is_some(){
+        if model.termination_date.is_some(){
             let termination = EventFactory::create_event(
-                model.terminationDate,
+                model.termination_date,
                 EventType::TD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_TD_STK)),
                 Some(Rc::new(STF_TD_STK)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             );
             events.retain(|e| {
                 e.compare_to(&termination) != 1
@@ -95,12 +95,12 @@ impl STK {
         events.retain(|e| {
             e.compare_to({
                 &EventFactory::create_event(
-                    model.statusDate,
+                    model.status_date,
                     EventType::TD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     None,
                     None,
-                    model.contractID.as_ref()
+                    &model.contract_id
                 )
             }) != -1
         });
@@ -109,10 +109,10 @@ impl STK {
                 &EventFactory::create_event(
                     Some(to.clone()),
                     EventType::AD,
-                    model.currency.as_ref(),
+                    &model.currency,
                     None,
                     None,
-                    model.contractID.as_ref()
+                    &model.contract_id
                 )
             }) != 1
         });
@@ -139,7 +139,7 @@ impl STK {
                 model,
                 observer,
                 &DayCountConvention::new(Some("E30360"), None, None).unwrap(),
-                &model.businessDayAdjuster.clone().unwrap()
+                &model.business_day_adjuster.clone().unwrap()
             )
         });
         // Return evaluated events
@@ -151,7 +151,7 @@ impl STK {
         model: &ContractModel,
     ) -> StateSpace {
         let mut states = StateSpace::default();
-        states.statusDate = model.statusDate;
+        states.status_date = model.status_date;
 
         states
     }

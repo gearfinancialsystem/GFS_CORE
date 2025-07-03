@@ -17,14 +17,22 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
+use std::cmp::Ordering;
+use std::fmt::Debug;
+use std::marker::PhantomData;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[derive(Clone)]
-pub struct ContractEvent {
+pub struct ContractEvent<T1, T2> {
+    _marker_t1: PhantomData<T1>,
+    _marker_t2: PhantomData<T2>,
     pub epoch_offset: Option<i64>,
     pub fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
     pub fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
-    pub event_time: Option<IsoDatetime>,
-    pub schedule_time: Option<IsoDatetime>,
+    pub event_time: Option<T1>,
+    pub schedule_time: Option<T2>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
@@ -32,38 +40,45 @@ pub struct ContractEvent {
     pub contract_id: Option<ContractID>,
 }
 
-impl ContractEvent {
-    pub fn new(
-        schedule_time: Option<IsoDatetime>,
-        event_time: Option<IsoDatetime>,
-        event_type: EventType,
-        currency: Option<Currency>,
+impl<T1, T2> ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+{
+    pub fn new (
+        schedule_time: &Option<T1>,
+        event_time: &Option<T2>,
+        event_type: &EventType,
+        currency: &Option<Currency>,
         fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
         fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
-        contract_id: Option<ContractID>,
-    ) -> Self {
-        let epoch_millis = event_time.unwrap().and_utc().timestamp_millis();
+        contract_id: &Option<ContractID>,
+    ) -> Self
+    {
+        let epoch_millis = event_time.clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
         let epoch_offset = epoch_millis + EventSequence::time_offset(event_type);
 
         Self {
             epoch_offset: Some(epoch_offset),
             fstate: fstate,
             fpayoff: fpayoff,
-            event_time: event_time,
-            schedule_time: schedule_time,
-            event_type: event_type,
-            currency: currency,
+            event_time: event_time.clone(),
+            schedule_time: schedule_time.clone(),
+            event_type: event_type.clone(),
+            currency: currency.clone(),
             payoff: Some(0.0),
             state: StateSpace::default(),
-            contract_id: contract_id,
+            contract_id: contract_id.clone(),
         }
     }
-
     pub fn get_contract_id(&self) -> ContractID {
         self.contract_id.clone().unwrap()
     }
     pub fn get_event_time(&self) -> IsoDatetime {
-        self.event_time.clone().unwrap()
+        self.event_time.clone().unwrap().value()
+    }
+    pub fn get_schedule_time(&self) -> IsoDatetime {
+        self.schedule_time.clone().unwrap().value()
     }
     pub fn get_event_type(&self) -> EventType {
         self.event_type
@@ -71,38 +86,31 @@ impl ContractEvent {
     pub fn chg_event_type(&mut self, event_type: EventType) {
         self.event_type = event_type;
         // this.epoch_offset = event_time.toEpochSecond(ZoneOffset.UTC) + EventSequence.timeOffset(event_type);
-        self.epoch_offset = Some(self.event_time.unwrap().and_utc().timestamp_millis() + EventSequence::time_offset(event_type));
+        self.epoch_offset = Some(self.get_event_time().and_utc().timestamp_millis() + EventSequence::time_offset(&event_type));
     }
     pub fn currency(&self) -> Currency {
         self.currency.clone().unwrap()
     }
-
     pub fn payoff(&self) -> f64 {
         self.payoff.clone().unwrap()
     }
-
     pub fn states(&self) -> StateSpace {
         self.state.clone()
     }
-
     pub fn setStates(&mut self, state: StateSpace) {
         self.state = state;
     }
-
     // Méthode pour changer fPayOff
     pub fn set_f_pay_off(&mut self, function: Option<Rc<dyn TraitPayOffFunction>>) {
         self.fpayoff = function;
     }
-
     // Méthode pour changer fStateTrans
     pub fn set_f_state_trans(&mut self, function: Option<Rc<dyn TraitStateTransitionFunction>>) {
         self.fstate = function;
     }
-
     pub fn compare_to(&self, other: &Self) -> i64 {
         (self.epoch_offset.unwrap() - other.epoch_offset.unwrap()).signum()
     }
-
     pub fn eval(
         &mut self,
         states: &mut StateSpace,
@@ -113,7 +121,7 @@ impl ContractEvent {
     ) {
         if !self.fpayoff.is_none() {
             self.payoff = Some(self.fpayoff.clone().unwrap().eval(
-                &self.schedule_time.unwrap(),
+                &self.get_schedule_time(),
                 states,
                 model,
                 risk_factor_model,
@@ -122,13 +130,13 @@ impl ContractEvent {
             ));
         }
         if !self.fstate.is_none() {
-            self.fstate.clone().unwrap().eval( // a verifier
-                              &self.schedule_time.unwrap(),
-                              states,
-                              model,
-                              risk_factor_model,
-                              day_counter,
-                              time_adjuster,
+            self.fstate.clone().unwrap().eval(
+                &self.get_schedule_time(),
+                states,
+                model,
+                risk_factor_model,
+                day_counter,
+                time_adjuster,
             );
         }
 
@@ -139,8 +147,8 @@ impl ContractEvent {
             epoch_offset: self.epoch_offset,
             fstate: self.fstate.clone(),
             fpayoff: self.fpayoff.clone(),
-            event_time: self.event_time,
-            schedule_time: self.schedule_time,
+            event_time: self.event_time.clone(),
+            schedule_time: self.schedule_time.clone(),
             event_type: self.event_type.clone(),
             currency: self.currency.clone(),
             payoff: self.payoff,
@@ -153,8 +161,8 @@ impl ContractEvent {
         format!(
             "{} {} {} {:?} {} {} {:?}",
             self.epoch_offset.unwrap(),
-            self.event_time.unwrap(),
-            self.schedule_time.unwrap(),
+            self.get_event_time(),
+            self.get_schedule_time(),
             self.event_type,
             self.currency.as_ref().unwrap().value().to_string(),
             self.payoff.unwrap(),
@@ -166,7 +174,7 @@ impl ContractEvent {
         let mut attributes = HashMap::new();
         attributes.insert("payoff".to_string(), self.payoff.as_ref().unwrap().to_string()   );
         attributes.insert("currency".to_string(), self.currency.as_ref().unwrap().value()   );
-        attributes.insert("eventDate".to_string(), self.event_time.as_ref().unwrap().to_string());
+        attributes.insert("eventDate".to_string(), self.event_time.as_ref().unwrap().value().to_string() );
         attributes.insert("event_type".to_string(), format!("{:?}", self.event_type));
         // Ajoutez d'autres attributs ici en fonction des champs de StateSpace
         if let Some(value) = self.state.accrued_interest.clone(){
@@ -220,7 +228,11 @@ impl ContractEvent {
 }
 
 // Implémentation manuelle de Debug pour ContractEvent
-impl fmt::Debug for ContractEvent {
+impl<T1, T2> Debug for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
             .field("contract_id", &self.contract_id)
@@ -235,24 +247,34 @@ impl fmt::Debug for ContractEvent {
 }
 
 // Implémentation des traits pour la comparaison
-use std::cmp::Ordering;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_notional_principal::Currency::Currency;
 
-impl PartialOrd for ContractEvent {
+
+impl<T1, T2> PartialOrd for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl Ord for ContractEvent {
+impl<T1, T2> Ord for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{
     fn cmp(&self, other: &Self) -> Ordering {
         self.epoch_offset.cmp(&other.epoch_offset)
     }
 }
 
 // Implémentation manuelle de PartialEq pour ContractEvent
-impl PartialEq for ContractEvent {
+impl<T1, T2> PartialEq for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{
     fn eq(&self, other: &Self) -> bool {
         self.contract_id == other.contract_id
             && self.currency == other.currency
@@ -264,13 +286,21 @@ impl PartialEq for ContractEvent {
             && Rc::ptr_eq(&self.fstate.clone().unwrap(), &other.fstate.clone().unwrap())
     }
 }
-impl Eq for ContractEvent {}
+impl<T1, T2> Eq for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{}
 
-impl Hash for ContractEvent {
+impl<T1, T2> Hash for ContractEvent<T1, T2>
+where
+    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+{
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.contract_id.hash(state);
         self.currency.hash(state);
-        self.event_time.hash(state);
+        self.event_time.clone().hash(state);
         self.event_type.hash(state);
         self.schedule_time.hash(state);
 

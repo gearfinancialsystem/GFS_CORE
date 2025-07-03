@@ -6,7 +6,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::business_day_adjuster::business_day_adjuster;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 
 pub struct CSH;
@@ -26,8 +26,8 @@ impl CSH {
     ) -> Vec<ContractEvent> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
-        states.statusDate = model.statusDate.clone();
-        states.notionalPrincipal = Some(&model.contract_role.clone().unwrap().role_sign() * model.notional_principal.clone().unwrap());
+        states.status_date = model.status_date.clone();
+        states.notional_principal = Some(&model.contract_role.clone().unwrap().role_sign() * model.notional_principal.clone().unwrap());
 
         // Sort the events according to their time sequence
         events.sort();
@@ -39,7 +39,7 @@ impl CSH {
                 model,
                 observer,
                 &DayCountConvention::new(Some("AAISDA"), None, None).expect("etet"),
-                &BusinessDayAdjuster::new("NOS", model.calendar.clone().unwrap()).expect("good ba"),  //&DayCountConvention::new(None, None),
+                &business_day_adjuster::new("NOS", model.calendar.clone().unwrap()).expect("good ba"),  //&DayCountConvention::new(None, None),
             );
         }
 

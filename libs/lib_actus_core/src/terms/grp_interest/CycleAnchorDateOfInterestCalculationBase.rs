@@ -6,6 +6,9 @@ use std::str::FromStr;
 use std::collections::HashMap;
 use crate::util::Value::Value;
 use crate::types::IsoDatetime::IsoDatetime;
-
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::define_struct_isodatetime;
+use crate::events::AnyContractEvent::AnyContractEvent;
+use crate::events::ContractEvent::ContractEvent;
+use crate::traits::TraitConvertContractToAnyEvent::TraitConvertContractToAnyEvent;
 define_struct_isodatetime!(CycleAnchorDateOfInterestCalculationBase);

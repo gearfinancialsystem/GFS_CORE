@@ -1,10 +1,16 @@
 use std::collections::HashMap;
+use std::fmt::{Debug, Formatter};
 use std::ops::Add;
 use std::ops::Sub;
 use std::rc::Rc;
-use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike};
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, ParseResult};
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::Value::Value;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+use std::fmt;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::IsoCycle::IsoCycle;
 
 pub type IsoDatetime = NaiveDateTime;
 
@@ -86,6 +92,20 @@ impl TraitNaiveDateTimeExtension for IsoDatetime {
 
 }
 
+impl TraitMarqueurIsoDatetime for IsoDatetime {
+    fn value(&self) -> IsoDatetime {
+        self.clone()
+    }
+
+    fn set_value(&mut self, value: &IsoDatetime) {
+        *self = value.clone();
+    }
+
+    fn parse_from_string(s: &str, fmt: &str) -> ParseResult<IsoDatetime> {
+        NaiveDateTime::parse_from_str(s, fmt)
+    }
+}
+
 impl Add<IsoPeriod> for IsoDatetime {
     type Output = IsoDatetime;
 
@@ -107,4 +127,3 @@ impl Sub<IsoPeriod> for IsoDatetime {
             .checked_sub_months(Months::new((other.years * 12) as u32)).unwrap()
     }
 }
-

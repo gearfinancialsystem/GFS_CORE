@@ -35,33 +35,33 @@ impl CEG {
         let maturity = Self::maturity(model);
 
         // Purchase
-        if let Some(purchase_date) = &model.purchaseDate {
+        if let Some(purchase_date) = &model.purchase_date {
             events.push(EventFactory::create_event(
                 Some(purchase_date.clone()),
                 EventType::PRD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_PRD_OPTNS)),
                 Some(Rc::new(STF_PRD_CEG)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Fees (if specified)
         if !(model.fee_rate.is_none() || model.fee_rate.unwrap() == 0.0) {
-            let start_date = if model.cycleAnchorDateOfFee.is_none() && model.cycle_of_fee.is_none() {
+            let start_date = if model.cycle_anchor_date_of_fee.is_none() && model.cycle_of_fee.is_none() {
                 None
-            } else if model.cycleAnchorDateOfFee.is_none() {
-                Some(model.purchaseDate.unwrap() + CycleUtils::parse_period(&model.cycle_of_fee.as_ref().unwrap()).unwrap())
+            } else if model.cycle_anchor_date_of_fee.is_none() {
+                Some(model.purchase_date.unwrap() + CycleUtils::parse_period(&model.cycle_of_fee.as_ref().unwrap()).unwrap())
 
 
             } else {
-                model.cycleAnchorDateOfFee.clone()
+                model.cycle_anchor_date_of_fee.clone()
             };
 
-            let end_date = if model.exerciseDate.is_none() {
+            let end_date = if model.exercise_date.is_none() {
                 Some(maturity.clone())
             } else {
-                model.exerciseDate.clone()
+                model.exercise_date.clone()
             };
 
             let fee_events = EventFactory::create_events_with_convention(
@@ -69,53 +69,53 @@ impl CEG {
                     start_date,
                     end_date,
                     model.cycle_of_fee.clone(),
-                    model.endOfMonthConvention.clone().unwrap(),
+                    model.end_of_month_convention.clone().unwrap(),
                     false,
                 ),
                 EventType::FP,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_FP_CEG)),
                 Some(Rc::new(STF_FP_CEG)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             );
 
             events.extend(fee_events);
         }
 
         // Maturity
-        if model.exerciseDate.is_none() {
+        if model.exercise_date.is_none() {
             events.push(EventFactory::create_event(
                 Some(maturity),
                 EventType::MD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_MD_CEG)),
                 Some(Rc::new(STF_MD_CEG)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
         }
 
         // Exercise
-        if let Some(exercise_date) = &model.exerciseDate {
+        if let Some(exercise_date) = &model.exercise_date {
             events.push(EventFactory::create_event(
                 Some(exercise_date.clone()),
                 EventType::XD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEG)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
 
-            let settlement_period = model.settlementPeriod.clone().unwrap();
+            let settlement_period = model.settlement_period.clone().unwrap();
             let settlement_date = exercise_date.clone() + settlement_period;
             events.push(EventFactory::create_event_with_convention(
                 Some(settlement_date),
                 EventType::STD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_STD_CEG)),
                 Some(Rc::new(STF_STD_CEG)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             ));
         }
 
@@ -132,15 +132,15 @@ impl CEG {
 
         let mut states = Self::init_state_space(model, observer, &maturity).unwrap();
 
-        events.sort_by(|a, b| a.eventTime.cmp(&b.eventTime));
+        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         for event in events.iter_mut() {
             event.eval(
                 &mut states,
                 model,
                 observer,
-                &model.dayCountConvention.clone().unwrap(),
-                &model.businessDayAdjuster.clone().unwrap(),
+                &model.day_count_convention.clone().unwrap(),
+                &model.business_day_adjuster.clone().unwrap(),
             );
         }
 
@@ -148,7 +148,7 @@ impl CEG {
     }
 
     fn maturity(model: &ContractModel) -> IsoDatetime {
-        if let Some(maturity_date) = model.maturityDate.clone().map(|rc| (*rc).clone()) {
+        if let Some(maturity_date) = model.maturity_date.clone().map(|rc| (*rc).clone()) {
             maturity_date.clone()
         } else {
             let covered_contract_refs = model.contract_structure.clone().unwrap()
@@ -173,35 +173,35 @@ impl CEG {
         maturity: &IsoDatetime,
     ) -> Result<StateSpace, Box<dyn Error>> {
         let mut states = StateSpace::default();
-        states.maturityDate = Some(maturity.clone());
-        states.statusDate = model.statusDate.clone();
+        states.maturity_date = Some(maturity.clone());
+        states.status_date = model.status_date.clone();
 
-        if states.statusDate.unwrap() > states.maturityDate.unwrap() {
-            states.notionalPrincipal = Some(0.0);
+        if states.status_date.unwrap() > states.maturity_date.unwrap() {
+            states.notional_principal = Some(0.0);
         } else if model.notional_principal.is_some() {
             let role_sign = &model.contract_role.clone().unwrap().role_sign();
-            states.notionalPrincipal = Some(
-                model.coverageOfCreditEnhancement.unwrap()
+            states.notional_principal = Some(
+                model.coverage_of_credit_enhancement.unwrap()
                     * role_sign
                     * model.notional_principal.unwrap()
             );
         } else {
-            states.notionalPrincipal = Some(Self::calculate_notional_principal(
+            states.notional_principal = Some(Self::calculate_notional_principal(
                 &states,
                 model,
                 observer,
-                &states.statusDate.unwrap(),
+                &states.status_date.unwrap(),
             ));
         }
 
         if model.fee_rate.is_none() {
-            states.feeAccrued = Some(0.0);
-        } else if model.feeAccrued.is_some() {
-            states.feeAccrued = model.feeAccrued;
+            states.fee_accrued = Some(0.0);
+        } else if model.fee_accrued.is_some() {
+            states.fee_accrued = model.fee_accrued;
         }
 
-        states.exerciseAmount = model.exerciseAmount;
-        states.exerciseDate = model.exerciseDate.clone();
+        states.exercise_amount = model.exerciseAmount;
+        states.exerciseDate = model.exercise_date.clone();
 
         Ok(states)
     }
@@ -225,7 +225,7 @@ impl CEG {
             .collect();
 
         let role_sign = &model.contract_role.clone().unwrap().role_sign();
-        let coverage = model.coverageOfCreditEnhancement.unwrap();
+        let coverage = model.coverage_of_credit_enhancement.unwrap();
 
         match model.guaranteedExposure {
             Some(GuaranteedExposure::NO(NO)) => coverage
@@ -268,18 +268,18 @@ impl CEG {
     ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
         let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap()
             .iter()
-            .map(|c| c.get_contract_attribute("contractID").unwrap().to_string())
+            .map(|c| c.get_contract_attribute("contract_id").unwrap().to_string())
             .collect();
 
-        let credit_event_type_covered = model.creditEventTypeCovered.clone().unwrap()[0].clone();
+        let credit_event_type_covered = model.credit_event_type_covered.clone().unwrap()[0].clone();
 
         let observed_events = observer.events(model);
 
         let ce_events: Vec<ContractEvent> = observed_events
             .into_iter()
             .filter(|e| {
-                contract_identifiers.contains(&e.contractID.clone().unwrap())
-                    && &e.eventTime.clone().unwrap() <= maturity
+                contract_identifiers.contains(&e.contract_id.clone().unwrap())
+                    && &e.event_time.clone().unwrap() <= maturity
                     && e.states().contractPerformance.clone().unwrap().to_stringx().unwrap()
                     == credit_event_type_covered.to_stringx().unwrap()
             })
@@ -287,28 +287,28 @@ impl CEG {
 
         if !ce_events.is_empty() {
             let ce_event = &ce_events[0];
-            events.retain(|e| e.eventType != EventType::MD);
+            events.retain(|e| e.event_type != EventType::MD);
 
             events.push(EventFactory::create_event(
-                Some(ce_event.eventTime.clone().unwrap()),
+                Some(ce_event.event_time.clone().unwrap()),
                 EventType::XD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEG)),
-                model.contractID.as_ref(),
+                &model.contract_id,
             ));
 
-            let settlement_period = model.settlementPeriod.clone().unwrap();
-            let settlement_date = ce_event.eventTime.clone().unwrap() + settlement_period;
+            let settlement_period = model.settlement_period.clone().unwrap();
+            let settlement_date = ce_event.event_time.clone().unwrap() + settlement_period;
 
             events.push(EventFactory::create_event_with_convention(
                 Some(settlement_date),
                 EventType::STD,
-                model.currency.as_ref(),
+                &model.currency,
                 Some(Rc::new(POF_STD_CEG)),
                 Some(Rc::new(STF_STD_CEG)),
-                model.businessDayAdjuster.as_ref().unwrap(),
-                model.contractID.as_ref(),
+                model.business_day_adjuster.as_ref().unwrap(),
+                &model.contract_id,
             ));
         }
 

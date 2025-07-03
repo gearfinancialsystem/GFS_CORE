@@ -13,15 +13,7 @@ macro_rules! define_struct_isocycle {
                 $struct_name::from_str(cycle.as_str())
             }
 
-            // Get the IsoCycle value
-            pub fn value(&self) -> &IsoCycle {
-                &self.0
-            }
 
-            // Set the IsoCycle value
-            pub fn set_value(&mut self, value: IsoCycle) {
-                self.0 = value;
-            }
 
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
@@ -35,6 +27,33 @@ macro_rules! define_struct_isocycle {
                 }
             }
         }
+
+        impl TraitMarqueurIsoCycle for $struct_name {
+            // Get the IsoCycle value
+            fn value(&self) -> &IsoCycle {
+                &self.0
+            }
+
+            // Set the IsoCycle value
+            fn set_value(&mut self, value: &IsoCycle) {
+                self.0 = value.clone();
+            }
+        }
+
+        //Implémentation du trait From<IsoDatetime>
+        impl From<IsoCycle> for $struct_name {
+            fn from(iso_cycle: IsoCycle: IsoDatetime) -> Self {
+                $struct_name(iso_datetime)
+            }
+        }
+        
+        // Implémentation du trait Hash
+        impl std::hash::Hash for $struct_name {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.0.hash(state);
+            }
+        }
+
         impl FromStr for $struct_name {
             type Err = String;
 
