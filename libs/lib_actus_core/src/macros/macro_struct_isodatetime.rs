@@ -1,6 +1,22 @@
 #[macro_export]
 macro_rules! define_struct_isodatetime {
     ($struct_name:ident) => {
+        use chrono::NaiveDateTime;
+        use chrono::ParseResult;
+        use std::str::FromStr;
+        use std::collections::HashMap;
+
+        use crate::types::IsoDatetime::IsoDatetime;
+        use crate::types::IsoPeriod::IsoPeriod;
+
+        use crate::util::Value::Value;
+
+        use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+        use crate::traits::TraitConvertContractToAnyEvent::TraitConvertContractToAnyEvent;
+
+        use crate::events::AnyContractEvent::AnyContractEvent;
+        use crate::events::ContractEvent::ContractEvent;
+
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(IsoDatetime);
 

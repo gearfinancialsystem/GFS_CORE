@@ -214,7 +214,7 @@ impl PAM {
 
             if let Some(fixed_event_val) = fixed_event {
                 fixed_event_val.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
-                fixed_event_val.chg_eventType(EventType::RRF);
+                fixed_event_val.chg_event_type(EventType::RRF);
                 rate_reset_events.insert(fixed_event_val.clone());
             }
 

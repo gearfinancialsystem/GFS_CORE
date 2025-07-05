@@ -1,3 +1,31 @@
+
+macro_rules! define_method_value {
+    () => {
+        pub fn value(&self) -> f64 {
+            self.0
+        }
+    }
+}
+
+macro_rules! define_methods_tostring_x {
+    () => {
+        // Convert to String with rounding to a specific number of decimal places
+            pub fn to_string_rounded(&self, decimals: usize) -> String {
+                let factor = 10f64.powi(decimals as i32);
+                let rounded = (self.0 * factor).round() / factor;
+                format!("{:.1$}", rounded, decimals)
+            }
+
+            // Convert to String with truncating to a specific number of decimal places
+            pub fn to_string_truncated(&self, decimals: usize) -> String {
+                let factor = 10f64.powi(decimals as i32);
+                let truncated = (self.0 * factor).trunc() / factor;
+                format!("{:.1$}", truncated, decimals)
+            }
+    }
+}
+
+
 #[macro_export]
 macro_rules! define_struct_f64 {
     // Case with validation conditions and a default value
@@ -22,9 +50,8 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn value(&self) -> f64 {
-                self.0
-            }
+            define_method_value!();
+
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
                 if !$value.is_finite() {
@@ -43,19 +70,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            // Convert to String with rounding to a specific number of decimal places
-            pub fn to_string_rounded(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let rounded = (self.0 * factor).round() / factor;
-                format!("{:.1$}", rounded, decimals)
-            }
-
-            // Convert to String with truncating to a specific number of decimal places
-            pub fn to_string_truncated(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let truncated = (self.0 * factor).trunc() / factor;
-                format!("{:.1$}", truncated, decimals)
-            }
+            define_methods_tostring_x!();
 
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
@@ -111,9 +126,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn value(&self) -> f64 {
-                self.0
-            }
+            define_method_value!();
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
                 if !$value.is_finite() {
@@ -132,17 +145,8 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn to_string_rounded(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let rounded = (self.0 * factor).round() / factor;
-                format!("{:.1$}", rounded, decimals)
-            }
+            define_methods_tostring_x!();
 
-            pub fn to_string_truncated(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let truncated = (self.0 * factor).trunc() / factor;
-                format!("{:.1$}", truncated, decimals)
-            }
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
                     None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
@@ -183,9 +187,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn value(&self) -> f64 {
-                self.0
-            }
+            define_method_value!();
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
                 if !$value.is_finite() {
@@ -198,17 +200,8 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn to_string_rounded(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let rounded = (self.0 * factor).round() / factor;
-                format!("{:.1$}", rounded, decimals)
-            }
+            define_methods_tostring_x!();
 
-            pub fn to_string_truncated(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let truncated = (self.0 * factor).trunc() / factor;
-                format!("{:.1$}", truncated, decimals)
-            }
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {
                     None => Some(Self::default()), // Clé absente : valeur par défaut dans un Some
@@ -256,9 +249,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn value(&self) -> f64 {
-                self.0
-            }
+            define_method_value!();
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
                 if !$value.is_finite() {
@@ -271,17 +262,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            pub fn to_string_rounded(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let rounded = (self.0 * factor).round() / factor;
-                format!("{:.1$}", rounded, decimals)
-            }
-
-            pub fn to_string_truncated(&self, decimals: usize) -> String {
-                let factor = 10f64.powi(decimals as i32);
-                let truncated = (self.0 * factor).trunc() / factor;
-                format!("{:.1$}", truncated, decimals)
-            }
+            define_methods_tostring_x!();
 
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
                 match string_map.get(key) {

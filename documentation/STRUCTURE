@@ -1,6 +1,33 @@
 - CHAQUE 'TERM' appartient a un groupe tel que defini dans la norme
 - Chaque 'TERM' est definie par un Struct enveloppante ; evitant que les termes soient definies seulement par des types
     primitifs qui creent de lambiguite
+- Les types primitifs autorisés, au sens de la norme, :
+    - f64 ("Real")
+    - IsoDatetime ("TimeStamp")
+    - IsoPeriod ("Period")
+    - IsoCycle ("Cycle")
+    - String ("VarChar")
+    - bool ("bool")
+    - Enum ("Enum") (a)
+- (a) les enums sont des structures plus complexe a implementer séparéments
+- Certains termes sont des 'Array' de terms ou de 'Array' d'éléments non-terms : dans ce cas le plus propre est de definir les
+    éléments (deja defini si c'est des termes, non encore definis si c'est des non-term) puis de les wrapper dans un Vec.
+    Les Arrays peuvent également contenir des variants denum (Enum[])
+
+- Chaque term doit avoir un trait 'marker' permettant d'identifier quelle famille de type primitif il enveloppe :
+  - TraitMarqueurF64
+  - TraitMarqueurIsoDatetime
+  - TraitMarqueurIsPeriod
+  - TraitMarqueurIsoCycle
+  - TraitMarqueurString
+  - TraitMarqueurBool
+  - TraitMarqueurEnum <- beaucoup de methodes specifiques sont a implementer indépendament
+  - TraitMarqueurArr : les elements doivent avoir l'un des traits marqueur ci-dessus
+
+- Avoir ces TraitMarqueur nous aide notamment a implementer des conversion explicite entre deux terms ayant le meme
+    type primitif sous-jacent
+
+
 - CHAQUE 'TERM' doit venir avec un certain nombre de methodes, definis dans un trait
 - Comme il y a beaucoup de termes, et beaucoup avec une structure similaire, les macros suivantes sont utilisees pour
     generer le code :
@@ -12,6 +39,9 @@
     - macro_struct_vec_isodatetime
     - macro_struct_vec_isocycle
     - macro_struct_vec_f64
+
+
+
 
 il faut implemter le trait Display pour pouvoir utiliser to_string
 

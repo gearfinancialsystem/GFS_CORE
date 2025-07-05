@@ -2,6 +2,6 @@
 members = [
     "libs/lib_actus_core",
     "libs/lib_risk_factor",
-    "main"
-]
+    "main",
+    "playground"]
 resolver = "2"
