@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_TD_SWPPV {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.notionalPrincipal = Some(0.0);
-        states.accruedInterest = Some(0.0);
-        states.accruedInterest2 = Some(0.0);
-        states.feeAccrued = Some(0.0);
-        states.statusDate = Some(*time);
+        states.notional_principal = Some(0.0);
+        states.accrued_interest = Some(0.0);
+        states.accrued_interest2 = Some(0.0);
+        states.fee_accrued = Some(0.0);
+        states.status_date = Some(*time);
     }
 }

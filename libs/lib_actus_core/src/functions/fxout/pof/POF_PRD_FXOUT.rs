@@ -21,7 +21,7 @@ impl TraitPayOffFunction for POF_PRD_FXOUT {
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let contract_role_sign = contract_role.role_sign();
-        let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always exist");
+        let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

@@ -20,10 +20,10 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         time_adjuster: &BusinessDayAdjuster,
     )  {
         
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let accrued_interest = states.accruedInterest.expect("accruedInterest should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let accrued_interest = states.accrued_interest.expect("accruedInterest should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
         let fee_rate = model.fee_rate.expect("fee rate should always be Some");
         
         // Calculate time from the last event
@@ -32,14 +32,14 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
             time_adjuster.shift_sc(&time),
         );
 
-        states.notionalPrincipal = states.notionalPrincipal.map(|mut notional_principal| {
+        states.notional_principal = states.notional_principal.map(|mut notional_principal| {
             notional_principal += accrued_interest + (nominal_interest_rate * notional_principal * time_from_last_event);
             notional_principal
         });
         
-        states.accruedInterest = Some(0.0);
+        states.accrued_interest = Some(0.0);
         
-        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|mut fee_accrued| {
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });

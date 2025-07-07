@@ -24,7 +24,7 @@ impl TraitPayOffFunction for POF_PRD_STK {
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
         let quantity = model.quantity.expect("quantity should always be some");
-        let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always be some");
+        let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always be some");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
             model,

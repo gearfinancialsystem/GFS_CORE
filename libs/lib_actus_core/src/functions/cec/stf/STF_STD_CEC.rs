@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_STD_CEC {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.notionalPrincipal = Some(0.0);
-        states.statusDate = Some(*time);
+        states.notional_principal = Some(0.0);
+        states.status_date = Some(*time);
     }
 }

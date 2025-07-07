@@ -19,14 +19,14 @@ impl TraitStateTransitionFunction for STF_IPFix_SWPPV {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
 
         states.lastInterestPeriod = Some(day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         ));
 
-        states.accruedInterest = Some(0.0);
-        states.statusDate = Some(*time);
+        states.accrued_interest = Some(0.0);
+        states.status_date = Some(*time);
     }
 }

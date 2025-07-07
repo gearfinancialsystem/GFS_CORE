@@ -22,7 +22,7 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
     ) {
         // Set notionalPrincipal if it is not already set
         if model.notional_principal.is_none() {
-            states.notionalPrincipal = Some(CEG::calculate_notional_principal(
+            states.notional_principal = Some(CEG::calculate_notional_principal(
                 states,
                 model,
                 risk_factor_model,
@@ -32,12 +32,12 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
 
         // Set feeAccrued based on feeRate or existing feeAccrued
         if let Some(fee_rate) = model.fee_rate {
-            states.feeAccrued = Some(fee_rate);
-        } else if let Some(fee_accrued) = model.feeAccrued {
-            states.feeAccrued = Some(fee_accrued);
+            states.fee_accrued = Some(fee_rate);
+        } else if let Some(fee_accrued) = model.fee_accrued {
+            states.fee_accrued = Some(fee_accrued);
         }
         // TODO: Implement last two possible initializations
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

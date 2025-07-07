@@ -26,10 +26,10 @@ impl TraitPayOffFunction for POF_IP_LAM {
             states
         );
         
-        settlement_currency_fx_rate * states.interestScalingMultiplier.unwrap()
-            * (states.accruedInterest.unwrap() + (day_counter.day_count_fraction(
-                                                    time_adjuster.shift_sc(&states.statusDate.unwrap()),
+        settlement_currency_fx_rate * states.interest_scaling_multiplier.unwrap()
+            * (states.accrued_interest.unwrap() + (day_counter.day_count_fraction(
+                                                    time_adjuster.shift_sc(&states.status_date.unwrap()),
                                                     time_adjuster.shift_sc(time)
-        ) * states.nominalInterestRate.unwrap() * states.interestCalculationBaseAmount.unwrap()))
+        ) * states.nominal_interest_rate.unwrap() * states.interest_calculation_base_amount.unwrap()))
     }
 }

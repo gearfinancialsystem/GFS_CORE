@@ -56,12 +56,12 @@ impl StateSpace {
     // Méthode pour créer une copie de StateSpace
     pub fn copy_state_space(original: &StateSpace) -> StateSpace {
         StateSpace {
-            accrued_interest: original.accrued_interest.clone(),
-            accrued_interest2: original.accrued_interest2.clone(),
-            contract_performance: original.contract_performance.clone(),
-            exercise_amount: original.exercise_amount.clone(),
-            exercise_date: original.exercise_date.clone(),
-            fee_accrued: original.fee_accrued.clone(),
+            accrued_interest:       original.accrued_interest.clone(),
+            accrued_interest2:      original.accrued_interest2.clone(),
+            contract_performance:   original.contract_performance.clone(),
+            exercise_amount:        original.exercise_amount.clone(),
+            exercise_date:          original.exercise_date.clone(),
+            fee_accrued:                        original.fee_accrued.clone(),
             interest_calculation_base_amount: original.interest_calculation_base_amount.clone(),
             interest_scaling_multiplier: original.interest_scaling_multiplier.clone(),
             next_principal_redemption_payment: original.next_principal_redemption_payment.clone(),

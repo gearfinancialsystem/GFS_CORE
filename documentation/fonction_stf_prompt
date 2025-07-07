@@ -22,11 +22,11 @@ public final class STF_CD_PAM implements StateTransitionFunction {
     @Override
     public StateSpace eval(LocalDateTime time, StateSpace states,
     ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {// update state space
-        double timeFromLastEvent = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(states.statusDate), timeAdjuster.shiftCalcTime(time));
-        states.accruedInterest += states.nominalInterestRate * states.notionalPrincipal * timeFromLastEvent;
-        states.feeAccrued += model.<Double>getAs("feeRate") * states.notionalPrincipal * timeFromLastEvent;
-        states.contractPerformance = ContractPerformance.DF;
-        states.statusDate = time;
+        double timeFromLastEvent = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(states.status_date), timeAdjuster.shiftCalcTime(time));
+        states.accrued_interest += states.nominal_interest_rate * states.notional_principal * timeFromLastEvent;
+        states.fee_accrued += model.<Double>getAs("feeRate") * states.notional_principal * timeFromLastEvent;
+        states.contract_performance = ContractPerformance.DF;
+        states.status_date = time;
 
         // return post-event-states
         return StateSpace.copyStateSpace(states);
@@ -58,27 +58,27 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
         time_adjuster: &BusinessDayAdjuster,
     ) {
 
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
 
-        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|mut fee_accrued| {
             let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });
 
 
-        states.contractPerformance = Some(ContractPerformance::new_DF());
-        states.statusDate = Some(*time);
+        states.contract_performance = Some(ContractPerformance::new_DF());
+        states.status_date = Some(*time);
 
     }
 }
@@ -113,11 +113,11 @@ public final class STF_PR_UMP implements StateTransitionFunction {
     public StateSpace eval(LocalDateTime time, StateSpace states,
     ContractModelProvider model, RiskFactorModelProvider riskFactorModel, DayCountCalculator dayCounter, BusinessDayAdjuster timeAdjuster) {
         // update state space
-        double timeFromLastEvent = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(states.statusDate), timeAdjuster.shiftCalcTime(time));
-        states.accruedInterest += states.nominalInterestRate * states.notionalPrincipal * timeFromLastEvent;
-        states.notionalPrincipal -= ContractRoleConvention.roleSign(model.getAs("contractRole"))*payoff;
-        states.feeAccrued += model.<Double>getAs("feeRate") * states.notionalPrincipal * timeFromLastEvent;
-        states.statusDate = time;
+        double timeFromLastEvent = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(states.status_date), timeAdjuster.shiftCalcTime(time));
+        states.accrued_interest += states.nominal_interest_rate * states.notional_principal * timeFromLastEvent;
+        states.notional_principal -= ContractRoleConvention.roleSign(model.getAs("contractRole"))*payoff;
+        states.fee_accrued += model.<Double>getAs("feeRate") * states.notional_principal * timeFromLastEvent;
+        states.status_date = time;
 
         // return post-event-states
         return StateSpace.copyStateSpace(states);

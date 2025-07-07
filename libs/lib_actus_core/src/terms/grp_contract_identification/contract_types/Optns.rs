@@ -172,7 +172,7 @@ impl OPTNS {
 
         states.status_date = model.status_date;
         states.exercise_amount = model.exerciseAmount;
-        states.exerciseDate = model.exercise_date;
+        states.exercise_date = model.exercise_date;
         states.contract_performance = model.contract_performance;
 
         states

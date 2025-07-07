@@ -27,7 +27,7 @@ impl TraitStateTransitionFunction for STF_XD_OPTNS {
         let option_type = model.optionType.as_ref().expect("optionType should always be Some");
         let option_strike1 = model.optionStrike1.unwrap_or(0.0);
 
-        states.exerciseAmount = match option_type {
+        states.exercise_amount = match option_type {
             OptionType::C(C) => Some((st - option_strike1).max(0.0)),
             OptionType::P(P) => Some((option_strike1 - st).max(0.0)),
             _ => {
@@ -36,6 +36,6 @@ impl TraitStateTransitionFunction for STF_XD_OPTNS {
             }
         };
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

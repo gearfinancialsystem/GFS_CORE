@@ -37,17 +37,17 @@ impl TraitPayOffFunction for POF_PY_PAM {
             }
             PenaltyType::N(_N) => {
                 let penalty_rate = model.penaltyRate.as_ref().expect("penaltyRate should be Some");
-                let status_date = states.statusDate.as_ref().expect("status date should always exist");
-                let notional_principal = states.notionalPrincipal.as_ref().expect("notionalPrincipal should be Some");
+                let status_date = states.status_date.as_ref().expect("status date should always exist");
+                let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be Some");
 
                 settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(&time))
                 * penalty_rate * notional_principal
             }
             _ => {
-                let status_date = states.statusDate.expect("status date should always exist");
-                let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
-                let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be Some");
+                let status_date = states.status_date.expect("status date should always exist");
+                let notional_principal = states.notional_principal.expect("notionalPrincipal should always exist");
+                let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should be Some");
                 //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
                 
                 settlement_currency_fx_rate * contract_role.role_sign()

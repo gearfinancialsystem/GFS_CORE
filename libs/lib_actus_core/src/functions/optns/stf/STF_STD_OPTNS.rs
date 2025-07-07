@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_STD_OPTNS {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.exerciseAmount = Some(0.0);
-        states.statusDate = Some(*time);
+        states.exercise_amount = Some(0.0);
+        states.status_date = Some(*time);
     }
 }

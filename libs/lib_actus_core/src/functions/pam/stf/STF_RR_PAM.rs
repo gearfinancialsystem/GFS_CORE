@@ -22,9 +22,9 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
     ) {
         let rate_multiplier = model.rateMultiplier.expect("rate_multiplier should be some");
         let rate_spread = model.rateSpread.expect("rate_spread should be some");
-        let status_date = states.statusDate.expect("status date should be some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should be some");
+        let status_date = states.status_date.expect("status date should be some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should be some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should be some");
         let period_floor = model.periodFloor.expect("period floor should be some");
         let period_cap = model.periodCap.expect("period cap should be some");
         let life_floor = model.lifeFloor.expect("lifeFloor should be some");
@@ -40,14 +40,14 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
         
-        states.nominalInterestRate = Some(rate);
+        states.nominal_interest_rate = Some(rate);
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
 
 
     }

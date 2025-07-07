@@ -20,6 +20,6 @@ impl TraitStateTransitionFunction for STF_MD2_FXOUT {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // Update state space
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

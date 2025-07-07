@@ -19,6 +19,6 @@ impl TraitStateTransitionFunction for STF_IP_CLM {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.accruedInterest = Some(0.0);
+        states.accrued_interest = Some(0.0);
     }
 }

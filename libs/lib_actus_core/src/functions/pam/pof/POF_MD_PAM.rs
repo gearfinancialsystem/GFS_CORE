@@ -20,8 +20,8 @@ impl TraitPayOffFunction for POF_MD_PAM {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-            let notional_scaling_multiplier = states.notionalScalingMultiplier.expect("notionalScalingMultiplier should always be some");
-            let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be some");
+            let notional_scaling_multiplier = states.notional_scaling_multiplier.expect("notionalScalingMultiplier should always be some");
+            let notional_principal = states.notional_principal.expect("notionalPrincipal should always be some");
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
                 risk_factor_model,

@@ -23,11 +23,11 @@ impl TraitStateTransitionFunction for STF_IED_SWPPV {
         let role_sign = contract_role.role_sign();
 
         let notional_principal = model.notional_principal.unwrap_or(0.0);
-        states.notionalPrincipal = Some(role_sign * notional_principal);
+        states.notional_principal = Some(role_sign * notional_principal);
 
-        let nominal_interest_rate = model.nominalInterestRate2.unwrap_or(0.0);
-        states.nominalInterestRate = Some(nominal_interest_rate);
+        let nominal_interest_rate = model.nominal_interest_rate2.unwrap_or(0.0);
+        states.nominal_interest_rate = Some(nominal_interest_rate);
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

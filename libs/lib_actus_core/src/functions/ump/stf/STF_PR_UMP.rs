@@ -27,30 +27,30 @@ impl TraitStateTransitionFunction for STF_PR_UMP {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         );
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
 
         let contract_role = model.contract_role.clone().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
-        states.notionalPrincipal = Some(notional_principal - role_sign * self.payoff);
+        states.notional_principal = Some(notional_principal - role_sign * self.payoff);
 
-        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|mut fee_accrued| {
             let fee_rate = model.fee_rate.unwrap_or(0.0);
-            fee_accrued += fee_rate * states.notionalPrincipal.unwrap_or(0.0) * time_from_last_event;
+            fee_accrued += fee_rate * states.notional_principal.unwrap_or(0.0) * time_from_last_event;
             fee_accrued
         });
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

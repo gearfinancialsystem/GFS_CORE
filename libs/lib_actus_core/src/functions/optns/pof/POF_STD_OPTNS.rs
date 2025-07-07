@@ -20,7 +20,7 @@ impl TraitPayOffFunction for POF_STD_OPTNS {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let exercise_amount = states.exerciseAmount.expect("exerciseAmount should always exist");
+        let exercise_amount = states.exercise_amount.expect("exerciseAmount should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

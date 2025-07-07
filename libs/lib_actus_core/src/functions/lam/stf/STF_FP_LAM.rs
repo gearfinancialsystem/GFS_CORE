@@ -22,9 +22,9 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
         // Create a mutable copy of the states to update
 
         // Create a mutable copy of the states to update
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always be Some");
 
 
         // Update state space
@@ -32,14 +32,14 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time),
         );
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * interest_calculation_base_amount * time_from_last_event;
             accrued_interest
         });
 
 
-        states.feeAccrued = Some(0.0);
-        states.statusDate = Some(*time);
+        states.fee_accrued = Some(0.0);
+        states.status_date = Some(*time);
 
 
     }

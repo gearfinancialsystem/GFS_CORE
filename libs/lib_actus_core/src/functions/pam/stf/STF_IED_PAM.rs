@@ -22,20 +22,20 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
         
         let contract_role = model.contract_role.as_ref().expect("contract role should be Some");
         let notional_principal = model.notional_principal.expect("notionalPrincipal should always be Some");
-        let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should be Some");
-        let notional_principal_s = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
-        let nominal_interest_rate_s = states.nominalInterestRate.expect("nominalInterestRate should be Some");
+        let nominal_interest_rate = model.nominal_interest_rate.expect("nominalInterestRate should be Some");
+        let notional_principal_s = states.notional_principal.expect("notionalPrincipal should always be Some");
+        let nominal_interest_rate_s = states.nominal_interest_rate.expect("nominalInterestRate should be Some");
 
-        states.notionalPrincipal = Some(contract_role.role_sign() * notional_principal);
-        states.nominalInterestRate = Some(nominal_interest_rate);
-        states.statusDate = Some(*time);
+        states.notional_principal = Some(contract_role.role_sign() * notional_principal);
+        states.nominal_interest_rate = Some(nominal_interest_rate);
+        states.status_date = Some(*time);
 
         if let (Some(cycle_anchor_date), Some(initial_exchange_date)) = (
             model.cycleAnchorDateOfInterestPayment.as_ref(),
             model.initial_exchange_date.as_ref(),
         ) {
             if cycle_anchor_date < initial_exchange_date {
-                states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+                states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
                     accrued_interest += notional_principal_s * nominal_interest_rate_s *
                         day_counter.day_count_fraction(
                             time_adjuster.shift_sc(cycle_anchor_date),

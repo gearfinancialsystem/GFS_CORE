@@ -20,20 +20,20 @@ impl TraitStateTransitionFunction for STF_FP_PAM {
         time_adjuster: &BusinessDayAdjuster,
     )  {
         
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
         
-        states.feeAccrued = Some(0.0);
-        states.statusDate = Some(*time);
+        states.fee_accrued = Some(0.0);
+        states.status_date = Some(*time);
 
 
     }

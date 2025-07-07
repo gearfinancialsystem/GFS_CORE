@@ -22,16 +22,16 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         );
 
-        let model_nominal_interest_rate = model.nominalInterestRate.unwrap_or(0.0);
+        let model_nominal_interest_rate = model.nominal_interest_rate.unwrap_or(0.0);
         let delivery_settlement = model.deliverySettlement.as_ref().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
@@ -39,16 +39,16 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
             _ => model_nominal_interest_rate - nominal_interest_rate,
         };
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
 
-        states.accruedInterest2 = states.accruedInterest2.map(|mut accrued_interest2| {
+        states.accrued_interest2 = states.accrued_interest2.map(|mut accrued_interest2| {
             accrued_interest2 += (-1.0) * nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest2
         });
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

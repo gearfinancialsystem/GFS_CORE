@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_RRF_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
         let next_reset_rate = model.nextResetRate.clone().expect("fee rate should always be Some");
@@ -32,16 +32,16 @@ impl TraitStateTransitionFunction for STF_RRF_LAM {
             time_adjuster.shift_sc(time),
         );
 
-        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
             accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
         });
 
-        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
             let fee_rate = fee_rate;
             fee_accrued + fee_rate * notional_principal * time_from_last_event
         });
 
-        states.nominalInterestRate = Some(next_reset_rate);
-        states.statusDate = Some(*time);
+        states.nominal_interest_rate = Some(next_reset_rate);
+        states.status_date = Some(*time);
     }
 }

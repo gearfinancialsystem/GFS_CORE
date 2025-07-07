@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_IPFloat_SWPPV {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.accruedInterest2 = Some(0.0);
-        states.statusDate = Some(*time);
+        states.accrued_interest2 = Some(0.0);
+        states.status_date = Some(*time);
     }
 }

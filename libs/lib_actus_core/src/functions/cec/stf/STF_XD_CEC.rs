@@ -26,16 +26,16 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
             time
         );
 
-        states.notionalPrincipal = Some(CEC::calculate_notional_principal(
+        states.notional_principal = Some(CEC::calculate_notional_principal(
             model,
             risk_factor_model,
             time
         ));
 
-        let exercise_amount = states.notionalPrincipal.unwrap_or(0.0).min(market_value_covering_contracts);
-        states.exerciseAmount = Some(exercise_amount);
+        let exercise_amount = states.notional_principal.unwrap_or(0.0).min(market_value_covering_contracts);
+        states.exercise_amount = Some(exercise_amount);
 
-        states.exerciseDate = Some(*time);
-        states.statusDate = Some(*time);
+        states.exercise_date = Some(*time);
+        states.status_date = Some(*time);
     }
 }

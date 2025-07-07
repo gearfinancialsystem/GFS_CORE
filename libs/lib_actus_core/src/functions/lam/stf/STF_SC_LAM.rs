@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
         //let scaling_index_at_contract_deal_date = model.scalingIndexAtContractDealDate.clone().expect("fee rate should always be Some");
@@ -33,11 +33,11 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
             time_adjuster.shift_sc(time)
         );
 
-        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
             accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
         });
 
-        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
             let fee_rate = fee_rate;
             fee_accrued + fee_rate * notional_principal * time_from_last_event
         });
@@ -56,12 +56,12 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
 
 
         if scaling_effect.to_string().contains("I") {
-            states.interestScalingMultiplier = Some(scaling_multiplier);
+            states.interest_scaling_multiplier = Some(scaling_multiplier);
         }
         if scaling_effect.to_string().contains("N") {
-            states.notionalScalingMultiplier = Some(scaling_multiplier);
+            states.notional_scaling_multiplier = Some(scaling_multiplier);
         }
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

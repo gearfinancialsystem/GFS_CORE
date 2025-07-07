@@ -201,7 +201,7 @@ impl CEG {
         }
 
         states.exercise_amount = model.exerciseAmount;
-        states.exerciseDate = model.exercise_date.clone();
+        states.exercise_date = model.exercise_date.clone();
 
         Ok(states)
     }

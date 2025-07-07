@@ -28,13 +28,13 @@ public final class POF_PRD_PAM implements PayOffFunction {
                 * ContractRoleConvention.roleSign(model.getAs("contractRole"))
                 * (-1)
                 * (model.<Double>getAs("priceAtPurchaseDate")
-                    + states.accruedInterest
+                    + states.accrued_interest
                     + dayCounter.dayCountFraction(
-                        timeAdjuster.shiftCalcTime(states.statusDate),
+                        timeAdjuster.shiftCalcTime(states.status_date),
                         timeAdjuster.shiftCalcTime(time)
                         )
-                    * states.nominalInterestRate
-                    * states.notionalPrincipal
+                    * states.nominal_interest_rate
+                    * states.notional_principal
                 );
         }
 }
@@ -62,10 +62,10 @@ impl TraitPayOffFunction for POF_PRD_PAM {
     ) -> f64 {
 
             let contract_role = model.contractRole.as_ref().expect("contract role should always exist");
-            let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always exist");
+            let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always exist");
             let accrued_interest = model.accruedInterest.expect("accruedInterest should always exist");
             let status_date = model.statusDate.expect("status date should always exist");
-            let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always exist");
+            let nominal_interest_rate = model.nominal_interest_rate.expect("nominalInterestRate should always exist");
             let notional_principal = model.notional_principal.expect("notionalPrincipal should always exist");
 
             1.0 * contract_role.role_sign() * -1.0 * (

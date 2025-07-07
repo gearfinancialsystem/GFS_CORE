@@ -24,37 +24,37 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
     ) {
         let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let notional_principal = model.notional_principal.expect("notionalPrincipal should always be Some");
-        let nominal_interest_rate = model.nominalInterestRate.expect("nominalInterestRate should always be Some");
+        let nominal_interest_rate = model.nominal_interest_rate.expect("nominalInterestRate should always be Some");
 
-        states.statusDate = Some(*time);
-        states.notionalPrincipal = Some(contract_role.role_sign() * notional_principal);
-        states.nominalInterestRate = Some(nominal_interest_rate);
+        states.status_date = Some(*time);
+        states.notional_principal = Some(contract_role.role_sign() * notional_principal);
+        states.nominal_interest_rate = Some(nominal_interest_rate);
 
         if let Some(interest_calculation_base) = &model.interest_calculation_base {
             if *interest_calculation_base == InterestCalculationBase::NT(NT) {
-                states.interestCalculationBaseAmount = states.notionalPrincipal;
+                states.interest_calculation_base_amount = states.notional_principal;
             } else {
                 let interest_calculation_base_amount = model.interest_calculation_baseAmount.expect("interestCalculationBaseAmount should always be Some");
-                states.interestCalculationBaseAmount = Some(contract_role.role_sign() * interest_calculation_base_amount);
+                states.interest_calculation_base_amount = Some(contract_role.role_sign() * interest_calculation_base_amount);
             }
         }
 
         if let Some(accrued_interest) = model.accruedInterest {
-            states.accruedInterest = Some(contract_role.role_sign() * accrued_interest);
+            states.accrued_interest = Some(contract_role.role_sign() * accrued_interest);
         } else if let Some(cycle_anchor_date_of_interest_payment) = model.cycleAnchorDateOfInterestPayment {
             if cycle_anchor_date_of_interest_payment < *time {
                 let time_from_last_event = day_counter.day_count_fraction(
                     time_adjuster.shift_sc(&cycle_anchor_date_of_interest_payment),
                     time_adjuster.shift_sc(time)
                 );
-                states.accruedInterest = states.notionalPrincipal.map(|np| {
-                    np * states.interestCalculationBaseAmount.unwrap_or(0.0) * time_from_last_event
+                states.accrued_interest = states.notional_principal.map(|np| {
+                    np * states.interest_calculation_base_amount.unwrap_or(0.0) * time_from_last_event
                 });
             } else {
-                states.accruedInterest = Some(0.0);
+                states.accrued_interest = Some(0.0);
             }
         } else {
-            states.accruedInterest = Some(0.0);
+            states.accrued_interest = Some(0.0);
         }
     }
 }

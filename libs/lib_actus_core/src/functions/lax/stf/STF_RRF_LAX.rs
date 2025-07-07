@@ -30,34 +30,34 @@ impl TraitStateTransitionFunction for STF_RRF_LAX {
         // Compute new rate
         let rate = self.scheduled_rate * model.rateMultiplier.unwrap_or(1.0)
             + model.rateSpread.unwrap_or(0.0)
-            - states.nominalInterestRate.unwrap_or(0.0);
+            - states.nominal_interest_rate.unwrap_or(0.0);
 
         let delta_rate = rate.max(model.periodFloor.unwrap_or(f64::MIN)).min(model.periodCap.unwrap_or(f64::MAX));
 
-        let new_rate = (states.nominalInterestRate.unwrap_or(0.0) + delta_rate)
+        let new_rate = (states.nominal_interest_rate.unwrap_or(0.0) + delta_rate)
             .max(model.lifeFloor.unwrap_or(f64::MIN))
             .min(model.lifeCap.unwrap_or(f64::MAX));
 
         // Update state space
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.unwrap_or(0.0);
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.unwrap_or(0.0);
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.unwrap_or(0.0);
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.unwrap_or(0.0);
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         );
 
-        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
             accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
         });
 
-        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
             let fee_rate = model.fee_rate.unwrap_or(0.0);
-            fee_accrued + fee_rate * states.notionalPrincipal.unwrap_or(0.0) * time_from_last_event
+            fee_accrued + fee_rate * states.notional_principal.unwrap_or(0.0) * time_from_last_event
         });
 
-        states.nominalInterestRate = Some(new_rate);
-        states.statusDate = Some(*time);
+        states.nominal_interest_rate = Some(new_rate);
+        states.status_date = Some(*time);
     }
 }

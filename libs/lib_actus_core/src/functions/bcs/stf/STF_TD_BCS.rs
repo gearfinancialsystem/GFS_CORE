@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_TD_BCS {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        states.notionalPrincipal = Some(0.0);
+        states.notional_principal = Some(0.0);
 
     }
 }

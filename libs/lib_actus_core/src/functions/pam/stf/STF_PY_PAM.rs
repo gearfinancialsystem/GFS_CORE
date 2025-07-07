@@ -19,24 +19,24 @@ impl TraitStateTransitionFunction for STF_PY_PAM {
         time_adjuster: &BusinessDayAdjuster,
     )  {
         
-        let status_date = states.statusDate.expect("status date should be some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should be some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should be some");
+        let status_date = states.status_date.expect("status date should be some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should be some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should be some");
         let fee_rate = model.fee_rate.expect("feeRate should be some");
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accruedInterest = states.accruedInterest.map(|mut accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
             accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
             accrued_interest
         });
 
-        states.feeAccrued = states.feeAccrued.map(|mut fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|mut fee_accrued| {
             fee_accrued += fee_rate * notional_principal * time_from_last_event;
             fee_accrued
         });
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
 
 
     }

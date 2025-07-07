@@ -261,24 +261,24 @@ public final class PrincipalAtMaturity {
 
     private static StateSpace initStateSpace(ContractModelProvider model) throws AttributeConversionException {
         StateSpace states = new StateSpace();
-        states.notionalScalingMultiplier = model.getAs("notionalScalingMultiplier");
-        states.interestScalingMultiplier = model.getAs("interestScalingMultiplier");
+        states.notional_scaling_multiplier = model.getAs("notionalScalingMultiplier");
+        states.interest_scaling_multiplier = model.getAs("interestScalingMultiplier");
 
-        states.contractPerformance = model.getAs("contractPerformance");
-        states.statusDate = model.getAs("statusDate");
+        states.contract_performance = model.getAs("contractPerformance");
+        states.status_date = model.getAs("statusDate");
 
         if(model.<LocalDateTime>getAs("initialExchangeDate").isAfter(model.getAs("statusDate"))){
-            states.notionalPrincipal = 0.0;
-            states.nominalInterestRate = 0.0;
+            states.notional_principal = 0.0;
+            states.nominal_interest_rate = 0.0;
         }else{
-            states.notionalPrincipal = ContractRoleConvention.roleSign(model.getAs("contractRole"))*model.<Double>getAs("notionalPrincipal");
-            states.nominalInterestRate = model.getAs("nominalInterestRate");
+            states.notional_principal = ContractRoleConvention.roleSign(model.getAs("contractRole"))*model.<Double>getAs("notionalPrincipal");
+            states.nominal_interest_rate = model.getAs("nominalInterestRate");
         }
 
         if(CommonUtils.isNull(model.getAs("nominalInterestRate"))){
-            states.accruedInterest = 0.0;
+            states.accrued_interest = 0.0;
         } else if(!CommonUtils.isNull(model.getAs("accruedInterest"))){
-            states.accruedInterest = model.getAs("accruedInterest");
+            states.accrued_interest = model.getAs("accruedInterest");
         } else{
             DayCountCalculator dayCounter = model.getAs("dayCountConvention");
             BusinessDayAdjuster timeAdjuster = model.getAs("businessDayConvention");
@@ -290,17 +290,17 @@ public final class PrincipalAtMaturity {
                     true
             ));
             Collections.sort(ipSchedule);
-            List<LocalDateTime> dateEarlierThanT0 = ipSchedule.stream().filter(time -> time.isBefore(states.statusDate)).collect(Collectors.toList());
+            List<LocalDateTime> dateEarlierThanT0 = ipSchedule.stream().filter(time -> time.isBefore(states.status_date)).collect(Collectors.toList());
             LocalDateTime tMinus = dateEarlierThanT0.get(dateEarlierThanT0.size() -1);
-            states.accruedInterest = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(tMinus), timeAdjuster.shiftCalcTime(states.statusDate))
-                    * states.notionalPrincipal
-                    * states.nominalInterestRate;
+            states.accrued_interest = dayCounter.dayCountFraction(timeAdjuster.shiftCalcTime(tMinus), timeAdjuster.shiftCalcTime(states.status_date))
+                    * states.notional_principal
+                    * states.nominal_interest_rate;
         }
 
         if(CommonUtils.isNull(model.getAs("feeRate"))){
-            states.feeAccrued = 0.0;
+            states.fee_accrued = 0.0;
         } else if(!CommonUtils.isNull(model.getAs("feeAccrued"))){
-            states.feeAccrued = model.getAs("feeAccrued");
+            states.fee_accrued = model.getAs("feeAccrued");
         }//TODO: implement last two possible initialization
 
 
@@ -395,7 +395,7 @@ impl PrincipalAtMaturity {
         }
 
         // Interest payment related events
-        if model.nominalInterestRate.is_some()
+        if model.nominal_interest_rate.is_some()
             && (model.cycleOfInterestPayment.is_some() || model.cycleAnchorDateOfInterestPayment.is_some())
         {
             // Generate raw interest payment events (IP)
@@ -658,27 +658,27 @@ impl PrincipalAtMaturity {
     ) -> StateSpace {
         let mut states = StateSpace::default();
 
-        states.notionalScalingMultiplier = model.notionalScalingMultiplier;
-        states.interestScalingMultiplier = model.interestScalingMultiplier;
-        states.contractPerformance = model.contractPerformance;
-        states.statusDate = model.statusDate;
+        states.notional_scaling_multiplier = model.notionalScalingMultiplier;
+        states.interest_scaling_multiplier = model.interestScalingMultiplier;
+        states.contract_performance = model.contractPerformance;
+        states.status_date = model.statusDate;
 
         let initial_exchange_date: IsoDatetime = model.initialExchangeDate.unwrap();
-        if initial_exchange_date > states.statusDate.unwrap() {
-            states.notionalPrincipal = Some(0.0);
-            states.nominalInterestRate = Some(0.0);
+        if initial_exchange_date > states.status_date.unwrap() {
+            states.notional_principal = Some(0.0);
+            states.nominal_interest_rate = Some(0.0);
         } else {
 
             let role_sign = model.contractRole.as_ref().map_or(1.0, |a| a.role_sign());
-            states.notionalPrincipal = Some(role_sign * model.notional_principal.unwrap());
-            states.nominalInterestRate = model.nominalInterestRate;
+            states.notional_principal = Some(role_sign * model.notional_principal.unwrap());
+            states.nominal_interest_rate = model.nominal_interest_rate;
         }
 
         // Initialize accrued interest
-        if model.nominalInterestRate.is_none() {
-            states.accruedInterest =  Some(0.0);
+        if model.nominal_interest_rate.is_none() {
+            states.accrued_interest =  Some(0.0);
         } else if model.accruedInterest.is_some() {
-            states.accruedInterest = model.accruedInterest;
+            states.accrued_interest = model.accruedInterest;
         } else {
             // GERER CE CAS : Il y a UNE ERREUR
             let day_counter = model.dayCountConvention.as_ref().unwrap();
@@ -697,22 +697,22 @@ impl PrincipalAtMaturity {
 
             let date_earlier_than_t0: Vec<&IsoDatetime> = ip_schedule
                 .iter()
-                .filter(|&&date| date < states.statusDate.unwrap())
+                .filter(|&&date| date < states.status_date.unwrap())
                 .collect();
 
             let t_minus = date_earlier_than_t0.last();
             println!("ok");
-            states.accruedInterest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
-                                                                    time_adjuster.shift_bd(&states.statusDate.unwrap()))
-                * states.notionalPrincipal.unwrap()
-                * states.nominalInterestRate.unwrap());
+            states.accrued_interest = Some(day_counter.day_count_fraction(time_adjuster.shift_bd(t_minus.unwrap()),
+                                                                    time_adjuster.shift_bd(&states.status_date.unwrap()))
+                * states.notional_principal.unwrap()
+                * states.nominal_interest_rate.unwrap());
 
         }
 
         if model.fee_rate.is_none() {
-            states.feeAccrued = Some(0.0);
-        } else if model.feeAccrued.is_some() {
-            states.feeAccrued = model.feeAccrued;
+            states.fee_accrued = Some(0.0);
+        } else if model.fee_accrued.is_some() {
+            states.fee_accrued = model.fee_accrued;
         }
         // TODO: Implement last two possible initializations if needed
 
@@ -1131,7 +1131,7 @@ public final class ExoticLinearAmortizer {
 
         // apply events according to their time sequence to current state
 		ListIterator<ContractEvent> eventIterator = events.listIterator();
-        //while (( states.statusDate.isBefore(initialExchangeDate) || states.notionalPrincipal != 0.0) && eventIterator.hasNext()) {
+        //while (( states.status_date.isBefore(initialExchangeDate) || states.notional_principal != 0.0) && eventIterator.hasNext()) {
         while (eventIterator.hasNext()) {
                 ((ContractEvent) eventIterator.next()).eval(states, model, observer, model.getAs("dayCountConvention"),
                     model.getAs("businessDayConvention"));
@@ -1219,25 +1219,25 @@ public final class ExoticLinearAmortizer {
 		StateSpace states = new StateSpace();
 
 		// general states to be initialized
-		states.statusDate = model.getAs("statusDate");
-		states.notionalScalingMultiplier = 1;
-		states.interestScalingMultiplier = 1;
+		states.status_date = model.getAs("statusDate");
+		states.notional_scaling_multiplier = 1;
+		states.interest_scaling_multiplier = 1;
 
 		if(model.<LocalDateTime>getAs("initialExchangeDate").isAfter(model.getAs("statusDate"))){
-            states.notionalPrincipal = 0.0;
-            states.nominalInterestRate = 0.0;
-            states.interestCalculationBaseAmount = 0.0;
+            states.notional_principal = 0.0;
+            states.nominal_interest_rate = 0.0;
+            states.interest_calculation_base_amount = 0.0;
         }else{
-			states.notionalPrincipal = ContractRoleConvention.roleSign(model.getAs("contractRole"))
+			states.notional_principal = ContractRoleConvention.roleSign(model.getAs("contractRole"))
 					* model.<Double>getAs("notionalPrincipal");
-			states.nominalInterestRate = model.getAs("nominalInterestRate");
-			states.accruedInterest = ContractRoleConvention.roleSign(model.getAs("contractRole"))
+			states.nominal_interest_rate = model.getAs("nominalInterestRate");
+			states.accrued_interest = ContractRoleConvention.roleSign(model.getAs("contractRole"))
 					* model.<Double>getAs("accruedInterest");
-			states.feeAccrued = model.getAs("feeAccrued");
+			states.fee_accrued = model.getAs("feeAccrued");
 			if(InterestCalculationBase.NT.equals(model.getAs("interestCalculationBase"))){
-                states.interestCalculationBaseAmount = states.notionalPrincipal; // contractRole applied at notionalPrincipal init
+                states.interest_calculation_base_amount = states.notional_principal; // contractRole applied at notionalPrincipal init
             }else{
-                states.interestCalculationBaseAmount = ContractRoleConvention.roleSign(model.getAs("contractRole")) * model.<Double>getAs("interestCalculationBaseAmount");
+                states.interest_calculation_base_amount = ContractRoleConvention.roleSign(model.getAs("contractRole")) * model.<Double>getAs("interestCalculationBaseAmount");
             }
 		}
 		return states;

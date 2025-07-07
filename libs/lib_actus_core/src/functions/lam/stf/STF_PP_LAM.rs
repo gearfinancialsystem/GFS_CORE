@@ -21,21 +21,21 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.statusDate.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always be Some");
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always be Some");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always be Some");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         );
 
-        states.accruedInterest = states.accruedInterest.map(|accrued_interest| {
+        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
             accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
         });
 
-        states.feeAccrued = states.feeAccrued.map(|fee_accrued| {
+        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
             let fee_rate = model.fee_rate.unwrap_or(0.0);
             fee_accrued + fee_rate * notional_principal * time_from_last_event
         });
@@ -49,14 +49,14 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         // );
         let prepayment_factor = 1.0;
 
-        states.notionalPrincipal = Some(notional_principal - prepayment_factor * notional_principal);
+        states.notional_principal = Some(notional_principal - prepayment_factor * notional_principal);
 
         if let Some(interest_calculation_base) = &model.interest_calculation_base {
             if *interest_calculation_base == InterestCalculationBase::NTL(NTL) {
-                states.interestCalculationBaseAmount = states.notionalPrincipal;
+                states.interest_calculation_base_amount = states.notional_principal;
             }
         }
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

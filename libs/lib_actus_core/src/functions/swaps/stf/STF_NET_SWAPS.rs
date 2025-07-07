@@ -32,14 +32,14 @@ impl TraitStateTransitionFunction for STF_NET_SWAPS {
         let e1_states = self.e1.clone().unwrap().states();
         let e2_states = self.e2.clone().unwrap().states();
 
-        let notional_principal_e1 = e1_states.notionalPrincipal.expect("should be some");
-        let notional_principal_e2 = e2_states.notionalPrincipal.expect("should be some");
-        let accrued_interest_e1 = e1_states.accruedInterest.expect("should be some");
-        let accrued_interest_e2 = e2_states.accruedInterest.expect("should be some");
+        let notional_principal_e1 = e1_states.notional_principal.expect("should be some");
+        let notional_principal_e2 = e2_states.notional_principal.expect("should be some");
+        let accrued_interest_e1 = e1_states.accrued_interest.expect("should be some");
+        let accrued_interest_e2 = e2_states.accrued_interest.expect("should be some");
 
-        states.notionalPrincipal = Some(notional_principal_e1 + notional_principal_e2);
-        states.accruedInterest = Some(accrued_interest_e1 + accrued_interest_e2);
+        states.notional_principal = Some(notional_principal_e1 + notional_principal_e2);
+        states.accrued_interest = Some(accrued_interest_e1 + accrued_interest_e2);
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

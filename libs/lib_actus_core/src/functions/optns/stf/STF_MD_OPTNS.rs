@@ -22,7 +22,7 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        if states.exerciseDate.is_none() {
+        if states.exercise_date.is_none() {
             let mut x = 0.0;
             let st = 1.0; // Placeholder for risk_factor_model logic
             let option_type = model.optionType.as_ref().expect("optionType should always be Some");
@@ -42,11 +42,11 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
             }
 
             if x == 0.0 {
-                states.exerciseDate = None;
+                states.exercise_date = None;
             } else {
-                states.exerciseDate = Some(*time);
+                states.exercise_date = Some(*time);
             }
         }
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

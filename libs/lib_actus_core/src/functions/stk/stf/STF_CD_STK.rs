@@ -20,8 +20,8 @@ impl TraitStateTransitionFunction for STF_CD_STK {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     )  {
-        states.contractPerformance = Some(ContractPerformance::new("DF").expect("ok cp"));
-        states.statusDate = Some(*time);
+        states.contract_performance = Some(ContractPerformance::new("DF").expect("ok cp"));
+        states.status_date = Some(*time);
 
     }
 }

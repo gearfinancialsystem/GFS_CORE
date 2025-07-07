@@ -37,7 +37,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::AnyContractEvent::AnyContractEvent;
-use crate::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
+
 use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
 use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;

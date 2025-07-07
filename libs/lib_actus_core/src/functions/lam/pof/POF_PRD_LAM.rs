@@ -30,11 +30,11 @@ impl TraitPayOffFunction for POF_PRD_LAM {
         settlement_currency_fx_rate
             * model.clone().contractRole.unwrap().role_sign()
             * (-1.0)
-            * (model.priceAtPurchaseDate.clone().unwrap() + states.accruedInterest.unwrap()
+            * (model.price_at_purchase_date.clone().unwrap() + states.accrued_interest.unwrap()
             + (day_counter.day_count_fraction(
-                    time_adjuster.shift_sc(&states.statusDate.unwrap()),
+                    time_adjuster.shift_sc(&states.status_date.unwrap()),
                     time_adjuster.shift_sc(time),
-        ) * states.nominalInterestRate.unwrap()
-            * states.interestCalculationBaseAmount.unwrap()))
+        ) * states.nominal_interest_rate.unwrap()
+            * states.interest_calculation_base_amount.unwrap()))
     }
 }

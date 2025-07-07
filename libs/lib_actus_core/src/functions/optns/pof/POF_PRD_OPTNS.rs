@@ -20,7 +20,7 @@ impl TraitPayOffFunction for POF_PRD_OPTNS {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let price_at_purchase_date = model.priceAtPurchaseDate.expect("priceAtPurchaseDate should always exist");
+        let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

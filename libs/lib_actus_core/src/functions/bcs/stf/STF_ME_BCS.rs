@@ -45,8 +45,8 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
 
                         // Update state space
                         states.boundaryMonitoringFlag = Some(false);
-                        states.boundaryCrossedFlag = Some(true);
-                        states.statusDate = Some(*time);
+                        states.boundary_crossed_flag = Some(true);
+                        states.status_date = Some(*time);
                     }
                 }
             }

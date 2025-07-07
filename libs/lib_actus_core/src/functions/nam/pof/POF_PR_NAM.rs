@@ -20,13 +20,13 @@ impl TraitPayOffFunction for POF_PR_NAM {
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let status_date = states.statusDate.as_ref().expect("status date should always exist");
-        let next_principal_redemption_payment = states.nextPrincipalRedemptionPayment.expect("nextPrincipalRedemptionPayment should always exist");
-        let accrued_interest = states.accruedInterest.expect("accruedInterest should always exist");
-        let nominal_interest_rate = states.nominalInterestRate.expect("nominalInterestRate should always exist");
-        let interest_calculation_base_amount = states.interestCalculationBaseAmount.expect("interestCalculationBaseAmount should always exist");
-        let notional_principal = states.notionalPrincipal.expect("notionalPrincipal should always exist");
-        let notional_scaling_multiplier = states.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
+        let status_date = states.status_date.as_ref().expect("status date should always exist");
+        let next_principal_redemption_payment = states.next_principal_redemption_payment.expect("nextPrincipalRedemptionPayment should always exist");
+        let accrued_interest = states.accrued_interest.expect("accruedInterest should always exist");
+        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always exist");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always exist");
+        let notional_principal = states.notional_principal.expect("notionalPrincipal should always exist");
+        let notional_scaling_multiplier = states.notional_scaling_multiplier.expect("notionalScalingMultiplier should always exist");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),

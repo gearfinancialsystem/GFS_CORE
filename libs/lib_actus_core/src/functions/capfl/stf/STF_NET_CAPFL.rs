@@ -29,6 +29,6 @@ impl TraitStateTransitionFunction for STF_NET_CAPFL {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     )  {
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

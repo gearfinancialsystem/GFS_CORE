@@ -27,11 +27,11 @@ impl TraitStateTransitionFunction for STF_MD_FUTUR {
         let x = st - futures_price;
 
         if x == 0.0 {
-            states.exerciseDate = None;
+            states.exercise_date = None;
         } else {
-            states.exerciseDate = Some(*time);
+            states.exercise_date = Some(*time);
         }
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
     }
 }

@@ -20,7 +20,7 @@ impl TraitStateTransitionFunction for STF_PRD_STK {
         _time_adjuster: &BusinessDayAdjuster,
     )  {
 
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
 
     }
 }

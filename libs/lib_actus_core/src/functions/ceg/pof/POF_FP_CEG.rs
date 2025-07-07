@@ -35,12 +35,12 @@ impl TraitPayOffFunction for POF_FP_CEG {
             settlement_currency_fx_rate * contract_role.role_sign() * fee_rate
         } else {
             let time_from_last_event = day_counter.day_count_fraction(
-                time_adjuster.shift_sc(&states.statusDate.clone().unwrap()),
+                time_adjuster.shift_sc(&states.status_date.clone().unwrap()),
                 time_adjuster.shift_sc(time)
             );
             settlement_currency_fx_rate * (
-                states.feeAccrued.clone().unwrap() +
-                    (states.notionalPrincipal.clone().unwrap() * time_from_last_event * fee_rate)
+                states.fee_accrued.clone().unwrap() +
+                    (states.notional_principal.clone().unwrap() * time_from_last_event * fee_rate)
             )
         };
 

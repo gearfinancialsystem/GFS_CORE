@@ -26,7 +26,7 @@ impl TraitStateTransitionFunction for STF_XD_FUTUR {
         let futures_price = model.futures_price.unwrap_or(0.0);
         
         
-        states.exerciseAmount = Some(st - futures_price);
-        states.statusDate = Some(*time);
+        states.exercise_amount = Some(st - futures_price);
+        states.status_date = Some(*time);
     }
 }

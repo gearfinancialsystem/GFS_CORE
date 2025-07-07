@@ -38,8 +38,8 @@ impl TraitPayOffFunction for POF_FP_PAM {
         } 
         else {
             let notional_principal = model.notional_principal.as_ref().expect("notionalPrincipal should always be some");
-            let fee_accrued = states.feeAccrued.expect("fee accrued should always be some");
-            let status_date = states.statusDate.expect("status date should always be some");
+            let fee_accrued = states.fee_accrued.expect("fee accrued should always be some");
+            let status_date = states.status_date.expect("status date should always be some");
             
             settlement_currency_fx_rate * (fee_accrued + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date), time_adjuster.shift_sc(time))) * fee_rate * notional_principal
         }

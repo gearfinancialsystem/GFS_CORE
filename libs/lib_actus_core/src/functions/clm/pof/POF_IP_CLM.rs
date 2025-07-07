@@ -26,15 +26,15 @@ impl TraitPayOffFunction for POF_IP_CLM {
             states
         );
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.statusDate.clone().unwrap()),
+            time_adjuster.shift_sc(&states.status_date.clone().unwrap()),
             time_adjuster.shift_sc(time)
         );
 
         settlement_currency_fx_rate * (
-            states.accruedInterest.clone().unwrap() +
+            states.accrued_interest.clone().unwrap() +
                 time_from_last_event *
-                    states.nominalInterestRate.clone().unwrap() *
-                    states.notionalPrincipal.clone().unwrap()
+                    states.nominal_interest_rate.clone().unwrap() *
+                    states.notional_principal.clone().unwrap()
         )
     }
 }

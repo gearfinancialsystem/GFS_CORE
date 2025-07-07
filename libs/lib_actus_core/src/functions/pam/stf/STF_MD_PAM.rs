@@ -21,12 +21,12 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 
         // Set state values to zero at maturity
-        states.notionalPrincipal = Some(0.0);
-        states.accruedInterest = Some(0.0);
-        states.feeAccrued = Some(0.0);
+        states.notional_principal = Some(0.0);
+        states.accrued_interest = Some(0.0);
+        states.fee_accrued = Some(0.0);
         
         // Update the status date
-        states.statusDate = Some(*time);
+        states.status_date = Some(*time);
         
     }
 }

@@ -21,7 +21,7 @@ impl TraitStateTransitionFunction for STF_CD_FXOUT {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // Update state space
-        states.contractPerformance = Some(ContractPerformance::new("DF").expect("ok cp"));
-        states.statusDate = Some(*time);
+        states.contract_performance = Some(ContractPerformance::new("DF").expect("ok cp"));
+        states.status_date = Some(*time);
     }
 }
