@@ -25,7 +25,7 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         let status_date = states.status_date.as_ref().expect("statusDate should always be Some");
         let accrued_interest = states.accrued_interest.as_ref().expect("accruedInterest should always be Some");
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should always be Some");
+        let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         
         let fee_rate = model.fee_rate.as_ref().expect("fee rate should always be Some");
         

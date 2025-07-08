@@ -5,6 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -22,15 +23,15 @@ impl TraitStateTransitionFunction for STF_FP_PAM {
         time_adjuster: &BusinessDayAdjuster,
     )  {
         
-        let status_date = states.status_date.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
-        let notional_principal = states.notional_principal.expect("notionalPrincipal should always be Some");
+        let status_date = states.status_date.as_ref().expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
+        let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
 
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate * notional_principal * time_from_last_event;
+        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
+            accrued_interest += nominal_interest_rate.value() * notional_principal.value() * time_from_last_event;
             accrued_interest
         });
         
