@@ -4,7 +4,7 @@ use crate::exceptions::AttributeConversionException::AttributeConversionExceptio
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use crate::types::IsoCycle::{LONG_STUB, SHORT_STUB};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PeriodCycleAdjuster {
     pub period: IsoPeriod,
     pub stub: char,

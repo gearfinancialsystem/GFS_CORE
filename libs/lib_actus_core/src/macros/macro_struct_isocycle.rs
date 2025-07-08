@@ -42,8 +42,8 @@ macro_rules! define_struct_isocycle {
 
         //Implémentation du trait From<IsoDatetime>
         impl From<IsoCycle> for $struct_name {
-            fn from(iso_cycle: IsoCycle: IsoDatetime) -> Self {
-                $struct_name(iso_datetime)
+            fn from(iso_cycle: IsoCycle) -> Self {
+                $struct_name(iso_cycle)
             }
         }
         

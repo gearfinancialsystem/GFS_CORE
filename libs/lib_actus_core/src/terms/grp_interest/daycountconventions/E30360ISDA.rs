@@ -3,9 +3,9 @@ use std::rc::Rc;
 
 use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Datelike;
-use crate::terms::grp_interest::daycountconventions::E30360::E30360;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -74,6 +74,7 @@ mod tests {
     use std::str::FromStr;
     use super::*;
     use chrono::NaiveDateTime;
+    use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
     use super::E30360ISDA;
     //use super::E30360ISDA;
     fn parse_date(date_str: &str) -> MaturityDate {

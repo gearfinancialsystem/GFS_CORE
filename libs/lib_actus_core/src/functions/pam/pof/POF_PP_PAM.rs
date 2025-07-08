@@ -20,7 +20,7 @@ impl TraitPayOffFunction for POF_PP_PAM {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-            let notional_principal = states.notional_principal.expect("notionalPrincipal should always be some");
+            let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should always be some");
             let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
@@ -29,7 +29,7 @@ impl TraitPayOffFunction for POF_PP_PAM {
                 time,
                 states
             );
-            settlement_currency_fx_rate * contract_role.role_sign() * 1.0 * notional_principal
+            settlement_currency_fx_rate * contract_role.role_sign() * 1.0 * notional_principal.value()
 
     }
 }

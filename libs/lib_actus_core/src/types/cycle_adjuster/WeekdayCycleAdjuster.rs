@@ -5,7 +5,7 @@ use chrono::{Months, NaiveDate, Weekday};
 use chrono::Datelike;
 use crate::types::IsoCycle::{LONG_STUB, SHORT_STUB};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct WeekdayCycleAdjuster {
     pub day_of_week: Weekday,
     pub position: i32,

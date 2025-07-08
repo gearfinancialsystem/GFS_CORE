@@ -37,7 +37,7 @@ macro_rules! define_struct_isodatetime {
         }
 
         impl $struct_name {
-            fn new(value: IsoDatetime) -> Result<Self, String> {
+            pub fn new(value: IsoDatetime) -> Result<Self, String> {
                 Ok($struct_name(value))
             }
             pub fn to_opt_isodatetime(option_s: &Option<$struct_name>) -> Option<IsoDatetime> {
@@ -63,11 +63,12 @@ macro_rules! define_struct_isodatetime {
             }
         }
 
-        impl TraitConvertContractToAnyEvent for ContractEvent<$struct_name, $struct_name> {
-            fn convert_to_any(self) -> Result<AnyContractEvent, String> {
-                Ok(AnyContractEvent::$struct_name)(self)
-            }
-        }
+        // impl TraitConvertContractToAnyEvent for ContractEvent<$struct_name, $struct_name> {
+        //     fn convert_to_any(self) -> AnyContractEvent, {
+        //         AnyContractEvent::$struct_name(ContractEvent<$struct_name, $struct_name>)
+        //
+        //     }
+        // }
         
         // Implémentation du trait Hash
         impl std::hash::Hash for $struct_name {

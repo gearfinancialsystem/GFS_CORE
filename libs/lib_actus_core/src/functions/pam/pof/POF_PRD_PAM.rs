@@ -3,6 +3,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -21,11 +22,11 @@ impl TraitPayOffFunction for POF_PRD_PAM {
     ) -> f64 {
         
             let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-            let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always exist");
-            let accrued_interest = model.accruedInterest.expect("accruedInterest should always exist");
-            let status_date = model.statusDate.expect("status date should always exist");
-            let nominal_interest_rate = model.nominal_interest_rate.expect("nominalInterestRate should always exist");
-            let notional_principal = model.notional_principal.expect("notionalPrincipal should always exist");
+            let price_at_purchase_date = model.price_at_purchase_date.as_ref().expect("priceAtPurchaseDate should always exist");
+            let accrued_interest = model.accrued_interest.as_ref().expect("accruedInterest should always exist");
+            let status_date = model.status_date.as_ref().expect("status date should always exist");
+            let nominal_interest_rate = model.nominal_interest_rate.as_ref().expect("nominalInterestRate should always exist");
+            let notional_principal = model.notional_principal.as_ref().expect("notionalPrincipal should always exist");
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
                 risk_factor_model,
@@ -34,10 +35,10 @@ impl TraitPayOffFunction for POF_PRD_PAM {
                 states
             );
             settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (
-                    price_at_purchase_date + 
-                    accrued_interest + day_counter.day_count_fraction(
-                    time_adjuster.shift_sc(&status_date),
+                    price_at_purchase_date.value() + 
+                    accrued_interest.value() + day_counter.day_count_fraction(
+                    time_adjuster.shift_sc(&status_date.value()),
                     time_adjuster.shift_sc(&time)
-                ) * notional_principal * nominal_interest_rate)
+                ) * notional_principal.value() * nominal_interest_rate.value())
     }
 }

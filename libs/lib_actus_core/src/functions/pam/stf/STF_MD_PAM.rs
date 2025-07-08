@@ -2,7 +2,11 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -21,12 +25,12 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 
         // Set state values to zero at maturity
-        states.notional_principal = Some(0.0);
-        states.accrued_interest = Some(0.0);
-        states.fee_accrued = Some(0.0);
+        states.notional_principal = NotionalPrincipal::new(0.0).ok();   //Some(0.0);
+        states.accrued_interest = AccruedInterest::new(0.0).ok();
+        states.fee_accrued = FeeAccrued::new(0.0).ok();
         
         // Update the status date
-        states.status_date = Some(*time);
+        states.status_date = Some(StatusDate::from(*time));
         
     }
 }

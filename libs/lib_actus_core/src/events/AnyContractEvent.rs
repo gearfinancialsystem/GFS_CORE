@@ -4,6 +4,7 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use std::any::{Any, TypeId};
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
 use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
 use crate::terms::grp_interest::CycleAnchorDateOfInterestCalculationBase::CycleAnchorDateOfInterestCalculationBase;
 use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
@@ -37,26 +38,18 @@ pub enum AnyContractEvent {
     OptionExersiceEndDate(ContractEvent<OptionExerciceEndDate, OptionExerciceEndDate>),
     CycleAnchorDateOfOptionality(ContractEvent<CycleAnchorDateOfOptionality, CycleAnchorDateOfOptionality>),
     CycleAnchorDateOfRateReset(ContractEvent<CycleAnchorDateOfRateReset, CycleAnchorDateOfRateReset>),
-    ExerciseDate(ContractEvent<ExerciseDate, ExerciseDate>)
+    ExerciseDate(ContractEvent<ExerciseDate, ExerciseDate>),
+    CycleAnchorDateOfFee(ContractEvent<CycleAnchorDateOfFee, CycleAnchorDateOfFee>),
+
     // Ajoutez d'autres variantes selon vos besoins
 }
 
 trait ConvertToAnyContractEvent {
     fn convert_to_any(self) -> Result<AnyContractEvent, String>;
 }
-// impl ConvertToAnyContractEvent for ContractEvent<InitialExchangeDate, InitialExchangeDate> {
-//     fn convert_to_any(self) -> Result<AnyContractEvent, String> {
-//         Ok(AnyContractEvent::InitialExchange(self))
-//     }
-// }
-//
-// impl ConvertToAnyContractEvent for ContractEvent<MaturityDate, MaturityDate> {
-//     fn convert_to_any(self) -> Result<AnyContractEvent, String> {
-//         Ok(AnyContractEvent::InterestPayment(self))
-//     }
-// }
 
 impl AnyContractEvent {
+    
     pub fn from_contract_event<T1, T2>(ce: ContractEvent<T1, T2>) -> Result<Self, String> where
         T1: TraitMarqueurIsoDatetime  + 'static,
         T2: TraitMarqueurIsoDatetime  + 'static,
