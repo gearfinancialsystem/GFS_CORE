@@ -1,5 +1,4 @@
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use chrono::Duration;
 use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -22,21 +21,13 @@ where
     U: TraitMarqueurIsoCycle + Clone + PartialEq + Debug + Hash + From<IsoCycle>,
     TO: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime> + Eq,
 {
-    /// Crée un ensemble de dates selon un cycle et une convention de fin de mois.
-
-    pub fn create_schedule_end_time_true(start_time: &Option<T1>,
-                                         end_time: &Option<T2>,
-                                         cycle: &Option<U>,
-                                         end_of_month_convention: &EndOfMonthConvention) -> HashSet<TO> {
-        Self::create_schedule(start_time, end_time, cycle, end_of_month_convention, true)
-    }
 
     pub fn create_schedule(
         start_time: &Option<T1>,
         end_time: &Option<T2>,
         cycle: &Option<U>,
-        end_of_month_convention: &EndOfMonthConvention,
-        add_end_time: bool,
+        end_of_month_convention: &Option<EndOfMonthConvention>,
+        add_end_time: Option<bool>,
     ) -> HashSet<TO> {
         let mut times_set: HashSet<TO> = HashSet::new();
 
@@ -45,14 +36,16 @@ where
                 let to_ins = TO::from(start_time.clone().unwrap().value());
                 times_set.insert(to_ins);
             }
-            if add_end_time == true {
+            if add_end_time == Some(true) {
                 let to_ins = TO::from(end_time.clone().unwrap().value());
                 times_set.insert(to_ins);
             }
             else {
-                if start_time.clone().unwrap().value() == end_time.clone().unwrap().value() {
-                    let to_sup = TO::from(start_time.clone().unwrap().value());
-                    times_set.remove(&to_sup);
+                if start_time.is_some() && end_time.is_some() {
+                    if start_time.clone().unwrap().value() == end_time.clone().unwrap().value() {
+                        let to_sup = TO::from(start_time.clone().unwrap().value());
+                        times_set.remove(&to_sup);
+                    }
                 }
             }
             return times_set;
@@ -62,7 +55,7 @@ where
         let stub = cycle.clone().unwrap().value().extract_stub();
         // let shifter = EndOfMonthAdjuster::new(end_of_month_convention, start_time, cycle.clone());
         let shifter = EndOfMonthConvention::new(
-            end_of_month_convention.clone(),
+            end_of_month_convention.clone().unwrap(),
             start_time.clone().unwrap().value(), 
             ccycle.clone().value().clone()).expect("sd"); // attention vérifier
         // CHANGER EoM new (prendre cycle as ref, pas en valeur
@@ -83,7 +76,7 @@ where
         }
 
         // Ajoutez (ou non) end_time au calendrier
-        if add_end_time == true {
+        if add_end_time == Some(true) {
             let to_ins = TO::from(end_time.clone().unwrap().value());
             times_set.insert(to_ins);
         } else {
@@ -107,7 +100,7 @@ where
         start_times: &Vec<T1>,
         end_time: &Option<T2>,
         cycles: &Vec<U>,
-        end_of_month_convention: &EndOfMonthConvention,
+        end_of_month_convention: &Option<EndOfMonthConvention>,
     ) -> HashSet<TO> {
         let mut times_set = HashSet::new();
 
@@ -120,7 +113,7 @@ where
                     &Some(second_time),
                     &(if cycles.is_empty() { None } else { Some(cycles[i].clone()) }),
                     end_of_month_convention,
-                    true,
+                    Some(true),
                 )
             };
             times_set.extend(sub_schedule);
@@ -134,7 +127,7 @@ where
                     &Some(second_time), 
                     &(if cycles.is_empty() { None } else { Some(cycles[start_times.len() - 1].clone()) }),
                     end_of_month_convention, 
-                    true,
+                    Some(true),
                 )
             };
         times_set.extend(last_schedule);

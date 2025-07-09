@@ -12,10 +12,8 @@ macro_rules! define_struct_isodatetime {
         use crate::util::Value::Value;
 
         use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-        use crate::traits::TraitConvertContractToAnyEvent::TraitConvertContractToAnyEvent;
 
-        use crate::events::AnyContractEvent::AnyContractEvent;
-        use crate::events::ContractEvent::ContractEvent;
+        //use crate::events::AnyContractEvent::AnyContractEvent;
 
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(IsoDatetime);
@@ -62,7 +60,12 @@ macro_rules! define_struct_isodatetime {
                 $struct_name(iso_datetime)
             }
         }
-
+        // Implémentation du trait Into<IsoDatetime>
+        impl Into<IsoDatetime> for $struct_name {
+            fn into(self) -> IsoDatetime {
+                self.0 // Assuming $struct_name is a tuple struct with IsoDatetime as its first and only element.
+            }
+        }
         // impl TraitConvertContractToAnyEvent for ContractEvent<$struct_name, $struct_name> {
         //     fn convert_to_any(self) -> AnyContractEvent, {
         //         AnyContractEvent::$struct_name(ContractEvent<$struct_name, $struct_name>)

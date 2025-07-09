@@ -40,7 +40,7 @@ macro_rules! define_struct_string {
     };
     ($struct_name:ident, "currency") => {
         #[derive(PartialEq, Debug, Clone, Hash)]
-        pub struct $struct_name(String);
+        pub struct $struct_name(pub String);
 
         impl $struct_name {
             pub fn new(value: String) -> Result<Self, String> {
@@ -72,6 +72,10 @@ macro_rules! define_struct_string {
                         }
                     }
                 }
+            }
+            // REFAIRE PROPRE FAIRE EN SORTE QUON PUISSE COMPARER les types currency et settlement currency
+            pub fn to_currency(&self) -> Currency {
+                Currency(self.0.clone())
             }
         }
 

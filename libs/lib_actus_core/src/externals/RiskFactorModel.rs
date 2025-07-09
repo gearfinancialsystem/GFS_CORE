@@ -6,7 +6,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 pub struct RiskFactorModel;
 
 impl RiskFactorModel {
-    pub fn events(&self, attributes: &ContractModel) -> Vec<ContractEvent> {
+    pub fn events(&self, attributes: &ContractModel) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
         let events = Vec::new();
         events
     }

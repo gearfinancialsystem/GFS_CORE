@@ -42,7 +42,7 @@ impl Default for FixedVariableElement {
         Self::None
     }
 }
-
+#[derive(PartialEq, Debug, Clone)]
 pub struct ArrayFixedVariable(Vec<FixedVariableElement>);
 
 

@@ -1,5 +1,4 @@
 
 use crate::define_struct_f64;
 
-define_struct_f64!(PremiumDiscountAtIED, |value| {
-}, {0.0});
+define_struct_f64!(PremiumDiscountAtIED, |value| {}, {0.0});

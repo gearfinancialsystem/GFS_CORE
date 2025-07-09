@@ -99,26 +99,28 @@ impl ContractReference {
         &self.object
     }
 
-    pub fn get_contract_attribute(&self, contract_attribute: &str) -> Option<String> {
-        match &self.object {
-            Object::String(s) if contract_attribute == "marketObjectCode" && matches!(self.reference_type, ReferenceType::MOC) => Some(s.clone()),
-            Object::ContractModel(model) if matches!(self.reference_type, ReferenceType::CNT) => Some(model.get_field(contract_attribute)?.extract_vString()?),
-            Object::String(s) if matches!(self.reference_type, ReferenceType::CID) => Some(s.clone()),
-            _ => None,
-        }
-    }
+    // pub fn get_contract_attribute(&self, contract_attribute: &str) -> Option<String> {
+    //     match &self.object {
+    //         Object::String(s) if contract_attribute == "marketObjectCode" && matches!(self.reference_type, ReferenceType::MOC) => Some(s.clone()),
+    //         Object::ContractModel(model) if matches!(self.reference_type, ReferenceType::CNT) => Some(model.get_field(contract_attribute)?.extract_vString()?),
+    //
+    //         Object::String(s) if matches!(self.reference_type, ReferenceType::CID) => Some(s.clone()),
+    //         _ => None,
+    //     }
+    // }
 
     pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &RiskFactorModel) -> StateSpace {
         let model = self.object.as_cm().unwrap();
         if self.reference_type == ReferenceType::CID {
             let mut events =  ContractType::schedule( Some(time.checked_add_days(Days::new(1))).unwrap(), &self.object.as_cm().unwrap()).unwrap();
             let analysis_event = EventFactory::create_event(
-                Some(time),
-                EventType::AD,
-                model.currency.as_ref(),
+                &Some(time),
+                &EventType::AD,
+                &model.currency,
                 Some(Rc::new(POF_AD_PAM)),
                 Some(Rc::new(STF_AD_PAM)),
-                model.contract_id.as_ref()
+                &None,
+                &model.contract_id
             );
             events.push(analysis_event.clone());
             events.sort();
@@ -128,15 +130,15 @@ impl ContractReference {
         StateSpace::default() // a checker
     }
 
-    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &RiskFactorModel ) -> ContractEvent {
-        let mut events : Vec<ContractEvent> = vec![];
+    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &RiskFactorModel ) -> ContractEvent<IsoDatetime, IsoDatetime> {
+        let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = vec![];
         if self.reference_type == ReferenceType::CNT {
             events = ContractType::apply(
                 ContractType::schedule(None, &self.object.as_cm().unwrap()).unwrap(),
                 &self.object.as_cm().unwrap(),
                 observer
             ).unwrap();
-            events.iter_mut().filter(|e| e.eventType == event_type);
+            events.iter_mut().filter(|e| e.event_type == event_type);
         }
         events.get(0).unwrap().clone()
     }

@@ -16,7 +16,7 @@ impl TraitStateTransitionFunction for STF_PY_PAM {
         time: &IsoDatetime, 
         states: &mut StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        _risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     )  {

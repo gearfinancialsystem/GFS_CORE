@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 

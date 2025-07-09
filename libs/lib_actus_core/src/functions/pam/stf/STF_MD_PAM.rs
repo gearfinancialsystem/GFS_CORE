@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         time: &IsoDatetime, 
         states: &mut StateSpace,
         _model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        _risk_factor_model: &RiskFactorModel,
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

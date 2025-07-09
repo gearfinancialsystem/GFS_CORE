@@ -24,6 +24,8 @@ use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
+pub trait TraitContractEvent {}
+
 #[derive(Clone)]
 pub struct ContractEvent<T1, T2> {
     _marker_t1: PhantomData<T1>,
@@ -31,14 +33,18 @@ pub struct ContractEvent<T1, T2> {
     pub epoch_offset: Option<i64>,
     pub fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
     pub fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
-    pub event_time: Option<T1>,
-    pub schedule_time: Option<T2>,
+    pub event_time: Option<T2>,
+    pub schedule_time: Option<T1>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
     pub state: StateSpace,
     pub contract_id: Option<ContractID>,
 }
+
+
+
+impl<T1, T2> TraitContractEvent for ContractEvent<T1, T2> {}
 
 impl<T1, T2> ContractEvent<T1, T2>
 where
@@ -59,6 +65,8 @@ where
         let epoch_offset = epoch_millis + EventSequence::time_offset(event_type);
 
         Self {
+            _marker_t1: PhantomData,
+            _marker_t2: PhantomData,
             epoch_offset: Some(epoch_offset),
             fstate: fstate,
             fpayoff: fpayoff,
@@ -71,6 +79,23 @@ where
             contract_id: contract_id.clone(),
         }
     }
+    pub fn to_iso_datetime_event(&self) -> ContractEvent<IsoDatetime, IsoDatetime> {
+        ContractEvent {
+            _marker_t1: PhantomData,
+            _marker_t2: PhantomData,
+            epoch_offset: self.epoch_offset,
+            fstate: self.fstate.clone(),
+            fpayoff: self.fpayoff.clone(),
+            event_time: self.event_time.clone().map(|t| t.value()),
+            schedule_time: self.schedule_time.clone().map(|t| t.value()),
+            event_type: self.event_type.clone(),
+            currency: self.currency.clone(),
+            payoff: self.payoff,
+            state: self.state.clone(),
+            contract_id: self.contract_id.clone(),
+        }
+    }
+
     pub fn get_contract_id(&self) -> ContractID {
         self.contract_id.clone().unwrap()
     }
@@ -108,7 +133,7 @@ where
     pub fn set_f_state_trans(&mut self, function: Option<Rc<dyn TraitStateTransitionFunction>>) {
         self.fstate = function;
     }
-    pub fn compare_to(&self, other: &Self) -> i64 {
+    pub fn compare_to(&self, other: &ContractEvent<T1, T2>) -> i64 {
         (self.epoch_offset.unwrap() - other.epoch_offset.unwrap()).signum()
     }
     pub fn eval(
@@ -117,9 +142,8 @@ where
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
         day_counter: &DayCountConvention,
-        time_adjuster: &BusinessDayAdjuster,
-    ) {
-        if !self.fpayoff.is_none() {
+        time_adjuster: &BusinessDayAdjuster) {
+        if self.fpayoff.is_some() {
             self.payoff = Some(self.fpayoff.clone().unwrap().eval(
                 &self.get_schedule_time(),
                 states,
@@ -129,7 +153,7 @@ where
                 time_adjuster,
             ));
         }
-        if !self.fstate.is_none() {
+        if self.fstate.is_some() {
             self.fstate.clone().unwrap().eval(
                 &self.get_schedule_time(),
                 states,
@@ -139,11 +163,12 @@ where
                 time_adjuster,
             );
         }
-
     }
 
     pub fn copy(&self) -> Self {
         ContractEvent {
+            _marker_t1: PhantomData,
+            _marker_t2: PhantomData,
             epoch_offset: self.epoch_offset,
             fstate: self.fstate.clone(),
             fpayoff: self.fpayoff.clone(),

@@ -1,7 +1,6 @@
 use std::fmt;
 use crate::types::IsoDatetime::IsoDatetime;
 use chrono::{Datelike, NaiveDate};
-use crate::terms::grp_interest::daycountconventions::A365::A365;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

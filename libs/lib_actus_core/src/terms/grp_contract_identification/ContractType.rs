@@ -32,7 +32,7 @@ pub struct ContractType;
 impl ContractType {
 
 
-    pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent>> {
+    pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent<IsoDatetime, IsoDatetime>>> {
 
         match cm.contract_type.clone().as_str() {
             "PAM" => Some(PAM::schedule(&to.unwrap(), cm).unwrap()),
@@ -58,7 +58,7 @@ impl ContractType {
         }
 
     }
-    pub fn apply(events: Vec<ContractEvent>, cm: &ContractModel, observer: &RiskFactorModel) -> Option<Vec<ContractEvent>> {
+    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, cm: &ContractModel, observer: &RiskFactorModel) -> Option<Vec<ContractEvent<IsoDatetime, IsoDatetime>>> {
 
         match cm.contract_type.clone().as_str() {
             // "ANN" => Some(ANN::apply(events, cm, observer)),

@@ -129,16 +129,16 @@ impl CommonUtils {
     }
 
     pub fn settlementCurrencyFxRate(riskFactorModel: &RiskFactorModel, model: &ContractModel, time: &IsoDatetime, state: &StateSpace) -> f64{    
-        let settlementCurrency = model.settlementCurrency.clone();
+        let settlement_currency = model.settlement_currency.clone();
         let currency = model.currency.clone();
         
-        if settlementCurrency.is_none()  || currency == settlementCurrency {
+        if settlement_currency.is_none()  || currency == Some(settlement_currency.clone().unwrap().to_currency()) {
             1.0
         }
         else {
-            let strings = vec![currency.unwrap(), settlementCurrency.unwrap()];
+            let strings = vec![currency.unwrap(), settlement_currency.clone().unwrap().to_currency()]; // refaire plus proprement pour pas melanger Currency et setllment currency
 
-            let str_slices: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
+            let str_slices: Vec<String> = strings.iter().map(|s| s.value()).collect();
             let joined = str_slices.join(" ");
 
             riskFactorModel.state_at(&joined, time, state, model,true).unwrap()

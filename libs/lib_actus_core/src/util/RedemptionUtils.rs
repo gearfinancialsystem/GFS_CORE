@@ -3,6 +3,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;
@@ -10,34 +11,34 @@ pub struct RedemptionUtils;
 impl RedemptionUtils {
     pub fn redemptionAmount(model: &ContractModel, state: &StateSpace) -> f64 {
         let redemption_amount: f64;
-        let status_date = state.statusDate.clone().unwrap();
-        let maturity = if model.amortizationDate.is_none() {
-            state.maturityDate.clone().unwrap()
+        let status_date = state.status_date.clone().unwrap();
+        let maturity: IsoDatetime = if model.amortization_date.is_none() {
+            state.maturity_date.clone().unwrap().value()
         } else {
-            model.amortizationDate.clone().unwrap()
+            model.amortization_date.clone().unwrap().value()
         };
 
-        let accrued_interest = state.accruedInterest.clone().unwrap();
-        let outstanding_notional = state.notionalPrincipal.clone().unwrap();
-        let interest_rate = state.nominalInterestRate.clone().unwrap();
+        let accrued_interest = state.accrued_interest.clone().unwrap();
+        let outstanding_notional = state.notional_principal.clone().unwrap();
+        let interest_rate = state.nominal_interest_rate.clone().unwrap();
 
         // extract day count convention
-        let day_counter = model.dayCountConvention.clone().unwrap();
+        let day_counter = model.day_count_convention.clone().unwrap();
 
         // determine remaining PR schedule
         let mut event_times: HashSet<IsoDatetime> = ScheduleFactory::create_schedule(
-            model.cycle_anchor_date_of_principal_redemption,
-            Some(maturity),
-            model.cycleOfPrincipalRedemption.clone(),
-            model.endOfMonthConvention.unwrap(),
-            true
+            &model.cycle_anchor_date_of_principal_redemption,
+            &Some(maturity),
+            &model.cycle_of_principal_redemption.clone(),
+            &model.end_of_month_convention,
+            Some(true)
         );
-        event_times.retain(|e| e >= &status_date);
-        event_times.remove(&status_date);
+        event_times.retain(|e| e >= &status_date.value());
+        event_times.remove(&status_date.value());
 
-        redemption_amount = match model.contractType.clone().unwrap().as_str() {
+        redemption_amount = match model.contract_type.clone().as_str() {
             "LAM" => {
-                model.notional_principal.clone().unwrap() / event_times.len() as f64 // on est sur que cest len ?
+                model.notional_principal.clone().unwrap().value() / event_times.len() as f64 // on est sur que cest len ?
             },
             "ANN" => {
                 0.0 // a implementer
@@ -48,10 +49,10 @@ impl RedemptionUtils {
                 event_times_sorted.sort();
                 let lb = 1;
                 let ub = event_times_sorted.len();
-                let scale = outstanding_notional + accrued_interest + day_counter.day_count(state.statusDate.clone().unwrap(),
-                                                                                            event_times_sorted.get(0).unwrap().clone()) * interest_rate*outstanding_notional;
-                let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate, day_counter.clone());
-                let frac = RedemptionUtils::product(lb, ub as i32, event_times_sorted.clone(), interest_rate, day_counter.clone()) / (1.0 + sum);
+                let scale = outstanding_notional.value() + accrued_interest.value() + day_counter.day_count(state.status_date.clone().unwrap().value(),
+                                                                                            event_times_sorted.get(0).unwrap().clone()) * interest_rate.value() * outstanding_notional.value();
+                let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone());
+                let frac = RedemptionUtils::product(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone()) / (1.0 + sum);
                 scale * frac
             },
             _ => 0.0

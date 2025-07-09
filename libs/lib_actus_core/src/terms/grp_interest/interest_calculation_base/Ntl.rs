@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_interest::interest_calculation_base::Ntied::NTIED;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct NTL;

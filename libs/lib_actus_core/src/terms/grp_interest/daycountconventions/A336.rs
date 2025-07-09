@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
