@@ -28,7 +28,7 @@ impl IsoCycle {
     pub fn extract_period(&self) -> Option<IsoPeriod> {
         match self {
             IsoCycle::PeriodCycleAdjuster(pca) => Some(pca.period.clone()),
-            IsoCycle::WeekdayCycleAdjuster(wca) => None
+            IsoCycle::WeekdayCycleAdjuster(_) => None
         }
     }
     pub fn extract_stub(&self) -> Option<char> {

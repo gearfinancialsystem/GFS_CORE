@@ -1,4 +1,4 @@
-use crate::types::IsoCycle::IsoCycle;
+
 
 #[macro_export]
 macro_rules! define_struct_isocycle {

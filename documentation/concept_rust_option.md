@@ -1,6 +1,6 @@
 En Rust, si vous avez une structure avec beaucoup de champs optionnels et que vous trouvez fastidieux de devoir gérer les `Option` à chaque fois, vous pouvez envisager plusieurs approches pour simplifier l'utilisation de votre structure.
 
-### Utilisation de `unwrap` ou `expect`
+### Utilisation de `unwrap` ou `expect` 
 
 Si vous êtes sûr que les champs ne seront pas `None` lorsque vous les utilisez, vous pouvez utiliser `unwrap` ou `expect` pour obtenir directement la valeur. Cependant, cela peut entraîner des paniques si les champs sont `None`.
 

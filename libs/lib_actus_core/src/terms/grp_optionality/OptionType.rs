@@ -5,11 +5,6 @@ use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
-use crate::terms::grp_optionality::option_exercise_type::A::A;
-use crate::terms::grp_optionality::option_exercise_type::B::B;
-use crate::terms::grp_optionality::option_exercise_type::E::E;
-use crate::terms::grp_optionality::OptionExerciseType::OptionExerciseType;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]

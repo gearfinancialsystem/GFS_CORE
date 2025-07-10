@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_counterparty::seniority::J::J;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 

@@ -1,16 +1,11 @@
 use std::collections::HashMap;
-use std::fmt::{Debug, Formatter};
 use std::ops::Add;
 use std::ops::Sub;
 use std::rc::Rc;
 use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, ParseResult};
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::util::Value::Value;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-use std::fmt;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoCycle::IsoCycle;
 
 pub type IsoDatetime = NaiveDateTime;
 

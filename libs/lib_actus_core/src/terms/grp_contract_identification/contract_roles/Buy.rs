@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 

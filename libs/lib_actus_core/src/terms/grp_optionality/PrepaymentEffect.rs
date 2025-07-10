@@ -5,10 +5,6 @@ use crate::terms::grp_optionality::prepayment_effect::A::A;
 use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_optionality::OptionType::OptionType;
-use crate::terms::grp_optionality::penalty_type::I::I;
-use crate::terms::grp_optionality::penalty_type::R::R;
-use crate::terms::grp_optionality::PenaltyType::PenaltyType;
 use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq)]

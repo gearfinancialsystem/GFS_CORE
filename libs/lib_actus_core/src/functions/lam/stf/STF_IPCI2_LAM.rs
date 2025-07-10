@@ -2,7 +2,13 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -19,27 +25,47 @@ impl TraitStateTransitionFunction for STF_IPCI2_LAM {
         day_counter: &DayCountConvention,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        let status_date = states.status_date.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should always be Some");
-        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("interestCalculationBaseAmount should always be Some");
+        let status_date = states.status_date.clone().expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date),
+            time_adjuster.shift_sc(&status_date.clone().value()),
             time_adjuster.shift_sc(time)
         );
+        
 
-        states.notional_principal = states.notional_principal.map(|notional_principal| {
-            notional_principal + states.accrued_interest.unwrap_or(0.0) + (nominal_interest_rate * interest_calculation_base_amount * time_from_last_event)
-        });
+        states.notional_principal = NotionalPrincipal::new({
+            states.notional_principal.clone().unwrap().value() * {
+                if states.accrued_interest.is_none() {
+                    0.0
+                } else { states.accrued_interest.clone().unwrap().value() }
+            } + (nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event)
+        }).ok();
 
-        states.accrued_interest = Some(0.0);
 
-        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
-            let fee_rate = model.fee_rate.unwrap_or(0.0);
-            fee_accrued + fee_rate * states.notional_principal.unwrap_or(0.0) * time_from_last_event
-        });
 
-        states.status_date = Some(*time);
-        states.interest_calculation_base_amount = states.notional_principal;
+        states.accrued_interest = AccruedInterest::new(0.0).ok();
+
+        states.fee_accrued = FeeAccrued::new({
+            let fee_rate = {
+                if model.fee_rate.is_none() {
+                    0.0
+                }
+                else { model.fee_rate.clone().unwrap().value() }
+            };
+            states.fee_accrued.clone().unwrap().value() + fee_rate * {
+                if states.notional_principal.is_none() {
+                    0.0
+                } else {states.notional_principal.clone().unwrap().value()}
+            } * time_from_last_event
+        }).ok();
+
+
+        
+
+
+        states.status_date = Some(StatusDate::from(*time));
+        states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
     }
 }

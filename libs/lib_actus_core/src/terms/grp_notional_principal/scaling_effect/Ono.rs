@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 

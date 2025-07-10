@@ -2,7 +2,11 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -19,28 +23,28 @@ impl TraitStateTransitionFunction for STF_PRF_ANN {
         time_adjuster: &BusinessDayAdjuster,
     )  {
 
-        let status_date = states.status_date.expect("status date should be some");
-        let nominal_interest_rate = states.nominal_interest_rate.expect("nominalInterestRate should be some");
-        let interest_calculation_base_amount = states.interest_calculation_base_amount.expect("nominalInterestRate should be some");
-        let notional_principal = states.notional_principal.expect("notionalPrincipal should be some");
-        let fee_rate = model.clone().feeRate.expect("feeRate should be some");
-        let contract_role = model.clone().contractRole.expect("contract role should be some");
+        let status_date = states.status_date.clone().expect("status date should be some");
+        let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should be some");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("nominalInterestRate should be some");
+        let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should be some");
+        let fee_rate = model.clone().fee_rate.clone().expect("feeRate should be some");
+        let contract_role = model.clone().contract_role.clone().expect("contract role should be some");
         
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date),
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accrued_interest = states.accrued_interest.map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate * interest_calculation_base_amount * time_from_last_event;
+        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
+            accrued_interest += nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event;
             accrued_interest
         });
 
-        states.fee_accrued = states.fee_accrued.map(|mut fee_accrued| {
-            fee_accrued += fee_rate * notional_principal * time_from_last_event;
+        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
+            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
             fee_accrued
         });
 
-        states.status_date = Some(*time);
-        states.next_principal_redemption_payment = Some(contract_role.role_sign() * 1.0); // implementer redemptionm utile
+        states.status_date = Some(StatusDate::from(*time));
+        states.next_principal_redemption_payment = NextPrincipalRedemptionPayment::new(contract_role.role_sign() * 1.0).ok(); // implementer redemptionm utile
 
     }
 }

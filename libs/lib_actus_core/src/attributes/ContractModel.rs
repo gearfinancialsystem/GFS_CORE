@@ -16,7 +16,6 @@ use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::CreatorID::CreatorID;
 use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -118,73 +117,72 @@ use crate::terms::grp_settlement::FuturesPrice::FuturesPrice;
 use crate::terms::grp_settlement::SettlementCurrency::SettlementCurrency;
 use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
-use crate::types::IsoPeriod::IsoPeriod;
-use crate::util::CommonUtils::CommonUtils;
+//use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension};
+
 use crate::util::Value::Value;
 
-#[derive(PartialEq, Debug, Clone)]
-pub enum FieldValue {
-    Vstring(String),
-    vF64(f64),
-    vIsoDatetime(IsoDatetime),
-    vIsoPeriod(IsoPeriod),
-    vBusinessDayAdjuster(BusinessDayAdjuster),
-    vDayCountConvention(DayCountConvention),
-    vEndOfMonthConvention(EndOfMonthConvention),
-    vContractRole(ContractRole),
-    vContractStructure(ContractStructure),
-    vFeeBasis(FeeBasis),
-    vCyclePointOfInterestPayment(CyclePointOfInterestPayment),
-    vContractPerformance(ContractPerformance),
-    vScalingEffect(ScalingEffect),
-    vPenaltyType(PenaltyType),
-    vCyclePointOfRateReset(CyclePointOfRateReset),
-    vMaturityDate(Rc<IsoDatetime>),
-    vCalendar(Rc<Calendar>),
-    vDeliverySettlement(DeliverySettlement),
-    vSeniority(Seniority),
-    vGuaranteedExposure(GuaranteedExposure),
-    vOptionType(OptionType),
-    vInterestCalculationBase(InterestCalculationBase),
-    vBoundaryDirection(BoundaryDirection),
-    vBoundaryEffect(BoundaryEffect),
-    vBoundaryLegInitiallyActive(BoundaryLegInitiallyActive),
-    vBool(bool),
-    vVecIsoDatetime(Vec<IsoDatetime>),
-    vVecF64(Vec<f64>),
-    vVecString(Vec<String>),
-    vArrayIncreaseDecrease(Vec<ArrayIncreaseDecrease>),
-    vArrayFixedVariable(Vec<ArrayFixedVariable>),
-    vVecCreditEventTypeCovered(Vec<CreditEventTypeCovered>),
-}
-
-impl FieldValue {
-    pub fn extract_vString(&self) -> Option<String> {
-        match self {
-            Self::Vstring(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vF64(&self) -> Option<f64> {
-        match self {
-            Self::vF64(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vIsoDatetime(&self) -> Option<IsoDatetime> {
-        match self { 
-            Self::vIsoDatetime(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-    pub fn extract_vBusinessDayAdjuster(&self) -> Option<BusinessDayAdjuster> {
-        match self {
-            Self::vBusinessDayAdjuster(s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-}
+// #[derive(PartialEq, Debug, Clone)]
+// pub enum FieldValue {
+//     Vstring(String),
+//     Vf64(f64),
+//     VIsoDatetime(IsoDatetime),
+//     VIsoPeriod(IsoPeriod),
+//     VBusinessDayAdjuster(BusinessDayAdjuster),
+//     VDayCountConvention(DayCountConvention),
+//     VEndOfMonthConvention(EndOfMonthConvention),
+//     VContractRole(ContractRole),
+//     VContractStructure(ContractStructure),
+//     VFeeBasis(FeeBasis),
+//     VCyclePointOfInterestPayment(CyclePointOfInterestPayment),
+//     VContractPerformance(ContractPerformance),
+//     VScalingEffect(ScalingEffect),
+//     VPenaltyType(PenaltyType),
+//     VCyclePointOfRateReset(CyclePointOfRateReset),
+//     VMaturityDate(Rc<IsoDatetime>),
+//     VCalendar(Rc<Calendar>),
+//     vDeliverySettlement(DeliverySettlement),
+//     vSeniority(Seniority),
+//     vGuaranteedExposure(GuaranteedExposure),
+//     vOptionType(OptionType),
+//     vInterestCalculationBase(InterestCalculationBase),
+//     vBoundaryDirection(BoundaryDirection),
+//     vBoundaryEffect(BoundaryEffect),
+//     vBoundaryLegInitiallyActive(BoundaryLegInitiallyActive),
+//     vBool(bool),
+//     vVecIsoDatetime(Vec<IsoDatetime>),
+//     vVecF64(Vec<f64>),
+//     vVecString(Vec<String>),
+//     vArrayIncreaseDecrease(Vec<ArrayIncreaseDecrease>),
+//     vArrayFixedVariable(Vec<ArrayFixedVariable>),
+//     vVecCreditEventTypeCovered(Vec<CreditEventTypeCovered>),
+// }
+//
+// impl FieldValue {
+//     pub fn extract_vString(&self) -> Option<String> {
+//         match self {
+//             Self::Vstring(s) => Some(s.clone()),
+//             _ => None,
+//         }
+//     }
+//     pub fn extract_vF64(&self) -> Option<f64> {
+//         match self {
+//             Self::vF64(s) => Some(s.clone()),
+//             _ => None,
+//         }
+//     }
+//     pub fn extract_vIsoDatetime(&self) -> Option<IsoDatetime> {
+//         match self {
+//             Self::vIsoDatetime(s) => Some(s.clone()),
+//             _ => None,
+//         }
+//     }
+//     pub fn extract_vBusinessDayAdjuster(&self) -> Option<BusinessDayAdjuster> {
+//         match self {
+//             Self::vBusinessDayAdjuster(s) => Some(s.clone()),
+//             _ => None,
+//         }
+//     }
+// }
 
 
 #[derive(PartialEq, Debug, Clone)]
@@ -212,7 +210,7 @@ pub struct ContractModel {
     pub boundary_monitoring_end_date: Option<BoundaryMonitoringEndDate>,
     pub boundary_value: Option<BoundaryValue>,
     pub business_day_adjuster: Option<BusinessDayAdjuster>,
-    pub calendar: Option<Rc<Calendar>>,
+    pub calendar: Rc<Calendar>,
     pub capitalization_end_date: Option<CapitalizationEndDate>,
     pub contract_id: Option<ContractID>,
     pub contract_performance: Option<ContractPerformance>,
@@ -249,7 +247,7 @@ pub struct ContractModel {
     pub delinquency_period: Option<DelinquencyPeriod>,
     pub delinquency_rate: Option<DelinquencyRate>,
     pub delivery_settlement: Option<DeliverySettlement>,
-    pub end_of_month_convention: Option<EndOfMonthConvention>,
+    pub end_of_month_convention: EndOfMonthConvention,
     pub ex_dividend_date: Option<ExDividendDate>,
     pub exercise_amount: Option<ExerciseAmount>,
     pub exercise_date: Option<ExerciseDate>,
@@ -324,23 +322,21 @@ impl ContractModel {
                 };
                 let calendar = Calendar::provide_rc(sm, "calendar");
 
-                let business_day_adjuster: Option<BusinessDayAdjuster> = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster: Option<BusinessDayAdjuster> =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
                         calendar_clone.expect("te")
                     )
-                } else {
-                    None
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
                     DayCountConvention::provide_from_input_dict(
                         sm,
                         "dayCountConvention",
                         Some(Rc::clone(maturity_date)),
-                        Some(Rc::clone(calendar))
+                        Some(Rc::clone(&calendar))
                     )
                 } else {
                     None
@@ -373,12 +369,17 @@ impl ContractModel {
                     fee_rate = FeeRate::new(0.0).ok();
                 }
 
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
+
                 let cm = ContractModel {
                     accrued_interest:                       accrued_interest,
                     business_day_adjuster:                  business_day_adjuster,
                     calendar:                               calendar,
                     capitalization_end_date:                CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
-                    contract_id:                            ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id:                            ContractID::provide_from_input_dict(sm, "contractID"),
                     contract_performance:                   ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
                     contract_role:                          ContractRole::provide_from_input_dict(sm, "contractRole"),
                     contract_type:                          ct_str.to_string(),
@@ -397,7 +398,7 @@ impl ContractModel {
                     cycle_point_of_interest_payment:        CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
                     cycle_point_of_rate_reset:              CyclePointOfRateReset::provide_from_input_dict(sm, "cyclePointOfRateReset"),
                     day_count_convention:                   day_count_convention,
-                    end_of_month_convention:                EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention:                end_of_month_convention,
                     fee_accrued:                            FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
                     fee_basis:                              FeeBasis::provide_from_input_dict(sm, "feeBasis"),
                     fee_rate:                               fee_rate,
@@ -451,7 +452,7 @@ impl ContractModel {
                 } else {None};
 
                 let cm = ContractModel {
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -479,15 +480,13 @@ impl ContractModel {
                 //VERIFIER PAS PRESENT DANS LA LISTE DES TERMES
                 let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(sm, "cycleOfDividendPayment");
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "BusinessDayAdjuster",
                         calendar_clone.expect("df")
                     )
-                } else {
-                    None
                 };
 
                 let cycle_anchor_date_of_dividend_payment = {
@@ -497,13 +496,18 @@ impl ContractModel {
                         let purchase_date_str = purchase_date.clone().unwrap().value().to_string();
                         CycleAnchorDateOfDividendPayment::from_str(purchase_date_str.as_str()).ok()
                     };
-                    let b = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "CycleAnchorDateOfDividendPayment");;
+                    let b = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "CycleAnchorDateOfDividendPayment");
                     if b.is_none() { a } else { b }
                 };
 
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
+
                 let cm = ContractModel {
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -517,7 +521,7 @@ impl ContractModel {
                     market_value_observed: MarketValueObserved::provide_from_input_dict(sm, "marketValueObserved"),
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     cycle_of_dividend_payment: cycle_of_dividend_payment,
                     cycle_anchor_date_of_dividend_payment: cycle_anchor_date_of_dividend_payment,
                     market_object_code_of_dividends: MarketObjectCodeOfDividends::provide_from_input_dict(sm, "marketObjectCodeOfDividends"),
@@ -555,8 +559,8 @@ impl ContractModel {
                 };
 
                 let day_count_convention =
-                    if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                    if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -597,23 +601,26 @@ impl ContractModel {
                     CycleAnchorDateOfRateReset::provide_from_input_dict(sm, "cycleAnchorDateOfRateReset")
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.expect("ere")
                     )
-                } else {
-                    None
                 };
+
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -695,8 +702,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -767,23 +774,26 @@ impl ContractModel {
                     CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption")
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -858,8 +868,8 @@ impl ContractModel {
                 };
 
                 // Champs qui dépendent d'autres champs
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -888,21 +898,25 @@ impl ContractModel {
                     CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption")
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
+
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -927,7 +941,7 @@ impl ContractModel {
                     market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
                     contract_type: ct_str.to_string(),
                     fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
                     rate_spread: RateSpread::provide_from_input_dict(sm, "rateSpread"),
                     period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
@@ -966,8 +980,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -992,28 +1006,30 @@ impl ContractModel {
                     CyclePointOfRateReset::provide(sm, "cyclePointOfRateReset")
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
                     accrued_interest2: AccruedInterest2::provide_from_input_dict(sm, "accruedInterest2"),
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
@@ -1056,23 +1072,25 @@ impl ContractModel {
                 };
 
                 // Gestion des dépendances
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1098,7 +1116,7 @@ impl ContractModel {
 
                 let cm = ContractModel {
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1120,7 +1138,7 @@ impl ContractModel {
 
                 let cm = ContractModel {
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
@@ -1158,8 +1176,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -1172,15 +1190,13 @@ impl ContractModel {
                     CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
 
@@ -1190,13 +1206,17 @@ impl ContractModel {
                 } else {
                     None
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1262,8 +1282,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -1277,23 +1297,25 @@ impl ContractModel {
                     CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1357,8 +1379,8 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
@@ -1401,15 +1423,13 @@ impl ContractModel {
                     CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
                 let credit_event_type_covered_tmp  = CreditEventTypeCovered::provide_from_input_dict(sm, "creditEventTypeCovered");
@@ -1418,13 +1438,17 @@ impl ContractModel {
                 } else {
                     credit_event_type_covered_tmp
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
@@ -1507,21 +1531,19 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
                 let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
@@ -1535,16 +1557,20 @@ impl ContractModel {
                     }
 
                 } else {None};
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1612,21 +1638,19 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let day_count_convention = if let (Some(maturity_date), Some(calendar)) = (&maturity_date, &calendar) {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(calendar)))
+                let day_count_convention = if let (Some(maturity_date)) = (&maturity_date) {
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
                 } else {
                     None
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
                 let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
@@ -1640,16 +1664,19 @@ impl ContractModel {
                     }
 
                 } else {None};
-
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1716,27 +1743,29 @@ impl ContractModel {
                     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster =  {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     maturity_date: maturity_date,
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1809,15 +1838,13 @@ impl ContractModel {
                 };
 
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                     BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
                 let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
@@ -1831,17 +1858,20 @@ impl ContractModel {
                     }
 
                 } else {None};
-
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
                 let cm = ContractModel {
                     maturity_date: maturity_date,
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1899,15 +1929,13 @@ impl ContractModel {
                     credit_event_type_covered_tmp
                 };
 
-                let business_day_adjuster = if let Some(calendar) = &calendar {
-                    let calendar_clone = Some(Rc::clone(calendar));
+                let business_day_adjuster = {
+                    let calendar_clone = Some(Rc::clone(&calendar));
                         BusinessDayAdjuster::provide(
                         sm,
                         "businessDayAdjuster",
                         calendar_clone.unwrap()
                     )
-                } else {
-                    None
                 };
 
                 let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
@@ -1921,17 +1949,21 @@ impl ContractModel {
                     }
 
                 } else {None};
+                let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let end_of_month_convention = if eomc.is_none() {
+                    EndOfMonthConvention::default()
+                } else {eomc.unwrap()};
 
                 let cm = ContractModel {
                     maturity_date: maturity_date,
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
-                    end_of_month_convention: EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention"),
+                    end_of_month_convention: end_of_month_convention,
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
@@ -1991,7 +2023,7 @@ impl ContractModel {
                     contract_type: ct_str.to_string(),
                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
                     contract_role: contract_role,
-                    contract_id: ContractID::provide_from_input_dict(sm, "contract_id"),
+                    contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
                     market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),

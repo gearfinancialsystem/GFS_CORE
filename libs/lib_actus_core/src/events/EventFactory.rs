@@ -83,7 +83,7 @@ where
                 let mut dd : Option<T2> = None;
                 if convention.is_none() {
                     let schedule_time_copy = time.value();
-                    let dd = Some(T2::from(schedule_time_copy));
+                    dd = Some(T2::from(schedule_time_copy));
                     
                 }
                 else {

@@ -1,4 +1,4 @@
-use std::arch::x86_64::_mm256_set_epi16;
+
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
@@ -23,15 +23,15 @@ impl TraitPayOffFunction for POF_PRD_STK {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always be some");
-        let quantity = model.quantity.expect("quantity should always be some");
-        let price_at_purchase_date = model.price_at_purchase_date.expect("priceAtPurchaseDate should always be some");
+        let quantity = model.quantity.clone().expect("quantity should always be some");
+        let price_at_purchase_date = model.price_at_purchase_date.clone().expect("priceAtPurchaseDate should always be some");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
             model,
             time,
             states
         );
-        settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * quantity * price_at_purchase_date
+        settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * quantity.value() * price_at_purchase_date.value()
     
     }
 }

@@ -5,11 +5,6 @@ use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::contract_performance::Ma::MA;
-use crate::terms::grp_counterparty::contract_performance::Pf::PF;
-use crate::terms::grp_counterparty::contract_performance::Te::TE;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::{ArrayIncreaseDecrease, IncreaseDecreaseElement};
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]

@@ -28,33 +28,33 @@ impl TraitStateTransitionFunction for STF_RRF_LAX {
         time_adjuster: &BusinessDayAdjuster,
     ) {
         // Compute new rate
-        let rate = self.scheduled_rate * model.rateMultiplier.unwrap_or(1.0)
-            + model.rateSpread.unwrap_or(0.0)
-            - states.nominal_interest_rate.unwrap_or(0.0);
+        let rate = self.scheduled_rate.clone() * model.rate_multiplier.clone().unwrap_or(1.0)
+            + model.rate_spread.clone().unwrap_or(0.0)
+            - states.nominal_interest_rate.clone().unwrap_or(0.0);
 
-        let delta_rate = rate.max(model.periodFloor.unwrap_or(f64::MIN)).min(model.periodCap.unwrap_or(f64::MAX));
+        let delta_rate = rate.max(model.period_floor.clone().unwrap_or(f64::MIN)).min(model.period_cap.unwrap_or(f64::MAX));
 
         let new_rate = (states.nominal_interest_rate.unwrap_or(0.0) + delta_rate)
-            .max(model.lifeFloor.unwrap_or(f64::MIN))
-            .min(model.lifeCap.unwrap_or(f64::MAX));
+            .max(model.life_floor.unwrap_or(f64::MIN))
+            .min(model.life_cap.unwrap_or(f64::MAX));
 
         // Update state space
-        let status_date = states.status_date.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominal_interest_rate.unwrap_or(0.0);
-        let interest_calculation_base_amount = states.interest_calculation_base_amount.unwrap_or(0.0);
+        let status_date = states.status_date.clone().expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.clone().unwrap_or(0.0);
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().unwrap_or(0.0);
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date),
             time_adjuster.shift_sc(time)
         );
 
-        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
+        states.accrued_interest = states.accrued_interest.clone().map(|accrued_interest| {
             accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
         });
 
-        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
-            let fee_rate = model.fee_rate.unwrap_or(0.0);
-            fee_accrued + fee_rate * states.notional_principal.unwrap_or(0.0) * time_from_last_event
+        states.fee_accrued = states.fee_accrued.clone().map(|fee_accrued| {
+            let fee_rate = model.fee_rate.clone().unwrap_or(0.0);
+            fee_accrued + fee_rate * states.notional_principal.clone().unwrap_or(0.0) * time_from_last_event
         });
 
         states.nominal_interest_rate = Some(new_rate);

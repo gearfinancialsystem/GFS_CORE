@@ -11,12 +11,6 @@ use crate::terms::grp_notional_principal::unitx::STN::STN;
 use crate::terms::grp_notional_principal::unitx::TON::TON;
 use crate::terms::grp_notional_principal::unitx::TRO::TRO;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
-use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
-use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
-use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
-use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
 use crate::util::Value::Value;
 
 pub enum Unit {

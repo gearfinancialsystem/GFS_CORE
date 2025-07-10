@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 

@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_calendar::businessday::elements::sc_convention::CalcShift::CalcShift;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use crate::types::IsoDatetime::IsoDatetime;

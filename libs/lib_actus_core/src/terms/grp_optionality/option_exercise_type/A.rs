@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_optionality::option_type::P::P;
 
 #[derive(Debug, Eq, PartialEq)]
 

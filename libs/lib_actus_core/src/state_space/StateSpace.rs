@@ -1,12 +1,10 @@
 use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::contract_performance::Pf::PF;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
 use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
@@ -19,7 +17,6 @@ use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalSca
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use crate::types::IsoDatetime::IsoDatetime;
 
 pub type BoundaryMonitoringFlag = bool;
 pub type BoundaryLeg1ActiveFlag = bool;

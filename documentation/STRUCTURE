@@ -58,3 +58,9 @@ pour eviter toute ambiguite quant au type
 A FAIRE :
 les supertraits : faire en sorte que TraitisodateTime soit un supertrait de Partialeq, clone, debug ect
 et n'appeler que Traitisodatetime
+
+
+NotionalPrincipal doit etre positive dans la norme (pour qui ne concerne qu'en fait que Model) et peut etre négatif en statespace;
+Pour le moment j'enleve la contrainte de positivite ; mais peut etre creer des termes specifiques pour les champs de state_space
+jai desactivé la positivité pour ces types, mais faudra la reactiver et recrire le netting des deux jambes de swaps (en soustrayant
+deux notionels positifs plutot que dadditioner un positif et un négatif)

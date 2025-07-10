@@ -1,8 +1,8 @@
-use std::error::Error;
+
 use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
-use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
+use crate::events::ContractEvent::{ContractEvent};
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -95,9 +95,9 @@ impl PAM {
         ///////////////////////////////
         //       Purchase (PRD)      //
         ///////////////////////////////
-        let aa = model.purchase_date.is_some();
+        //let aa = model.purchase_date.is_some();
         if model.purchase_date.is_some() {
-            let a = false;
+            //let a = false;
             let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &model.purchase_date,
                 &EventType::PRD,
@@ -371,9 +371,7 @@ impl PAM {
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //
         ////////////////////////////////////////////////////////////////////
-        let mut i = 0;
         for event in events.iter_mut() {
-            i += 1;
             event.eval(
                 &mut states,
                 model,

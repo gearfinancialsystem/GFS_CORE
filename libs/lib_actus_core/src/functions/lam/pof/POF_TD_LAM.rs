@@ -5,7 +5,7 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct POF_TD_LAM;
@@ -27,12 +27,12 @@ impl TraitPayOffFunction for POF_TD_LAM {
             states
         );
         settlement_currency_fx_rate
-            * model.clone().contractRole.unwrap().role_sign()
-            * (model.priceAtTerminationDate.unwrap() + states.accrued_interest.unwrap()
+            * model.clone().contract_role.unwrap().role_sign()
+            * (model.price_at_termination_date.clone().unwrap().value() + states.accrued_interest.clone().unwrap().value()
             + day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.status_date.unwrap()),
+            time_adjuster.shift_sc(&states.status_date.clone().unwrap().value()),
             time_adjuster.shift_sc(time),
-        ) * states.nominal_interest_rate.unwrap()
-            * states.interest_calculation_base_amount.unwrap())
+        ) * states.nominal_interest_rate.clone().unwrap().value()
+            * states.interest_calculation_base_amount.clone().unwrap().value())
     }
 }

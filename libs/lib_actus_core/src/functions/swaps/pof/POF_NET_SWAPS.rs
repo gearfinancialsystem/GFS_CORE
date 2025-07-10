@@ -8,12 +8,12 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 #[allow(non_camel_case_types)]
 pub struct POF_NET_SWAPS {
-    pub e1: Option<ContractEvent>,
-    pub e2: Option<ContractEvent>,
+    pub e1: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub e2: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
 }
 
 impl POF_NET_SWAPS {
-    pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
+    pub fn new(e1: ContractEvent<IsoDatetime, IsoDatetime>, e2: ContractEvent<IsoDatetime, IsoDatetime>) -> Self {
         POF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
     }
 }

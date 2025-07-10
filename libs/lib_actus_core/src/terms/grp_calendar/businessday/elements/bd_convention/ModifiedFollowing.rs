@@ -2,7 +2,6 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 use chrono::{Datelike, Duration};
 use std::{fmt, ptr};
 use std::rc::Rc;
-use crate::terms::grp_calendar::businessday::elements::bd_convention::Following::Following;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::IsoDatetime::IsoDatetime;

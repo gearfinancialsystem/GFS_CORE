@@ -63,10 +63,10 @@ impl ContractReference {
             ReferenceType::CNT => {
                 let mut child_model = attributes.get("object").unwrap().to_hashmap();
                 match (contract_role, &reference_role) {
-                    (ContractRole::RFL(RFL), ReferenceRole::FIL) => {
+                    (ContractRole::RFL(_), ReferenceRole::FIL) => {
                         child_model.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
                     },
-                    (ContractRole::RFL(RFL), _) => {
+                    (ContractRole::RFL(_), _) => {
                         child_model.insert("contractRole".to_string(), Value::Vstring("RPL".to_string()));
                     },
                     (_, ReferenceRole::FIL) => {

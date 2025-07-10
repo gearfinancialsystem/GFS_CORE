@@ -31,9 +31,9 @@ impl TraitPayOffFunction for POF_TD_SWAPS {
             time,
             states
         );
-        let price_at_termination = model.priceAtTerminationDate.expect("No price at termination");
-        let accrued_interest = states.accrued_interest.expect("No accrued interest");
+        let price_at_termination = model.price_at_termination_date.clone().expect("No price at termination");
+        let accrued_interest = states.accrued_interest.clone().expect("No accrued interest");
 
-        settlement_currency_fx_rate * price_at_termination + accrued_interest
+        settlement_currency_fx_rate * price_at_termination.value() + accrued_interest.value()
     }
 }

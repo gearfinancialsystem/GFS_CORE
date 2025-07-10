@@ -28,16 +28,16 @@ impl TraitStateTransitionFunction for STF_RR_LAX {
         time_adjuster: &BusinessDayAdjuster,
     ) {
         // Compute new rate
-        let rate = (1.0 * model.rateMultiplier.unwrap_or(1.0)) // Placeholder for risk_factor_model logic
-            + model.rateSpread.unwrap_or(0.0)
+        let rate = (1.0 * model.rate_multiplier.clone().unwrap_or(1.0)) // Placeholder for risk_factor_model logic
+            + model.rate_spread.clone().unwrap_or(0.0)
             + self.scheduled_rate
             - states.nominal_interest_rate.unwrap_or(0.0);
 
-        let delta_rate = rate.max(model.periodFloor.unwrap_or(f64::MIN)).min(model.periodCap.unwrap_or(f64::MAX));
+        let delta_rate = rate.max(model.period_floor.unwrap_or(f64::MIN)).min(model.period_cap.unwrap_or(f64::MAX));
 
         let new_rate = (states.nominal_interest_rate.unwrap_or(0.0) + delta_rate)
-            .max(model.lifeFloor.unwrap_or(f64::MIN))
-            .min(model.lifeCap.unwrap_or(f64::MAX));
+            .max(model.life_floor.unwrap_or(f64::MIN))
+            .min(model.life_cap.unwrap_or(f64::MAX));
 
         // Update state space
         let status_date = states.status_date.expect("statusDate should always be Some");

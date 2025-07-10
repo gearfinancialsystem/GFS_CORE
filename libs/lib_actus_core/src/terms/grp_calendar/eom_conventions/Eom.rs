@@ -2,7 +2,6 @@ use std::fmt;
 use crate::types::IsoDatetime::IsoDatetime;
 
 use chrono::{Datelike, Duration, NaiveDate};
-use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]

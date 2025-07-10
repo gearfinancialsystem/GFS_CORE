@@ -28,7 +28,8 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
         let nominal_interest_rate = model.nominal_interest_rate.clone().expect("nominalInterestRate should be Some");
         let notional_principal_s = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate_s = states.nominal_interest_rate.clone().expect("nominalInterestRate should be Some");
-
+        
+        
         states.notional_principal = NotionalPrincipal::new(contract_role.role_sign() * notional_principal.value()).ok();
         states.nominal_interest_rate = Some(nominal_interest_rate);
         states.status_date = Some(StatusDate::from(*time));

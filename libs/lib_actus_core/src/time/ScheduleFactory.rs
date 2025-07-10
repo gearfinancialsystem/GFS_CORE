@@ -26,7 +26,7 @@ where
         start_time: &Option<T1>,
         end_time: &Option<T2>,
         cycle: &Option<U>,
-        end_of_month_convention: &Option<EndOfMonthConvention>,
+        end_of_month_convention: &EndOfMonthConvention,
         add_end_time: Option<bool>,
     ) -> HashSet<TO> {
         let mut times_set: HashSet<TO> = HashSet::new();
@@ -55,7 +55,7 @@ where
         let stub = cycle.clone().unwrap().value().extract_stub();
         // let shifter = EndOfMonthAdjuster::new(end_of_month_convention, start_time, cycle.clone());
         let shifter = EndOfMonthConvention::new(
-            end_of_month_convention.clone().unwrap(),
+            end_of_month_convention.clone(),
             start_time.clone().unwrap().value(), 
             ccycle.clone().value().clone()).expect("sd"); // attention vérifier
         // CHANGER EoM new (prendre cycle as ref, pas en valeur
@@ -100,7 +100,7 @@ where
         start_times: &Vec<T1>,
         end_time: &Option<T2>,
         cycles: &Vec<U>,
-        end_of_month_convention: &Option<EndOfMonthConvention>,
+        end_of_month_convention: &EndOfMonthConvention,
     ) -> HashSet<TO> {
         let mut times_set = HashSet::new();
 

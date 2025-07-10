@@ -2,9 +2,6 @@ use std::{collections::HashMap, fmt, str::FromStr};
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_fees::fee_basis::N::N;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::seniority::J::J;
-use crate::terms::grp_counterparty::seniority::S::S;
-use crate::terms::grp_counterparty::Seniority::Seniority;
 use crate::util::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]

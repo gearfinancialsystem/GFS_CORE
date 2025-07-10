@@ -1,6 +1,4 @@
 use std::fmt;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
-use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
 pub struct D;

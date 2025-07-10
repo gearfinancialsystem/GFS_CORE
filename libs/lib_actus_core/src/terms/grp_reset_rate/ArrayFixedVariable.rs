@@ -3,11 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::contract_performance::Df::DF;
-use crate::terms::grp_counterparty::contract_performance::Dl::DL;
-use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
-use crate::terms::grp_counterparty::CreditEventTypeCovered::{CreditEventTypeCovered, CreditEventTypeCoveredElement};
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::util::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]

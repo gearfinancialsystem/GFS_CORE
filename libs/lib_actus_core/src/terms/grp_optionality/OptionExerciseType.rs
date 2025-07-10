@@ -5,12 +5,6 @@ use crate::terms::grp_optionality::option_exercise_type::A::A;
 use crate::terms::grp_optionality::option_exercise_type::B::B;
 use crate::terms::grp_optionality::option_exercise_type::E::E;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
-use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
-use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
-use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
-use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
 use crate::util::Value::Value;
 
 #[derive(PartialEq, Eq, Debug)]

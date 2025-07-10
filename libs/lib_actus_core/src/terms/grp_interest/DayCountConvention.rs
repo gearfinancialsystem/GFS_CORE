@@ -1,15 +1,11 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
-use std::str::FromStr;
 use crate::terms::grp_calendar::{Calendar::Calendar};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::types::IsoDatetime::IsoDatetime;
 
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
-use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
-use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use crate::terms::grp_interest::daycountconventions::A336::A336;
 use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::terms::grp_interest::daycountconventions::A365::A365;

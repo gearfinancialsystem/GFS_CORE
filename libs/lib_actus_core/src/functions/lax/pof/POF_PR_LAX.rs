@@ -29,8 +29,8 @@ impl TraitPayOffFunction for POF_PR_LAX {
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let role = contract_role.role_sign();
-        let notional_scaling_multiplier = model.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
-        let notional_principal = states.notional_principal.expect("notionalPrincipal should always exist");
+        let notional_scaling_multiplier = model.notional_scaling_multiplier.clone().expect("notionalScalingMultiplier should always exist");
+        let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -39,8 +39,8 @@ impl TraitPayOffFunction for POF_PR_LAX {
             states
         );
 
-        let redemption = role * self.pr_payment - role * f64::max(0.0, self.pr_payment.abs() - notional_principal.abs());
+        let redemption = role * self.pr_payment - role * f64::max(0.0, self.pr_payment.abs() - notional_principal.value().abs());
 
-        settlement_currency_fx_rate * notional_scaling_multiplier * redemption
+        settlement_currency_fx_rate * notional_scaling_multiplier.value() * redemption
     }
 }

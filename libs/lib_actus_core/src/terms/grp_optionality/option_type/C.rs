@@ -1,5 +1,4 @@
 use std::fmt;
-use crate::terms::grp_optionality::penalty_type::R::R;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 

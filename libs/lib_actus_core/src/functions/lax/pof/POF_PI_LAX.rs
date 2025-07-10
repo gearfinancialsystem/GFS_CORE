@@ -29,9 +29,9 @@ impl TraitPayOffFunction for POF_PI_LAX {
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         
-        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let notional_scaling_multiplier = model.notionalScalingMultiplier.expect("notionalScalingMultiplier should always exist");
-        let notional_principal = states.notional_principal.expect("notionalPrincipal should always exist");
+        let contract_role = model.contract_role.clone().expect("contract role should always exist");
+        let notional_scaling_multiplier = model.notional_scaling_multiplier.clone().expect("notionalScalingMultiplier should always exist");
+        let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -41,8 +41,8 @@ impl TraitPayOffFunction for POF_PI_LAX {
         );
         
         let redemption = self.pr_payment - contract_role.role_sign()
-            * f64::max(0.0, self.pr_payment.abs() - notional_principal.abs());
+            * f64::max(0.0, self.pr_payment.abs() - notional_principal.value().abs());
 
-        settlement_currency_fx_rate * -1.0 * contract_role.role_sign() * notional_scaling_multiplier * redemption
+        settlement_currency_fx_rate * -1.0 * contract_role.role_sign() * notional_scaling_multiplier.value() * redemption
     }
 }

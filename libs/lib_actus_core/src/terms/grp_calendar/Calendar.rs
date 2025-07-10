@@ -22,12 +22,12 @@ impl Calendar {
         Calendar::from_str(element)
     }
     
-    pub fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Option<Rc<Self>> {
+    pub fn provide_rc(string_map: &HashMap<String, Value>, key: &str) -> Rc<Self> {
         match string_map.get(key) {
-            None => Some(Rc::new(Calendar::default())), // Clé absente : valeur par défaut dans un Some
+            None => Rc::new(Calendar::default()), // Clé absente : valeur par défaut dans un Some
             Some(s) => {
                 match Self::from_str(s.as_string().unwrap().as_str()) {
-                    Ok(calendar) => Some(Rc::new(calendar)), // Valeur valide
+                    Ok(calendar) => Rc::new(calendar), // Valeur valide
                     Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
                 }
             }

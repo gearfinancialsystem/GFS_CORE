@@ -4,10 +4,6 @@ use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_optionality::OptionType::OptionType;
-use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::B::B;
-use crate::terms::grp_reset_rate::cycle_point_of_rate_reset::E::E;
-use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
 use crate::util::Value::Value;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]

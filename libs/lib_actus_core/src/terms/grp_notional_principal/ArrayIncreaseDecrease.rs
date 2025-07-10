@@ -3,11 +3,6 @@ use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::exceptions::ParseError::ParseError;
-use crate::terms::grp_counterparty::contract_performance::Df::DF;
-use crate::terms::grp_counterparty::contract_performance::Dl::DL;
-use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
-use crate::terms::grp_counterparty::CreditEventTypeCovered::{CreditEventTypeCovered, CreditEventTypeCoveredElement};
-use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::util::Value::Value;
 
 
