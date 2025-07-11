@@ -39,18 +39,22 @@ use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_fees::FeeRate::FeeRate;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
+use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::IncreaseDecreaseElement;
+use crate::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
 use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
@@ -60,6 +64,7 @@ use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoDatetime::IsoDatetime;
 
 
@@ -103,7 +108,7 @@ impl LAX {
             let pr_inc_dec = model.array_increase_decrease.as_ref().unwrap();
 
             for i in 0..pr_anchor_dates.len() {
-                let pr_type = if pr_inc_dec[i] == ArrayIncreaseDecrease::DEC(DEC) {
+                let pr_type = if pr_inc_dec.values()[i] == IncreaseDecreaseElement::DEC(DEC) {
                     EventType::PR
                 } else {
                     EventType::PI
@@ -112,28 +117,28 @@ impl LAX {
                 let pr_stf: Rc<dyn TraitStateTransitionFunction> = if model.interest_calculation_base == Some(InterestCalculationBase::NTL(NTL)) {
                     if pr_type == EventType::PR {
 
-                        Rc::new(STF_PR_LAX::new(pr_payments[i]))
+                        Rc::new(STF_PR_LAX::new(pr_payments.values()[i]))
                     } else {
-                        Rc::new(STF_PI_LAX::new(pr_payments[i]))
+                        Rc::new(STF_PI_LAX::new(pr_payments.values()[i]))
                     }
                 } else {
                     if pr_type == EventType::PR {
-                        Rc::new(STF_PR_LAX2::new(pr_payments[i]))
+                        Rc::new(STF_PR_LAX2::new(pr_payments.values()[i]))
                     } else {
-                        Rc::new(STF_PI_LAX2::new(pr_payments[i]))
+                        Rc::new(STF_PI_LAX2::new(pr_payments.values()[i]))
                     }
                 };
 
                 let pr_pof: Rc<dyn TraitPayOffFunction> = if pr_type == EventType::PR {
-                    Rc::new(POF_PR_LAX::new(pr_payments[i]))
+                    Rc::new(POF_PR_LAX::new(pr_payments.values()[i]))
                 } else {
-                    Rc::new(POF_PI_LAX::new(pr_payments[i]))
+                    Rc::new(POF_PI_LAX::new(pr_payments.values()[i]))
                 };
 
                 let schedule = ScheduleFactory::create_schedule(
-                    &Some(pr_anchor_dates[i].clone()),
+                    &Some(pr_anchor_dates.values()[i].clone()),
                     &Some(maturity.clone()),
-                    &pr_cycle.as_ref().map(|cycles| cycles[i].clone()),
+                    &pr_cycle.as_ref().map(|cycles| cycles.values()[i].clone()),
                     &model.end_of_month_convention.clone(),
                     Some(false),
                 );
@@ -162,13 +167,22 @@ impl LAX {
             &model.business_day_adjuster,
             &model.contract_id,
         );
-        events.push(e);
+        events.push(e.to_iso_datetime_event());
 
+
+        let z: Vec<CycleAnchorDateOfInterestPayment> = *&model.array_cycle_anchor_date_of_interest_payment.clone().unwrap().values().iter().map(
+            |d| CycleAnchorDateOfInterestPayment::new(d.clone()).ok().expect("er")
+        ).collect();
         // Interest payment schedule
         if let Some(ip_anchor_dates) = &model.array_cycle_anchor_date_of_interest_payment {
-            let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().iter().map(|s| Some(s.clone())).collect::<Vec<_>>();
+            let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|s| Some(s.clone())).collect::<Vec<_>>();
 
-            let s = ScheduleFactory::create_array_schedule(
+            let s = ScheduleFactory::<
+            ArrayCycleAnchorDateOfInterestPayment,
+                MaturityDate,
+                Vec<IsoCycle>,
+                IsoDatetime
+            >::create_array_schedule(
                 &ip_anchor_dates,
                 &maturity,
                 &ip_cycle,
@@ -441,7 +455,7 @@ impl LAX {
         events
     }
 
-    fn maturity(model: &ContractModel, to: Option<IsoDatetime>) -> IsoDatetime {
+    fn maturity(model: &ContractModel) -> MaturityDate {
         if let Some(maturity_date) = &model.maturity_date {
             return maturity_date.clone().as_ref().clone();
         }
@@ -450,15 +464,15 @@ impl LAX {
         let time_adjuster = model.business_day_adjuster.as_ref().unwrap();
         let notional_principal = model.notional_principal.clone().unwrap();
         let pr_anchor_dates = model.array_cycle_anchor_date_of_principal_redemption.as_ref().unwrap();
-        let pr_inc_dec: Vec<i32> = model.array_increase_decrease.as_ref().unwrap().iter().map(|s| if s.clone() == ArrayIncreaseDecrease::INC(INC) { 1 } else { -1 }).collect();
+        let pr_inc_dec: Vec<i32> = model.array_increase_decrease.as_ref().unwrap().values().iter().map(|s| if s.clone() == IncreaseDecreaseElement::INC(INC) { 1 } else { -1 }).collect();
         let pr_payments = model.array_next_principal_redemption_payment.as_ref().unwrap();
 
         if model.array_cycle_of_principal_redemption.is_none() {
-            return pr_anchor_dates.last().unwrap().clone();
+            return MaturityDate::new(pr_anchor_dates.values().last().unwrap().clone()).expect("Should return a maturity date");
         }
 
         let pr_cycle = model.array_cycle_of_principal_redemption.as_ref().unwrap();
-        let mut t = model.status_date.clone();
+        let mut t = model.status_date.clone().unwrap().value();
         let mut sum = 0.0;
 
         if pr_cycle.len() > 1 {
@@ -467,50 +481,56 @@ impl LAX {
             let mut pr_schedule = HashSet::new();
 
             loop {
-                pr_schedule = ScheduleFactory::create_schedule(
-                    &Some(pr_anchor_dates[index].clone()),
-                    &Some(pr_anchor_dates[index + 1].clone()),
-                    &Some(pr_cycle[index].clone()),
+                pr_schedule = ScheduleFactory::< // a changer avec les vrai types sous-jacents aux array pour que ce soit plus propre
+                    IsoDatetime,
+                    IsoDatetime,
+                    IsoCycle,
+                    IsoDatetime
+                >::create_schedule(
+                    &Some(pr_anchor_dates.values()[index].clone()),
+                    &Some(pr_anchor_dates.values()[index + 1].clone()),
+                    &Some(pr_cycle.values()[index].clone()),
                     &model.end_of_month_convention.clone(),
                     Some(false),
                 );
 
-                no_of_pr_events = if (pr_schedule.len() as f64 * pr_payments[index] * pr_inc_dec[index] as f64) + notional_principal.value() + sum >= 0.0 {
+                no_of_pr_events = if (pr_schedule.len() as f64 * pr_payments.values()[index] * pr_inc_dec[index] as f64) + notional_principal.value() + sum >= 0.0 {
                     pr_schedule.len()
                 } else {
-                    ((notional_principal.value() + sum) / pr_payments[index]).ceil() as usize
+                    ((notional_principal.value() + sum) / pr_payments.values()[index]).ceil() as usize
                 };
 
-                sum += no_of_pr_events as f64 * pr_inc_dec[index] as f64 * pr_payments[index];
+                sum += no_of_pr_events as f64 * pr_inc_dec[index] as f64 * pr_payments.values()[index];
 
                 if pr_anchor_dates.len() - 2 == index {
-                    no_of_pr_events = ((sum + notional_principal.value()) / pr_payments[index + 1]).ceil().abs() as usize;
-                    t = Some(pr_anchor_dates[index + 1].clone());
+                    no_of_pr_events = ((sum + notional_principal.value()) / pr_payments.values()[index + 1]).ceil().abs() as usize;
+                    t = pr_anchor_dates.values()[index + 1].clone();
 
                     for _ in 0..no_of_pr_events - 1 {
-                        t = Some(t.clone().unwrap()  + CycleUtils::parse_period(&pr_cycle[index + 1]).unwrap());
+                        t = t.clone() + pr_cycle.values()[index + 1].extract_period().clone().unwrap();
                     }
+                   
 
-                    sum += no_of_pr_events as f64 * pr_inc_dec[index + 1] as f64 * pr_payments[index + 1];
+                    sum += no_of_pr_events as f64 * pr_inc_dec[index + 1] as f64 * pr_payments.values()[index + 1];
                     break;
                 } else {
                     index += 1;
 
                     for _ in 0..no_of_pr_events {
-                        t = Some(t.unwrap() + CycleUtils::parse_period(&pr_cycle[index - 1]).unwrap());
+                        t = t.clone() + pr_cycle.values()[index - 1].extract_period().clone().unwrap();
                     }
                 }
             }
         } else {
-            let no_of_pr_events = (notional_principal / pr_payments[0]).ceil() as usize;
-            t = Some(pr_anchor_dates[0].clone());
+            let no_of_pr_events = (notional_principal.value() / pr_payments.values()[0]).ceil() as usize;
+            t = pr_anchor_dates.values()[0].clone();
 
             for _ in 0..no_of_pr_events - 1 {
-                t = Some(t.unwrap() + CycleUtils::parse_period(&pr_cycle[0]).unwrap());
+                t = t.clone() + pr_cycle.values()[0].extract_period().clone().unwrap();
             }
         }
 
-        time_adjuster.shift_bd(&t.unwrap())
+        MaturityDate::new(time_adjuster.shift_bd(&t)).ok().expect("Should return a maturity date")
     }
 
     fn init_state_space(model: &ContractModel, maturity: IsoDatetime) -> StateSpace {
@@ -546,7 +566,7 @@ impl LAX {
             };
 
             if model.interest_calculation_base == Some(InterestCalculationBase::NT(NT)) {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.unwrap().value()).ok();
+                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
             } else {
                 states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(role_sign * {
                     if model.interest_calculation_base_amount.is_none() {
@@ -559,9 +579,12 @@ impl LAX {
             }
         }
 
-        states
+        states.clone()
     }
+
 }
+
+
 impl fmt::Display for LAX {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "LAX")

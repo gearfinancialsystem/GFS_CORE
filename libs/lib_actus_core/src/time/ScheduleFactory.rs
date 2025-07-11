@@ -96,7 +96,7 @@ where
     }
 
     /// Crée un calendrier composé de sous-calendriers pour chaque paire start_time/cycle.
-    pub fn create_array_schedule(
+    pub fn ocreate_array_schedule(
         start_times: &Vec<T1>,
         end_time: &Option<T2>,
         cycles: &Vec<U>,

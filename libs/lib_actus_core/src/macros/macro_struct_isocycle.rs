@@ -30,8 +30,8 @@ macro_rules! define_struct_isocycle {
 
         impl TraitMarqueurIsoCycle for $struct_name {
             // Get the IsoCycle value
-            fn value(&self) -> &IsoCycle {
-                &self.0
+            fn value(&self) -> IsoCycle {
+                self.0.clone()
             }
 
             // Set the IsoCycle value

@@ -41,6 +41,9 @@ impl ArrayIncreaseDecrease {
             Err(e) => return Err(e)
         }
     }
+    pub fn values(&self) -> &Vec<IncreaseDecreaseElement> {
+        &self.0
+    }
 
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         string_map.get(key).and_then(|s| {

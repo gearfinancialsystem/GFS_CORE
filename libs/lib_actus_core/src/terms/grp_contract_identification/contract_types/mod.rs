@@ -4,7 +4,7 @@ pub mod Pam;
 pub mod Ann;
 pub mod Nam;
 pub mod Lam;
-pub mod Lax;
+//pub mod Lax;
 // pub mod Clm;
 // pub mod Ump;
 pub mod Csh;
