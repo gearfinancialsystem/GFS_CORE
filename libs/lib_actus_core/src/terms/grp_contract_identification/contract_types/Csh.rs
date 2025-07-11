@@ -8,22 +8,23 @@ use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::traits::TraitContractModel::TraitContractModel;
 
 pub struct CSH;
 
-impl CSH {
-    pub fn schedule(
-        _to: &IsoDatetime,
+impl TraitContractModel for  CSH {
+    fn schedule(
+        _to: Option<IsoDatetime>,
         _model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         Ok(Vec::new())
     }
 
-    pub fn apply(
+    fn apply(
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();
@@ -44,9 +45,15 @@ impl CSH {
         }
 
         // Return evaluated events
-        events
+        Ok(events)
+    }
+
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+        let mut states = StateSpace::default();
+        Ok(states)
     }
 }
+
 impl fmt::Display for CSH {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "CSH")

@@ -24,6 +24,7 @@ use crate::terms::grp_contract_identification::contract_types::Nam::NAM;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::terms::grp_contract_identification::contract_types::Com::COM;
 use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -44,7 +45,7 @@ impl ContractType {
             // "UMP" => Some(UMP::schedule(&to.unwrap(),cm).unwrap()),
             // "CSH" => Some(CSH::schedule(&to.unwrap(),cm).unwrap()),
             // "STK" => Some(STK::schedule(&to.unwrap(),cm).unwrap()),
-            // "COM" => Some(COM::schedule(&to.unwrap(),cm).unwrap()),
+            "COM" => COM::schedule(to,cm),
             // "FXOUT" => Some(FXOUT::schedule(&to.unwrap(),cm).unwrap()),
             // "SWPPV" => Some(SWPPV::schedule(&to.unwrap(),cm).unwrap()),
             "SWAPS" => SWAPS::schedule(to,cm),
@@ -70,6 +71,7 @@ impl ContractType {
             // "CSH" => Some(CSH::apply(events, cm, observer)),
             // "FUTUR" => Some(FUTUR::apply(events, cm, observer)),
             // "FXOUT" => Some(FXOUT::apply(events, cm, observer)),
+            "COM" => COM::apply(events, cm, observer),
             "LAM" => LAM::apply(events, cm, observer),
             //"LAX" => Some(LAX::apply(events, cm, observer)),
             "NAM" => NAM::apply(events, cm, observer),

@@ -12,59 +12,66 @@ use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_calendar::business_day_adjuster::business_day_adjuster;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct COM;
 
-impl COM {
-    pub fn schedule(
-        to: &IsoDatetime,
+impl TraitContractModel for COM {
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let mut events = Vec::new();
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
         let status_date = model.status_date.clone().unwrap();
         let purchase_date = model.purchase_date.clone();
         let termination_date = model.termination_date.clone();
 
         // Purchase
         if let Some(pd) = purchase_date {
-            if pd > status_date && to > &pd {
-                events.push(EventFactory::create_event(
-                    Some(pd),
-                    EventType::PRD,
+            if pd.clone().value() > status_date.clone().value() && to.clone().unwrap() > pd.clone().value() {
+                let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
+                    &Some(pd),
+                    &EventType::PRD,
                     &model.currency,
                     Some(Rc::new(POF_PRD_STK)),
                     Some(Rc::new(STF_PRD_STK)),
+                    &None,
                     &model.contract_id,
-                ));
+                );
+                events.push(e.to_iso_datetime_event());
             }
         }
 
         // Termination
         if let Some(td) = termination_date {
-            if td > status_date && to > &td {
-                events.push(EventFactory::create_event(
-                    Some(td),
-                    EventType::TD,
+            if td.clone().value() > status_date.clone().value() && to.clone().unwrap() > td.clone().value() {
+                let e: ContractEvent<TerminationDate, TerminationDate> = EventFactory::create_event(
+                    &Some(td),
+                    &EventType::TD,
                     &model.currency,
                     Some(Rc::new(POF_TD_STK)),
                     Some(Rc::new(STF_TD_STK)),
+                    &None,
                     &model.contract_id,
-                ));
+                );
+                events.push(e.to_iso_datetime_event());
             }
         }
 
         Ok(events)
     }
 
-    pub fn apply(
-        mut events: Vec<ContractEvent>,
+    fn apply(
+        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();
@@ -79,12 +86,17 @@ impl COM {
                 model,
                 observer,
                 &DayCountConvention::new(Some("AAISDA"), None, None).expect("etet"),
-                &business_day_adjuster::new("NOS", model.calendar.clone().unwrap()).expect("good NOS"),
+                &BusinessDayAdjuster::new("NOS", model.calendar.clone()).expect("good NOS"),
             );
         }
 
         // Return evaluated events
         Ok(events)
+    }
+
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+        let mut states = StateSpace::default();
+        Ok(states)
     }
 }
 impl fmt::Display for COM {

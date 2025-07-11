@@ -21,8 +21,8 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let contract_role_sign = contract_role.role_sign();
-        let notional_principal = model.notional_principal.expect("notionalPrincipal should always exist");
-        let notional_principal_2 = model.notional_principal2.expect("notionalPrincipal2 should always exist");
+        let notional_principal = model.notional_principal.clone().expect("notionalPrincipal should always exist");
+        let notional_principal_2 = model.notional_principal2.clone().expect("notionalPrincipal2 should always exist");
         
 
         let strings = vec![

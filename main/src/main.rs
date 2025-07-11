@@ -6,7 +6,7 @@ use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
-
+use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
 
 
@@ -118,12 +118,12 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = CSH::schedule(&to_date, cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = CSH::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
             let events2 = CSH::apply(events_res, cm, &risk_factor_model);
             
             for ce in events2.iter() {
-                println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);
+                //println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);
             }
 
         }
