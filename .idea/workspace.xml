@@ -21,18 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8160e6cd-402f-491d-a4a6-05e309f49da5" name="Changes" comment="sss">
-      <change afterPath="$PROJECT_DIR$/documentation/new_type_idiom.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/terms.ods" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/terms.ods" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/functions/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isocycle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/macros/macro_struct_isocycle.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/ContractType.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lax.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/Lax.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_contract_identification/contract_types/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/terms/grp_notional_principal/ArrayIncreaseDecrease.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/time/ScheduleFactory.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/time/ScheduleFactory.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/traits/TraitMarqueurIsoCycle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/traits/TraitMarqueurIsoCycle.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/lib_actus_core/src/types/IsoCycle.rs" beforeDir="false" afterPath="$PROJECT_DIR$/libs/lib_actus_core/src/types/IsoCycle.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,32 +71,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Cargo.Run main.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Run playground.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test Swap::tests.executor&quot;: &quot;Debug&quot;,
-    &quot;Cargo.Test contracts::Swap::tests::test_pam_contracts.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test contracts::Swap::tests::test_swap_contracts.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test macros::macro_struct_f64::tests::test_new_valid_value.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/python&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;org.rust.hideNoCargoProjectNotifications/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/playground/src/main.rs&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Cargo.Run main.executor": "Run",
+    "Cargo.Run playground.executor": "Run",
+    "Cargo.Test Swap::tests.executor": "Debug",
+    "Cargo.Test contracts::Swap::tests::test_pam_contracts.executor": "Run",
+    "Cargo.Test contracts::Swap::tests::test_swap_contracts.executor": "Run",
+    "Cargo.Test macros::macro_struct_f64::tests::test_new_valid_value.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "git-widget-placeholder": "dev",
+    "last_opened_file_path": "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/python",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.first.attach.projects": "true",
+    "org.rust.hideNoCargoProjectNotifications/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/playground/src/main.rs": "true",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/python" />
@@ -292,7 +281,7 @@
       <workItem from="1752065370922" duration="38630000" />
       <workItem from="1752152241410" duration="4427000" />
       <workItem from="1752176274736" duration="3304000" />
-      <workItem from="1752239744323" duration="4078000" />
+      <workItem from="1752239744323" duration="4364000" />
     </task>
     <task id="LOCAL-00001" summary="sss">
       <option name="closed" value="true" />
@@ -446,7 +435,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752120576436</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="sss">
+      <option name="closed" value="true" />
+      <created>1752253710391</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1752253710391</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
