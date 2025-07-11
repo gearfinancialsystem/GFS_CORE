@@ -24,7 +24,7 @@ use crate::terms::grp_contract_identification::contract_types::Nam::NAM;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
-
+use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ContractType;
@@ -32,13 +32,13 @@ pub struct ContractType;
 impl ContractType {
 
 
-    pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Option<Vec<ContractEvent<IsoDatetime, IsoDatetime>>> {
+    pub fn schedule(to: Option<IsoDatetime>, cm: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         match cm.contract_type.clone().as_str() {
-            "PAM" => Some(PAM::schedule(&to.unwrap(), cm).unwrap()),
-            "LAM" => Some(LAM::schedule(&to.unwrap(),cm).unwrap()),
-            "NAM" => Some(NAM::schedule(&to.unwrap(),cm).unwrap()),
-            "ANN" => Some(ANN::schedule(&to.unwrap(),cm).unwrap()),
+            "PAM" => PAM::schedule(to, cm),
+            "LAM" => LAM::schedule(to, cm),
+            "NAM" => NAM::schedule(to, cm),
+            "ANN" => ANN::schedule(to, cm),
             //"LAX" => Some(LAX::schedule(&to.unwrap(),cm).unwrap()),
             // "CLM" => Some(CLM::schedule(&to.unwrap(),cm).unwrap()),
             // "UMP" => Some(UMP::schedule(&to.unwrap(),cm).unwrap()),
@@ -47,21 +47,21 @@ impl ContractType {
             // "COM" => Some(COM::schedule(&to.unwrap(),cm).unwrap()),
             // "FXOUT" => Some(FXOUT::schedule(&to.unwrap(),cm).unwrap()),
             // "SWPPV" => Some(SWPPV::schedule(&to.unwrap(),cm).unwrap()),
-            "SWAPS" => Some(SWAPS::schedule(&to.unwrap(),cm).unwrap()),
+            "SWAPS" => SWAPS::schedule(to,cm),
             // "CAPFL" => Some(CAPFL::schedule(&to.unwrap(),cm).unwrap()),
             // "OPTNS" => Some(OPTNS::schedule(&to.unwrap(),cm).unwrap()),
             // "FUTUR" => Some(FUTUR::schedule(&to.unwrap(),cm).unwrap()),
             // "CEG" => Some(CEG::schedule(&to.unwrap(),cm).unwrap()),
             // "CEC" => Some(CEC::schedule(&to.unwrap(),cm).unwrap()),
             // "BCS" => Some(BCS::schedule(&to.unwrap(),cm).unwrap()),
-            _ => None
+            _ => Err("invalid contract type".to_string())
         }
 
     }
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, cm: &ContractModel, observer: &RiskFactorModel) -> Option<Vec<ContractEvent<IsoDatetime, IsoDatetime>>> {
+    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, cm: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         match cm.contract_type.clone().as_str() {
-            "ANN" => Some(ANN::apply(events, cm, observer)),
+            "ANN" => ANN::apply(events, cm, observer),
             // "BCS" => Some(BCS::apply(events, cm, observer)),
             // "CPFL" => Some(CAPFL::apply(events, cm, observer)),
             // "CEC" => Some(CEC::apply(events, cm, observer)),
@@ -70,16 +70,16 @@ impl ContractType {
             // "CSH" => Some(CSH::apply(events, cm, observer)),
             // "FUTUR" => Some(FUTUR::apply(events, cm, observer)),
             // "FXOUT" => Some(FXOUT::apply(events, cm, observer)),
-            "LAM" => Some(LAM::apply(events, cm, observer)),
+            "LAM" => LAM::apply(events, cm, observer),
             //"LAX" => Some(LAX::apply(events, cm, observer)),
-            "NAM" => Some(NAM::apply(events, cm, observer)),
+            "NAM" => NAM::apply(events, cm, observer),
             // "OPTNS" => Some(OPTNS::apply(events, cm, observer)),
-            "PAM" => Some(PAM::apply(events, cm, observer)),
+            "PAM" => PAM::apply(events, cm, observer),
             // "STK" => Some(STK::apply(events, cm, observer)),
-            "SWAPS" => Some(SWAPS::apply(events, cm, observer)),
+            "SWAPS" => SWAPS::apply(events, cm, observer),
             // "SWPPV" => Some(SWPPV::apply(events, cm, observer)),
             // "UMP" => Some(UMP::apply(events, cm, observer)),
-            _ => None
+            _ => Err("invalid contract type".to_string())
         }
     }
 }

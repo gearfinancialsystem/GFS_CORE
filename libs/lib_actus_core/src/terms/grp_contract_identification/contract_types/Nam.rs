@@ -53,6 +53,7 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -60,11 +61,11 @@ use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct NAM;
 
-impl NAM {
-    pub fn schedule(
-        _to: &IsoDatetime,
+impl TraitContractModel for NAM {
+    fn schedule(
+        _to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
         let maturity = Self::maturity(model);
 
@@ -441,12 +442,12 @@ impl NAM {
         Ok(events)
     }
 
-    pub fn apply(
+    fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
-        let mut states = Self::init_state_space(model);
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let mut states = Self::init_state_space(model).expect("Failed to initialize state_space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -476,66 +477,11 @@ impl NAM {
             events.retain(|e| e.event_type == EventType::AD || e.event_time >= purchase_event.event_time);
         }
 
-        events
+        Ok(events)
     }
 
-    fn maturity(model: &ContractModel) -> MaturityDate {
-        if let maturity = model.maturity_date.clone().unwrap() {
-            return maturity.as_ref().clone();
-        }
 
-        let t0 = model.status_date.clone().unwrap();
-        let pranx = model.cycle_anchor_date_of_principal_redemption.clone().unwrap();
-        let ied = model.initial_exchange_date.clone().unwrap();
-        //let prcl = CycleUtils::parse_period(&model.cycle_of_principal_redemption.clone().unwrap()).unwrap();
-        let prcl = &model.cycle_of_principal_redemption.clone().unwrap().value().extract_period().unwrap();
-        let last_event: IsoDatetime;
-
-        if pranx.value() >= t0.value() || pranx.value() == t0.value() {
-            last_event = pranx.value();
-        } else if (ied.clone().value() + prcl.clone()) > t0.value() || (ied.clone().value() + prcl.clone()) == t0.value() {
-            last_event = ied.clone().value() + prcl.clone();
-        } else {
-            let mut previous_events = ScheduleFactory::<
-                CycleAnchorDateOfPrincipalRedemption,
-                StatusDate,
-                CycleOfPrincipalRedemption,
-                IsoDatetime
-            >::create_schedule(
-                &model.cycle_anchor_date_of_principal_redemption,
-                &model.status_date,
-                &model.cycle_of_principal_redemption,
-                &model.end_of_month_convention,
-                Some(true)
-            );
-
-            previous_events.retain(|d| d.clone() < t0.value());
-            previous_events.remove(&t0.value());
-
-            let mut prev_events_list: Vec<_> = previous_events.into_iter().collect();
-            prev_events_list.sort();
-
-            last_event = prev_events_list.last().unwrap().clone();
-        }
-
-        let time_from_last_event_plus_one_cycle = model.day_count_convention.as_ref().unwrap().day_count_fraction(
-            last_event,
-            last_event + prcl.clone(),
-        );
-
-        let redemption_per_cycle = model.next_principal_redemption_payment.clone().unwrap().value();
-            - (time_from_last_event_plus_one_cycle * model.nominal_interest_rate.clone().unwrap().value()
-                * model.notional_principal.clone().unwrap().value());
-
-        let remaining_periods = ((model.notional_principal.clone().unwrap().value() / redemption_per_cycle).ceil() - 1.0) as i32;
-
-        let new_mat_date = last_event + prcl.multiplied_by(remaining_periods);
-        MaturityDate::new(model.business_day_adjuster.clone().as_ref().unwrap().shift_bd(
-            &new_mat_date
-        )).ok().unwrap()
-    }
-
-    fn init_state_space(model: &ContractModel) -> StateSpace {
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
@@ -593,9 +539,69 @@ impl NAM {
             states.fee_accrued = model.fee_accrued.clone();
         }
 
-        states
+        Ok(states)
     }
 }
+
+impl NAM {
+    fn maturity(model: &ContractModel) -> MaturityDate {
+        if let maturity = model.maturity_date.clone().unwrap() {
+            return maturity.as_ref().clone();
+        }
+
+        let t0 = model.status_date.clone().unwrap();
+        let pranx = model.cycle_anchor_date_of_principal_redemption.clone().unwrap();
+        let ied = model.initial_exchange_date.clone().unwrap();
+        //let prcl = CycleUtils::parse_period(&model.cycle_of_principal_redemption.clone().unwrap()).unwrap();
+        let prcl = &model.cycle_of_principal_redemption.clone().unwrap().value().extract_period().unwrap();
+        let last_event: IsoDatetime;
+
+        if pranx.value() >= t0.value() || pranx.value() == t0.value() {
+            last_event = pranx.value();
+        } else if (ied.clone().value() + prcl.clone()) > t0.value() || (ied.clone().value() + prcl.clone()) == t0.value() {
+            last_event = ied.clone().value() + prcl.clone();
+        } else {
+            let mut previous_events = ScheduleFactory::<
+                CycleAnchorDateOfPrincipalRedemption,
+                StatusDate,
+                CycleOfPrincipalRedemption,
+                IsoDatetime
+            >::create_schedule(
+                &model.cycle_anchor_date_of_principal_redemption,
+                &model.status_date,
+                &model.cycle_of_principal_redemption,
+                &model.end_of_month_convention,
+                Some(true)
+            );
+
+            previous_events.retain(|d| d.clone() < t0.value());
+            previous_events.remove(&t0.value());
+
+            let mut prev_events_list: Vec<_> = previous_events.into_iter().collect();
+            prev_events_list.sort();
+
+            last_event = prev_events_list.last().unwrap().clone();
+        }
+
+        let time_from_last_event_plus_one_cycle = model.day_count_convention.as_ref().unwrap().day_count_fraction(
+            last_event,
+            last_event + prcl.clone(),
+        );
+
+        let redemption_per_cycle = model.next_principal_redemption_payment.clone().unwrap().value();
+        - (time_from_last_event_plus_one_cycle * model.nominal_interest_rate.clone().unwrap().value()
+            * model.notional_principal.clone().unwrap().value());
+
+        let remaining_periods = ((model.notional_principal.clone().unwrap().value() / redemption_per_cycle).ceil() - 1.0) as i32;
+
+        let new_mat_date = last_event + prcl.multiplied_by(remaining_periods);
+        MaturityDate::new(model.business_day_adjuster.clone().as_ref().unwrap().shift_bd(
+            &new_mat_date
+        )).ok().unwrap()
+    }
+
+}
+
 impl fmt::Display for NAM {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "NAM")

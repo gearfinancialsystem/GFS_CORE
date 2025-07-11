@@ -53,6 +53,7 @@ use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPr
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -61,11 +62,11 @@ use crate::util::RedemptionUtils::RedemptionUtils;
 
 pub struct LAM;
 
-impl LAM {
-    pub fn schedule(
-        to: &IsoDatetime,
+impl TraitContractModel for LAM {
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
         let maturity = Self::maturity(model);
 
@@ -352,7 +353,7 @@ impl LAM {
         // let to_date = to.unwrap_or(maturity); // A CHECKER
         let to_date = to;
         let post_date = EventFactory::create_event(
-            &Some(to_date.clone()),
+            &Some(to_date.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -369,13 +370,13 @@ impl LAM {
         Ok(events)
     }
 
-    pub fn apply(
+    fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
-        let maturity = Self::maturity(model);
-        let mut states = Self::init_state_space(model, maturity);
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        //let maturity = Self::maturity(model);
+        let mut states = Self::init_state_space(model).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -405,9 +406,70 @@ impl LAM {
             events.retain(|e| e.event_type == EventType::AD || e.event_time >= purchase_event.event_time);
         }
 
-        events
+        Ok(events)
     }
 
+
+    fn init_state_space(
+        model: &ContractModel,
+    ) -> Result<StateSpace, String> {
+
+        let maturity = Self::maturity(model);
+
+        let mut states = StateSpace::default();
+
+        states.maturity_date = MaturityDate::new(maturity).ok();
+
+        if model.initial_exchange_date.clone().unwrap().value() > model.status_date.clone().unwrap().value() {
+            states.notional_principal = NotionalPrincipal::new(0.0).ok();
+            states.nominal_interest_rate = NominalInterestRate::new(0.0).ok();
+            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();
+        } else {
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap().value()).ok();
+            states.nominal_interest_rate = model.nominal_interest_rate.clone();
+
+            if model.interest_calculation_base == Some(InterestCalculationBase::NT(NT)) {
+                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
+            } else {
+                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(
+                    role_sign * model.interest_calculation_base_amount.clone().unwrap().value(),
+                ).ok();
+            }
+        }
+
+        if model.nominal_interest_rate.is_none() {
+            states.accrued_interest = AccruedInterest::new(0.0).ok();
+        } else if model.accrued_interest.is_some() {
+            states.accrued_interest = model.accrued_interest.clone();
+        }
+
+        if model.fee_rate.is_none() {
+            states.fee_accrued = FeeAccrued::new(0.0).ok();
+        } else if model.fee_accrued.is_some() {
+            states.fee_accrued = model.fee_accrued.clone();
+        }
+
+        states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
+        states.interest_scaling_multiplier = InterestScalingMultiplier::new(model.notional_scaling_multiplier.clone().unwrap().value()).ok();
+        states.contract_performance = model.contract_performance;
+        states.status_date = model.status_date.clone();
+
+        states.next_principal_redemption_payment = {
+            if model.next_principal_redemption_payment.is_some() {
+                model.next_principal_redemption_payment.clone()
+            }
+            else {
+                NextPrincipalRedemptionPayment::new(RedemptionUtils::redemptionAmount(model, &states.clone())).ok()
+            }
+        };
+
+
+        Ok(states)
+    }
+}
+
+impl LAM {
     fn maturity(model: &ContractModel) -> IsoDatetime {
         if let Some(maturity) = &model.maturity_date {
             return maturity.as_ref().clone().value();
@@ -463,63 +525,8 @@ impl LAM {
             cycle_period.value().extract_period().unwrap().multiplied_by(remaining_periods)
         )
     }
-
-    fn init_state_space(
-        model: &ContractModel,
-        maturity: IsoDatetime,
-    ) -> StateSpace {
-        let mut states = StateSpace::default();
-
-        states.maturity_date = MaturityDate::new(maturity).ok();
-
-        if model.initial_exchange_date.clone().unwrap().value() > model.status_date.clone().unwrap().value() {
-            states.notional_principal = NotionalPrincipal::new(0.0).ok();
-            states.nominal_interest_rate = NominalInterestRate::new(0.0).ok();
-            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();
-        } else {
-            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap().value()).ok();
-            states.nominal_interest_rate = model.nominal_interest_rate.clone();
-
-            if model.interest_calculation_base == Some(InterestCalculationBase::NT(NT)) {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
-            } else {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(
-                    role_sign * model.interest_calculation_base_amount.clone().unwrap().value(),
-                ).ok();
-            }
-        }
-
-        if model.nominal_interest_rate.is_none() {
-            states.accrued_interest = AccruedInterest::new(0.0).ok();
-        } else if model.accrued_interest.is_some() {
-            states.accrued_interest = model.accrued_interest.clone();
-        }
-
-        if model.fee_rate.is_none() {
-            states.fee_accrued = FeeAccrued::new(0.0).ok();
-        } else if model.fee_accrued.is_some() {
-            states.fee_accrued = model.fee_accrued.clone();
-        }
-
-        states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
-        states.interest_scaling_multiplier = InterestScalingMultiplier::new(model.notional_scaling_multiplier.clone().unwrap().value()).ok();
-        states.contract_performance = model.contract_performance;
-        states.status_date = model.status_date.clone();
-
-        states.next_principal_redemption_payment = {
-            if model.next_principal_redemption_payment.is_some() {
-                model.next_principal_redemption_payment.clone()
-            }
-            else {
-                NextPrincipalRedemptionPayment::new(RedemptionUtils::redemptionAmount(model, &states.clone())).ok()
-            }
-        };
-
-
-        states
-    }
 }
+
 impl fmt::Display for LAM {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "LAM")

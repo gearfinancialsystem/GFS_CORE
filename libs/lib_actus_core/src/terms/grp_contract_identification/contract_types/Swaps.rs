@@ -23,24 +23,16 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 
 pub struct SWAPS;
 
-impl SWAPS {
-    pub fn get_legs_contract_models(model: &ContractModel) -> (ContractModel, ContractModel) {
-
-        let cs = model.clone().contract_structure.unwrap();
-
-        let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
-        let second_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
-        (first_leg_model, second_leg_model)
-    }
-    /// Compute next events within the period up to `to` date based on the contract model
-    pub fn schedule(
-        to: &IsoDatetime,
+impl TraitContractModel for SWAPS {
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
@@ -95,7 +87,7 @@ impl SWAPS {
 
         events.retain(|e| e.compare_to(
             &EventFactory::create_event(
-                &Some(to.clone()),
+                &Some(to.clone().unwrap()),
                 &EventType::AD,
                 &model.currency,
                 None,
@@ -106,11 +98,11 @@ impl SWAPS {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    pub fn apply(
+    fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         let mut events = events;
         let cs = model.clone().contract_structure.unwrap();
@@ -219,22 +211,22 @@ impl SWAPS {
             });
         }
         events.sort();
-        events
+        Ok(events)
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_StateSpace(
+    fn init_state_space(
         model: &ContractModel,
-        event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
-    ) -> StateSpace {
+    ) -> Result<StateSpace, String> { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let cs = model.clone().contract_structure.unwrap();
         let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
         let second_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
 
-        let event_t0_status_date = event_at_t0.states().status_date;
-        let mut states = if event_t0_status_date.is_some() {
-            StateSpace::default()
-        } else { event_at_t0.states() };
+        //let event_t0_status_date = event_at_t0.states().status_date;
+        //let mut states = if event_t0_status_date.is_some() {
+        //    StateSpace::default()
+        //} else { event_at_t0.states() };
+        let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();
         states.contract_performance = if model.contract_performance.is_some() {
@@ -243,9 +235,24 @@ impl SWAPS {
         let mat1 = first_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
         let mat2 = second_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
         states.maturity_date = if mat1.clone().unwrap().value() > mat2.clone().unwrap().value() { mat1 } else { mat2 };
-        states.accrued_interest = event_at_t0.states().accrued_interest;
-        states
+        //states.accrued_interest = event_at_t0.states().accrued_interest;
+        states.accrued_interest = AccruedInterest::new(0.0).ok();
+        Ok(states)
     }
+
+
+}
+
+impl SWAPS {
+    pub fn get_legs_contract_models(model: &ContractModel) -> (ContractModel, ContractModel) {
+
+        let cs = model.clone().contract_structure.unwrap();
+
+        let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
+        let second_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
+        (first_leg_model, second_leg_model)
+    }
+    /// Compute next events within the period up to `to` date based on the contract model
 
     pub fn filter_and_nett_congruent_events(
         first_leg_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
@@ -458,6 +465,7 @@ impl SWAPS {
         netting
     }
 }
+
 
 impl fmt::Display for SWAPS {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

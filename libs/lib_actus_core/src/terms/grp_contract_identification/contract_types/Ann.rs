@@ -51,13 +51,14 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
 use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 pub struct ANN;
 
-impl ANN {
-    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+impl TraitContractModel for ANN {
+    fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new(); // A revoir
         let maturity = Self::maturity(model);
 
@@ -438,7 +439,7 @@ impl ANN {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -455,9 +456,9 @@ impl ANN {
         Ok(events)
     }
 
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
-        -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
-        let mut states = Self::init_state_space(model);
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
+        -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let mut states = Self::init_state_space(model).expect("Failed to initialize state space");
         let mut events = events;
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -487,58 +488,10 @@ impl ANN {
                 e.event_type == EventType::AD || e >= &purchase_event.to_iso_datetime_event());
         }
 
-        events
+        Ok(events)
     }
 
-    fn maturity(model: &ContractModel) -> MaturityDate {
-        if let Some(maturity_date) = model.maturity_date.clone() {
-            let a = maturity_date.clone().deref().clone();
-            return a;
-        }
-
-        if let Some(amortization_date) = model.amortization_date.as_ref() {
-            let a = amortization_date.clone().value().to_string();
-            let b = MaturityDate::from_str(a.as_str()).unwrap();
-            return b;
-        }
-
-        let t0 = model.status_date.as_ref().unwrap();
-        let pranx = model.cycle_anchor_date_of_principal_redemption.as_ref().unwrap();
-        let ied = model.initial_exchange_date.as_ref().unwrap();
-        let copr = model.cycle_of_principal_redemption.as_ref().unwrap();
-        let prcl = copr.clone().value().extract_period().unwrap();
-
-        let last_event = if pranx.value() >= t0.value() {
-            pranx.value()
-        } else if ied.value() + prcl.clone() > t0.value() {
-            ied.value() + prcl.clone()
-        } else {
-            let mut previous_events: Vec<IsoDatetime> = ScheduleFactory::
-            <CycleAnchorDateOfPrincipalRedemption,
-            StatusDate,
-            CycleOfPrincipalRedemption,
-            IsoDatetime>::create_schedule(
-                &model.cycle_anchor_date_of_principal_redemption,
-                &Some(t0.clone()),
-                &model.cycle_of_principal_redemption,
-                &model.end_of_month_convention,
-                Some(false)
-            ).into_iter().collect();
-
-            previous_events.retain(|&d| d > t0.value());
-            previous_events.sort();
-            *previous_events.last().unwrap()
-        };
-
-        let time_from_last_event_plus_one_cycle = model.day_count_convention.as_ref().unwrap().day_count_fraction(last_event.value(), last_event + prcl.clone());
-        let redemption_per_cycle = model.next_principal_redemption_payment.clone().unwrap().value() - (time_from_last_event_plus_one_cycle * model.nominal_interest_rate.clone().unwrap().value() * model.notional_principal.clone().unwrap().value());
-        let remaining_periods = ((model.notional_principal.clone().unwrap().value() / redemption_per_cycle).ceil() - 1.0) as i32;
-
-        MaturityDate::new(model.business_day_adjuster.clone().unwrap()
-            .shift_bd( &(last_event.clone() + prcl.multiplied_by(remaining_periods))   )).ok().unwrap()
-    }
-
-    fn init_state_space(model: &ContractModel) -> StateSpace {
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
         states.interest_scaling_multiplier = model.interest_scaling_multiplier.clone();
@@ -604,8 +557,59 @@ impl ANN {
             states.next_principal_redemption_payment = model.next_principal_redemption_payment.clone();
         }
 
-        states
+        Ok(states)
     }
+}
+
+impl ANN {
+    fn maturity(model: &ContractModel) -> MaturityDate {
+        if let Some(maturity_date) = model.maturity_date.clone() {
+            let a = maturity_date.clone().deref().clone();
+            return a;
+        }
+
+        if let Some(amortization_date) = model.amortization_date.as_ref() {
+            let a = amortization_date.clone().value().to_string();
+            let b = MaturityDate::from_str(a.as_str()).unwrap();
+            return b;
+        }
+
+        let t0 = model.status_date.as_ref().unwrap();
+        let pranx = model.cycle_anchor_date_of_principal_redemption.as_ref().unwrap();
+        let ied = model.initial_exchange_date.as_ref().unwrap();
+        let copr = model.cycle_of_principal_redemption.as_ref().unwrap();
+        let prcl = copr.clone().value().extract_period().unwrap();
+
+        let last_event = if pranx.value() >= t0.value() {
+            pranx.value()
+        } else if ied.value() + prcl.clone() > t0.value() {
+            ied.value() + prcl.clone()
+        } else {
+            let mut previous_events: Vec<IsoDatetime> = ScheduleFactory::
+            <CycleAnchorDateOfPrincipalRedemption,
+                StatusDate,
+                CycleOfPrincipalRedemption,
+                IsoDatetime>::create_schedule(
+                &model.cycle_anchor_date_of_principal_redemption,
+                &Some(t0.clone()),
+                &model.cycle_of_principal_redemption,
+                &model.end_of_month_convention,
+                Some(false)
+            ).into_iter().collect();
+
+            previous_events.retain(|&d| d > t0.value());
+            previous_events.sort();
+            *previous_events.last().unwrap()
+        };
+
+        let time_from_last_event_plus_one_cycle = model.day_count_convention.as_ref().unwrap().day_count_fraction(last_event.value(), last_event + prcl.clone());
+        let redemption_per_cycle = model.next_principal_redemption_payment.clone().unwrap().value() - (time_from_last_event_plus_one_cycle * model.nominal_interest_rate.clone().unwrap().value() * model.notional_principal.clone().unwrap().value());
+        let remaining_periods = ((model.notional_principal.clone().unwrap().value() / redemption_per_cycle).ceil() - 1.0) as i32;
+
+        MaturityDate::new(model.business_day_adjuster.clone().unwrap()
+            .shift_bd( &(last_event.clone() + prcl.multiplied_by(remaining_periods))   )).ok().unwrap()
+    }
+
 }
 
 impl fmt::Display for ANN {

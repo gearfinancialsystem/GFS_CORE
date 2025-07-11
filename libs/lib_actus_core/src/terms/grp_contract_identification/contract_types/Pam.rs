@@ -53,13 +53,14 @@ use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDa
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::traits::TraitContractModel::TraitContractModel;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct PAM;
 
-impl PAM {
+impl TraitContractModel for PAM {
     /// Compute next events within the period up to `to` date based on the contract model
-    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         
         //let mut events: Vec<Box< dyn TraitContractEvent>> = Vec::new();
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
@@ -337,7 +338,7 @@ impl PAM {
         // Remove all events after the `to` date //
         ///////////////////////////////////////////
         let to_event: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -356,11 +357,11 @@ impl PAM {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
-        let mut states = Self::init_StateSpace(model);
+        let mut states = Self::init_state_space(model).expect("uncorrect state space initialization !");
         let mut events = events.clone();
 
         //////////////////////////////////////////////////
@@ -402,11 +403,11 @@ impl PAM {
         /////////////////////////////
         // Return evaluated events //
         /////////////////////////////
-        events.clone()
+        Ok(events)
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_StateSpace(model: &ContractModel) -> StateSpace {
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
@@ -470,7 +471,7 @@ impl PAM {
         }
         // TODO: Implement last two possible initializations if needed
 
-        states
+        Ok(states)
     }
 }
 
