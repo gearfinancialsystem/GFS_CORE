@@ -19,87 +19,94 @@ use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::types::IsoPeriod::IsoPeriod;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct STK;
 
-impl STK {
+impl TraitContractModel for STK {
     /// Compute next events within the period up to `to` date based on the contract model
-    pub fn schedule(
-        to: &IsoDatetime,
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
 
 
         if model.purchase_date.is_some(){
-            events.push(EventFactory::create_event(
-                model.purchase_date,
-                EventType::PRD,
+            let e = EventFactory::create_event(
+                &model.purchase_date,
+                &EventType::PRD,
                 &model.currency,
                 Some(Rc::new(POF_PRD_STK)),
                 Some(Rc::new(STF_PRD_STK)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
-        if model.cycleOfDividendPayment.is_some(){
+        if model.cycle_of_dividend_payment.is_some(){
             if model.termination_date.is_none(){
                 events.extend(
-                    EventFactory::create_events_with_convention(
-                        &ScheduleFactory::create_schedule_end_time_true(
-                            model.cycleAnchorDateOfDividendPayment,
-                            Some(model.cycleAnchorDateOfDividendPayment.clone().unwrap() + IsoPeriod::of_years(10)), // definir les constantes
-                            model.cycleOfDividendPayment.clone(),
-                            model.end_of_month_convention.clone().unwrap()
+                    EventFactory::create_events(
+                        &ScheduleFactory::create_schedule(
+                            &model.cycle_anchor_date_of_dividend_payment,
+                            &Some(model.cycle_anchor_date_of_dividend_payment.clone().unwrap() + IsoPeriod::of_years(10)), // definir les constantes
+                            &model.cycle_of_dividend_payment,
+                            &model.end_of_month_convention,
+                            Some(true)
                         ),
-                        EventType::DV,
+                        &EventType::DV,
                         &model.currency,
                         Some(Rc::new(POF_DV_STK)),
                         Some(Rc::new(STF_DV_STK)),
-                        &model.business_day_adjuster.clone().unwrap(),
+                        &model.business_day_adjuster,
                         &model.contract_id)
                 );
             }
             else {
                 events.extend(
-                    EventFactory::create_events_with_convention(
-                        &ScheduleFactory::create_schedule_end_time_true(
-                            model.cycleAnchorDateOfDividendPayment,
-                            model.termination_date.clone(),
-                            model.cycleOfDividendPayment.clone(),
-                            model.end_of_month_convention.unwrap()),
-                        EventType::DV,
+                    EventFactory::create_events(
+                        &ScheduleFactory::create_schedule(
+                            &model.cycle_anchor_date_of_dividend_payment,
+                            &model.termination_date,
+                            &model.cycle_of_dividend_payment,
+                            &model.end_of_month_convention,
+                            Some(true)),
+                        &EventType::DV,
                         &model.currency,
                         Some(Rc::new(POF_DV_STK)),
                         Some(Rc::new(STF_DV_STK)),
-                        &model.business_day_adjuster.clone().unwrap(),
+                        &model.business_day_adjuster,
                         &model.contract_id)
                 )
             }
         }
         if model.termination_date.is_some(){
             let termination = EventFactory::create_event(
-                model.termination_date,
-                EventType::TD,
+                &model.termination_date,
+                &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_STK)),
                 Some(Rc::new(STF_TD_STK)),
+                &None,
                 &model.contract_id,
             );
             events.retain(|e| {
                 e.compare_to(&termination) != 1
             });
-            events.push(termination);
+            events.push(termination.to_iso_datetime_event());
         }
         events.retain(|e| {
             e.compare_to({
                 &EventFactory::create_event(
-                    model.status_date,
-                    EventType::TD,
+                    &model.status_date,
+                    &EventType::TD,
                     &model.currency,
                     None,
                     None,
+                    &None,
                     &model.contract_id
                 )
             }) != -1
@@ -108,10 +115,11 @@ impl STK {
             e.compare_to({
                 &EventFactory::create_event(
                     Some(to.clone()),
-                    EventType::AD,
+                    &EventType::AD,
                     &model.currency,
                     None,
                     None,
+                    &None,
                     &model.contract_id
                 )
             }) != 1
@@ -122,13 +130,13 @@ impl STK {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    pub fn apply(
-        events: Vec<ContractEvent>,
+    fn apply(
+        events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let mut states = Self::init_StateSpace(model);
+        let mut states = Self::init_state_space(model).expect("Failed to initialize state_space");
         let mut events = events.clone();
         // Sort events according to their time sequence
         events.sort();
@@ -143,17 +151,17 @@ impl STK {
             )
         });
         // Return evaluated events
-        events.clone()
+        Ok(events.clone())
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_StateSpace(
+    fn init_state_space(
         model: &ContractModel,
-    ) -> StateSpace {
+    ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
-        states.status_date = model.status_date;
+        states.status_date = model.status_date.clone();
 
-        states
+        Ok(states)
     }
 }
 impl fmt::Display for STK {

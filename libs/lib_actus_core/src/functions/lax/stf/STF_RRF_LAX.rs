@@ -2,7 +2,9 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -32,10 +34,10 @@ impl TraitStateTransitionFunction for STF_RRF_LAX {
             + model.rate_spread.clone().unwrap_or(0.0)
             - states.nominal_interest_rate.clone().unwrap_or(0.0);
 
-        let delta_rate = rate.max(model.period_floor.clone().unwrap_or(f64::MIN)).min(model.period_cap.unwrap_or(f64::MAX));
+        let delta_rate = rate.max(model.period_floor.clone().unwrap_or(f64::MIN)).min(model.period_cap.clone().unwrap_or(f64::MAX));
 
         let new_rate = (states.nominal_interest_rate.unwrap_or(0.0) + delta_rate)
-            .max(model.life_floor.unwrap_or(f64::MIN))
+            .max(model.life_floor.clone().unwrap_or(f64::MIN))
             .min(model.life_cap.unwrap_or(f64::MAX));
 
         // Update state space
@@ -57,7 +59,7 @@ impl TraitStateTransitionFunction for STF_RRF_LAX {
             fee_accrued + fee_rate * states.notional_principal.clone().unwrap_or(0.0) * time_from_last_event
         });
 
-        states.nominal_interest_rate = Some(new_rate);
-        states.status_date = Some(*time);
+        states.nominal_interest_rate = NominalInterestRate::new(new_rate).ok();
+        states.status_date = Some(StatusDate::from(*time));
     }
 }

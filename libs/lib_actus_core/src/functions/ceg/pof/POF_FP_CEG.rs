@@ -5,6 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -29,18 +30,18 @@ impl TraitPayOffFunction for POF_FP_CEG {
             states
         );
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let fee_rate = model.fee_rate.expect("feeRate should always exist");
+        let fee_rate = model.fee_rate.clone().expect("feeRate should always exist");
 
         let payoff = if FeeBasis::A(A) == model.fee_basis.clone().unwrap() {
             settlement_currency_fx_rate * contract_role.role_sign() * fee_rate
         } else {
             let time_from_last_event = day_counter.day_count_fraction(
-                time_adjuster.shift_sc(&states.status_date.clone().unwrap()),
+                time_adjuster.shift_sc(&states.status_date.clone().unwrap().value()),
                 time_adjuster.shift_sc(time)
             );
             settlement_currency_fx_rate * (
                 states.fee_accrued.clone().unwrap() +
-                    (states.notional_principal.clone().unwrap() * time_from_last_event * fee_rate)
+                    (states.notional_principal.clone().unwrap().value() * time_from_last_event * fee_rate.value())
             )
         };
 

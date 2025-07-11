@@ -2,6 +2,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
@@ -32,7 +33,7 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
         );
 
         let model_nominal_interest_rate = model.nominal_interest_rate.unwrap_or(0.0);
-        let delivery_settlement = model.deliverySettlement.as_ref().expect("deliverySettlement should always be Some");
+        let delivery_settlement = model.delivery_settlement.as_ref().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
             DeliverySettlement::D(D) => model_nominal_interest_rate,
@@ -49,6 +50,6 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
             accrued_interest2
         });
 
-        states.status_date = Some(*time);
+        states.status_date = Some(StatusDate::from(*time));
     }
 }

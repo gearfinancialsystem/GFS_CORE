@@ -9,12 +9,12 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::util::CommonUtils::CommonUtils as cu;
 #[allow(non_camel_case_types)]
 pub struct POF_NET_CAPFL {
-    e1: ContractEvent,
-    e2: ContractEvent,
+    e1: ContractEvent<IsoDatetime, IsoDatetime>,
+    e2: ContractEvent<IsoDatetime, IsoDatetime>,
 }
 
 impl POF_NET_CAPFL {
-    pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
+    pub fn new(e1: ContractEvent<IsoDatetime, IsoDatetime>, e2: ContractEvent<IsoDatetime, IsoDatetime>) -> Self {
         POF_NET_CAPFL { e1, e2 }
     }
 }

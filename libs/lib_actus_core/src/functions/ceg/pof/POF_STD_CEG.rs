@@ -26,6 +26,6 @@ impl TraitPayOffFunction for POF_STD_CEG {
             states
         );
 
-        settlement_currency_fx_rate * (states.exercise_amount.clone().unwrap() + states.fee_accrued.clone().unwrap())
+        settlement_currency_fx_rate * (states.exercise_amount.clone().unwrap().value() + states.fee_accrued.clone().unwrap().value())
     }
 }

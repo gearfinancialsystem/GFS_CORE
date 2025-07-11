@@ -19,114 +19,132 @@ use crate::functions::optns::pof::POF_TD_OPTNS::POF_TD_OPTNS;
 use crate::functions::optns::stf::STF_STD_OPTNS::STF_STD_OPTNS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 
 pub struct FUTUR;
 
 impl FUTUR {
-    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let mut events = Vec::new();
+    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+        let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
 
         // Purchase event
         if let Some(purchase_date) = &model.purchase_date {
-            events.push(EventFactory::create_event(
-                Some(purchase_date.clone()),
-                EventType::PRD,
+            let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
+                &Some(purchase_date.clone()),
+                &EventType::PRD,
                 &model.currency,
                 Some(Rc::new(POF_PRD_OPTNS)),
                 Some(Rc::new(STF_PRD_STK)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         // Exercise and Settlement events
         if let Some(exercise_date) = &model.exercise_date {
-            events.push(EventFactory::create_event(
-                Some(exercise_date.clone()),
-                EventType::XD,
+            let e : ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
+                &Some(exercise_date.clone()),
+                &EventType::XD,
                 &model.currency,
                 Some(Rc::new(POF_XD_FUTUR)),
                 Some(Rc::new(STF_XD_FUTUR)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
                 &(exercise_date.clone() + model.settlement_period.clone().unwrap())
             );
 
-            events.push(EventFactory::create_event(
-                Some(settlement_date),
-                EventType::STD,
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
+                &Some(settlement_date),
+                &EventType::STD,
                 &model.currency,
                 Some(Rc::new(POF_STD_OPTNS)),
                 Some(Rc::new(STF_STD_OPTNS)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+
+            events.push(e.to_iso_datetime_event());
         } else {
-            events.push(EventFactory::create_event(
-                model.maturity_date.clone().map(|rc| (*rc).clone()),
-                EventType::XD,
+            let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
+                &model.maturity_date.clone().map(|rc| (*rc).clone()),
+                &EventType::XD,
                 &model.currency,
                 Some(Rc::new(POF_XD_FUTUR)),
                 Some(Rc::new(STF_XD_FUTUR)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
                 &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().clone() + model.settlement_period.clone().unwrap())
             );
-
-            events.push(EventFactory::create_event(
-                Some(settlement_date),
-                EventType::STD,
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
+                &Some(settlement_date),
+                &EventType::STD,
                 &model.currency,
                 Some(Rc::new(POF_STD_OPTNS)),
                 Some(Rc::new(STF_STD_OPTNS)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         // Maturity event
-        events.push(EventFactory::create_event(
-            model.maturity_date.clone().map(|rc| (*rc).clone()),
-            EventType::MD,
+        let e : ContractEvent<MaturityDate, MaturityDate>= EventFactory::create_event(
+            &model.maturity_date.clone().map(|rc| (*rc).clone()),
+            &EventType::MD,
             &model.currency,
             Some(Rc::new(POF_MD_FUTUR)),
             Some(Rc::new(STF_MD_FUTUR)),
+            &None,
             &model.contract_id,
-        ));
+        );
+        events.push(e.to_iso_datetime_event());
 
         // Termination event
         if let Some(termination_date) = &model.termination_date {
             let termination = EventFactory::create_event(
-                Some(termination_date.clone()),
-                EventType::TD,
+                &Some(termination_date.clone()),
+                &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_OPTNS)),
                 Some(Rc::new(STF_TD_STK)),
+                &None,
                 &model.contract_id,
             );
 
             events.retain(|e| e <= &termination);
-            events.push(termination);
+            events.push(termination.to_iso_datetime_event());
         }
 
         // Remove all pre-status date events
-        let status_event = EventFactory::create_event(
-            model.status_date,
-            EventType::AD,
+        let status_event: ContractEvent<StatusDate, StatusDate> = EventFactory::create_event(
+            &model.status_date,
+            &EventType::AD,
             &model.currency,
             None,
             None,
+            &None,
             &model.contract_id,
         );
 
-        events.retain(|e| e >= &status_event);
+        events.retain(|e| e >= &status_event.to_iso_datetime_event());
 
         Ok(events)
     }
 
-    pub fn apply(events: Vec<ContractEvent>, model: &ContractModel, observer: &RiskFactorModel) -> Vec<ContractEvent> {
+    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
+        -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut states = Self::init_state_space(model);
         let mut events = events.clone();
 
@@ -148,29 +166,30 @@ impl FUTUR {
         // Remove pre-purchase events if purchase date is set
         if let Some(purchase_date) = &model.purchase_date {
             let purchase_event = EventFactory::create_event(
-                Some(purchase_date.clone()),
-                EventType::PRD,
+                &Some(purchase_date.clone()),
+                &EventType::PRD,
                 &model.currency,
                 None,
                 None,
+                &None,
                 &model.contract_id,
             );
 
             events.retain(|e| e.event_type == EventType::AD || e >= &purchase_event);
         }
 
-        events
+        Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> StateSpace {
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
-        states.status_date = model.status_date;
-        states.exercise_amount = model.exerciseAmount;
-        states.exercise_date = model.exercise_date;
-        states.contract_performance = model.contract_performance;
+        states.status_date = model.status_date.clone();
+        states.exercise_amount = model.exercise_amount.clone();
+        states.exercise_date = model.exercise_date.clone();
+        states.contract_performance = model.contract_performance.clone();
 
-        states
+        Ok(states)
     }
 }
 impl fmt::Display for FUTUR {

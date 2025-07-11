@@ -24,15 +24,15 @@ impl TraitStateTransitionFunction for STF_XD_OPTNS {
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         let st = 1.0; // Placeholder for risk_factor_model logic
-        let option_type = model.optionType.as_ref().expect("optionType should always be Some");
-        let option_strike1 = model.optionStrike1.unwrap_or(0.0);
+        let option_type = model.option_type.as_ref().expect("optionType should always be Some");
+        let option_strike1 = model.option_strike1.clone().unwrap_or(0.0);
 
         states.exercise_amount = match option_type {
             OptionType::C(C) => Some((st - option_strike1).max(0.0)),
             OptionType::P(P) => Some((option_strike1 - st).max(0.0)),
             _ => {
-                let option_strike2 = model.optionStrike2.unwrap_or(0.0);
-                Some((st - option_strike1).max(0.0) + (option_strike2 - st).max(0.0))
+                let option_strike2 = model.option_strike2.clone().unwrap_or(0.0);
+                Some((st - option_strike1).max(0.0) + (option_strike2.value() - st).max(0.0))
             }
         };
 

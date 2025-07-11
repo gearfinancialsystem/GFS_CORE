@@ -2,6 +2,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -52,6 +53,6 @@ impl TraitStateTransitionFunction for STF_PR_LAX {
             notional_principal - redemption
         });
 
-        states.status_date = Some(*time);
+        states.status_date = Some(StatusDate::from(*time));
     }
 }

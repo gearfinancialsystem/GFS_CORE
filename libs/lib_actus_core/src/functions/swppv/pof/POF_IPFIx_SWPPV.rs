@@ -3,6 +3,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -25,18 +26,18 @@ impl TraitPayOffFunction for POF_IPFix_SWPPV {
             time,
             states
         );
-        let nominal_interest_rate = model.nominal_interest_rate.expect("nominalInterestRate should always exist");
+        let nominal_interest_rate = model.nominal_interest_rate.clone().expect("nominalInterestRate should always exist");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.status_date.clone().unwrap()),
+            time_adjuster.shift_sc(&states.status_date.clone().unwrap().value()),
             time_adjuster.shift_sc(time)
         );
 
         settlement_currency_fx_rate * (
-            states.accrued_interest.clone().unwrap() +
+            states.accrued_interest.clone().unwrap().value() +
                 time_from_last_event *
-                    nominal_interest_rate *
-                    states.notional_principal.clone().unwrap()
+                    nominal_interest_rate.value()  *
+                    states.notional_principal.clone().unwrap().value()
         )
     }
 }

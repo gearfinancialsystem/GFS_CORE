@@ -16,63 +16,70 @@ use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct CEC;
 
-impl CEC {
-    pub fn schedule(
-        to: &IsoDatetime,
+impl TraitContractModel for CEC {
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
         let maturity = Self::maturity(model);
 
         // Maturity
         if model.exercise_date.is_none() {
-            events.push(EventFactory::create_event(
-                Some(maturity),
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
+                &Some(maturity),
                 &EventType::MD,
                 &model.currency,
                 Some(Rc::new(POF_MD_CEG)),
                 Some(Rc::new(STF_MD_CEG)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         // Exercise
         if let Some(exercise_date) = &model.exercise_date {
-            events.push(EventFactory::create_event(
-                Some(exercise_date.clone()),
+            let e: ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
+                &Some(exercise_date.clone()),
                 &EventType::XD,
                 &model.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEC)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
             let settlement_date = exercise_date.clone() + settlement_period.clone();
 
-            events.push(EventFactory::create_event_with_convention(
-                Some(settlement_date),
+            let e: ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
+                &Some(settlement_date),
                 &EventType::STD,
                 &model.currency,
                 Some(Rc::new(POF_STD_CEC)),
                 Some(Rc::new(STF_STD_CEC)),
-                model.business_day_adjuster.as_ref().unwrap(),
+                &model.business_day_adjuster,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         Ok(events)
     }
 
-    pub fn apply(
-        mut events: Vec<ContractEvent>,
+    fn apply(
+        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model);
         events = Self::add_external_xd_event(model, events, observer, &maturity).unwrap();
 
@@ -90,32 +97,14 @@ impl CEC {
             );
         }
 
-        events
-    }
-
-    fn maturity(model: &ContractModel) -> IsoDatetime {
-
-        let covered_contract_refs = model.contract_structure.clone().unwrap()
-            .iter()
-            .filter(|e| e.reference_role == ReferenceRole::COVE)
-            .map(|cr| cr.clone())
-            .collect::<Vec<_>>();
-
-
-        let mut maturity_dates: Vec<IsoDatetime> = covered_contract_refs
-            .iter()
-            .map(|c| IsoDatetime::parse_from_str(c.get_contract_attribute("maturityDate").unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap())
-            .collect();
-
-        maturity_dates.sort();
-        maturity_dates.last().unwrap().clone()
+        Ok(events)
     }
 
     fn init_state_space(
         model: &ContractModel,
         observer: &RiskFactorModel,
         maturity: &IsoDatetime,
-    ) -> Result<StateSpace, Box<dyn Error>> {
+    ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.maturity_date = Some(maturity.clone());
         states.status_date = model.status_date.clone();
@@ -136,13 +125,36 @@ impl CEC {
         Ok(states)
     }
 
+
+}
+
+impl CEC {
+
+    fn maturity(model: &ContractModel) -> IsoDatetime {
+
+        let covered_contract_refs = model.contract_structure.clone().unwrap()
+            .iter()
+            .filter(|e| e.reference_role == ReferenceRole::COVE)
+            .map(|cr| cr.clone())
+            .collect::<Vec<_>>();
+
+
+        let mut maturity_dates: Vec<IsoDatetime> = covered_contract_refs
+            .iter()
+            .map(|c| IsoDatetime::parse_from_str(c.get_contract_attribute("maturityDate").unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap())
+            .collect();
+
+        maturity_dates.sort();
+        maturity_dates.last().unwrap().clone()
+    }
+
     pub fn calculate_notional_principal(
         model: &ContractModel,
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
 
-        let covered_contract_refs = model.contract_structure.clone().unwrap()
+        let covered_contract_refs = model.contract_structure.clone().unwrap().0
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -212,16 +224,16 @@ impl CEC {
 
     fn add_external_xd_event(
         model: &ContractModel,
-        mut events: Vec<ContractEvent>,
+        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         observer: &RiskFactorModel,
         maturity: &IsoDatetime,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
-        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap()
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0
             .iter()
             .map(|c| c.get_contract_attribute("contract_id").unwrap())
             .collect();
 
-        let a_credit_event_type_covered = model.credit_event_type_covered.clone().unwrap()
+        let a_credit_event_type_covered = model.credit_event_type_covered.clone().unwrap().0
             .iter()
             .map(|cr| cr.clone())
             .collect::<Vec<_>>();
@@ -230,7 +242,7 @@ impl CEC {
 
         let observed_events = observer.events(model);
 
-        let ce_events: Vec<ContractEvent> = observed_events
+        let ce_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = observed_events
             .into_iter()
             .filter(|e| {
                 contract_identifiers.contains(&e.contract_id.clone().unwrap())
@@ -244,27 +256,30 @@ impl CEC {
             let ce_event = &ce_events[0];
             events.retain(|e| e.event_type != EventType::MD);
 
-            events.push(EventFactory::create_event(
-                Some(ce_event.event_time.clone().unwrap()),
-                EventType::XD,
+            let e = EventFactory::create_event(
+                &Some(ce_event.event_time.clone().unwrap()),
+                &EventType::XD,
                 &model.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEC)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
             let settlement_date = ce_event.event_time.clone().unwrap() + settlement_period;
 
-            events.push(EventFactory::create_event_with_convention(
-                Some(settlement_date),
-                EventType::STD,
+            let e = EventFactory::create_event(
+                &Some(settlement_date),
+                &EventType::STD,
                 &model.currency,
                 Some(Rc::new(POF_STD_CEC)),
                 Some(Rc::new(STF_STD_CEC)),
-                model.business_day_adjuster.as_ref().unwrap(),
+                &model.business_day_adjuster,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         Ok(events)

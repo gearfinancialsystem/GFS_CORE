@@ -6,6 +6,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_CEG;
@@ -38,6 +39,6 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
         }
         // TODO: Implement last two possible initializations
 
-        states.status_date = Some(*time);
+        states.status_date = Some(StatusDate::from(*time));
     }
 }

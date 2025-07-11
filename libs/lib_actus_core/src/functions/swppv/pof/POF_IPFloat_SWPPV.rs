@@ -27,11 +27,11 @@ impl TraitPayOffFunction for POF_IPFloat_SWPPV {
         );
 
         settlement_currency_fx_rate * (
-            states.accrued_interest2.clone().unwrap() +
+            states.accrued_interest2.clone().unwrap().value() +
                 (-1.0) *
-                    states.lastInterestPeriod.clone().unwrap() *
-                    states.nominal_interest_rate.clone().unwrap() *
-                    states.notional_principal.clone().unwrap()
+                    states.last_interest_period.clone().unwrap() *
+                    states.nominal_interest_rate.clone().unwrap().value() *
+                    states.notional_principal.clone().unwrap().value()
         )
     }
 }

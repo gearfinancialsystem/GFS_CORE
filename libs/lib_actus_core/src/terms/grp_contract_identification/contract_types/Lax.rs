@@ -61,6 +61,7 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::time::ScheduleFactory::ScheduleFactory;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -70,8 +71,9 @@ use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct LAX;
 
-impl LAX {
-    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+impl TraitContractModel for LAX {
+    
+    fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
         let maturity = Self::maturity(model, Some(to.clone()));
 
@@ -421,7 +423,7 @@ impl LAX {
         Ok(events)
     }
 
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model, None);
         let mut states = Self::init_state_space(model, maturity);
         let mut events = events.clone();
@@ -455,6 +457,58 @@ impl LAX {
         events
     }
 
+    fn init_state_space(model: &ContractModel, maturity: IsoDatetime) -> Result<StateSpace, String> {
+        let mut states = StateSpace::default();
+
+        states.status_date = model.status_date.clone();
+        states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok(); // Some(1.0);
+        states.interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
+
+        if model.initial_exchange_date.clone().unwrap().value() > model.status_date.clone().unwrap().value() {
+            states.notional_principal = NotionalPrincipal::new(0.0).ok();//Some(0.0);
+            states.nominal_interest_rate = NominalInterestRate::new(0.0).ok();// Some(0.0);
+            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();// Some(0.0);
+        } else {
+            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
+            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap().value()).ok();
+            states.nominal_interest_rate = model.nominal_interest_rate.clone();
+            states.accrued_interest = AccruedInterest::new(role_sign * {
+                if model.accrued_interest.is_none() {
+                    AccruedInterest::new(0.0).ok().unwrap().value()
+                }
+                else {
+                    model.accrued_interest.clone().unwrap().value()
+                }
+            }).ok();
+            states.fee_accrued = {
+                if states.fee_accrued.is_none() {
+                    FeeAccrued::new(0.0).ok()
+                }
+                else {
+                    states.fee_accrued.clone()
+                }
+            };
+
+            if model.interest_calculation_base == Some(InterestCalculationBase::NT(NT)) {
+                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
+            } else {
+                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(role_sign * {
+                    if model.interest_calculation_base_amount.is_none() {
+                        InterestCalculationBaseAmount::new(0.0).ok().unwrap()
+                    }
+                    else {
+                        model.interest_calculation_base_amount.clone().unwrap()
+                    }
+                        }.value() ).ok();
+            }
+        }
+
+        Ok(states.clone())
+    }
+
+}
+
+impl LAX {
     fn maturity(model: &ContractModel) -> MaturityDate {
         if let Some(maturity_date) = &model.maturity_date {
             return maturity_date.clone().as_ref().clone();
@@ -509,7 +563,7 @@ impl LAX {
                     for _ in 0..no_of_pr_events - 1 {
                         t = t.clone() + pr_cycle.values()[index + 1].extract_period().clone().unwrap();
                     }
-                   
+
 
                     sum += no_of_pr_events as f64 * pr_inc_dec[index + 1] as f64 * pr_payments.values()[index + 1];
                     break;
@@ -532,57 +586,8 @@ impl LAX {
 
         MaturityDate::new(time_adjuster.shift_bd(&t)).ok().expect("Should return a maturity date")
     }
-
-    fn init_state_space(model: &ContractModel, maturity: IsoDatetime) -> StateSpace {
-        let mut states = StateSpace::default();
-
-        states.status_date = model.status_date.clone();
-        states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok(); // Some(1.0);
-        states.interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
-
-        if model.initial_exchange_date.clone().unwrap().value() > model.status_date.clone().unwrap().value() {
-            states.notional_principal = NotionalPrincipal::new(0.0).ok();//Some(0.0);
-            states.nominal_interest_rate = NominalInterestRate::new(0.0).ok();// Some(0.0);
-            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();// Some(0.0);
-        } else {
-            let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap().value()).ok();
-            states.nominal_interest_rate = model.nominal_interest_rate.clone();
-            states.accrued_interest = AccruedInterest::new(role_sign * {
-                if model.accrued_interest.is_none() {
-                    AccruedInterest::new(0.0).ok().unwrap().value()
-                }
-                else {
-                    model.accrued_interest.clone().unwrap().value()
-                }
-            }).ok();
-            states.fee_accrued = {
-                if states.fee_accrued.is_none() {
-                    FeeAccrued::new(0.0).ok()
-                }
-                else {
-                    states.fee_accrued.clone()
-                }
-            };
-
-            if model.interest_calculation_base == Some(InterestCalculationBase::NT(NT)) {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
-            } else {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(role_sign * {
-                    if model.interest_calculation_base_amount.is_none() {
-                        InterestCalculationBaseAmount::new(0.0).ok().unwrap()
-                    }
-                    else {
-                        model.interest_calculation_base_amount.clone().unwrap()
-                    }
-                        }.value() ).ok();
-            }
-        }
-
-        states.clone()
-    }
-
 }
+
 
 
 impl fmt::Display for LAX {

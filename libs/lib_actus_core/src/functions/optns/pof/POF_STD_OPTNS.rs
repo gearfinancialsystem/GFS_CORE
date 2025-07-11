@@ -19,8 +19,8 @@ impl TraitPayOffFunction for POF_STD_OPTNS {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
-        let exercise_amount = states.exercise_amount.expect("exerciseAmount should always exist");
+        let contract_role = model.contract_role.clone().expect("contract role should always exist");
+        let exercise_amount = states.exercise_amount.clone().expect("exerciseAmount should always exist");
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -28,6 +28,6 @@ impl TraitPayOffFunction for POF_STD_OPTNS {
             time,
             states
         );
-        settlement_currency_fx_rate * contract_role.role_sign() * exercise_amount
+        settlement_currency_fx_rate * contract_role.role_sign() * exercise_amount.value()
     }
 }

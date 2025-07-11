@@ -19,7 +19,6 @@ use crate::functions::fxout::stf::STF_MD2_FXOUT::STF_MD2_FXOUT;
 use crate::functions::fxout::stf::STF_STD_FXOUT::STF_STD_FXOUT;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;

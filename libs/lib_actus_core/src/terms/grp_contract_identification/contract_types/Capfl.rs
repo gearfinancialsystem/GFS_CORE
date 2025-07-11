@@ -18,79 +18,90 @@ use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct CAPFL;
 
-impl CAPFL {
-    pub fn schedule(
-        to: &IsoDatetime,
+impl TraitContractModel for CAPFL {
+    fn schedule(
+        to: Option<IsoDatetime>,
         model: &ContractModel,
-    ) -> Result<Vec<ContractEvent>, Box<dyn Error>> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Compute underlying event schedule
-        let underlying_model = model.contract_structure.clone().unwrap()
+        let underlying_model = model.contract_structure.clone().unwrap().0
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone().as_cm()))
             .map(|obj| {
                 let mut m = obj.unwrap();
-                m.contractRole = Some(ContractRole::new(Some("RPA")).expect("good contract role")); //   .add_attribute("contractRole", ContractRole::RPA);
+                m.contract_role = Some(ContractRole::new(Some("RPA")).expect("good contract role")); //   .add_attribute("contractRole", ContractRole::RPA);
                 m
             })
             .ok_or("Underlying model not found")?;
 
+        let umat = underlying_model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value();
         let mut events = ContractType::schedule(
-            underlying_model.maturity_date.clone().map(|rc| (*rc).clone()),
+            Some(umat),
             &underlying_model,
         ).unwrap();
 
         // Purchase
         if let Some(purchase_date) = &model.purchase_date {
-            events.push(EventFactory::create_event(
-                Some(purchase_date.clone()),
-                EventType::PRD,
+            let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
+                &Some(purchase_date.clone()),
+                &EventType::PRD,
                 &model.currency,
                 Some(Rc::new(POF_PRD_STK)),
                 Some(Rc::new(STF_PRD_STK)),
+                &None,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         // Termination
         if let Some(termination_date) = &model.termination_date {
-            let termination = EventFactory::create_event(
-                Some(termination_date.clone()),
-                EventType::TD,
+            let termination: ContractEvent<TerminationDate, TerminationDate> = EventFactory::create_event(
+                &Some(termination_date.clone()),
+                &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_STK)),
                 Some(Rc::new(STF_TD_STK)),
+                &None,
                 &model.contract_id,
             );
 
-            events.retain(|e| e.compare_to(&termination) != 1);
-            events.push(termination);
+            events.retain(|e| e.compare_to(&termination.to_iso_datetime_event()) != 1);
+            events.push(termination.to_iso_datetime_event());
         }
 
         // Remove all pre-status date events
-        let status_event = EventFactory::create_event(
-            model.status_date.clone(),
-            EventType::AD,
+        let status_event: ContractEvent<StatusDate, StatusDate> = EventFactory::create_event(
+            &model.status_date.clone(),
+            &EventType::AD,
             &model.currency,
             None,
             None,
+            &None,
             &model.contract_id,
         );
 
-        events.retain(|e| e.compare_to(&status_event) != -1);
+        events.retain(|e| e.compare_to(&status_event.to_iso_datetime_event()) != -1);
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            Some(to.clone()),
-            EventType::AD,
+            &Some(to.clone().unwrap()),
+            &EventType::AD,
             &model.currency,
             None,
             None,
+            &None,
             &model.contract_id,
         );
 
@@ -99,27 +110,27 @@ impl CAPFL {
         Ok(events)
     }
 
-    pub fn apply(
-        events: Vec<ContractEvent>,
+    fn apply(
+        events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> Vec<ContractEvent> {
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Evaluate events of underlying without cap/floor applied
-        let underlying_model = model.contract_structure.clone().unwrap()
+        let underlying_model = model.contract_structure.clone().unwrap().0
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone()))
             .ok_or("Underlying model not found").unwrap();
 
-        let underlying_events: Vec<ContractEvent> = ContractType::apply(events.clone(), &underlying_model.as_cm().unwrap(), observer).unwrap()
+        let underlying_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = ContractType::apply(events.clone(), &underlying_model.as_cm().unwrap(), observer).unwrap()
             .into_iter()
             .filter(|e| e.event_type == EventType::IP)
             .collect();//::<Vec<_>>();
 
         // Evaluate events of underlying with cap/floor applied
         let mut underlying_model_with_cap_floor = underlying_model.clone().as_cm().unwrap();
-        underlying_model_with_cap_floor.lifeCap = &model.life_cap;
-        underlying_model_with_cap_floor.lifeFloor = &model.life_floor;
+        underlying_model_with_cap_floor.life_cap = model.life_cap.clone();
+        underlying_model_with_cap_floor.life_floor = model.life_floor.clone();
 
         let mut underlying_with_cap_floor_events = events
             .into_iter()
@@ -151,33 +162,41 @@ impl CAPFL {
 
         // Remove pre-purchase events if purchase date set
         if let Some(purchase_date) = &model.purchase_date {
-            let purchase_event = EventFactory::create_event(
-                Some(purchase_date.clone()),
-                EventType::PRD,
+            let purchase_event: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
+                &Some(purchase_date.clone()),
+                &EventType::PRD,
                 &model.currency,
                 None,
                 None,
+                &None,
                 &model.contract_id,
             );
 
-            events.retain(|e| e.event_type == EventType::AD || e.compare_to(&purchase_event) != -1);
+            events.retain(|e| e.event_type == EventType::AD || e.compare_to(&purchase_event.to_iso_datetime_event()) != -1);
         }
 
-        events
+        Ok(events)
     }
 
+    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+        todo!()
+    }
+}
+
+impl CAPFL {
     pub fn netting_event(
-        e1: &ContractEvent,
-        e2: &ContractEvent,
+        e1: &ContractEvent<IsoDatetime, IsoDatetime>,
+        e2: &ContractEvent<IsoDatetime, IsoDatetime>,
         model: &ContractModel,
         observer: &RiskFactorModel,
-    ) -> ContractEvent {
+    ) -> ContractEvent<IsoDatetime, IsoDatetime> {
         let mut e = EventFactory::create_event(
             &e1.event_time,
             &e1.event_type,
             &e1.currency,
             Some(Rc::new(POF_NET_CAPFL::new(e1.clone(), e2.clone()))),
             Some(Rc::new(STF_NET_CAPFL::new(e1.clone(), e2.clone()))),
+            &None,
             &model.contract_id,
         );
 
@@ -192,6 +211,7 @@ impl CAPFL {
         e
     }
 }
+
 impl fmt::Display for CAPFL {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "CAPFL")

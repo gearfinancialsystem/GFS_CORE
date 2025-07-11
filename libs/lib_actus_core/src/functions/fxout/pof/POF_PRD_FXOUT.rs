@@ -30,6 +30,6 @@ impl TraitPayOffFunction for POF_PRD_FXOUT {
             states
         );
 
-        settlement_currency_fx_rate * contract_role_sign * -1.0 * price_at_purchase_date.clone()
+        settlement_currency_fx_rate * contract_role_sign * -1.0 * price_at_purchase_date.value()
     }
 }

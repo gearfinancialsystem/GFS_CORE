@@ -25,8 +25,8 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
         if states.exercise_date.is_none() {
             let mut x = 0.0;
             let st = 1.0; // Placeholder for risk_factor_model logic
-            let option_type = model.optionType.as_ref().expect("optionType should always be Some");
-            let option_strike1 = model.optionStrike1.unwrap_or(0.0);
+            let option_type = model.option_type.as_ref().expect("optionType should always be Some");
+            let option_strike1 = model.option_strike1.unwrap_or(0.0);
 
             match option_type {
                 OptionType::C(C) => {
@@ -36,7 +36,7 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
                     x = (option_strike1 - st).max(0.0);
                 },
                 _ => {
-                    let option_strike2 = model.optionStrike2.unwrap_or(0.0);
+                    let option_strike2 = model.option_strike2.unwrap_or(0.0);
                     x = (st - option_strike1).max(0.0) + (option_strike2 - st).max(0.0);
                 }
             }
@@ -44,7 +44,7 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
             if x == 0.0 {
                 states.exercise_date = None;
             } else {
-                states.exercise_date = Some(*time);
+                states.exercise_date = Some(ExerciceDate::from(*time));
             }
         }
         states.status_date = Some(*time);

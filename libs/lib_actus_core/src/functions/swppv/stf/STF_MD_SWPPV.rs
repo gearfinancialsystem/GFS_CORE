@@ -2,6 +2,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -21,7 +22,7 @@ impl TraitStateTransitionFunction for STF_MD_SWPPV {
     ) {
         states.accrued_interest = Some(0.0);
         states.accrued_interest2 = Some(0.0);
-        states.notional_principal = Some(0.0);
-        states.status_date = Some(*time);
+        states.notional_principal = NotionalPrincipal::new(0.0).ok();
+        states.status_date = Some(StatusDate::from(*time));
     }
 }
