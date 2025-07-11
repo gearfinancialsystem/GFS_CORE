@@ -58,10 +58,11 @@ use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 pub struct ANN;
 
 impl TraitContractModel for ANN {
+
     fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new(); // A revoir
         let maturity = Self::maturity(model);
-
+        println!("ok");
         // Initial exchange (IED)
         // ::<InitialExchangeDate, InitialExchangeDate>
         let e : ContractEvent<InitialExchangeDate, InitialExchangeDate>= EventFactory::create_event(
