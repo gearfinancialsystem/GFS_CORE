@@ -89,7 +89,7 @@ fn main() {
     // v.push(Value::VhashMap(cs2.clone()));
 
     // dico.insert("contractStructure".to_string(), Value::VvecVal(v));
-
+    println!("new dev");
     // CASH 01
     dico.insert("contractType".to_string(),Value::Vstring("CSH".to_string()));
     dico.insert("contractID".to_string(),Value::Vstring("csh01".to_string()));
