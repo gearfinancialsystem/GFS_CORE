@@ -19,7 +19,7 @@ use crate::util::RedemptionUtils::RedemptionUtils;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 use crate::functions::{
-    ann::stf::STF_PRF_ANN::STF_PRF_ANN,
+    ann::stf::STF_PRD_ANN::STF_PRF_ANN,
     lam::pof::{
         POF_IP_LAM::POF_IP_LAM, POF_IPCB_LAM::POF_IPCB_LAM, POF_PRD_LAM::POF_PRD_LAM, POF_TD_LAM::POF_TD_LAM,
     },

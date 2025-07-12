@@ -13,3 +13,7 @@ pub mod STF_PY_LAM;
 pub mod STF_RRF_LAM;
 pub mod STF_RR_LAM;
 pub mod STF_SC_LAM;
+pub mod STF_AD_LAM;
+pub mod STF_TD_LAM;
+pub mod STF_IP_LAM;
+pub mod STF_CE_LAM;

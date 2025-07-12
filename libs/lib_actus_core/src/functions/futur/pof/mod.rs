@@ -1,2 +1,7 @@
 pub mod POF_MD_FUTUR;
 pub mod POF_XD_FUTUR;
+mod POF_PRD_FUTUR;
+mod POF_AD_FUTUR;
+mod POF_TD_FUTUR;
+mod POF_STD_FUTUR;
+mod POF_CE_FUTUR;

@@ -4,3 +4,4 @@ pub mod STF_MD_CEG;
 pub mod STF_PRD_CEG;
 pub mod STF_STD_CEG;
 pub mod STF_XD_CEG;
+pub mod STF_CE_CEG;

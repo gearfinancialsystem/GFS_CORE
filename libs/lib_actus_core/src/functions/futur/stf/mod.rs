@@ -1,2 +1,7 @@
 pub mod STF_MD_FUTUR;
 pub mod STF_XD_FUTUR;
+mod STF_AD_FUTUR;
+mod STF_PRD_FUTUR;
+mod STF_TD_FUTUR;
+mod STF_STD_FUTUR;
+mod STF_CE_FUTUR;

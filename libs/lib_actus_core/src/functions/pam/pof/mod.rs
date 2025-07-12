@@ -14,3 +14,5 @@ pub mod POF_RRY_PAM;
 pub mod POF_RR_PAM;
 pub mod POF_SC_PAM;
 pub mod POF_TD_PAM;
+pub mod POF_RRF_PAM;
+pub mod POF_CE_PAM;

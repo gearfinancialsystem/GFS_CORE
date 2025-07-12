@@ -1,2 +1,9 @@
 pub mod POF_IED_CLM;
 pub mod POF_IP_CLM;
+pub mod POF_AD_CLM;
+pub mod POF_PR_CLM;
+pub mod POF_FP_CLM;
+pub mod POF_IPCI_CLM;
+pub mod POF_RR_CLM;
+pub mod POF_RRF_CLM;
+pub mod POF_CE_CLM;

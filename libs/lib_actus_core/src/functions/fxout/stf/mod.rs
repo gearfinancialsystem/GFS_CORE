@@ -2,3 +2,7 @@ pub mod STF_CD_FXOUT;
 pub mod STF_MD1_FXOUT;
 pub mod STF_MD2_FXOUT;
 pub mod STF_STD_FXOUT;
+mod STF_AD_FXOUT;
+mod STF_PRD_FXOUT;
+mod STF_TD_FXOUT;
+mod STF_CE_FXOUT;
