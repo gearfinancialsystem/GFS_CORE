@@ -6,6 +6,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -25,10 +26,10 @@ impl TraitStateTransitionFunction for STF_IED_SWPPV {
         let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
 
-        let notional_principal = model.notional_principal.clone().unwrap_or(0.0);
+        let notional_principal = model.notional_principal.clone().itself_or(0.0);
         states.notional_principal = NotionalPrincipal::new(role_sign * notional_principal.value()).ok();
 
-        let nominal_interest_rate = model.nominal_interest_rate2.clone().unwrap_or(0.0);
+        let nominal_interest_rate = model.nominal_interest_rate2.clone().itself_or(0.0);
         states.nominal_interest_rate = NominalInterestRate::new(nominal_interest_rate.value()).ok();
 
         states.status_date = Some(StatusDate::from(*time));

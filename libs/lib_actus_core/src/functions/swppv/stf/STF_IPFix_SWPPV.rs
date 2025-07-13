@@ -3,6 +3,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -28,7 +29,7 @@ impl TraitStateTransitionFunction for STF_IPFix_SWPPV {
             time_adjuster.shift_sc(time)
         ));
 
-        states.accrued_interest = Some(0.0);
+        states.accrued_interest = AccruedInterest::new(0.0).ok();
         states.status_date = Some(StatusDate::from(*time));
     }
 }

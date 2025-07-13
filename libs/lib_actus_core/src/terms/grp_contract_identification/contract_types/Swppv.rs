@@ -25,8 +25,11 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::time::ScheduleFactory::ScheduleFactory;
@@ -45,7 +48,7 @@ impl TraitContractModel for SWPPV {
 
         // Purchase event
         if let Some(purchase_date) = &model.purchase_date {
-            let e = EventFactory::create_event(
+            let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &Some(purchase_date.clone()),
                 &EventType::PRD,
                 &model.currency,
@@ -58,7 +61,7 @@ impl TraitContractModel for SWPPV {
         }
 
         // Initial exchange event
-        let e = EventFactory::create_event(
+        let e: ContractEvent<InitialExchangeDate, InitialExchangeDate> = EventFactory::create_event(
             &model.initial_exchange_date.clone(),
             &EventType::IED,
             &model.currency,
@@ -70,7 +73,7 @@ impl TraitContractModel for SWPPV {
         events.push(e.to_iso_datetime_event());
 
         // Principal redemption event
-        let e = EventFactory::create_event(
+        let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
             &model.maturity_date.clone().map(|rc| (*rc).clone()),
             &EventType::MD,
             &model.currency,
@@ -187,7 +190,7 @@ impl TraitContractModel for SWPPV {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -209,7 +212,8 @@ impl TraitContractModel for SWPPV {
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state_space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -242,7 +246,7 @@ impl TraitContractModel for SWPPV {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();

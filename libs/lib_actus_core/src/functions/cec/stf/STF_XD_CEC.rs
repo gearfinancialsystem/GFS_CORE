@@ -8,6 +8,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 
 #[allow(non_camel_case_types)]
@@ -36,8 +37,20 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
             time
         )).ok();
 
-        let exercise_amount = states.notional_principal.clone().unwrap_or(0.0).min(market_value_covering_contracts);
-        states.exercise_amount = Some(exercise_amount);
+        let exercise_amount = {
+            ExerciseAmount::new({
+                if states.notional_principal.is_none(){
+                    0.0_f64.min(market_value_covering_contracts)
+                }
+                else {
+                    states.notional_principal.clone().unwrap().value().min(market_value_covering_contracts)
+                }
+            }).ok()
+        };
+
+            //states.notional_principal.clone().unwrap_or(0.0).min(market_value_covering_contracts);
+
+        states.exercise_amount = exercise_amount;
 
         states.exercise_date = Some(ExerciseDate::from(*time));
         states.status_date = Some(StatusDate::from(*time));

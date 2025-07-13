@@ -1,2 +1,2 @@
 
-pub type STF_CE_SWAPS = STF_AD_SWAPS;
+//pub type POF_CE_SWAPS = POF_AD_SWAPS;

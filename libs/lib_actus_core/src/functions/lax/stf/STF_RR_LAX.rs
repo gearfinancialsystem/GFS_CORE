@@ -3,7 +3,12 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -29,37 +34,37 @@ impl TraitStateTransitionFunction for STF_RR_LAX {
         time_adjuster: &BusinessDayAdjuster,
     ) {
         // Compute new rate
-        let rate = (1.0 * model.rate_multiplier.clone().unwrap_or(1.0)) // Placeholder for risk_factor_model logic
-            + model.rate_spread.clone().unwrap_or(0.0)
+        let rate = (1.0 * model.rate_multiplier.clone().itself_or(1.0).value()) // Placeholder for risk_factor_model logic
+            + model.rate_spread.clone().itself_or(0.0).value()
             + self.scheduled_rate
-            - states.nominal_interest_rate.unwrap_or(0.0);
+            - states.nominal_interest_rate.itself_or(0.0).value();
 
-        let delta_rate = rate.max(model.period_floor.unwrap_or(f64::MIN)).min(model.period_cap.unwrap_or(f64::MAX));
+        let delta_rate = rate.max(model.period_floor.itself_or(f64::MIN).value()).min(model.period_cap.itself_or(f64::MAX).value());
 
-        let new_rate = (states.nominal_interest_rate.unwrap_or(0.0) + delta_rate)
-            .max(model.life_floor.unwrap_or(f64::MIN))
-            .min(model.life_cap.unwrap_or(f64::MAX));
+        let new_rate = (states.nominal_interest_rate.itself_or(0.0).value() + delta_rate)
+            .max(model.life_floor.itself_or(f64::MIN).value())
+            .min(model.life_cap.itself_or(f64::MAX).value());
 
         // Update state space
-        let status_date = states.status_date.expect("statusDate should always be Some");
-        let nominal_interest_rate = states.nominal_interest_rate.unwrap_or(0.0);
-        let interest_calculation_base_amount = states.interest_calculation_base_amount.unwrap_or(0.0);
+        let status_date = states.status_date.clone().expect("statusDate should always be Some");
+        let nominal_interest_rate = states.nominal_interest_rate.itself_or(0.0);
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.itself_or(0.0);
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date),
+            time_adjuster.shift_sc(&status_date.value()),
             time_adjuster.shift_sc(time)
         );
 
-        states.accrued_interest = states.accrued_interest.map(|accrued_interest| {
-            accrued_interest + nominal_interest_rate * interest_calculation_base_amount * time_from_last_event
-        });
+        states.accrued_interest = AccruedInterest::new(states.accrued_interest.clone().map(|accrued_interest| {
+            accrued_interest.value() + nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event
+        }).unwrap()).ok();
 
-        states.fee_accrued = states.fee_accrued.map(|fee_accrued| {
-            let fee_rate = model.fee_rate.unwrap_or(0.0);
-            fee_accrued + fee_rate * states.notional_principal.unwrap_or(0.0) * time_from_last_event
-        });
+        states.fee_accrued = FeeAccrued::new(states.fee_accrued.clone().map(|fee_accrued| {
+            let fee_rate = model.fee_rate.itself_or(0.0);
+            fee_accrued.value() + fee_rate.value() * states.notional_principal.itself_or(0.0).value() * time_from_last_event
+        }).unwrap()).ok();
 
-        states.nominal_interest_rate = Some(new_rate);
+        states.nominal_interest_rate = NominalInterestRate::new(new_rate).ok();
         states.status_date = Some(StatusDate::from(*time));
     }
 }

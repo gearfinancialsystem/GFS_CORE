@@ -9,6 +9,7 @@ macro_rules! define_struct_f64 {
         use crate::util::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
+        use crate::traits::TraitOptionExt::TraitOptionExt;
 
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(f64);
@@ -33,7 +34,6 @@ macro_rules! define_struct_f64 {
             pub fn value(&self) -> f64 {
                 self.0
             }
-
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
                 if !$value.is_finite() {
@@ -106,6 +106,23 @@ macro_rules! define_struct_f64 {
                 match s.parse::<f64>() {
                     Ok(value) => $struct_name::new(value),
                     Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                }
+            }
+        }
+
+
+        // Implémentation du trait pour Option<$struct_name>
+        impl TraitOptionExt<$struct_name> for Option<$struct_name> {
+            fn itself_or(&self, value: f64) -> $struct_name {
+                match self {
+                    Some(x) => x.clone(),
+                    None => $struct_name::new(value).expect("Failed to create new instance"),
+                }
+            }
+            fn itself_or_option(&self, value: f64) -> Option<$struct_name> {
+                match self {
+                    Some(x) => Some(x.clone()).clone(),
+                    None => $struct_name::new(value).ok().clone(),
                 }
             }
         }
@@ -119,7 +136,7 @@ macro_rules! define_struct_f64 {
         use crate::util::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
-        
+        use crate::traits::TraitOptionExt::TraitOptionExt;
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(f64);
 
@@ -210,6 +227,23 @@ macro_rules! define_struct_f64 {
                 }
             }
         }
+
+
+        // Implémentation du trait pour Option<$struct_name>
+        impl TraitOptionExt<$struct_name> for Option<$struct_name> {
+            fn itself_or(&self, value: f64) -> $struct_name {
+                match self {
+                    Some(x) => x.clone(),
+                    None => $struct_name::new(value).expect("Failed to create new instance"),
+                }
+            }
+            fn itself_or_option(&self, value: f64) -> Option<$struct_name> {
+                match self {
+                    Some(x) => Some(x.clone()).clone(),
+                    None => $struct_name::new(value).ok().clone(),
+                }
+            }
+        }
     };
 
     // Case without validation conditions but with a default value
@@ -220,7 +254,8 @@ macro_rules! define_struct_f64 {
         use crate::util::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
-        
+        use crate::traits::TraitOptionExt::TraitOptionExt;
+
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(f64);
 
@@ -305,6 +340,24 @@ macro_rules! define_struct_f64 {
                 }
             }
         }
+
+
+
+        // Implémentation du trait pour Option<$struct_name>
+        impl TraitOptionExt<$struct_name> for Option<$struct_name> {
+            fn itself_or(&self, value: f64) -> $struct_name {
+                match self {
+                    Some(x) => x.clone(),
+                    None => $struct_name::new(value).expect("Failed to create new instance"),
+                }
+            }
+            fn itself_or_option(&self, value: f64) -> Option<$struct_name> {
+                match self {
+                    Some(x) => Some(x.clone()).clone(),
+                    None => $struct_name::new(value).ok().clone(),
+                }
+            }
+        }
     };
 
     // Case without validation conditions and without a default value
@@ -315,6 +368,7 @@ macro_rules! define_struct_f64 {
         use crate::util::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
+        use crate::traits::TraitOptionExt::TraitOptionExt;
 
         #[derive(PartialEq, Debug, Clone)]
         pub struct $struct_name(f64);
@@ -392,6 +446,23 @@ macro_rules! define_struct_f64 {
                 }
             }
         }
+
+        // Implémentation du trait pour Option<$struct_name>
+        impl TraitOptionExt<$struct_name> for Option<$struct_name> {
+            fn itself_or(&self, value: f64) -> $struct_name {
+                match self {
+                    Some(x) => x.clone(),
+                    None => $struct_name::new(value).expect("Failed to create new instance"),
+                }
+            }
+            fn itself_or_option(&self, value: f64) -> Option<$struct_name> {
+                match self {
+                    Some(x) => Some(x.clone()).clone(),
+                    None => $struct_name::new(value).ok().clone(),
+                }
+            }
+        }
+
     };
 }
 

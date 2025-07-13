@@ -19,7 +19,9 @@ use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
 use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::time::ScheduleFactory::ScheduleFactory;
@@ -37,7 +39,7 @@ impl TraitContractModel for UMP {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
 
         // Initial exchange event
-        events.push(EventFactory::create_event(
+        let e: ContractEvent<InitialExchangeDate, InitialExchangeDate> = EventFactory::create_event(
             &model.initial_exchange_date,
             &EventType::IED,
             &model.currency,
@@ -45,15 +47,16 @@ impl TraitContractModel for UMP {
             Some(Rc::new(STF_IED_PAM)),
             &None,
             &model.contract_id,
-        ));
+        );
+        events.push(e.to_iso_datetime_event());
 
         // Interest payment capitalization events
         let interest_events = EventFactory::create_events(
             &ScheduleFactory::create_schedule(
                 &model.cycle_anchor_date_of_interest_payment,
-                &Some(to.clone()),
+                &Some(to.clone().unwrap()),
                 &model.cycle_of_interest_payment,
-                model.end_of_month_convention,
+                &model.end_of_month_convention,
                 Some(false),
             ),
             &EventType::IPCI,
@@ -70,7 +73,7 @@ impl TraitContractModel for UMP {
         let mut rate_reset_events = EventFactory::create_events(
             &ScheduleFactory::create_schedule(
                 &model.cycle_anchor_date_of_rate_reset,
-                &Some(to.clone()),
+                &Some(to.clone().unwrap()),
                 &model.cycle_of_rate_reset,
                 &model.end_of_month_convention,
                 Some(false),
@@ -112,7 +115,7 @@ impl TraitContractModel for UMP {
             let fee_events = EventFactory::create_events(
                 &ScheduleFactory::create_schedule(
                     &model.cycle_anchor_date_of_fee.clone(),
-                    &Some(to.clone()),
+                    &Some(to.clone().unwrap()),
                     &Some(cycle_of_fee.clone()),
                     &model.end_of_month_convention,
                     Some(false),
@@ -159,7 +162,7 @@ impl TraitContractModel for UMP {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -181,7 +184,8 @@ impl TraitContractModel for UMP {
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model);
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -199,7 +203,7 @@ impl TraitContractModel for UMP {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();
@@ -208,9 +212,9 @@ impl TraitContractModel for UMP {
 
         if model.initial_exchange_date.clone().unwrap().value() <= model.status_date.clone().unwrap().value() {
             let role_sign = model.contract_role.as_ref().map_or(1.0, |role| role.role_sign());
-            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap()).ok();
+            states.notional_principal = NotionalPrincipal::new(role_sign * model.notional_principal.clone().unwrap().value()).ok();
             states.nominal_interest_rate = model.nominal_interest_rate.clone();
-            states.accrued_interest = AccruedInterest::new(role_sign * model.accrued_interest.clone().unwrap()).ok();
+            states.accrued_interest = AccruedInterest::new(role_sign * model.accrued_interest.clone().unwrap().value()).ok();
             states.fee_accrued = model.fee_accrued.clone();
         }
 

@@ -19,6 +19,7 @@ use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
@@ -216,7 +217,7 @@ impl TraitContractModel for SWAPS {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel,
+        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate
     ) -> Result<StateSpace, String> { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let cs = model.clone().contract_structure.unwrap();
         let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();

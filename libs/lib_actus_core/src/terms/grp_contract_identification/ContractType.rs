@@ -24,7 +24,20 @@ use crate::terms::grp_contract_identification::contract_types::Nam::NAM;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
+use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+use crate::terms::grp_contract_identification::contract_types::Capfl::CAPFL;
+use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
+use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
+use crate::terms::grp_contract_identification::contract_types::Clm::CLM;
 use crate::terms::grp_contract_identification::contract_types::Com::COM;
+use crate::terms::grp_contract_identification::contract_types::Csh::CSH;
+use crate::terms::grp_contract_identification::contract_types::Futur::FUTUR;
+use crate::terms::grp_contract_identification::contract_types::Fxout::FXOUT;
+use crate::terms::grp_contract_identification::contract_types::Lax::LAX;
+use crate::terms::grp_contract_identification::contract_types::Optns::OPTNS;
+use crate::terms::grp_contract_identification::contract_types::Stk::STK;
+use crate::terms::grp_contract_identification::contract_types::Swppv::SWPPV;
+use crate::terms::grp_contract_identification::contract_types::Ump::UMP;
 use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -40,21 +53,21 @@ impl ContractType {
             "LAM" => LAM::schedule(to, cm),
             "NAM" => NAM::schedule(to, cm),
             "ANN" => ANN::schedule(to, cm),
-            "LAX" => Some(LAX::schedule(&to.unwrap(),cm).unwrap()),
-            "CLM" => Some(CLM::schedule(&to.unwrap(),cm).unwrap()),
-            "UMP" => Some(UMP::schedule(&to.unwrap(),cm).unwrap()),
-            "CSH" => Some(CSH::schedule(&to.unwrap(),cm).unwrap()),
-            "STK" => Some(STK::schedule(&to.unwrap(),cm).unwrap()),
+            "LAX" => LAX::schedule(to,cm),
+            "CLM" => CLM::schedule(to,cm),
+            "UMP" => UMP::schedule(to,cm),
+            "CSH" => CSH::schedule(to,cm),
+            "STK" => STK::schedule(to,cm),
             "COM" => COM::schedule(to,cm),
-            "FXOUT" => Some(FXOUT::schedule(&to.unwrap(),cm).unwrap()),
-            "SWPPV" => Some(SWPPV::schedule(&to.unwrap(),cm).unwrap()),
+            "FXOUT" => FXOUT::schedule(to,cm),
+            "SWPPV" => SWPPV::schedule(to,cm),
             "SWAPS" => SWAPS::schedule(to,cm),
-            "CAPFL" => Some(CAPFL::schedule(&to.unwrap(),cm).unwrap()),
-            "OPTNS" => Some(OPTNS::schedule(&to.unwrap(),cm).unwrap()),
-            "FUTUR" => Some(FUTUR::schedule(&to.unwrap(),cm).unwrap()),
-            "CEG" => Some(CEG::schedule(&to.unwrap(),cm).unwrap()),
-            "CEC" => Some(CEC::schedule(&to.unwrap(),cm).unwrap()),
-            "BCS" => Some(BCS::schedule(&to.unwrap(),cm).unwrap()),
+            "CAPFL" => CAPFL::schedule(to,cm),
+            "OPTNS" => OPTNS::schedule(to,cm),
+            "FUTUR" => FUTUR::schedule(to,cm),
+            "CEG" => CEG::schedule(to,cm),
+            "CEC" => CEC::schedule(to,cm),
+            "BCS" => BCS::schedule(to,cm),
             _ => Err("invalid contract type".to_string())
         }
 

@@ -22,12 +22,14 @@ use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 pub struct FUTUR;
 
 impl FUTUR {
-    pub fn schedule(to: &IsoDatetime, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn Error>> {
+    pub fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
 
         // Purchase event
@@ -58,7 +60,7 @@ impl FUTUR {
             events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                &(exercise_date.clone() + model.settlement_period.clone().unwrap())
+                &(exercise_date.clone().value() + model.settlement_period.clone().unwrap().value().clone())
             );
 
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
@@ -85,7 +87,7 @@ impl FUTUR {
             events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().clone() + model.settlement_period.clone().unwrap())
+                &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().clone().value() + model.settlement_period.clone().unwrap().value().clone())
             );
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(settlement_date),
@@ -113,7 +115,7 @@ impl FUTUR {
 
         // Termination event
         if let Some(termination_date) = &model.termination_date {
-            let termination = EventFactory::create_event(
+            let termination: ContractEvent<TerminationDate, TerminationDate> = EventFactory::create_event(
                 &Some(termination_date.clone()),
                 &EventType::TD,
                 &model.currency,
@@ -123,7 +125,7 @@ impl FUTUR {
                 &model.contract_id,
             );
 
-            events.retain(|e| e <= &termination);
+            events.retain(|e| e <= &termination.to_iso_datetime_event());
             events.push(termination.to_iso_datetime_event());
         }
 
@@ -145,7 +147,7 @@ impl FUTUR {
 
     pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
         -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model);
+        let mut states = Self::init_state_space(model).expect("Failed to initialize state space.");
         let mut events = events.clone();
 
         // Add external XD-event
@@ -165,7 +167,7 @@ impl FUTUR {
 
         // Remove pre-purchase events if purchase date is set
         if let Some(purchase_date) = &model.purchase_date {
-            let purchase_event = EventFactory::create_event(
+            let purchase_event: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &Some(purchase_date.clone()),
                 &EventType::PRD,
                 &model.currency,
@@ -175,7 +177,7 @@ impl FUTUR {
                 &model.contract_id,
             );
 
-            events.retain(|e| e.event_type == EventType::AD || e >= &purchase_event);
+            events.retain(|e| e.event_type == EventType::AD || e >= &purchase_event.to_iso_datetime_event());
         }
 
         Ok(events)

@@ -21,6 +21,7 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct OPTNS;
@@ -60,11 +61,11 @@ impl TraitContractModel for OPTNS {
             events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                &(*exercise_date + model.clone().settlementPeriod.unwrap())
+                &(exercise_date.clone().value() + model.clone().settlement_period.unwrap().value().clone())
             );
-            let e = EventFactory::create_event(
-                Some(settlement_date),
-                EventType::STD,
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
+                &Some(settlement_date),
+                &EventType::STD,
                 &model.currency,
                 Some(Rc::new(POF_STD_OPTNS)),
                 Some(Rc::new(STF_STD_OPTNS)),
@@ -74,8 +75,8 @@ impl TraitContractModel for OPTNS {
             events.push(e.to_iso_datetime_event());
         } else {
             let e:ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
-                model.maturity_date.clone().map(|rc| (*rc).clone()),
-                EventType::XD,
+                &model.maturity_date.clone().map(|rc| (*rc).clone()),
+                &EventType::XD,
                 &model.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_OPTNS)),
@@ -85,7 +86,7 @@ impl TraitContractModel for OPTNS {
             events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap() + model.settlement_period.clone().unwrap())
+                &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value() + model.settlement_period.clone().unwrap().value().clone())
             );
 
             let e : ContractEvent<IsoDatetime, IsoDatetime >= EventFactory::create_event(
@@ -101,9 +102,9 @@ impl TraitContractModel for OPTNS {
         }
 
         // Maturity event
-        let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
-            model.maturity_date.clone().map(|rc| (*rc).clone()),
-            EventType::MD,
+        let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
+            &model.maturity_date.clone().map(|rc| (*rc).clone()),
+            &EventType::MD,
             &model.currency,
             Some(Rc::new(POF_MD_OPTNS)),
             Some(Rc::new(STF_MD_OPTNS)),
@@ -115,16 +116,17 @@ impl TraitContractModel for OPTNS {
         // Termination event
         if let Some(termination_date) = &model.termination_date {
             let termination = EventFactory::create_event(
-                Some(termination_date.clone()),
-                EventType::TD,
+                &Some(termination_date.clone()),
+                &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_OPTNS)),
                 Some(Rc::new(STF_TD_STK)),
+                &None,
                 &model.contract_id,
             );
 
             events.retain(|e| e.event_time <= termination.event_time);
-            events.push(termination);
+            events.push(termination.to_iso_datetime_event());
         }
 
         // Remove all pre-status date events
@@ -148,7 +150,8 @@ impl TraitContractModel for OPTNS {
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model);
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         // Add external XD-event
@@ -184,7 +187,7 @@ impl TraitContractModel for OPTNS {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();

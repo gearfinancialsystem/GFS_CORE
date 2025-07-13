@@ -48,7 +48,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
 
 
                     if (boundary_direction.clone() == BoundaryDirection::DECR(DECR) && cbv.clone().unwrap() <= boundary_value.value()) ||
-                        (boundary_direction.clone() == BoundaryDirection::INCR(INCR) && cbv.clone().unwrap() >= boundary_value.value()) || {
+                        (boundary_direction.clone() == BoundaryDirection::INCR(INCR) && cbv.clone().unwrap() >= boundary_value.value()) {
 
                         // Update state space
                         states.boundary_monitoring_flag = Some(false);

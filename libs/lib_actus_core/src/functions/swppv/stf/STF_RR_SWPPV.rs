@@ -8,6 +8,7 @@ use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -34,12 +35,12 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
             time_adjuster.shift_sc(time)
         );
 
-        let model_nominal_interest_rate = model.nominal_interest_rate.clone().unwrap_or(0.0);
+        let model_nominal_interest_rate = model.nominal_interest_rate.clone().itself_or(0.0);
         let delivery_settlement = model.delivery_settlement.clone().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
             DeliverySettlement::D(D) => model_nominal_interest_rate,
-            _ => model_nominal_interest_rate - nominal_interest_rate,
+            _ => NominalInterestRate::new(model_nominal_interest_rate.value() - nominal_interest_rate.value()).expect(""),
         };
 
         states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
@@ -54,8 +55,8 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
 
         // Placeholder for risk factor calculation
         //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
-        let rate_multiplier = model.rate_multiplier.clone().unwrap_or(1.0);
-        let rate_spread = model.rate_spread.clone().unwrap_or(0.0);
+        let rate_multiplier = model.rate_multiplier.clone().itself_or(1.0);
+        let rate_spread = model.rate_spread.clone().itself_or(0.0);
 
         // Simplified calculation as a placeholder
         let risk_factor_value = 1.0; // risk_factor_model.state_at(

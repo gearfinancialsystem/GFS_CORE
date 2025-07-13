@@ -12,7 +12,9 @@ macro_rules! define_struct_isocycle {
                 //IsoCycle::from_str(cycle.as_str()).map($struct_name)
                 $struct_name::from_str(cycle.as_str())
             }
-
+            pub fn new_with_isocycle(iso_cycle: IsoCycle) -> Self {
+                $struct_name(iso_cycle)
+            }
 
 
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {

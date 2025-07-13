@@ -14,4 +14,5 @@ pub mod TraitPayOffFunction;
 pub mod TraitStateTransitionFunction;
 pub mod TraitMarqueurIsoDatetime;
 pub mod TraitMarqueurIsoCycle;
+pub mod TraitOptionExt;
 //pub mod TraitConvertContractToAnyEvent;

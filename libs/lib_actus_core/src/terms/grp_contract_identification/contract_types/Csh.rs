@@ -7,6 +7,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitContractModel::TraitContractModel;
 
@@ -48,7 +49,7 @@ impl TraitContractModel for  CSH {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         Ok(states)
     }

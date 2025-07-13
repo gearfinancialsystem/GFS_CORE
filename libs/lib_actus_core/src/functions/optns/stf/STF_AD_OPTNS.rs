@@ -1,1 +1,1 @@
-pub type STF_AD_OPTNS = XX
+// pub type STF_AD_OPTNS = XX

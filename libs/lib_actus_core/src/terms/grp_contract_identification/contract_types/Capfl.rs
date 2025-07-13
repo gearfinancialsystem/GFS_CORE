@@ -20,6 +20,7 @@ use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -178,7 +179,7 @@ impl TraitContractModel for CAPFL {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         todo!()
     }
 }

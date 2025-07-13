@@ -5,6 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -23,10 +24,10 @@ impl TraitStateTransitionFunction for STF_MD_FUTUR {
     ) {
         // Placeholder for risk factor model state retrieval
         let st = RiskFactorModel.state_at(
-            &model.contract_structure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap().marketObjectCode.clone().unwrap(),
+            &model.contract_structure.clone().unwrap().0.get(0).unwrap().object.as_cm().unwrap().market_object_code.clone().unwrap().value(),
             time, states, model, true).expect("correct risk factor model");
-        let futures_price = model.futures_price.clone().unwrap_or(0.0);
-        let x = st - futures_price;
+        let futures_price = model.futures_price.clone().itself_or(0.0);
+        let x = st - futures_price.value();
 
         if x == 0.0 {
             states.exercise_date = None;

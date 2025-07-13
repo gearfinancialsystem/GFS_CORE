@@ -26,11 +26,11 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         
 
         let strings = vec![
-                            model.currency2.clone().unwrap(),
+                            model.currency2.clone().unwrap().to_currency(),
                             model.currency.clone().unwrap()
         ];
 
-        let str_slices: Vec<&str> = strings.iter().map(|s| s.as_str()).collect();
+        let str_slices: Vec<String> = strings.iter().map(|s| s.value().clone().to_string()).collect();
         let joined = str_slices.join(" ");
 
         let risk_factor_placeholder = risk_factor_model.state_at(&joined, time, states, model,true).unwrap();
@@ -42,7 +42,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
             states
         );
 
-        let payoff = settlement_currency_fx_rate * contract_role_sign * (notional_principal - risk_factor_placeholder * notional_principal_2);
+        let payoff = settlement_currency_fx_rate * contract_role_sign * (notional_principal.value() - risk_factor_placeholder * notional_principal_2.value());
 
         payoff
     }

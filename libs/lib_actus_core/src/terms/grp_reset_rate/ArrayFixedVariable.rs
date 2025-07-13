@@ -19,6 +19,7 @@ impl FixedVariableElement {
             Err(e) => Err(e)
         }
     }
+
 }
 
 impl FromStr for FixedVariableElement {
@@ -42,7 +43,9 @@ pub struct ArrayFixedVariable(Vec<FixedVariableElement>);
 
 
 impl ArrayFixedVariable {
-
+    pub fn values(&self) -> &Vec<FixedVariableElement> {
+        &self.0
+    }
     pub fn new(value: &str) -> Result<Self, ParseError> {
         let a = FixedVariableElement::from_str(value);
         match a {

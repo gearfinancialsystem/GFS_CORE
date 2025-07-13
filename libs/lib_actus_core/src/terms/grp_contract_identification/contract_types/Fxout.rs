@@ -21,11 +21,13 @@ use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 pub struct FXOUT;
 
@@ -62,7 +64,7 @@ impl TraitContractModel for FXOUT {
         } else {
             // Settlement events
             if model.delivery_settlement == Some(DeliverySettlement::D(D)) || model.delivery_settlement.is_none() {
-                let e = EventFactory::create_event(
+                let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
                     &model.maturity_date.clone().map(|rc| (*rc).clone()),
                     &EventType::MD,
                     &model.currency,
@@ -73,10 +75,10 @@ impl TraitContractModel for FXOUT {
                 );
                 events.push(e.to_iso_datetime_event());
 
-                let e = EventFactory::create_event(
+                let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
                     &model.maturity_date.clone().map(|rc| (*rc).clone()),
                     &EventType::MD,
-                    &model.currency2,
+                    &Some(model.currency2.clone().unwrap().to_currency()),
                     Some(Rc::new(POF_MD2_FXOUT)),
                     Some(Rc::new(STF_MD2_FXOUT)),
                     &model.business_day_adjuster,
@@ -85,10 +87,12 @@ impl TraitContractModel for FXOUT {
                 events.push(e.to_iso_datetime_event());
             } else {
                 let shifted_maturity_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                    &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap() + model.settlement_period.clone().unwrap().value())
+                    &(model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap() +
+                        model.settlement_period.clone().unwrap().value().clone()
+                    ).value()
                 );
 
-                let e = EventFactory::create_event(
+                let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                     &Some(shifted_maturity_date),
                     &EventType::STD,
                     &model.currency,
@@ -134,7 +138,8 @@ impl TraitContractModel for FXOUT {
     }
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         events.sort();
@@ -152,7 +157,7 @@ impl TraitContractModel for FXOUT {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();
         Ok(states)

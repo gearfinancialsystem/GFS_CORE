@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt;
+use std::ops::Deref;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -13,11 +14,16 @@ use crate::functions::ceg::pof::POF_MD_CEG::POF_MD_CEG;
 use crate::functions::ceg::stf::STF_MD_CEG::STF_MD_CEG;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance::MA;
 use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
 use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
 use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct CEC;
@@ -33,7 +39,7 @@ impl TraitContractModel for CEC {
         // Maturity
         if model.exercise_date.is_none() {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
-                &Some(maturity),
+                &Some(maturity.value()),
                 &EventType::MD,
                 &model.currency,
                 Some(Rc::new(POF_MD_CEG)),
@@ -58,7 +64,7 @@ impl TraitContractModel for CEC {
             events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
-            let settlement_date = exercise_date.clone() + settlement_period.clone();
+            let settlement_date = exercise_date.clone() + settlement_period.clone().value().clone();
 
             let e: ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
                 &Some(settlement_date),
@@ -81,9 +87,9 @@ impl TraitContractModel for CEC {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model);
-        events = Self::add_external_xd_event(model, events, observer, &maturity).unwrap();
+        events = Self::add_external_xd_event(model, events, observer, &maturity.value()).unwrap();
 
-        let mut states = Self::init_state_space(model, observer, &maturity).unwrap();
+        let mut states = Self::init_state_space(model, observer, &maturity).expect("Failed to initialize state space");
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
@@ -103,20 +109,20 @@ impl TraitContractModel for CEC {
     fn init_state_space(
         model: &ContractModel,
         observer: &RiskFactorModel,
-        maturity: &IsoDatetime,
+        maturity: &MaturityDate,
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.maturity_date = Some(maturity.clone());
         states.status_date = model.status_date.clone();
 
-        if states.status_date.unwrap() > states.maturity_date.unwrap() {
-            states.notional_principal = Some(0.0);
+        if states.status_date.clone().unwrap().value() > states.clone().maturity_date.unwrap().value() {
+            states.notional_principal = NotionalPrincipal::new(0.0).ok();
         } else {
-            states.notional_principal = Some(Self::calculate_notional_principal(
+            states.notional_principal = NotionalPrincipal::new(Self::calculate_notional_principal(
                 model,
                 observer,
-                &states.status_date.unwrap(),
-            ));
+                &states.status_date.clone().unwrap().value(),
+            )).ok();
         }
 
         states.exercise_amount = model.exercise_amount.clone();
@@ -130,9 +136,9 @@ impl TraitContractModel for CEC {
 
 impl CEC {
 
-    fn maturity(model: &ContractModel) -> IsoDatetime {
+    fn maturity(model: &ContractModel) -> MaturityDate {
 
-        let covered_contract_refs = model.contract_structure.clone().unwrap()
+        let covered_contract_refs = model.contract_structure.clone().unwrap().0
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -141,11 +147,15 @@ impl CEC {
 
         let mut maturity_dates: Vec<IsoDatetime> = covered_contract_refs
             .iter()
-            .map(|c| IsoDatetime::parse_from_str(c.get_contract_attribute("maturityDate").unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap())
+            .map(|c| {
+                let a = c.object.as_cm().unwrap().maturity_date.clone().unwrap().clone().deref().clone().value();
+                a
+            }
+            )
             .collect();
 
         maturity_dates.sort();
-        maturity_dates.last().unwrap().clone()
+        MaturityDate::new(maturity_dates.last().unwrap().clone()).ok().unwrap()
     }
 
     pub fn calculate_notional_principal(
@@ -169,29 +179,52 @@ impl CEC {
         let coverage = model.coverage_of_credit_enhancement.clone().unwrap();
 
         match model.guaranteed_exposure {
-            Some(GuaranteedExposure::NO(NO)) => coverage
+            Some(GuaranteedExposure::NO(NO)) => coverage.value()
                 * role_sign
                 * states_at_time_point
                 .iter()
-                .map(|s| s.notional_principal.unwrap_or(0.0))
+                .map(|s| {
+                    if s.notional_principal.is_none() {
+                        NotionalPrincipal::new(0.0).ok().unwrap().value()
+                    }
+                    else {
+                        s.notional_principal.clone().unwrap().value()
+                    }
+                })
                 .sum::<f64>(),
-            Some(GuaranteedExposure::NI(NI)) => coverage
+            Some(GuaranteedExposure::NI(NI)) => coverage.value()
                 * role_sign
                 * (states_at_time_point
                 .iter()
-                .map(|s| s.notional_principal.unwrap_or(0.0))
+                .map(|s| {
+                    if s.notional_principal.is_none() {
+                        NotionalPrincipal::new(0.0).ok().unwrap().value()
+                    }
+                    else {
+                        s.notional_principal.clone().unwrap().value()
+                    }
+                })
                 .sum::<f64>()
                 + states_at_time_point
                 .iter()
-                .map(|s| s.accrued_interest.unwrap_or(0.0))
+                .map(|s| {
+                    if s.accrued_interest.is_none() {
+                        AccruedInterest::new(0.0).ok().unwrap().value()
+                    }
+                    else {
+                        s.accrued_interest.clone().unwrap().value()
+                    }
+                })
                 .sum::<f64>()),
             _ => {
                 let market_object_codes: Vec<String> = covered_contract_refs
                     .iter()
-                    .map(|c| c.get_contract_attribute("marketObjectCode").unwrap().to_string())
+                    .map(|c| {
+                        c.object.as_cm().unwrap().market_object_code.clone().unwrap().value()
+                    })
                     .collect();
 
-                coverage
+                coverage.value()
                     * role_sign
                     * market_object_codes
                     .iter()
@@ -206,14 +239,16 @@ impl CEC {
         observer: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covering_contract_refs = model.contract_structure.clone().unwrap()
+        let covering_contract_refs = model.contract_structure.clone().unwrap().0
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVI)
             .map(|cr| cr.clone())
             .collect::<Vec<_>>();
         let market_object_codes: Vec<String> = covering_contract_refs
             .iter()
-            .map(|e| e.get_contract_attribute("marketObjectCode").unwrap())
+            .map(|e| {
+                e.object.as_cm().unwrap().market_object_code.clone().unwrap().value()
+            })
             .collect();
 
         market_object_codes
@@ -230,7 +265,9 @@ impl CEC {
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0
             .iter()
-            .map(|c| c.get_contract_attribute("contract_id").unwrap())
+            .map(|c| {
+                c.object.as_cm().unwrap().contract_id.clone().unwrap().value()
+            })
             .collect();
 
         let a_credit_event_type_covered = model.credit_event_type_covered.clone().unwrap().0
@@ -245,10 +282,10 @@ impl CEC {
         let ce_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = observed_events
             .into_iter()
             .filter(|e| {
-                contract_identifiers.contains(&e.contract_id.clone().unwrap())
+                contract_identifiers.contains(&e.contract_id.clone().unwrap().value())
                     && &e.event_time.unwrap() <= maturity
                     && e.states().contract_performance.clone().unwrap().to_stringx().unwrap()
-                    == credit_event_type_covered.to_stringx().unwrap()
+                    == credit_event_type_covered.to_string()
             })
             .collect();
 
@@ -256,7 +293,7 @@ impl CEC {
             let ce_event = &ce_events[0];
             events.retain(|e| e.event_type != EventType::MD);
 
-            let e = EventFactory::create_event(
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(ce_event.event_time.clone().unwrap()),
                 &EventType::XD,
                 &model.currency,
@@ -268,9 +305,9 @@ impl CEC {
             events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
-            let settlement_date = ce_event.event_time.clone().unwrap() + settlement_period;
+            let settlement_date = ce_event.event_time.clone().unwrap().value() + settlement_period.value().clone();
 
-            let e = EventFactory::create_event(
+            let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(settlement_date),
                 &EventType::STD,
                 &model.currency,

@@ -29,6 +29,7 @@ use crate::terms::grp_boundary::BoundaryMonitoringEndDate::BoundaryMonitoringEnd
 use crate::terms::grp_contract_identification::contract_types::Ann::ANN;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -86,7 +87,8 @@ impl TraitContractModel for BCS {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
 
         // Sort the events according to their time sequence
         events.sort();
@@ -329,7 +331,7 @@ impl TraitContractModel for BCS {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         // Initialize state variables

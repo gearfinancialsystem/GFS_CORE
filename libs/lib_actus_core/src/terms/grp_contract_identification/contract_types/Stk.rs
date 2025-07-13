@@ -19,7 +19,11 @@ use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
 
 /// Represents the Principal At Maturity payoff algorithm
@@ -35,7 +39,7 @@ impl TraitContractModel for STK {
 
 
         if model.purchase_date.is_some(){
-            let e = EventFactory::create_event(
+            let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &model.purchase_date,
                 &EventType::PRD,
                 &model.currency,
@@ -84,7 +88,7 @@ impl TraitContractModel for STK {
             }
         }
         if model.termination_date.is_some(){
-            let termination = EventFactory::create_event(
+            let termination: ContractEvent<TerminationDate, TerminationDate> = EventFactory::create_event(
                 &model.termination_date,
                 &EventType::TD,
                 &model.currency,
@@ -94,14 +98,14 @@ impl TraitContractModel for STK {
                 &model.contract_id,
             );
             events.retain(|e| {
-                e.compare_to(&termination) != 1
+                e.compare_to(&termination.to_iso_datetime_event()) != 1
             });
             events.push(termination.to_iso_datetime_event());
         }
         events.retain(|e| {
             e.compare_to({
                 &EventFactory::create_event(
-                    &model.status_date,
+                    &Some(model.status_date.clone().unwrap().value()),
                     &EventType::TD,
                     &model.currency,
                     None,
@@ -114,7 +118,7 @@ impl TraitContractModel for STK {
         events.retain(|e| {
             e.compare_to({
                 &EventFactory::create_event(
-                    Some(to.clone()),
+                    &Some(to.clone().clone().unwrap()),
                     &EventType::AD,
                     &model.currency,
                     None,
@@ -136,7 +140,8 @@ impl TraitContractModel for STK {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state_space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
         let mut events = events.clone();
         // Sort events according to their time sequence
         events.sort();
@@ -156,7 +161,7 @@ impl TraitContractModel for STK {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel,
+        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();

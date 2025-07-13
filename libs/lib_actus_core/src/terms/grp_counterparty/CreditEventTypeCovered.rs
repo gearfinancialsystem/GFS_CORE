@@ -21,7 +21,17 @@ impl CreditEventTypeCoveredElement {
             Err(e) => Err(e)
         }
     }
+    pub fn to_string(&self) -> String {
+        match self {
+            CreditEventTypeCoveredElement::DL(DL) => "DL".to_string(),
+            CreditEventTypeCoveredElement::DQ(DQ) => "DQ".to_string(),
+            CreditEventTypeCoveredElement::DF(DF) => "DF".to_string(),
+            _ => "".to_string(),
+        }
+    }
+
 }
+
 
 impl FromStr for CreditEventTypeCoveredElement {
     type Err = ParseError;
@@ -37,7 +47,7 @@ impl FromStr for CreditEventTypeCoveredElement {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct CreditEventTypeCovered(Vec<CreditEventTypeCoveredElement>);
+pub struct CreditEventTypeCovered(pub Vec<CreditEventTypeCoveredElement>);
 
 impl CreditEventTypeCovered {
 
@@ -51,6 +61,9 @@ impl CreditEventTypeCovered {
             }
             Err(e) => return Err(e)
         }
+    }
+    pub fn values(&self) -> &Vec<CreditEventTypeCoveredElement> {
+        &self.0
     }
 
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {

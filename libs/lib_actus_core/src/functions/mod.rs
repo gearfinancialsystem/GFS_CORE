@@ -18,5 +18,4 @@ pub mod clm;
 pub mod csh;
 pub mod swppv;
 pub mod ump;
-mod com;
-mod com;
+pub mod com;

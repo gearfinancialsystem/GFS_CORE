@@ -1,4 +1,3 @@
-use std::any::Any;
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
@@ -24,12 +23,16 @@ use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
 use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -44,7 +47,7 @@ impl TraitContractModel for CLM {
         let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>>= Vec::new();
 
         // Determine maturity of the contract
-        let maturity = Self::maturity(model, to);
+        let maturity = Self::maturity(model, &to.unwrap());
 
         // Initial exchange
         let e = EventFactory::<InitialExchangeDate, InitialExchangeDate>::create_event(
@@ -71,7 +74,7 @@ impl TraitContractModel for CLM {
         events.push(e.to_iso_datetime_event());
 
         // Principal redemption
-        let e = EventFactory::create_event(
+        let e:ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
             &Some(maturity.clone()),
             &EventType::MD,
             &model.currency,
@@ -84,18 +87,22 @@ impl TraitContractModel for CLM {
 
         // Interest payment capitalization (if specified)
         if model.cycle_of_interest_payment.is_some() {
-            let cycle_anchor_date = if model.cycle_anchor_date_of_interest_payment.is_none() {
-                model.initial_exchange_date.clone().unwrap() + CycleUtils::parse_period(&model.cycle_of_interest_payment.clone().unwrap()).unwrap()
+            let cycle_anchor_date_of_interest_payment = if model.cycle_anchor_date_of_interest_payment.is_none() {
+                //model.initial_exchange_date.clone().unwrap() + CycleUtils::parse_period(&model.cycle_of_interest_payment.clone().unwrap()).unwrap()
+                CycleAnchorDateOfInterestPayment::new({
+                    model.initial_exchange_date.clone().unwrap().value() + model.cycle_of_interest_payment.clone().unwrap().value().extract_period().unwrap()
+                }).ok(
+                ).unwrap()
             } else {
                 model.cycle_anchor_date_of_interest_payment.clone().unwrap()
             };
 
             let interest_events = EventFactory::create_events(
                 &ScheduleFactory::create_schedule(
-                    &Some(cycle_anchor_date),
+                    &Some(cycle_anchor_date_of_interest_payment),
                     &Some(maturity.clone()),
                     &model.cycle_of_interest_payment,
-                    model.end_of_month_convention,
+                    &model.end_of_month_convention,
                     Some(false),
                 ),
                 &EventType::IPCI,
@@ -111,7 +118,12 @@ impl TraitContractModel for CLM {
 
         // Rate reset events
         let mut rate_reset_events = EventFactory::create_events(
-            &ScheduleFactory::create_schedule(
+            &ScheduleFactory::<
+            CycleAnchorDateOfRateReset,
+                MaturityDate,
+                CycleOfRateReset,
+                IsoDatetime
+            >::create_schedule(
                 &model.cycle_anchor_date_of_rate_reset,
                 &Some(maturity.clone()),
                 &model.cycle_of_rate_reset,
@@ -128,7 +140,7 @@ impl TraitContractModel for CLM {
 
         // Adapt fixed rate reset event
         if model.next_reset_rate.is_some() {
-            let status_event = EventFactory::create_event(
+            let status_event: ContractEvent<StatusDate, StatusDate> = EventFactory::create_event(
                 &model.status_date,
                 &EventType::AD,
                 &model.currency,
@@ -141,7 +153,7 @@ impl TraitContractModel for CLM {
             let mut sorted_events: Vec<_> = rate_reset_events.iter().collect();
             sorted_events.sort();
 
-            if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.compare_to(&status_event) == 1).cloned() {
+            if let Some(fixed_event) = sorted_events.iter().find(|&&e| e.compare_to(&status_event.to_iso_datetime_event()) == 1).cloned() {
                 let mut fixed_event_clone = fixed_event.clone();
                 fixed_event_clone.set_f_state_trans(Some(Rc::new(STF_RRF_PAM)));
                 fixed_event_clone.chg_event_type(EventType::RRF);
@@ -187,7 +199,7 @@ impl TraitContractModel for CLM {
 
         // Remove all post to-date events
         let to_event: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -210,7 +222,8 @@ impl TraitContractModel for CLM {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state_space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
 
         // Sort the events according to their time sequence
         events.sort();
@@ -231,7 +244,7 @@ impl TraitContractModel for CLM {
 
 
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();

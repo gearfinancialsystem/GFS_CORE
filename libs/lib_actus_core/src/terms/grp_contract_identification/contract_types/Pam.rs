@@ -361,7 +361,8 @@ impl TraitContractModel for PAM {
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
-        let mut states = Self::init_state_space(model).expect("uncorrect state space initialization !");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("uncorrect state space initialization !");
         let mut events = events.clone();
 
         //////////////////////////////////////////////////
@@ -407,7 +408,7 @@ impl TraitContractModel for PAM {
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();

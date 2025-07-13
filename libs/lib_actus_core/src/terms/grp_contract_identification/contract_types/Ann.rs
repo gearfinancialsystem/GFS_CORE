@@ -1,5 +1,6 @@
 use std::{error::Error, rc::Rc, collections::HashSet, fmt};
 use std::any::Any;
+use std::arch::x86_64::_addcarry_u32;
 use std::ops::Deref;
 use std::str::FromStr;
 use chrono::Days;
@@ -459,7 +460,8 @@ impl TraitContractModel for ANN {
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
         -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let mut states = Self::init_state_space(model).expect("Failed to initialize state space");
+        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events;
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -492,7 +494,7 @@ impl TraitContractModel for ANN {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
         states.interest_scaling_multiplier = model.interest_scaling_multiplier.clone();

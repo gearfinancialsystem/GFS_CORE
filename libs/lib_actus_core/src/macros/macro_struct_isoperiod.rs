@@ -1,3 +1,5 @@
+use crate::types::IsoCycle::IsoCycle;
+
 #[macro_export]
 macro_rules! define_struct_isoperiod {
     ($struct_name:ident) => {
@@ -9,6 +11,7 @@ macro_rules! define_struct_isoperiod {
             pub fn new(years: i32, months: i32, days: i32) -> Self {
                 $struct_name(IsoPeriod::new(years, months, days))
             }
+
 
             // Get the IsoPeriod value
             pub fn value(&self) -> &IsoPeriod {

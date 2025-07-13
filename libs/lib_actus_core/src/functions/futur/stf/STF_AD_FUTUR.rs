@@ -1,1 +1,1 @@
-pub type STF_AD_FUTUR = STF_AD_OPTNS;
+//pub type STF_AD_FUTUR = STF_AD_OPTNS;

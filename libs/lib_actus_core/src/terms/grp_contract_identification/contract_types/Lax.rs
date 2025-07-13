@@ -41,7 +41,9 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
 use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
@@ -58,7 +60,8 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::ArrayFixedVariable;
+use crate::terms::grp_optionality::option_type::C::C;
+use crate::terms::grp_reset_rate::ArrayFixedVariable::{ArrayFixedVariable, FixedVariableElement};
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -75,7 +78,7 @@ impl TraitContractModel for LAX {
     
     fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
-        let maturity = Self::maturity(model, Some(to.clone()));
+        let maturity = Self::maturity(model);
 
         // Initial exchange (IED)
         let e: ContractEvent<InitialExchangeDate, InitialExchangeDate> = EventFactory::create_event(
@@ -160,7 +163,7 @@ impl TraitContractModel for LAX {
         }
 
         // Maturity event (MD)
-        let e = EventFactory::create_event(
+        let e: ContractEvent<MaturityDate, MaturityDate> = EventFactory::create_event(
             &Some(maturity.clone()),
             &EventType::MD,
             &model.currency,
@@ -172,21 +175,39 @@ impl TraitContractModel for LAX {
         events.push(e.to_iso_datetime_event());
 
 
-        let z: Vec<CycleAnchorDateOfInterestPayment> = *&model.array_cycle_anchor_date_of_interest_payment.clone().unwrap().values().iter().map(
-            |d| CycleAnchorDateOfInterestPayment::new(d.clone()).ok().expect("er")
-        ).collect();
+        // let z: Vec<CycleAnchorDateOfInterestPayment> = ArrayCycleAnchorDateOfInterestPayment::with_values(
+        //     &model.array_cycle_anchor_date_of_interest_payment.clone().unwrap().values().iter().map(
+        //     |d| CycleAnchorDateOfInterestPayment::new(d.clone()).ok().expect("er")
+        //     ).collect()
+        // );
+        let z = model.array_cycle_anchor_date_of_interest_payment.clone().unwrap();
+
+
         // Interest payment schedule
         if let Some(ip_anchor_dates) = &model.array_cycle_anchor_date_of_interest_payment {
-            let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|s| Some(s.clone())).collect::<Vec<_>>();
+            let z2: Vec<CycleAnchorDateOfInterestPayment> = {
+                let a = ip_anchor_dates.values().iter().map(|d| CycleAnchorDateOfInterestPayment::new(d.clone()).ok().unwrap()
+                ).collect();
+                a
+            };
+
+            let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|s| s.clone()).collect::<Vec<_>>();
+
+            let ip_cycle: Vec<CycleOfInterestPayment> = {
+                let a = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|d| CycleOfInterestPayment::new_with_isocycle(d.clone())
+                ).collect();
+                a
+            };
+
 
             let s = ScheduleFactory::<
-            ArrayCycleAnchorDateOfInterestPayment,
+                CycleAnchorDateOfInterestPayment,
                 MaturityDate,
-                Vec<IsoCycle>,
+                CycleOfInterestPayment,
                 IsoDatetime
             >::create_array_schedule(
-                &ip_anchor_dates,
-                &maturity,
+                &z2,
+                &Some(maturity.clone()),
                 &ip_cycle,
                 &model.end_of_month_convention,
             );
@@ -240,7 +261,7 @@ impl TraitContractModel for LAX {
                 Rc::new(STF_IPCI2_LAM)
             };
 
-            events.push(EventFactory::create_event(
+            let e: ContractEvent<CapitalizationEndDate, CapitalizationEndDate> = EventFactory::create_event(
                 &Some(capitalization_end_date.clone()),
                 &EventType::IPCI,
                 &model.currency,
@@ -248,7 +269,8 @@ impl TraitContractModel for LAX {
                 Some(stf_ipci),
                 &model.business_day_adjuster,
                 &model.contract_id,
-            ));
+            );
+            events.push(e.to_iso_datetime_event());
         }
 
         // Rate reset schedule
@@ -258,7 +280,7 @@ impl TraitContractModel for LAX {
             let rr_fixed_var = model.array_fixed_variable.as_ref().unwrap();
 
             for i in 0..rr_anchor_dates.len() {
-                let rr_type = if rr_fixed_var[i] == ArrayFixedVariable::F(F) {
+                let rr_type = if rr_fixed_var.values()[i] == FixedVariableElement::F(F) {
                     EventType::RRF
                 } else {
                     EventType::RR
@@ -300,7 +322,7 @@ impl TraitContractModel for LAX {
                 rate_reset_events.sort();
 
                 if let Some(fixed_event) = rate_reset_events.iter_mut()
-                    .find(|e| e.event_time > model.status_date.clone()) {
+                    .find(|e| e.event_time > Some(model.status_date.clone().unwrap().value())) {
                     fixed_event.fstate = Some(Rc::new(STF_RRY_LAM));
                     events.push(fixed_event.clone());
                 }
@@ -406,7 +428,7 @@ impl TraitContractModel for LAX {
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
-            &Some(to.clone()),
+            &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
             None,
@@ -424,8 +446,8 @@ impl TraitContractModel for LAX {
     }
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let maturity = Self::maturity(model, None);
-        let mut states = Self::init_state_space(model, maturity);
+        let maturity = Self::maturity(model);
+        let mut states = Self::init_state_space(model, observer, &maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -454,10 +476,10 @@ impl TraitContractModel for LAX {
             events.retain(|e| e.event_type == EventType::AD || e.event_time >= purchase_event.event_time);
         }
 
-        events
+        Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, maturity: IsoDatetime) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();
