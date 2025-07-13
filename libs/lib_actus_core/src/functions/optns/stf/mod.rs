@@ -3,3 +3,5 @@ pub mod STF_STD_OPTNS;
 pub mod STF_XD_OPTNS;
 mod STF_PRD_OPTNS;
 mod STF_CE_OPTNS;
+mod STF_AD_OPTNS;
+mod STF_TD_OPTNS;

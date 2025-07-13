@@ -1,0 +1,1 @@
+pub type STF_CE_STK = STF_AD_STK; 

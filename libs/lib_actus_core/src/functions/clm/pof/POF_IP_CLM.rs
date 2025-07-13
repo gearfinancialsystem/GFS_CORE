@@ -3,6 +3,7 @@ use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -26,15 +27,15 @@ impl TraitPayOffFunction for POF_IP_CLM {
             states
         );
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&states.status_date.clone().unwrap()),
+            time_adjuster.shift_sc(&states.status_date.clone().unwrap().value()),
             time_adjuster.shift_sc(time)
         );
 
         settlement_currency_fx_rate * (
-            states.accrued_interest.clone().unwrap() +
+            states.accrued_interest.clone().unwrap().value() +
                 time_from_last_event *
-                    states.nominal_interest_rate.clone().unwrap() *
-                    states.notional_principal.clone().unwrap()
+                    states.nominal_interest_rate.clone().unwrap().value() *
+                    states.notional_principal.clone().unwrap().value()
         )
     }
 }

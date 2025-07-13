@@ -1,0 +1,201 @@
+\documentclass[10pt,a4paper,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{blindtext} % \blindtext to generate lorem ipsum
+\usepackage{multicol}
+\usepackage{titlesec}
+\title{ACTUS latex equations}
+\author{cet}
+\date{April 2025}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+%\begin{multicols}{2}
+%\section{Introduction}
+%\end{multicols}
+
+% Planification PP
+\section{PAM equations}
+
+% ===== Page 9 Equations =====
+% PAM Contract Schedule Definitions
+$\boxed{
+    \vec{t}^{PP} = 
+    \begin{cases}
+        \varnothing & \text{if } \text{PPEF} = 'N' \\
+        (\vec{u}, \vec{v}) & \text{else}
+    \end{cases}
+}$
+where $ 
+\begin{cases}
+    \vec{u} = S(s, \text{PPCL}, T^{MD}) \\
+    \vec{v} = O^{ev}(\text{CID}, \text{PP}, t) \\
+    s = \begin{cases}
+        \varnothing & \text{if } \text{PPAIX} = \varnothing \land \text{PPCL} = \varnothing \\
+        \text{IED} + \text{PPCL} & \text{else if } \text{PPAIX} = \varnothing \\
+        \text{PPAIX} & \text{else}
+    \end{cases}
+\end{cases}$
+
+$\boxed{
+    \vec{t}^{PY} = 
+    \begin{cases}
+        \varnothing & \text{if } \text{PYTP} = 'O' \\
+        \vec{t}^{PP} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \vec{t}^{FP} = 
+    \begin{cases}
+        \varnothing & \text{if } \text{FER} = \varnothing \lor \text{FER} = 0 \\
+        S(s, \text{FECL}, T^{MD}) & \text{else}
+    \end{cases}
+}$
+where $s = \begin{cases}
+    \varnothing & \text{if } \text{FEAUX} = \varnothing \land \text{FECL} = \varnothing \\
+    \text{IED} + \text{FECL} & \text{else if } \text{FEAUX} = \varnothing \\
+    \text{FEAUX} & \text{else}
+\end{cases}$
+
+$\boxed{
+    \vec{t}^{IP} = 
+    \begin{cases}
+        \varnothing & \text{if } \text{IPNR} = \varnothing \\
+        S(s, \text{IPCL}, T^{MD}) & \text{else}
+    \end{cases}
+}$
+where $s = \begin{cases}
+    \varnothing & \text{if } \text{IPAIX} = \varnothing \land \text{IPCL} = \varnothing \\
+    \text{IPCED} & \text{else if } \text{IPCED} \neq \varnothing \\
+    \text{IED} + \text{IPCL} & \text{else if } \text{IPAIX} = \varnothing \\
+    \text{IPAIX} & \text{else}
+\end{cases}$
+
+% ===== Page 10 Equations =====
+% PAM State Variables Initialization
+$\boxed{
+    \mathbf{Md}_{t_0} = \text{MD}
+}$
+
+$\boxed{
+    \mathbf{Nt}_{t_0} = 
+    \begin{cases}
+        0.0 & \text{if } \text{IED} > t_0 \\
+        R(\text{CNTRL}) \times \text{NT} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \mathbf{Ipnr}_{t_0} = 
+    \begin{cases}
+        0.0 & \text{if } \text{IED} > t_0 \\
+        \text{IPNR} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \mathbf{Ipac}_{t_0} = 
+    \begin{cases}
+        0.0 & \text{if } \mathbf{IPNR} = \varnothing \\
+        \text{IPAC} & \text{else if } \text{IPAC} \neq \varnothing \\
+        Y(t^{-}, t_0) \times \mathbf{Nt}_{t_0} \times \mathbf{Ipnr}_{t_0} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \mathbf{Feac}_{t_0} = 
+    \begin{cases}
+        0.0 & \text{if } \mathbf{FER} = \varnothing \\
+        \text{FEAC} & \text{else if } \text{FEAC} \neq \varnothing \\
+        Y(t^{FP-}, t_0) \times \mathbf{Nt}_{t_0} \times \mathbf{FER} & \text{else if } \text{FEB} = 'N' \\
+        \frac{Y(t^{FP-}, t_0)}{Y(t^{FP-}, t^{FP+})} \times \mathbf{FER} & \text{else}
+    \end{cases}
+}$
+
+% ===== Page 11 Equations =====
+% PAM State Transition and Payoff Functions
+$\boxed{
+    \text{POF\_PP\_PAM()} = X_{\text{CUR}}^{\text{CURS}}(t) \cdot f(O^{ev}(\text{CID}, \text{PP}, t))
+}$
+
+$\boxed{
+    \text{POF\_PY\_PAM()} = 
+    \begin{cases}
+        X_{\text{CUR}}^{\text{CURS}}(t) \cdot R(\text{CNTRL}) \cdot \text{PYRT} & \text{if PYTP} = 'A' \\
+        c \cdot \text{PYRT} & \text{if PYTP} = 'N' \\
+        c \cdot \max(0, \mathbf{Ipnr}_{t^{-}} - O^{rf}(\text{RRMO}, t)) & \text{if PYTP} = 'I'
+    \end{cases}
+}$
+where $c = X_{\text{CUR}}^{\text{CURS}}(t) R(\text{CNTRL}) Y(\mathbf{Sd}_{t^{-}}, t) \mathbf{Nt}_{t^{-}}$
+
+$\boxed{
+    \text{POF\_FP\_PAM()} = 
+    \begin{cases}
+        R(\text{CNTRL}) \cdot c & \text{if FEB} = 'A' \\
+        c \cdot Y(\mathbf{Sd}_{t^{-}}, t) \cdot \mathbf{Nt}_{t^{-}} + \mathbf{Feac}_{t^{-}} & \text{if FEB} = 'N'
+    \end{cases}
+}$
+where $c = X_{\text{CUR}}^{\text{CURS}}(t) \cdot \text{FER}$
+
+$\boxed{
+    \text{POF\_PRD\_PAM()} = X_{\text{CUR}}^{\text{CURS}}(t) R(\text{CNTRL})(-1)(\text{PPRD} + \mathbf{Ipac}_{t^{-}} + Y(\mathbf{Sd}_{t^{-}}, t) \mathbf{Ipnr}_{t^{-}} \mathbf{Nt}_{t^{-}})
+}$
+
+$\boxed{
+    \text{POF\_IP\_PAM()} = X_{\text{CUR}}^{\text{CURS}}(t) \mathbf{Isc}_{t^{-}} (\mathbf{Ipac}_{t^{-}} + Y(\mathbf{Sd}_{t^{-}}, t) \mathbf{Ipnr}_{t^{-}} \mathbf{Nt}_{t^{-}})
+}$
+
+$\boxed{
+    \mathbf{Ipnr}_{t^{+}} = \min(\max(\mathbf{Ipnr}_{t^{-}} + \Delta r, \text{RRLF}), \text{RRLC})
+}$
+where $\Delta r = \min(\max(O^{rf}(\text{RRMO}, t)\text{RRMLT} + \text{RRSP} - \mathbf{Ipnr}_{t^{-}}, \text{RRPF}), \text{RRPC})$
+
+% ===== Page 12 Equations =====
+% PAM Continued
+$\boxed{
+    \mathbf{Nsc}_{t^{+}} = 
+    \begin{cases}
+        \mathbf{Nsc}_{t^{-}} & \text{if } \text{SCEF} = [x]0[x] \\
+        \frac{O^{rf}(\text{SCMO}, t) - \text{SCIBD}}{\text{SCIBD}} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \mathbf{Isc}_{t^{+}} = 
+    \begin{cases}
+        \mathbf{Isc}_{t^{-}} & \text{if } \text{SCEF} = 0[x][x] \\
+        \frac{O^{rf}(\text{SCMO}, t) - \text{SCIBD}}{\text{SCIBD}} & \text{else}
+    \end{cases}
+}$
+
+% LAM: Linear Amortizer
+$\boxed{
+    \mathbf{Pmxt}_{t_0} = 
+    \begin{cases}
+        \text{PRMXT} & \text{if } \text{PRMXT} \neq \varnothing \\
+        \text{NT} \left( \text{ceil}\left(\frac{Y(s, T^{MD})}{Y(s, s+\text{PRCL})}\right) \right)^{-1} & \text{else}
+    \end{cases}
+}$
+
+$\boxed{
+    \text{POF\_PR\_LAM()} = X_{\text{CUR}}^{\text{CURS}}(t) R(\text{CNTRL}) \mathbf{Nsc}_{t^{-}} \mathbf{Pmxt}_{t^{-}}
+}$
+
+$\boxed{
+    \mathbf{Ipcb}_{t_0} = 
+    \begin{cases}
+        0.0 & \text{if } t_0 < \text{IED} \\
+        R(\text{CNTRL})\text{NT} & \text{else if } \text{IPCB} = 'NT' \\
+        R(\text{CNTRL})\text{IPCBA} & \text{else}
+    \end{cases}
+}$
+
+\end{document}

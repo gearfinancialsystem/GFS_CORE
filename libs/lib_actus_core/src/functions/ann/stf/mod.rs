@@ -16,3 +16,5 @@ pub mod STF_SC_ANN;
 pub mod STF_TD_ANN;
 pub mod STF_RRF_ANN;
 pub mod STF_CE_ANN;
+pub mod STF_PR_ANN;
+pub mod STF_IPCB_ANN;

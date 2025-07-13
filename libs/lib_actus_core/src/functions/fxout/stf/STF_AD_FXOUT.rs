@@ -1,0 +1,1 @@
+pub type STF_AD_FXOUT = STF_AD_STK;

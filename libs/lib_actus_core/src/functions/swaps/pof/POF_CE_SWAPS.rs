@@ -1,0 +1,2 @@
+
+pub type STF_CE_SWAPS = STF_AD_SWAPS;

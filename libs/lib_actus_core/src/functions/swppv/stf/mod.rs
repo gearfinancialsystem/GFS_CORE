@@ -9,3 +9,4 @@ pub mod STF_MD_SWPPV;
 pub mod STF_PRD_SWPPV;
 pub mod STF_RR_SWPPV;
 pub mod STF_TD_SWPPV;
+pub mod STF_CE_SWPPV;
