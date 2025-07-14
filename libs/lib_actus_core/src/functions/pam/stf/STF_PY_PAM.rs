@@ -5,6 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -28,18 +29,9 @@ impl TraitStateTransitionFunction for STF_PY_PAM {
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate.value() * notional_principal.value() * time_from_last_event;
-            accrued_interest
-        });
-
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
-            fee_accrued
-        });
-
+        states.accrued_interest.add_assign(nominal_interest_rate.value() * notional_principal.value() * time_from_last_event);
+        states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
         states.status_date = Some(StatusDate::from(*time));
-
-
+        
     }
 }

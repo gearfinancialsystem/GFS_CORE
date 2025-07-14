@@ -6,12 +6,64 @@ use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Lax::LAX;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Stk::STK;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
 
 
 fn main() {
     let mut dico= HashMap::new(); // HashMap<String, String>
+
+    // LAX01
+    dico.insert("contractType".to_string(), Value::Vstring("LAX".to_string()));
+    dico.insert("contractID".to_string(), Value::Vstring("lax01".to_string()));
+    dico.insert("creatorID".to_string(), Value::Vstring("LEI01".to_string()));
+    dico.insert("counterpartyID".to_string(), Value::Vstring("LEI02".to_string()));
+    dico.insert("statusDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
+    dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    dico.insert("calendar".to_string(), Value::Vstring("NC".to_string()));
+    dico.insert("businessDayConvention".to_string(), Value::Vstring("SCF".to_string()));
+    dico.insert("endOfMonthConvention".to_string(), Value::Vstring("SD".to_string()));
+    dico.insert("currency".to_string(), Value::Vstring("EUR".to_string()));
+    dico.insert("contractDealDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
+    dico.insert("initialExchangeDate".to_string(), Value::Vstring("2020-01-02T00:00:00".to_string()));
+    dico.insert("maturityDate".to_string(), Value::Vstring("2024-12-31T00:00:00".to_string()));
+    dico.insert("notionalPrincipal".to_string(), Value::Vstring("100".to_string()));
+    dico.insert("arrayCycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2021-01-01T00:00:00".to_string()));
+    dico.insert("arrayCycleOfInterestPayment".to_string(), Value::Vstring("P1YL1".to_string()));
+    dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.05".to_string()));
+    dico.insert("dayCountConvention".to_string(), Value::Vstring("30E360".to_string()));
+    dico.insert("arrayCycleAnchorDateOfPrincipalRedemption".to_string(), Value::VvecVal({
+        let mut a = Vec::new();
+        a.push(Value::Vstring("2021-01-01T00:00:00".to_string()));
+        a}));
+    dico.insert("arrayCycleOfPrincipalRedemption".to_string(), Value::VvecVal({
+        let mut a = Vec::new();
+        a.push(Value::Vstring("P1YL1".to_string()));
+        a}));
+    dico.insert("arrayNextPrincipalRedemptionPayment".to_string(), Value::VvecVal({
+        let mut a = Vec::new();
+        a.push(Value::Vstring("20".to_string()));
+        a}));
+    dico.insert("arrayIncreaseDecrease".to_string(), Value::VvecVal({
+        let mut a = Vec::new();
+        a.push(Value::Vstring("DEC".to_string()));
+        a}));
+
+
+
+    // STK01
+    // dico.insert("contractType".to_string(), Value::Vstring("STK".to_string()));
+    // dico.insert("contractID".to_string(), Value::Vstring("stk01".to_string()));
+    // dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-28T00:00:00".to_string()));
+    // dico.insert("statusDate".to_string(), Value::Vstring("2012-12-30T00:00:00".to_string()));
+    // dico.insert("notionalPrincipal".to_string(), Value::Vstring("1000".to_string()));
+    // dico.insert("currency".to_string(), Value::Vstring("USD".to_string(),));
+    // dico.insert("purchaseDate".to_string(), Value::Vstring("2013-01-01T00:00:00".to_string()));
+    // dico.insert("priceAtPurchaseDate".to_string(), Value::Vstring("1100".to_string()));
+    // dico.insert("endOfMonthConvention".to_string(), Value::Vstring("EOM".to_string()));
 
     // PAM02
     // dico.insert("contractType".to_string(),Value::Vstring("PAM".to_string()));
@@ -91,12 +143,12 @@ fn main() {
     // dico.insert("contractStructure".to_string(), Value::VvecVal(v));
     println!("new dev");
     // CASH 01
-    dico.insert("contractType".to_string(),Value::Vstring("CSH".to_string()));
-    dico.insert("contractID".to_string(),Value::Vstring("csh01".to_string()));
-    dico.insert("statusDate".to_string(),Value::Vstring("2015-07-15T00:00:00".to_string()));
-    dico.insert("contractRole".to_string(),Value::Vstring("RPA".to_string()));
-    dico.insert("currency".to_string(),Value::Vstring("CHF".to_string()));
-    dico.insert("notionalPrincipal".to_string(),Value::Vstring("1000".to_string()));
+    // dico.insert("contractType".to_string(),Value::Vstring("CSH".to_string()));
+    // dico.insert("contractID".to_string(),Value::Vstring("csh01".to_string()));
+    // dico.insert("statusDate".to_string(),Value::Vstring("2015-07-15T00:00:00".to_string()));
+    // dico.insert("contractRole".to_string(),Value::Vstring("RPA".to_string()));
+    // dico.insert("currency".to_string(),Value::Vstring("CHF".to_string()));
+    // dico.insert("notionalPrincipal".to_string(),Value::Vstring("1000".to_string()));
 
 
     // test loading avec functions
@@ -118,12 +170,12 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = CSH::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = LAX::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = CSH::apply(events_res, cm, &risk_factor_model);
+            let events2 = LAX::apply(events_res, cm, &risk_factor_model).ok().unwrap();
             
             for ce in events2.iter() {
-                //println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);
+                println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);
             }
 
         }

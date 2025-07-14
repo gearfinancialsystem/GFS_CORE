@@ -1,6 +1,4 @@
-use std::{error::Error, rc::Rc, collections::HashSet, fmt};
-use std::any::Any;
-use std::arch::x86_64::_addcarry_u32;
+use std::{rc::Rc, collections::HashSet, fmt};
 use std::ops::Deref;
 use std::str::FromStr;
 use chrono::Days;
@@ -33,7 +31,6 @@ use crate::functions::{
     pam::pof::{POF_FP_PAM::POF_FP_PAM, POF_IED_PAM::POF_IED_PAM, POF_IPCI_PAM::POF_IPCI_PAM, POF_MD_PAM::POF_MD_PAM, POF_RR_PAM::POF_RR_PAM, POF_SC_PAM::POF_SC_PAM,},
     pam::stf::{STF_IP_PAM::STF_IP_PAM, STF_TD_PAM::STF_TD_PAM}
 };
-use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
@@ -460,7 +457,7 @@ impl TraitContractModel for ANN {
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
         -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events;
 
@@ -494,7 +491,7 @@ impl TraitContractModel for ANN {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
         states.interest_scaling_multiplier = model.interest_scaling_multiplier.clone();

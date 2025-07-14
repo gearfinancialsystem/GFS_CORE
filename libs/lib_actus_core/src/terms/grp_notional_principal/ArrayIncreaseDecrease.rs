@@ -53,10 +53,10 @@ impl ArrayIncreaseDecrease {
                     .filter_map(|v| v.as_string().and_then(|s| IncreaseDecreaseElement::from_str(&s).ok()))
                     .collect();
 
-                if !parsed_inc_dec.is_empty() {
-                    Some(ArrayIncreaseDecrease(parsed_inc_dec))
-                } else {
+                if parsed_inc_dec.is_empty() {
                     None
+                } else {
+                    Some(ArrayIncreaseDecrease(parsed_inc_dec))
                 }
             } else {
                 None // Not a vector type

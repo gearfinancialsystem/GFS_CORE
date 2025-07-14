@@ -66,10 +66,10 @@ impl ArrayFixedVariable {
                     .filter_map(|v| v.as_string().and_then(|s| FixedVariableElement::from_str(&s).ok()))
                     .collect();
 
-                if !parsed_v.is_empty() {
-                    Some(ArrayFixedVariable(parsed_v))
-                } else {
+                if parsed_v.is_empty() {
                     None
+                } else {
+                    Some(ArrayFixedVariable(parsed_v))
                 }
             } else {
                 None // Not a vector type

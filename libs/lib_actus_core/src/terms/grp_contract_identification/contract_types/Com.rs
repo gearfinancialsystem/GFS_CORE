@@ -95,7 +95,7 @@ impl TraitContractModel for COM {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         Ok(states)
     }

@@ -6,6 +6,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -27,13 +28,12 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
         let fee_rate = model.fee_rate.clone().expect("fee rate should be some");
         let notional_principal = states.notional_principal.clone().expect("notional principal should be some");
 
+
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()), time_adjuster.shift_sc(time));
+
         states.accrued_interest = AccruedInterest::new(0.0).ok();
 
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            fee_accrued += day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()), time_adjuster.shift_sc(time)) *
-                fee_rate.value() * notional_principal.value();
-            fee_accrued
-        });
+        states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
 
         states.status_date = Some(StatusDate::from(*time));
         

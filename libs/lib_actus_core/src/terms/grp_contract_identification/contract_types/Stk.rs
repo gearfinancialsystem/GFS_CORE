@@ -1,4 +1,4 @@
-use std::error::Error;
+
 use std::fmt;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
@@ -17,7 +17,6 @@ use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_DV_STK::STF_DV_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
@@ -140,7 +139,7 @@ impl TraitContractModel for STK {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
         let mut events = events.clone();
         // Sort events according to their time sequence
@@ -161,7 +160,7 @@ impl TraitContractModel for STK {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate
+        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();

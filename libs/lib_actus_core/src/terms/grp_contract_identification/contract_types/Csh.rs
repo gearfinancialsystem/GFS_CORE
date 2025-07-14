@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt;
+use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
@@ -49,7 +50,7 @@ impl TraitContractModel for  CSH {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         Ok(states)
     }

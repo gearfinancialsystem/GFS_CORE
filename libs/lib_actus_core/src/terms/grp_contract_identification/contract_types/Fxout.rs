@@ -138,7 +138,7 @@ impl TraitContractModel for FXOUT {
     }
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
@@ -157,7 +157,7 @@ impl TraitContractModel for FXOUT {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();
         Ok(states)

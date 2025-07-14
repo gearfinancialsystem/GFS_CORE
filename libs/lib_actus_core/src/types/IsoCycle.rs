@@ -67,6 +67,6 @@ impl FromStr for IsoCycle {
             let wd_adjuster = WeekdayCycleAdjuster::new(s.to_string()).expect("weekday cycle_adjuster good");
             Ok(IsoCycle::WeekdayCycleAdjuster(   wd_adjuster    ))
         }
-        // Err(_) => Err(format!("Unable to parse {} as f64", s)),
+
     }
 }

@@ -222,7 +222,7 @@ impl TraitContractModel for CLM {
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
 
         // Sort the events according to their time sequence
@@ -244,7 +244,7 @@ impl TraitContractModel for CLM {
 
 
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();

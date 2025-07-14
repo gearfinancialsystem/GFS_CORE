@@ -375,7 +375,7 @@ impl TraitContractModel for LAM {
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         //let maturity = Self::maturity(model);
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
@@ -411,7 +411,7 @@ impl TraitContractModel for LAM {
     }
 
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>
     ) -> Result<StateSpace, String> {
 
         let maturity = Self::maturity(model);

@@ -24,9 +24,9 @@ impl TraitStateTransitionFunction for STF_TD_PAM {
         _time_adjuster: &BusinessDayAdjuster,
     )  {
 
-        states.notional_principal = NotionalPrincipal::new(0.0).ok();//
-        states.accrued_interest = AccruedInterest::new(0.0).ok();//
-        states.fee_accrued =FeeAccrued::new(0.0).ok();//
+        states.notional_principal = NotionalPrincipal::new(0.0).ok();
+        states.accrued_interest = AccruedInterest::new(0.0).ok();
+        states.fee_accrued = FeeAccrued::new(0.0).ok();
         states.status_date = Some(StatusDate::from(*time));
         
     }

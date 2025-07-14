@@ -1,4 +1,4 @@
-use std::error::Error;
+
 use std::fmt;
 use std::rc::Rc;
 
@@ -16,7 +16,7 @@ use crate::functions::optns::stf::STF_XD_OPTNS::STF_XD_OPTNS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
+
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
@@ -150,7 +150,7 @@ impl TraitContractModel for OPTNS {
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let _maturity = &model.maturity_date.clone().unwrap().clone();
+        let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
@@ -187,7 +187,7 @@ impl TraitContractModel for OPTNS {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();

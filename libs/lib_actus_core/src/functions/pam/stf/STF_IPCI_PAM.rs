@@ -5,6 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -34,19 +35,12 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
             time_adjuster.shift_sc(&status_date.value()),
             time_adjuster.shift_sc(&time),
         );
-            
-        
-        states.notional_principal =  states.notional_principal.clone().map(|mut notional_principalx| {
-            notional_principalx += accrued_interest.value() + (nominal_interest_rate.value() * notional_principalx.value() * time_from_last_event);
-            notional_principalx
-        });
+
+        states.notional_principal.add_assign(accrued_interest.value() + (nominal_interest_rate.value() * notional_principal.value() * time_from_last_event));
 
         states.accrued_interest = AccruedInterest::new(0.0).ok();
-        
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
-            fee_accrued
-        });
+        states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
+
         
     }
 }

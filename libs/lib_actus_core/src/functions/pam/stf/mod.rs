@@ -14,4 +14,4 @@ pub mod STF_RRF_PAM;
 pub mod STF_RR_PAM;
 pub mod STF_SC_PAM;
 pub mod STF_TD_PAM;
-mod STF_CE_PAM;
+pub mod STF_CE_PAM;

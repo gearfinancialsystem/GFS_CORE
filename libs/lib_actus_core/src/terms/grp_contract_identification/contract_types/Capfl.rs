@@ -1,4 +1,4 @@
-use std::error::Error;
+
 use std::rc::Rc;
 use std::collections::HashMap;
 use std::fmt;
@@ -179,7 +179,7 @@ impl TraitContractModel for CAPFL {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         todo!()
     }
 }

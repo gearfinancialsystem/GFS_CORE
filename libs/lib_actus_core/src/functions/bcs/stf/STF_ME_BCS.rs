@@ -27,7 +27,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
         _day_counter: &DayCountConvention,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        println!("fde");
+        
         if states.boundary_monitoring_flag.unwrap_or(false) {
             if let Some(contract_structure) = &model.contract_structure {
                 if let Some(contract_reference) = contract_structure.0.iter().find(|e| {

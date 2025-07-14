@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
     )  {
         
         let contract_role = model.contract_role.as_ref().expect("contract role should be Some");
-        let notional_principal = model.notional_principal.clone().expect("notionalPrincipal should always be Some");
+        let notional_principal = model.notional_principal.as_ref().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate = model.nominal_interest_rate.clone().expect("nominalInterestRate should be Some");
         let notional_principal_s = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate_s = states.nominal_interest_rate.clone().expect("nominalInterestRate should be Some");

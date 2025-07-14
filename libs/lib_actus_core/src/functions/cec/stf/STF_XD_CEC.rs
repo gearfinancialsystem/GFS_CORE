@@ -39,11 +39,12 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
 
         let exercise_amount = {
             ExerciseAmount::new({
-                if states.notional_principal.is_none(){
-                    0.0_f64.min(market_value_covering_contracts)
+                if states.notional_principal.is_some(){
+                    states.notional_principal.clone().unwrap().value().min(market_value_covering_contracts)
                 }
                 else {
-                    states.notional_principal.clone().unwrap().value().min(market_value_covering_contracts)
+                    0.0_f64.min(market_value_covering_contracts)
+                    
                 }
             }).ok()
         };

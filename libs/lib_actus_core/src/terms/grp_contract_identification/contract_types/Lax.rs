@@ -1,8 +1,6 @@
 use std::collections::HashSet;
-use std::error::Error;
 use std::fmt;
 use std::rc::Rc;
-use chrono::format::Fixed::Internal;
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
@@ -40,7 +38,7 @@ use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+
 use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
 use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
 use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
@@ -49,9 +47,9 @@ use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::ArrayIncreaseDecrease;
+
 use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::IncreaseDecreaseElement;
-use crate::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
+
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
@@ -60,8 +58,8 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_optionality::option_type::C::C;
-use crate::terms::grp_reset_rate::ArrayFixedVariable::{ArrayFixedVariable, FixedVariableElement};
+
+use crate::terms::grp_reset_rate::ArrayFixedVariable::{FixedVariableElement};
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -180,7 +178,6 @@ impl TraitContractModel for LAX {
         //     |d| CycleAnchorDateOfInterestPayment::new(d.clone()).ok().expect("er")
         //     ).collect()
         // );
-        let z = model.array_cycle_anchor_date_of_interest_payment.clone().unwrap();
 
 
         // Interest payment schedule
@@ -191,7 +188,7 @@ impl TraitContractModel for LAX {
                 a
             };
 
-            let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|s| s.clone()).collect::<Vec<_>>();
+            //let mut ip_cycle = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|s| s.clone()).collect::<Vec<_>>();
 
             let ip_cycle: Vec<CycleOfInterestPayment> = {
                 let a = model.array_cycle_of_interest_payment.clone().unwrap().values().iter().map(|d| CycleOfInterestPayment::new_with_isocycle(d.clone())
@@ -254,7 +251,8 @@ impl TraitContractModel for LAX {
             }
 
             events.append(&mut interest_events.into_iter().collect());
-        } else if let Some(capitalization_end_date) = &model.capitalization_end_date {
+        } 
+        else if let Some(capitalization_end_date) = &model.capitalization_end_date {
             let stf_ipci: Rc<dyn TraitStateTransitionFunction> = if model.interest_calculation_base == Some(InterestCalculationBase::NTL(NTL)) {
                 Rc::new(STF_IPCI_LAM)
             } else {
@@ -351,8 +349,8 @@ impl TraitContractModel for LAX {
         }
 
         // Scaling events
-        if let scaling_effect = &model.scaling_effect.clone().unwrap().to_string() {
-            if scaling_effect.contains('I') || scaling_effect.contains('N') {
+        if let Some(scaling_effect) = &model.scaling_effect.clone() {
+            if scaling_effect.to_string().contains('I') || scaling_effect.to_string().contains('N') {
                 let scaling_events = EventFactory::create_events(
                     &ScheduleFactory::create_schedule(
                         &model.cycle_anchor_date_of_scaling_index,
@@ -447,7 +445,7 @@ impl TraitContractModel for LAX {
 
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model);
-        let mut states = Self::init_state_space(model, observer, &maturity).expect("Failed to initialize state space");
+        let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity)) ).expect("Failed to initialize state space");
         let mut events = events.clone();
 
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -479,7 +477,7 @@ impl TraitContractModel for LAX {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();

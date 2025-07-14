@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::externals::RiskFactorModel::RiskFactorModel;
@@ -12,7 +13,7 @@ pub trait TraitContractModel {
              observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
     fn init_state_space(model: &ContractModel, 
                         observer: &RiskFactorModel,
-                        maturity: &MaturityDate) -> Result<StateSpace, String>;
+                        maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String>;
 
     // les erreurs doivent etre autre chose que String
     

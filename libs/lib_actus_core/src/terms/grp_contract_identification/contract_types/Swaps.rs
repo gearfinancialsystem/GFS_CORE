@@ -217,7 +217,7 @@ impl TraitContractModel for SWAPS {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &MaturityDate
+        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>
     ) -> Result<StateSpace, String> { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let cs = model.clone().contract_structure.unwrap();
         let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
