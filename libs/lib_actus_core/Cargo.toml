@@ -5,6 +5,7 @@ edition = "2021"
 
 [lib]
 name = "lib_actus_core"
+path = "src/lib.rs"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
@@ -15,3 +16,6 @@ serde_json = "1.0"
 
 [dev-dependencies]
 serde_json = "1.0"
+
+[features]
+dev = []

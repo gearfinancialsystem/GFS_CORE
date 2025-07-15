@@ -7,6 +7,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::types::IsoDatetime::IsoDatetime;
 
 
@@ -35,15 +36,10 @@ impl TraitStateTransitionFunction for STF_CD_LAM {
             time_adjuster.shift_sc(&status_date.clone().value()),
             time_adjuster.shift_sc(time),
         );
-        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event;
-            accrued_interest
-        });
-        
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
-            fee_accrued
-        });
+
+        states.accrued_interest.add_assign(nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event);
+
+        states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
         
         states.contract_performance = Some(ContractPerformance::new("DF").expect("ok cp")  );
         states.status_date = Some(StatusDate::from(*time));

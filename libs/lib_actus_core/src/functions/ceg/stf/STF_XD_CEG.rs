@@ -62,20 +62,14 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
 
                 let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
                 let role_sign = contract_role.role_sign();
-
-                states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-                    fee_accrued += role_sign * time_from_last_event / time_full_fee_cycle * fee_rate.value();
-                    fee_accrued
-                });
+                
+                states.fee_accrued.add_assign(role_sign * time_from_last_event / time_full_fee_cycle * fee_rate.value());
             }
         } else {
             let time_from_last_event = day_counter.day_count_fraction(shifted_status_date, shifted_time);
             let notional_principal = states.notional_principal.clone().itself_or(0.0);
-
-            states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-                fee_accrued += notional_principal.value() * time_from_last_event * fee_rate.value();
-                fee_accrued
-            });
+            
+            states.fee_accrued.add_assign(notional_principal.value() * time_from_last_event * fee_rate.value());
         }
 
         states.status_date = Some(StatusDate::from(*time));

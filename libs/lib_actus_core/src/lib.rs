@@ -11,5 +11,8 @@ pub mod state_space;
 pub mod events;
 pub mod externals;
 
-pub mod util_tests;
+
 pub mod macros;
+#[cfg(feature = "dev")]
+pub mod util_tests;
+

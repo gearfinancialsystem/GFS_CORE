@@ -34,9 +34,9 @@ mod tests {
     use crate::types::IsoDatetime::IsoDatetime;
     
     fn set_vars() -> (IsoDatetime, IsoDatetime, IsoDatetime) {
-        let local_date1 = IsoDatetime::parse_from_str("2019-02-01 00:00:00", "%Y-%m-%d %H:%M:%S").expect("");
-        let local_date2 = IsoDatetime::parse_from_str("2019-04-30 00:00:00", "%Y-%m-%d %H:%M:%S").expect("");
-        let local_date3 = IsoDatetime::parse_from_str("2019-06-30 00:00:00", "%Y-%m-%d %H:%M:%S").expect("");
+        let local_date1 = IsoDatetime::parse_from_str("2019-02-01 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
+        let local_date2 = IsoDatetime::parse_from_str("2019-04-30 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
+        let local_date3 = IsoDatetime::parse_from_str("2019-06-30 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
         (local_date1, local_date2, local_date3)
     }
     

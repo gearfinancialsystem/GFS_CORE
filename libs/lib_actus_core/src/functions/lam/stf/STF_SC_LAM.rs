@@ -31,9 +31,9 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
 
-        let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
+        let fee_rate_m = model.fee_rate.clone().expect("fee rate should always be Some");
         //let scaling_index_at_contract_deal_date = model.scalingIndexAtContractDealDate.clone().expect("fee rate should always be Some");
-        let scaling_effect = model.scaling_effect.clone().expect("fee rate should always be Some");
+        let scaling_effect_m = model.scaling_effect.clone().expect("fee rate should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.clone().value()),
@@ -46,17 +46,7 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         }).ok();
         
         states.fee_accrued = FeeAccrued::new({
-            let fee_rate = {
-                if model.fee_rate.is_none() {
-                    0.0
-                }
-                else { model.fee_rate.clone().unwrap().value() }
-            };
-            states.fee_accrued.clone().unwrap().value() + fee_rate * {
-                if states.notional_principal.is_none() {
-                    0.0
-                } else {states.notional_principal.clone().unwrap().value()}
-            } * time_from_last_event
+            states.fee_accrued.clone().unwrap().value() + fee_rate_m.value() * notional_principal.value() * time_from_last_event
         }).ok();
         
 
@@ -73,10 +63,10 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         let scaling_multiplier = 1.0;
 
 
-        if scaling_effect.to_string().contains("I") {
+        if scaling_effect_m.to_string().contains("I") {
             states.interest_scaling_multiplier = InterestScalingMultiplier::new(scaling_multiplier).ok();
         }
-        if scaling_effect.to_string().contains("N") {
+        if scaling_effect_m.to_string().contains("N") {
             states.notional_scaling_multiplier = NotionalScalingMultiplier::new(scaling_multiplier).ok();
         }
 

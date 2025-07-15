@@ -8,6 +8,7 @@ use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -37,8 +38,9 @@ impl TraitStateTransitionFunction for STF_IPCB_LAM {
         states.accrued_interest = AccruedInterest::new({
             states.accrued_interest.clone().unwrap().value() + nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event
         }).ok();
-        
 
+        
+        
         states.fee_accrued = FeeAccrued::new({
             let fee_rate = {
                 if model.fee_rate.is_none() {

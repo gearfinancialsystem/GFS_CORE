@@ -84,7 +84,7 @@ macro_rules! define_struct_isodatetime {
             type Err = String;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match Self::parse_from_string(s, "%Y-%m-%d %H:%M:%S")  {
+                match Self::parse_from_string(s, "%Y-%m-%dT%H:%M:%S")  {
                     Ok(value) => $struct_name::new(value),
                     Err(_) => Err(format!("Unable to parse {} as isodatetime, THINK ABOUT REMOVING T", s)),
                 }

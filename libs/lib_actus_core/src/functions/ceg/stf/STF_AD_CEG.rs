@@ -12,7 +12,7 @@ use crate::terms::grp_fees::FeeRate::FeeRate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
+use crate::traits::TraitOptionExt::TraitOptionExt;
 
 #[allow(non_camel_case_types)]
 pub struct STF_AD_CEG;
@@ -57,10 +57,8 @@ impl TraitStateTransitionFunction for STF_AD_CEG {
                 let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
                 let role_sign = contract_role.role_sign();
 
-                states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-                    fee_accrued += role_sign * time_from_last_event / time_full_fee_cycle * fee_rate.value();
-                    fee_accrued
-                });
+                states.fee_accrued.add_assign(role_sign * time_from_last_event / time_full_fee_cycle * fee_rate.value());
+                
             }
         } else {
             let time_from_last_event = day_counter.day_count_fraction(shifted_status_date, shifted_time);
@@ -73,11 +71,8 @@ impl TraitStateTransitionFunction for STF_AD_CEG {
                 }
             }.unwrap();
 
+            states.fee_accrued.add_assign(notional_principal.value() * time_from_last_event * fee_rate.value());
 
-            states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-                fee_accrued += notional_principal.value() * time_from_last_event * fee_rate.value();
-                fee_accrued
-            });
         }
 
         states.status_date = Some(StatusDate::from(*time));

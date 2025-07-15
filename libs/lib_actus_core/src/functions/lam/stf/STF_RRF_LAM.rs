@@ -29,8 +29,8 @@ impl TraitStateTransitionFunction for STF_RRF_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
 
-        let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
-        let next_reset_rate = model.next_reset_rate.clone().expect("fee rate should always be Some");
+        let fee_rate_m = model.fee_rate.clone().expect("fee rate should always be Some");
+        let next_reset_rate_m = model.next_reset_rate.clone().expect("fee rate should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.clone().value()),
@@ -43,20 +43,11 @@ impl TraitStateTransitionFunction for STF_RRF_LAM {
         }).ok();
 
         states.fee_accrued = FeeAccrued::new({
-            let fee_rate = {
-                if model.fee_rate.is_none() {
-                    0.0
-                }
-                else { model.fee_rate.clone().unwrap().value() }
-            };
-            states.fee_accrued.clone().unwrap().value() + fee_rate * {
-                if states.notional_principal.is_none() {
-                    0.0
-                } else {states.notional_principal.clone().unwrap().value()}
-            } * time_from_last_event
+
+            states.fee_accrued.clone().unwrap().value() + fee_rate_m.value() * notional_principal.value() * time_from_last_event
         }).ok();
 
-        states.nominal_interest_rate = NominalInterestRate::new(next_reset_rate.value()).ok();
+        states.nominal_interest_rate = NominalInterestRate::new(next_reset_rate_m.value()).ok();
         states.status_date = Some(StatusDate::from(*time));
     }
 }
