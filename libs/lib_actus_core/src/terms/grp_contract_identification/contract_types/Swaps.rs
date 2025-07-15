@@ -106,6 +106,8 @@ impl TraitContractModel for SWAPS {
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         let mut events = events;
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         let cs = model.clone().contract_structure.unwrap();
         let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
         let second_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
@@ -117,7 +119,8 @@ impl TraitContractModel for SWAPS {
             })
             .cloned()
             .collect();
-
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         let second_leg_schedule: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = events.clone()
             .iter()
             .filter(|event| {
@@ -126,7 +129,8 @@ impl TraitContractModel for SWAPS {
             .cloned()
             .collect();
 
-
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         // Remove the filtered events from the main events list
         events.retain(|e| {
             !first_leg_schedule.iter().any(|first_leg_event| first_leg_event.contract_id == e.contract_id) &&
@@ -148,7 +152,8 @@ impl TraitContractModel for SWAPS {
             events.extend(first_leg_events.clone().unwrap());
             events.extend(second_leg_events.clone().unwrap());
         }
-
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         events.iter().for_each(|event| {
             if event.get_contract_id() == model.contract_id.clone().unwrap() {
                 if event.event_type == EventType::PRD || event.event_type == EventType::TD {
@@ -211,7 +216,8 @@ impl TraitContractModel for SWAPS {
                 e.compare_to(&purchase.to_iso_datetime_event()) == -1
             });
         }
-        events.sort();
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         Ok(events)
     }
 

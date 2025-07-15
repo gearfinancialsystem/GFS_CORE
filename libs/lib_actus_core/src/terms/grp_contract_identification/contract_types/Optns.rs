@@ -157,7 +157,8 @@ impl TraitContractModel for OPTNS {
         // Add external XD-event
         events.extend(observer.events(model));
 
-        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         for event in events.iter_mut() {
             event.eval(

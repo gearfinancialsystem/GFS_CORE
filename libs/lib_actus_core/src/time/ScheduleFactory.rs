@@ -30,7 +30,7 @@ where
         add_end_time: Option<bool>,
     ) -> HashSet<TO> {
         let mut times_set: HashSet<TO> = HashSet::new();
-
+        println!("{:?}", start_time);
         if cycle.is_none() {
             if start_time.is_some() {
                 let to_ins = TO::from(start_time.clone().unwrap().value());
@@ -45,11 +45,13 @@ where
                     if start_time.clone().unwrap().value() == end_time.clone().unwrap().value() {
                         let to_sup = TO::from(start_time.clone().unwrap().value());
                         times_set.remove(&to_sup);
+                        times_set.remove(&to_sup);
                     }
                 }
             }
             return times_set;
         }
+
         let ccycle = cycle.clone().unwrap();
         // let stub = CycleUtils::parse_stub(cycle.as_ref().unwrap()).expect("Invalid stub");
         let stub = cycle.clone().unwrap().value().extract_stub();
@@ -66,12 +68,14 @@ where
         // Créez le calendrier en fonction de la convention de fin de mois
         let mut new_time = start_time.clone().unwrap().value();
         let mut counter = 1;
-
+        println!("{:?}", start_time);
+        println!("{:?}", end_time);
         while new_time < end_time.clone().unwrap().value() {
             let to_ins = TO::from(new_time.clone().value());
             times_set.insert(to_ins);
             let increment = period.multiplied_by(counter);
             new_time = shifter.shift(start_time.clone().unwrap().value() + increment);
+            println!("{:?}", new_time);
             counter += 1;
         }
 

@@ -1,3 +1,4 @@
+use std::os::linux::raw::stat;
 use crate::attributes::ContractModel::ContractModel;
 use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
@@ -26,11 +27,22 @@ impl TraitPayOffFunction for POF_IP_LAM {
             time,
             states
         );
+        let status_date = states.status_date.clone().expect("No status date");
+        let interest_scaling_multiplier = states.interest_scaling_multiplier.clone().expect("interest_scaling_multiplier should exist");
+        let accrued_interest = states.accrued_interest.clone().expect("accrued_interest should exist");
+        let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominal_interest_rate should exist");
+        let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interest_calculation_base_amount should exist");
         
-        settlement_currency_fx_rate * states.interest_scaling_multiplier.clone().unwrap().value()
-            * (states.accrued_interest.clone().unwrap().value() + (day_counter.day_count_fraction(
-                                                    time_adjuster.shift_sc(&states.status_date.clone().unwrap().value()),
-                                                    time_adjuster.shift_sc(time)
-        ) * states.nominal_interest_rate.clone().unwrap().value() * states.interest_calculation_base_amount.clone().unwrap().value()))
+        
+        let timadj = day_counter.day_count_fraction(
+            time_adjuster.shift_sc(&status_date.value()),
+            time_adjuster.shift_sc(time)
+        );
+        println!("pof ip lam : {:?}", time);
+        settlement_currency_fx_rate * interest_scaling_multiplier.value()
+            * (accrued_interest.value() + (timadj * nominal_interest_rate.value() * 
+            interest_calculation_base_amount.value())
+        )
+
     }
 }

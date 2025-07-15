@@ -6,12 +6,13 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
 #[allow(non_camel_case_types)]
-pub struct STF_PRF_ANN;
-impl TraitStateTransitionFunction for STF_PRF_ANN {
+pub struct STF_PRD_ANN;
+impl TraitStateTransitionFunction for STF_PRD_ANN {
     fn eval(
         &self,
         time: &IsoDatetime,
@@ -26,24 +27,22 @@ impl TraitStateTransitionFunction for STF_PRF_ANN {
         let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should be some");
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("nominalInterestRate should be some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should be some");
-        let fee_rate = model.clone().fee_rate.clone().expect("feeRate should be some");
-        let contract_role = model.clone().contract_role.clone().expect("contract role should be some");
+
+        let fee_rate_m = model.clone().fee_rate.clone().expect("feeRate should be some");
+        let contract_role_m = model.clone().contract_role.clone().expect("contract role should be some");
         
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
                                                                   time_adjuster.shift_sc(time));
 
-        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event;
-            accrued_interest
-        });
+        states.accrued_interest.add_assign(time_from_last_event *
+            nominal_interest_rate.value() * interest_calculation_base_amount.value());
 
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
-            fee_accrued
-        });
+        states.fee_accrued.add_assign(time_from_last_event * notional_principal.value() * fee_rate_m.value());
+        
 
         states.status_date = Some(StatusDate::from(*time));
-        states.next_principal_redemption_payment = NextPrincipalRedemptionPayment::new(contract_role.role_sign() * 1.0).ok(); // implementer redemptionm utile
+        states.next_principal_redemption_payment = NextPrincipalRedemptionPayment::new(
+            contract_role_m.role_sign() * 1.0).ok(); // implementer redemptionm utile
 
     }
 }

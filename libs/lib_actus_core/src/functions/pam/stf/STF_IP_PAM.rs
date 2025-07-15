@@ -25,7 +25,7 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
     ) {
         
         let status_date = states.status_date.as_ref().expect("status date should be some");
-        let fee_rate = model.fee_rate.clone().expect("fee rate should be some");
+        let fee_rate_m = model.fee_rate.clone().expect("fee rate should be some");
         let notional_principal = states.notional_principal.clone().expect("notional principal should be some");
 
 
@@ -33,9 +33,9 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
 
         states.accrued_interest = AccruedInterest::new(0.0).ok();
 
-        states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
+        states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
 
         states.status_date = Some(StatusDate::from(*time));
-        
+        println!("stf ip pam : {:?}", time);
     }
 }

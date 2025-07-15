@@ -142,7 +142,8 @@ impl TraitContractModel for FXOUT {
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
-        events.sort();
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         for event in events.iter_mut() {
             event.eval(

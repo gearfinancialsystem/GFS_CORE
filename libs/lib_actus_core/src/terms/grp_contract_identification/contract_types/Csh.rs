@@ -33,7 +33,8 @@ impl TraitContractModel for  CSH {
         states.notional_principal = NotionalPrincipal::new(&model.contract_role.clone().unwrap().role_sign() * model.notional_principal.clone().unwrap().value()).ok();
 
         // Sort the events according to their time sequence
-        events.sort();
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         // Apply events according to their time sequence to current state
         for event in events.iter_mut() {

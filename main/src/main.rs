@@ -6,8 +6,11 @@ use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Ann::ANN;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Lax::LAX;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Nam::NAM;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Stk::STK;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Ump::UMP;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
 
@@ -15,41 +18,107 @@ use lib_actus_core::util::Value::Value;
 fn main() {
     let mut dico= HashMap::new(); // HashMap<String, String>
 
-    // LAX01
-    dico.insert("contractType".to_string(), Value::Vstring("LAX".to_string()));
-    dico.insert("contractID".to_string(), Value::Vstring("lax01".to_string()));
-    dico.insert("creatorID".to_string(), Value::Vstring("LEI01".to_string()));
-    dico.insert("counterpartyID".to_string(), Value::Vstring("LEI02".to_string()));
-    dico.insert("statusDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
+    // NAM01
+    dico.insert("contractType".to_string(), Value::Vstring("NAM".to_string()));
+    dico.insert("contractID".to_string(), Value::Vstring("nam01".to_string()));
     dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
-    dico.insert("calendar".to_string(), Value::Vstring("NC".to_string()));
-    dico.insert("businessDayConvention".to_string(), Value::Vstring("SCF".to_string()));
-    dico.insert("endOfMonthConvention".to_string(), Value::Vstring("SD".to_string()));
-    dico.insert("currency".to_string(), Value::Vstring("EUR".to_string()));
-    dico.insert("contractDealDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
-    dico.insert("initialExchangeDate".to_string(), Value::Vstring("2020-01-02T00:00:00".to_string()));
-    dico.insert("maturityDate".to_string(), Value::Vstring("2024-12-31T00:00:00".to_string()));
-    dico.insert("notionalPrincipal".to_string(), Value::Vstring("100".to_string()));
-    dico.insert("arrayCycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2021-01-01T00:00:00".to_string()));
-    dico.insert("arrayCycleOfInterestPayment".to_string(), Value::Vstring("P1YL1".to_string()));
-    dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.05".to_string()));
-    dico.insert("dayCountConvention".to_string(), Value::Vstring("30E360".to_string()));
-    dico.insert("arrayCycleAnchorDateOfPrincipalRedemption".to_string(), Value::VvecVal({
-        let mut a = Vec::new();
-        a.push(Value::Vstring("2021-01-01T00:00:00".to_string()));
-        a}));
-    dico.insert("arrayCycleOfPrincipalRedemption".to_string(), Value::VvecVal({
-        let mut a = Vec::new();
-        a.push(Value::Vstring("P1YL1".to_string()));
-        a}));
-    dico.insert("arrayNextPrincipalRedemptionPayment".to_string(), Value::VvecVal({
-        let mut a = Vec::new();
-        a.push(Value::Vstring("20".to_string()));
-        a}));
-    dico.insert("arrayIncreaseDecrease".to_string(), Value::VvecVal({
-        let mut a = Vec::new();
-        a.push(Value::Vstring("DEC".to_string()));
-        a}));
+    dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-28 00:00:00".to_string()));
+    dico.insert("initialExchangeDate".to_string(), Value::Vstring("2013-01-01 00:00:00".to_string()));
+    dico.insert("statusDate".to_string(), Value::Vstring("2012-12-30 00:00:00".to_string()));
+    dico.insert("notionalPrincipal".to_string(), Value::Vstring("5000".to_string()));
+    dico.insert("cycleAnchorDateOfPrincipalRedemption".to_string(), Value::Vstring("2013-02-01 00:00:00".to_string()));
+    dico.insert("cycleOfPrincipalRedemption".to_string(), Value::Vstring("P1ML0".to_string()));
+    dico.insert("nextPrincipalRedemptionPayment".to_string(), Value::Vstring("500".to_string()));
+    dico.insert("dayCountConvention".to_string(), Value::Vstring("A365".to_string()));
+    dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.08".to_string()));
+    dico.insert("currency".to_string(), Value::Vstring("USD".to_string()));
+    dico.insert("maturityDate".to_string(), Value::Vstring("2013-12-01 00:00:00".to_string()));
+    dico.insert("cycleAnchorDateOfRateReset".to_string(), Value::Vstring("2013-04-01 00:00:00".to_string()));
+    dico.insert("cycleOfRateReset".to_string(), Value::Vstring("P3ML1".to_string()));
+    dico.insert("marketObjectCodeOfRateReset".to_string(), Value::Vstring("LIBOR_USD".to_string()));
+    dico.insert("rateSpread".to_string(), Value::Vstring("0.10".to_string()));
+    dico.insert("fixingDays".to_string(), Value::Vstring("P0D".to_string()));
+    dico.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2013-02-01 00:00:00".to_string()));
+    dico.insert("cycleOfInterestPayment".to_string(), Value::Vstring("P1ML0".to_string()));
+    dico.insert("interestCalculationBase".to_string(), Value::Vstring("NT".to_string()));
+
+
+    // UMP01
+    // dico.insert("contractID".to_string(), Value::Vstring("ump01".to_string()));
+    // dico.insert("contractType".to_string(), Value::Vstring("UMP".to_string()));
+    // dico.insert("statusDate".to_string(), Value::Vstring("2012-12-15 00:00:00".to_string()));
+    // dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    // dico.insert("currency".to_string(), Value::Vstring("USD".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-15 00:00:00".to_string()));
+    // dico.insert("initialExchangeDate".to_string(), Value::Vstring("2013-01-01 00:00:00".to_string()));
+    // dico.insert("notionalPrincipal".to_string(), Value::Vstring("1000".to_string()));
+    // dico.insert("dayCountConvention".to_string(), Value::Vstring("E30360".to_string()));
+    // dico.insert("xDayNotice".to_string(), Value::Vstring("P1M".to_string()));
+
+
+
+    // ANN01
+    // dico.insert("contractType".to_string(), Value::Vstring("ANN".to_string()));
+    // dico.insert("contractID".to_string(), Value::Vstring("ann01".to_string()));
+    // dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-28 00:00:00".to_string()));
+    // dico.insert("initialExchangeDate".to_string(), Value::Vstring("2013-01-01 00:00:00".to_string()));
+    // dico.insert("statusDate".to_string(), Value::Vstring("2012-12-30 00:00:00".to_string()));
+    // dico.insert("notionalPrincipal".to_string(), Value::Vstring("5000".to_string()));
+    // dico.insert("cycleAnchorDateOfPrincipalRedemption".to_string(), Value::Vstring("2013-02-01 00:00:00".to_string()));
+    // dico.insert("nextPrincipalRedemptionPayment".to_string(), Value::Vstring("434.866594118346".to_string()));
+    // dico.insert("dayCountConvention".to_string(), Value::Vstring("A365".to_string()));
+    // dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.08".to_string()));
+    // dico.insert("currency".to_string(), Value::Vstring("USD".to_string()));
+    // dico.insert("cycleOfPrincipalRedemption".to_string(), Value::Vstring("P1ML0".to_string()));
+    // dico.insert("maturityDate".to_string(), Value::Vstring("2014-01-01 00:00:00".to_string()));
+    // dico.insert("rateMultiplier".to_string(), Value::Vstring("1.0".to_string()));
+    // dico.insert("rateSpread".to_string(), Value::Vstring("0.0".to_string()));
+    // dico.insert("fixingDays".to_string(), Value::Vstring("P0D".to_string()));
+    // dico.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2013-02-01 00:00:00".to_string()));
+    // dico.insert("cycleOfInterestPayment".to_string(), Value::Vstring("P1ML0".to_string()));
+
+    // LAX01
+    // dico.insert("contractType".to_string(), Value::Vstring("LAX".to_string()));
+    // dico.insert("contractID".to_string(), Value::Vstring("lax01".to_string()));
+    // dico.insert("creatorID".to_string(), Value::Vstring("LEI01".to_string()));
+    // dico.insert("counterpartyID".to_string(), Value::Vstring("LEI02".to_string()));
+    // dico.insert("statusDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
+    // dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    // dico.insert("calendar".to_string(), Value::Vstring("NC".to_string()));
+    // dico.insert("businessDayConvention".to_string(), Value::Vstring("SCF".to_string()));
+    // dico.insert("endOfMonthConvention".to_string(), Value::Vstring("SD".to_string()));
+    // dico.insert("currency".to_string(), Value::Vstring("EUR".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::Vstring("2020-01-01T00:00:00".to_string()));
+    // dico.insert("initialExchangeDate".to_string(), Value::Vstring("2020-01-02T00:00:00".to_string()));
+    // dico.insert("maturityDate".to_string(), Value::Vstring("2024-12-31T00:00:00".to_string()));
+    // dico.insert("notionalPrincipal".to_string(), Value::Vstring("100".to_string()));
+    // dico.insert("arrayCycleAnchorDateOfInterestPayment".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("2021-01-01T00:00:00".to_string()));
+    //     a}));
+    // dico.insert("arrayCycleOfInterestPayment".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("P1YL1".to_string()));
+    //     a}));
+    // dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.05".to_string()));
+    // dico.insert("dayCountConvention".to_string(), Value::Vstring("E30360".to_string())); //  30E360
+    // dico.insert("arrayCycleAnchorDateOfPrincipalRedemption".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("2021-01-01T00:00:00".to_string()));
+    //     a}));
+    // dico.insert("arrayCycleOfPrincipalRedemption".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("P1YL1".to_string()));
+    //     a}));
+    // dico.insert("arrayNextPrincipalRedemptionPayment".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("20".to_string()));
+    //     a}));
+    // dico.insert("arrayIncreaseDecrease".to_string(), Value::VvecVal({
+    //     let mut a = Vec::new();
+    //     a.push(Value::Vstring("DEC".to_string()));
+    //     a}));
 
 
 
@@ -170,9 +239,9 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = LAX::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = NAM::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = LAX::apply(events_res, cm, &risk_factor_model).ok().unwrap();
+            let events2 = NAM::apply(events_res, cm, &risk_factor_model).ok().unwrap();
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);

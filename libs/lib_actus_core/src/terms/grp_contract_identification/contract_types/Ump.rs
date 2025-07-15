@@ -51,14 +51,15 @@ impl TraitContractModel for UMP {
         events.push(e.to_iso_datetime_event());
 
         // Interest payment capitalization events
+        let s = ScheduleFactory::create_schedule(
+            &model.cycle_anchor_date_of_interest_payment,
+            &Some(to.clone().unwrap()),
+            &model.cycle_of_interest_payment,
+            &model.end_of_month_convention,
+            Some(false),
+        );
         let interest_events = EventFactory::create_events(
-            &ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_interest_payment,
-                &Some(to.clone().unwrap()),
-                &model.cycle_of_interest_payment,
-                &model.end_of_month_convention,
-                Some(false),
-            ),
+            &s,
             &EventType::IPCI,
             &model.currency,
             Some(Rc::new(POF_IPCI_PAM)),
@@ -70,14 +71,15 @@ impl TraitContractModel for UMP {
         events.extend(interest_events);
 
         // Rate reset events
+        let s = ScheduleFactory::create_schedule(
+            &model.cycle_anchor_date_of_rate_reset,
+            &Some(to.clone().unwrap()),
+            &model.cycle_of_rate_reset,
+            &model.end_of_month_convention,
+            Some(false),
+        );
         let mut rate_reset_events = EventFactory::create_events(
-            &ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_rate_reset,
-                &Some(to.clone().unwrap()),
-                &model.cycle_of_rate_reset,
-                &model.end_of_month_convention,
-                Some(false),
-            ),
+            &s,
             &EventType::RR,
             &model.currency,
             Some(Rc::new(POF_RR_PAM)),
@@ -188,7 +190,8 @@ impl TraitContractModel for UMP {
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events.clone();
 
-        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         for event in events.iter_mut() {
             event.eval(

@@ -9,6 +9,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -32,55 +33,32 @@ impl TraitStateTransitionFunction for STF_PR2_NAM {
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always be Some");
         //let contract_role = model.contract_role.clone().expect("contract role should always be Some");
+        let accrued_interest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
+
+        let fee_rate_m = model.fee_rate.clone().expect("feeRate model should be Some");
+
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.value()),
             time_adjuster.shift_sc(time)
         );
 
-        states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
-            accrued_interest += nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event;
-            accrued_interest
-        });
+        states.accrued_interest.add_assign(nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event);
+        states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
 
-
-
-        states.fee_accrued = states.fee_accrued.clone().map(|mut fee_accrued| {
-            
-            let fee_rate = {
-                if model.fee_rate.is_none() {
-                    FeeRate::new(0.0).ok().unwrap()
-                }
-                else {
-                    model.fee_rate.clone().unwrap()
-                }
-            };
-            fee_accrued += fee_rate.value() * notional_principal.value() * time_from_last_event;
-            fee_accrued
-        });
 
         let contract_role = model.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
-        let redemption_amount = next_principal_redemption_payment.value() - 
-            role_sign * {
-                if states.accrued_interest.is_none() {
-                    AccruedInterest::new(0.0).ok().unwrap().value()
-                }
-                else {
-                    states.accrued_interest.clone().unwrap().value()
-                }
-            };
+        let redemption_amount = next_principal_redemption_payment.value() -
+            (role_sign * states.accrued_interest.clone().unwrap().value());
 
-        let redemption = redemption_amount - redemption_amount.max(0.0).min(notional_principal.value().abs());
-        
-        states.notional_principal = NotionalPrincipal::new({
-            if states.notional_principal.is_none() {
-                NotionalPrincipal::new(0.0).ok().unwrap().value()
-            }
-            else {
-                states.notional_principal.clone().unwrap().value()
-            }
-        } - role_sign * redemption).ok();
+        let redemption = redemption_amount -
+            (0.0_f64.max( redemption_amount - notional_principal.value().abs()));
+
+        states.notional_principal.sub_assign(role_sign * redemption);
+
+
+
         states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
         states.status_date = Some(StatusDate::from(*time));
     }

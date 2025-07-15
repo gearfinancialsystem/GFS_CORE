@@ -8,6 +8,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitContractModel {
     fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+    
     fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
              model: &ContractModel,
              observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;

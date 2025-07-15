@@ -18,7 +18,7 @@ use crate::util::RedemptionUtils::RedemptionUtils;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 use crate::functions::{
-    ann::stf::STF_PRD_ANN::STF_PRF_ANN,
+    ann::stf::STF_PRD_ANN::STF_PRD_ANN,
     lam::pof::{
         POF_IP_LAM::POF_IP_LAM, POF_IPCB_LAM::POF_IPCB_LAM, POF_PRD_LAM::POF_PRD_LAM, POF_TD_LAM::POF_TD_LAM,
     },
@@ -31,6 +31,7 @@ use crate::functions::{
     pam::pof::{POF_FP_PAM::POF_FP_PAM, POF_IED_PAM::POF_IED_PAM, POF_IPCI_PAM::POF_IPCI_PAM, POF_MD_PAM::POF_MD_PAM, POF_RR_PAM::POF_RR_PAM, POF_SC_PAM::POF_SC_PAM,},
     pam::stf::{STF_IP_PAM::STF_IP_PAM, STF_TD_PAM::STF_TD_PAM}
 };
+
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
@@ -94,7 +95,7 @@ impl TraitContractModel for ANN {
         } else {
             stf = Rc::new(STF_PR2_NAM)
         };
-
+        println!("{:?}", &model.cycle_anchor_date_of_principal_redemption);
         let a = &ScheduleFactory::<
             CycleAnchorDateOfPrincipalRedemption,
             MaturityDate,
@@ -127,7 +128,7 @@ impl TraitContractModel for ANN {
                 &EventType::PRF,
                 &model.currency,
                 Some(Rc::new(POF_RR_PAM)),
-                Some(Rc::new(STF_PRF_ANN)),
+                Some(Rc::new(STF_PRD_ANN)),
                 &model.business_day_adjuster.clone(),
                 &model.contract_id,
             );
@@ -174,7 +175,9 @@ impl TraitContractModel for ANN {
             Rc::new(STF_IPCI2_LAM)
         };
 
-        if model.nominal_interest_rate.is_some() && (model.cycle_of_interest_payment.is_some() || model.cycle_anchor_date_of_interest_payment.is_some()) {
+        if model.nominal_interest_rate.is_some() &&
+            (model.cycle_of_interest_payment.is_some() ||
+                model.cycle_anchor_date_of_interest_payment.is_some()) {
             let mut interest_events = EventFactory::create_events(
                 &ScheduleFactory::<CycleAnchorDateOfInterestPayment,
                 MaturityDate,
@@ -264,7 +267,8 @@ impl TraitContractModel for ANN {
             }
 
             events.extend(interest_events);
-        } else if model.capitalization_end_date.is_some() {
+        }
+        else if model.capitalization_end_date.is_some() {
             let e: ContractEvent<CapitalizationEndDate, CapitalizationEndDate> = EventFactory::create_event(
                 &model.capitalization_end_date.clone(),
                 &EventType::IPCI,
@@ -276,7 +280,8 @@ impl TraitContractModel for ANN {
             );
             events.push(e.to_iso_datetime_event());
 
-        } else if model.cycle_of_interest_payment.is_none() && model.cycle_anchor_date_of_interest_payment.is_none() {
+        }
+        else if model.cycle_of_interest_payment.is_none() && model.cycle_anchor_date_of_interest_payment.is_none() {
 
             let s = ScheduleFactory::<
                 CycleAnchorDateOfPrincipalRedemption,
@@ -346,7 +351,7 @@ impl TraitContractModel for ANN {
             &model.clone().business_day_adjuster,
             &model.contract_id,
         );
-
+        // adapt fixed rate reset event
         if let Some(next_reset_rate) = model.next_reset_rate.clone() {
             let status_event: ContractEvent<StatusDate, StatusDate> = EventFactory::create_event(
                 &model.status_date.clone(),
@@ -367,24 +372,26 @@ impl TraitContractModel for ANN {
 
 
         }
-
+        // add all rate reset events
         events.extend(rate_reset_events.clone());
 
-        let prf_schedule: HashSet<_> = rate_reset_events.clone().iter().map(|e| e.event_time.unwrap()).collect();
+        // add all rate reset events
+        let prf_schedule: HashSet<_> = rate_reset_events.clone().iter()
+            .map(|e| e.event_time.unwrap()).collect();
         if !prf_schedule.is_empty() {
             let es = EventFactory::create_events(
                 &prf_schedule,
                 &EventType::PRF,
                 &model.currency,
                 Some(Rc::new(POF_RR_PAM)),
-                Some(Rc::new(STF_PRF_ANN)),
+                Some(Rc::new(STF_PRD_ANN)),
                 &model.business_day_adjuster,
                 &model.contract_id,
             );
             events.extend(es);
         }
 
-        // Scaling events (SC)
+        // scaling (if specified)
         if let Some(scaling_effect) = &model.scaling_effect {
             if scaling_effect.to_string().contains('I') || scaling_effect.to_string().contains('N') {
                 let s = ScheduleFactory::create_schedule(
@@ -461,7 +468,8 @@ impl TraitContractModel for ANN {
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
         let mut events = events;
 
-        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         for event in &mut events {
             event.eval(
@@ -485,7 +493,7 @@ impl TraitContractModel for ANN {
             );
 
             events.retain(|e|
-                e.event_type == EventType::AD || e >= &purchase_event.to_iso_datetime_event());
+                !(e.event_type != EventType::AD && e.compare_to(&purchase_event.to_iso_datetime_event()) == -1) );
         }
 
         Ok(events)

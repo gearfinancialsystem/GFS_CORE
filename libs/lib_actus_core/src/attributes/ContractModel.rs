@@ -83,6 +83,7 @@ use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTermina
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::Quantity::Quantity;
 use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+//use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect::OOO;
 use crate::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_notional_principal::XDayNotice::XDayNotice;
@@ -740,12 +741,19 @@ impl ContractModel {
 
 
 
+                let cycle_anchor_date_of_rate_reset = CycleAnchorDateOfRateReset::provide_from_input_dict(sm, "cycleAnchorDateOfRateReset");
                 let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset");
-                let cycle_anchor_date_of_rate_reset = if cycle_of_rate_reset.is_none() {
-                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
-                    CycleAnchorDateOfRateReset::from_str(&a).ok()
+                let cycle_anchor_date_of_rate_reset = if cycle_anchor_date_of_rate_reset.is_some() {
+                    cycle_anchor_date_of_rate_reset
                 } else {
-                    CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
+                    if cycle_of_rate_reset.is_none() {
+                        None
+                    }
+                    else {
+                        let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value();
+                        CycleAnchorDateOfRateReset::new(a).ok()
+                    }
+
                 };
 
                 let cycle_of_interest_calculation_base = CycleOfInterestCalculationBase::provide_from_input_dict (sm, "cycleOfInterestCalculationBase");
@@ -767,12 +775,18 @@ impl ContractModel {
                 let cycle_of_principal_redemption = CycleOfPrincipalRedemption::provide_from_input_dict (sm, "cycleOfPrincipalRedemption");
 
                 let b = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate");
-                let cycle_anchor_date_of_principal_redemption = if let Some(initial_exchange_date) = b {
-                    let a = initial_exchange_date.value().to_string();
-                    CycleAnchorDateOfPrincipalRedemption::from_str(&a).ok()
-                } else {
-                    CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption")
-                };
+                let z = CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption");
+                let cycle_anchor_date_of_principal_redemption = if z.is_some() {
+                    z
+                }
+                else { CycleAnchorDateOfPrincipalRedemption::new(b.unwrap().value()).ok() };
+
+                // let cycle_anchor_date_of_principal_redemption = if let Some(initial_exchange_date) = b {
+                //     let a = initial_exchange_date.value().to_string();
+                //     CycleAnchorDateOfPrincipalRedemption::from_str(&a).ok()
+                // } else {
+                //     CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption")
+                // };
 
                 let business_day_adjuster = {
                     let calendar_clone = Some(Rc::clone(&calendar));
@@ -788,6 +802,56 @@ impl ContractModel {
                     EndOfMonthConvention::default()
                 } else {eomc.unwrap()};
 
+                let w = AccruedInterest::provide_from_input_dict(sm, "accruedInterest");
+                let accrued_interest = if w.is_some() {
+                    w
+                }
+                else {
+                    AccruedInterest::new(0.0).ok()
+                };
+
+
+                let w = FeeRate::provide_from_input_dict(sm, "feeRate");
+                let fee_rate = if w.is_some() {
+                    w
+                }
+                else {
+                    FeeRate::new(0.0).ok()
+                };
+
+
+                let w = PeriodCap::provide_from_input_dict(sm, "periodCap");
+                let period_cap = if w.is_some() {
+                    w
+                }
+                else {
+                    PeriodCap::new(f64::INFINITY).ok()
+                };
+
+                let w = PeriodFloor::provide_from_input_dict(sm, "periodFloor");
+                let period_floor = if w.is_some() {
+                    w
+                }
+                else {
+                    PeriodFloor::new(f64::NEG_INFINITY).ok()
+                };
+
+
+                let w = LifeCap::provide_from_input_dict(sm, "lifeCap");
+                let life_cap = if w.is_some() {
+                    w
+                }
+                else {
+                    LifeCap::new(f64::INFINITY).ok()
+                };
+
+                let w = LifeFloor::provide_from_input_dict(sm, "lifeFloor");
+                let life_floor = if w.is_some() {
+                    w
+                }
+                else {
+                    LifeFloor::new(f64::NEG_INFINITY).ok()
+                };
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
@@ -801,13 +865,13 @@ impl ContractModel {
                     cycle_anchor_date_of_fee: cycle_anchor_date_of_fee,
                     cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
                     fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
-                    fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+                    fee_rate: fee_rate,
                     fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
                     cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
                     nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
                     day_count_convention: day_count_convention,
-                    accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
+                    accrued_interest: accrued_interest,
                     capitalization_end_date: CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
                     cycle_point_of_rate_reset: cycle_point_of_rate_reset,
                     cycle_point_of_interest_payment: CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
@@ -835,10 +899,10 @@ impl ContractModel {
                     cycle_of_rate_reset: CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset"),
                     rate_spread: RateSpread::provide_from_input_dict(sm, "rateSpread"),
                     market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
-                    life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
-                    life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
-                    period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
-                    period_floor: PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+                    life_cap: life_cap,
+                    life_floor: life_floor,
+                    period_cap: period_cap,
+                    period_floor: period_floor,
                     fixing_period: FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
                     next_reset_rate: NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
@@ -889,6 +953,10 @@ impl ContractModel {
                     interest_calculation_base_tmp
                 };
 
+                let mut fee_rate = FeeRate::provide_from_input_dict(sm, "feeRate");
+                if fee_rate.is_none() {
+                    fee_rate = FeeRate::new(0.0).ok();
+                }
 
                 let b = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate");
                 let cycle_anchor_date_of_principal_redemption = if let Some(initial_exchange_date) = b {
@@ -908,11 +976,15 @@ impl ContractModel {
                 };
 
                 let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+                let b = eomc.unwrap();
                 let end_of_month_convention = if eomc.is_none() {
                     EndOfMonthConvention::default()
-                } else {eomc.unwrap()};
+                } else {
+                    eomc.unwrap()
+                };
+                let z = ArrayCycleOfInterestPayment::provide_from_input_dict(sm, "arrayCycleOfInterestPayment");
 
-
+                println!("ok");
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
@@ -940,7 +1012,7 @@ impl ContractModel {
                     array_fixed_variable: ArrayFixedVariable::provide_from_input_dict(sm, "arrayFixedVariable"),
                     market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
                     contract_type: ct_str.to_string(),
-                    fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+                    fee_rate: fee_rate,
                     end_of_month_convention: end_of_month_convention,
                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
                     rate_spread: RateSpread::provide_from_input_dict(sm, "rateSpread"),
@@ -1152,6 +1224,8 @@ impl ContractModel {
             "UMP" => {
                 // Déclarations simples sans dépendances
                 let calendar = Calendar::provide_rc(sm, "calendar");
+
+                // doit etre None a priori
                 let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
                 let maturity_date = if let Some(a) = maturity_date_tmp {
                     Some(Rc::new(a))
@@ -1167,27 +1241,40 @@ impl ContractModel {
                     CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee")
                 };
 
-
-                let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
-                let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
-                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
-                    CycleAnchorDateOfInterestPayment::from_str(&a).ok()
+                let mut cycle_anchor_date_of_interest_payment = CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment");
+                let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict (sm, "cycleOfInterestPayment");
+                let cycle_anchor_date_of_interest_payment = if cycle_anchor_date_of_interest_payment.is_some() {
+                    cycle_anchor_date_of_interest_payment
                 } else {
-                    CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
+                    if cycle_of_interest_payment.is_some() {
+                        let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value();
+                        CycleAnchorDateOfInterestPayment::new(a).ok()
+                    }
+                    else {
+                        None
+                    }
                 };
 
-                let day_count_convention = if let Some(maturity_date) = &maturity_date {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
-                } else {
-                    None
-                };
+                let day_count_convention =
+                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", maturity_date.clone(), Some(Rc::clone(&calendar)));
+                // let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                //
+                // } else {
+                //     None
+                // };
 
-                let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset");
-                let cycle_anchor_date_of_rate_reset = if cycle_of_rate_reset.is_none() {
-                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
-                    CycleAnchorDateOfRateReset::from_str(&a).ok()
+                let mut cycle_anchor_date_of_rate_reset = CycleAnchorDateOfRateReset::provide_from_input_dict(sm, "cycleAnchorDateOfRateReset");
+                let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict (sm, "cycleOfRateReset");
+                let cycle_anchor_date_of_rate_reset = if cycle_anchor_date_of_rate_reset.is_some() {
+                    cycle_anchor_date_of_rate_reset
                 } else {
-                    CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
+                    if cycle_of_rate_reset.is_some() {
+                        let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value();
+                        CycleAnchorDateOfRateReset::new(a).ok()
+                    }
+                    else {
+                        None
+                    }
                 };
 
                 let business_day_adjuster =  {
@@ -1198,14 +1285,40 @@ impl ContractModel {
                         calendar_clone.unwrap()
                     )
                 };
-
-
-                let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
-                let maturity_date = if let Some(a) = maturity_date_tmp {
-                    Some(Rc::new(a))
-                } else {
-                    None
+                let w = NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate");
+                let nominal_interest_rate = if w.is_some() {
+                    w
+                }
+                else {
+                    NominalInterestRate::new(0.0).ok()
                 };
+
+                let w = FeeRate::provide_from_input_dict(sm, "feeRate");
+                let fee_rate = if w.is_some() {
+                    w
+                }
+                else {
+                    FeeRate::new(0.0).ok()
+                };
+
+                let w = FeeAccrued::provide_from_input_dict(sm, "feeAccrued");
+                let fee_accrued = if w.is_some() { w } else { FeeAccrued::new(0.0).ok() };
+
+
+                let w = PeriodCap::provide_from_input_dict(sm, "periodCap");
+                let period_cap = if w.is_some() { w } else { PeriodCap::new(f64::INFINITY).ok() };
+
+                let w = PeriodFloor::provide_from_input_dict(sm, "periodFloor");
+                let period_floor = if w.is_some() { w } else { PeriodFloor::new(f64::NEG_INFINITY).ok() };
+
+                let w = LifeCap::provide_from_input_dict(sm, "lifeCap");
+                let life_cap = if w.is_some() { w } else { LifeCap::new(f64::INFINITY).ok() };
+
+                let w = LifeFloor::provide_from_input_dict(sm, "lifeFloor");
+                let life_floor = if w.is_some() { w } else { LifeFloor::new(f64::NEG_INFINITY).ok() };
+
+
+
                 let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
                 let end_of_month_convention = if eomc.is_none() {
                     EndOfMonthConvention::default()
@@ -1224,11 +1337,11 @@ impl ContractModel {
                     cycle_anchor_date_of_fee: cycle_anchor_date_of_fee,
                     cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
                     fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
-                    fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
-                    fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
+                    fee_rate: fee_rate,
+                    fee_accrued: fee_accrued,
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
-                    cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
-                    nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
+                    cycle_of_interest_payment:cycle_of_interest_payment,
+                    nominal_interest_rate: nominal_interest_rate,
                     day_count_convention: day_count_convention,
                     accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
                     currency: Currency::provide_from_input_dict(sm, "currency"),
@@ -1244,10 +1357,10 @@ impl ContractModel {
                     fixing_period: FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
                     next_reset_rate: NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
-                    life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
-                    life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
-                    period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
-                    period_floor: PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+                    life_cap: life_cap,
+                    life_floor: life_floor,
+                    period_cap: period_cap,
+                    period_floor: period_floor,
                     maturity_date: maturity_date,
                     ..Default::default()
                 };
@@ -1443,7 +1556,98 @@ impl ContractModel {
                     EndOfMonthConvention::default()
                 } else {eomc.unwrap()};
 
+
+                let w = AccruedInterest::provide_from_input_dict(sm, "accruedInterest");
+                let accrued_interest = if w.is_some() {
+                    w
+                }
+                else {
+                    AccruedInterest::new(0.0).ok()
+                };
+
+
+                let w = FeeRate::provide_from_input_dict(sm, "feeRate");
+                let fee_rate = if w.is_some() {
+                    w
+                }
+                else {
+                    FeeRate::new(0.0).ok()
+                };
+
+
+                let w = PeriodCap::provide_from_input_dict(sm, "periodCap");
+                let period_cap = if w.is_some() {
+                    w
+                }
+                else {
+                    PeriodCap::new(f64::INFINITY).ok()
+                };
+
+                let w = PeriodFloor::provide_from_input_dict(sm, "periodFloor");
+                let period_floor = if w.is_some() {
+                    w
+                }
+                else {
+                    PeriodFloor::new(f64::NEG_INFINITY).ok()
+                };
+
+
+                let w = LifeCap::provide_from_input_dict(sm, "lifeCap");
+                let life_cap = if w.is_some() {
+                    w
+                }
+                else {
+                    LifeCap::new(f64::INFINITY).ok()
+                };
+
+                let w = LifeFloor::provide_from_input_dict(sm, "lifeFloor");
+                let life_floor = if w.is_some() {
+                    w
+                }
+                else {
+                    LifeFloor::new(f64::NEG_INFINITY).ok()
+                };
+
+                let mut cycle_anchor_date_of_principal_redemption = CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(sm, "cycleAnchorDateOfPrincipalRedemption");
+                cycle_anchor_date_of_principal_redemption = if cycle_anchor_date_of_principal_redemption.is_some() {
+                    cycle_anchor_date_of_principal_redemption
+                }
+                else {
+                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate");
+                    CycleAnchorDateOfPrincipalRedemption::new(a.unwrap().value()).ok()
+                };
+
+
+                let mut scaling_effect = ScalingEffect::provide_from_input_dict(sm, "scalingEffect");
+                scaling_effect = if scaling_effect.is_some() {
+                    scaling_effect
+                }
+                else {
+                    Some(ScalingEffect::new("OOO").unwrap())
+                };
+
+                let mut premium_discount_at_ied= PremiumDiscountAtIED::provide_from_input_dict(sm, "premiumDiscountAtIED");
+                premium_discount_at_ied = if premium_discount_at_ied.is_some() {
+                    premium_discount_at_ied
+                }
+                else {
+                    PremiumDiscountAtIED::new(0.0).ok()
+                };
+
+
+                let mut next_principal_redemption_payment= NextPrincipalRedemptionPayment::provide_from_input_dict(sm, "nextPrincipalRedemptionPayment");
+                next_principal_redemption_payment = if next_principal_redemption_payment.is_some() {
+                    next_principal_redemption_payment
+                }
+                else {
+                    None
+                };
+
                 let cm = ContractModel {
+                    next_principal_redemption_payment: next_principal_redemption_payment,
+                    premium_discount_at_ied: premium_discount_at_ied,
+                    cycle_anchor_date_of_principal_redemption: cycle_anchor_date_of_principal_redemption,
+                    cycle_of_principal_redemption: CycleOfPrincipalRedemption::provide_from_input_dict(sm, "cycleOfPrincipalRedemption"),
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
                     end_of_month_convention: end_of_month_convention,
@@ -1456,13 +1660,13 @@ impl ContractModel {
                     cycle_anchor_date_of_fee: cycle_anchor_date_of_fee,
                     cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
                     fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
-                    fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+                    fee_rate: fee_rate,
                     fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
                     cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
                     cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
                     nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
                     day_count_convention: day_count_convention,
-                    accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
+                    accrued_interest: accrued_interest,
                     capitalization_end_date: CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
                     cycle_point_of_rate_reset: cycle_point_of_rate_reset,
                     cycle_point_of_interest_payment: CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
@@ -1479,7 +1683,7 @@ impl ContractModel {
                     interest_scaling_multiplier: InterestScalingMultiplier::provide_from_input_dict(sm, "interestScalingMultiplier"),
                     cycle_anchor_date_of_scaling_index: cycle_anchor_date_of_scaling_index,
                     cycle_of_scaling_index: CycleOfScalingIndex::provide_from_input_dict(sm, "cycleOfScalingIndex"),
-                    scaling_effect: ScalingEffect::provide_from_input_dict(sm, "scalingEffect"),
+                    scaling_effect: scaling_effect,
                     cycle_anchor_date_of_optionality: cycle_anchor_date_of_optionality,
                     cycle_of_optionality: CycleOfOptionality::provide_from_input_dict(sm, "cycleOfOptionality"),
                     penalty_type: PenaltyType::provide_from_input_dict(sm, "penaltyType"),
@@ -1489,10 +1693,10 @@ impl ContractModel {
                     cycle_of_rate_reset: CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset"),
                     rate_spread: RateSpread::provide_from_input_dict(sm, "rateSpread"),
                     market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
-                    life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
-                    life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
-                    period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
-                    period_floor: PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+                    life_cap: life_cap,
+                    life_floor: life_floor,
+                    period_cap: period_cap,
+                    period_floor: period_floor,
                     fixing_period: FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
                     next_reset_rate: NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),

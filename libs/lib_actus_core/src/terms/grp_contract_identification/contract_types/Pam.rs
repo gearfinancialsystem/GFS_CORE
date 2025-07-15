@@ -368,7 +368,8 @@ impl TraitContractModel for PAM {
         //////////////////////////////////////////////////
         // Sort events according to their time sequence //
         //////////////////////////////////////////////////
-        events.sort();
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //

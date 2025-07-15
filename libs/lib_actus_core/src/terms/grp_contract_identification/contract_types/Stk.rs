@@ -143,7 +143,8 @@ impl TraitContractModel for STK {
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
         let mut events = events.clone();
         // Sort events according to their time sequence
-        events.sort();
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         events.iter_mut().for_each(|e| {
             e.eval(

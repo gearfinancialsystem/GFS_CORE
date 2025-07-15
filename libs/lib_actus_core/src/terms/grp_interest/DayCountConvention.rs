@@ -54,7 +54,7 @@ impl DayCountConvention {
         }
     }
 
-    pub fn day_count_fraction(&self,start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    pub fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         match self {
             DayCountConvention::AAISDA(AAISDA) => AAISDA.day_count_fraction(start_time, end_time),
             DayCountConvention::A360(A360) => A360.day_count_fraction(start_time, end_time),

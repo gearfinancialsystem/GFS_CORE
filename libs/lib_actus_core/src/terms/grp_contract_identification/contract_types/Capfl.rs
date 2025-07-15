@@ -112,10 +112,14 @@ impl TraitContractModel for CAPFL {
     }
 
     fn apply(
-        events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
         observer: &RiskFactorModel,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
+
         // Evaluate events of underlying without cap/floor applied
         let underlying_model = model.contract_structure.clone().unwrap().0
             .iter()

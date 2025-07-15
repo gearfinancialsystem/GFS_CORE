@@ -34,9 +34,11 @@ impl TraitPayOffFunction for POF_PR_NAM {
             time_adjuster.shift_sc(&time)
         );
 
-        let redemption_amount = next_principal_redemption_payment.value() - contract_role.role_sign() * (accrued_interest.value() + time_from_last_event * nominal_interest_rate.value() * interest_calculation_base_amount.value());
+        let redemption_amount = next_principal_redemption_payment.value() - 
+            contract_role.role_sign() * 
+                (accrued_interest.value() + time_from_last_event * nominal_interest_rate.value() * interest_calculation_base_amount.value());
 
-        let redemption = redemption_amount - redemption_amount.max(0.0) - notional_principal.value().abs();
+        let redemption = redemption_amount - 0.0_f64.max(redemption_amount - notional_principal.value().abs());
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -45,6 +47,8 @@ impl TraitPayOffFunction for POF_PR_NAM {
             states
         );
         
-        settlement_currency_fx_rate * contract_role.role_sign() * notional_scaling_multiplier.value() * redemption
+        settlement_currency_fx_rate * 
+            contract_role.role_sign() * 
+            notional_scaling_multiplier.value() * redemption
     }
 }

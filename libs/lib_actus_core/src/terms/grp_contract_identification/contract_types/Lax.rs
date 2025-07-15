@@ -425,7 +425,7 @@ impl TraitContractModel for LAX {
         events.retain(|e| e.event_time >= status_event.event_time);
 
         // Remove all post to-date events
-        let to_event = EventFactory::create_event(
+        let to_event: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
             &Some(to.clone().unwrap()),
             &EventType::AD,
             &model.currency,
@@ -435,7 +435,21 @@ impl TraitContractModel for LAX {
             &model.contract_id,
         );
 
-        events.retain(|e| e.event_time <= to_event.event_time);
+        // remove all pre-status date events
+        events.retain(|e| e.compare_to(&to_event.to_iso_datetime_event()) != -1);
+
+
+        let to_event : ContractEvent<MaturityDate, MaturityDate>= EventFactory::create_event(
+            &Some(maturity.clone()),
+            &EventType::AD,
+            &model.currency,
+            None,
+            None,
+            &None,
+            &model.contract_id,
+        );
+        // remove all post to-date events
+        events.retain(|e| e.compare_to(&to_event.to_iso_datetime_event()) != 1);
 
         // Sort events according to their time of occurrence
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
@@ -448,15 +462,17 @@ impl TraitContractModel for LAX {
         let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity)) ).expect("Failed to initialize state space");
         let mut events = events.clone();
 
-        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
 
         for event in events.iter_mut() {
+            
             event.eval(
                 &mut states,
                 model,
                 observer,
-                model.day_count_convention.as_ref().unwrap(),
-                model.business_day_adjuster.as_ref().unwrap(),
+                &model.day_count_convention.clone().unwrap(),
+                &model.business_day_adjuster.clone().unwrap(),
             );
         }
 

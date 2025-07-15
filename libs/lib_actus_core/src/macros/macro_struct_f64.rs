@@ -56,13 +56,13 @@ macro_rules! define_struct_f64 {
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
                 }
                 $(
-                    else if !($condition) {
+                    else if $value.is_finite() && !($condition) {
                         Err($error.to_string())
                     }
                 )+
@@ -76,13 +76,13 @@ macro_rules! define_struct_f64 {
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
                 }
                 $(
-                    else if !($condition) {
+                    else if $value.is_finite() && !($condition) {
                         Err($error.to_string())
                     }
                 )+
@@ -172,13 +172,13 @@ macro_rules! define_struct_f64 {
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
                 }
                 $(
-                    else if !($condition) {
+                    else if $value.is_finite() && !($condition) {
                         Err($error.to_string())
                     }
                 )+
@@ -192,13 +192,13 @@ macro_rules! define_struct_f64 {
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
                 }
                 $(
-                    else if !($condition) {
+                    else if $value.is_finite() && !($condition) {
                         Err($error.to_string())
                     }
                 )+
@@ -279,11 +279,12 @@ macro_rules! define_struct_f64 {
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
-                } else {
+                }
+                else {
                     Ok($struct_name($value))
                 }
             }
@@ -293,11 +294,12 @@ macro_rules! define_struct_f64 {
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
-                } else {
+                }
+                else {
                     self.0 = $value;
                     Ok(())
                 }
@@ -381,11 +383,12 @@ macro_rules! define_struct_f64 {
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
-                } else {
+                }
+                else {
                     Ok($struct_name($value))
                 }
             }
@@ -395,11 +398,12 @@ macro_rules! define_struct_f64 {
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
-                if !$value.is_finite() {
-                    Err(concat!(stringify!($struct_name), " value must be finite and not NaN").to_string())
-                } else if $value > f64::MAX {
+                if $value.is_nan() {
+                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                } else if $value.is_finite() && $value > f64::MAX {
                     Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
-                } else {
+                }
+                else {
                     self.0 = $value;
                     Ok(())
                 }

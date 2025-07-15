@@ -91,8 +91,9 @@ impl TraitContractModel for CEC {
 
         let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity))).expect("Failed to initialize state space");
 
-        events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
+        events.sort_by(|a, b|
+            a.epoch_offset.cmp(&b.epoch_offset));
         for event in events.iter_mut() {
             event.eval(
                 &mut states,
