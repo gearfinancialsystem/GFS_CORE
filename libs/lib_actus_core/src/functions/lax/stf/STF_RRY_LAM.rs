@@ -16,7 +16,7 @@ impl TraitStateTransitionFunction for STF_RRY_LAM {
         _states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // This is a stub implementation, similar to the Java version.

@@ -26,9 +26,10 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         // Set notionalPrincipal if it is not already set
         if model.notional_principal.is_none() {
             states.notional_principal =NotionalPrincipal::new(CEG::calculate_notional_principal(

@@ -17,9 +17,10 @@ impl TraitPayOffFunction for POF_PR_NAM {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let contract_role = model.contract_role.clone().expect("contract role should always exist");
         let status_date = states.status_date.clone().expect("status date should always exist");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always exist");

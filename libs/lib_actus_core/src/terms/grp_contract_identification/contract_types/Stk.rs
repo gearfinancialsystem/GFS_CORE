@@ -151,7 +151,7 @@ impl TraitContractModel for STK {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new(Some("E30360"), None, None).unwrap(),
+                &DayCountConvention::new(Some("E30360"), None, None).ok(),
                 &model.business_day_adjuster.clone().unwrap()
             )
         });

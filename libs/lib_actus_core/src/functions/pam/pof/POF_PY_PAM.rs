@@ -18,10 +18,10 @@ impl TraitPayOffFunction for POF_PY_PAM {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let penalty_type = model.penalty_type.as_ref().expect("penaltyType should be Some");
         let contract_role = model.contract_role.as_ref().expect("contract role should be Some");
 

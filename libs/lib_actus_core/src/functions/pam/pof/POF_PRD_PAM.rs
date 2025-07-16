@@ -17,10 +17,10 @@ impl TraitPayOffFunction for POF_PRD_PAM {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        
+            let day_counter = day_counter.clone().expect("sould have day counter");
             let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
             let price_at_purchase_date = model.price_at_purchase_date.as_ref().expect("priceAtPurchaseDate should always exist");
             let accrued_interest = model.accrued_interest.as_ref().expect("accruedInterest should always exist");

@@ -30,9 +30,10 @@ impl TraitStateTransitionFunction for STF_PR_LAX {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let role = &model.contract_role.clone().unwrap().role_sign();
         let redemption = role * self.pr_payment - role * (self.pr_payment.abs() - states.notional_principal.clone().itself_or(0.0).value().abs()).max(0.0);
 

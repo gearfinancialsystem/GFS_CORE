@@ -19,9 +19,10 @@ impl TraitStateTransitionFunction for STF_IPFix_SWPPV {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let status_date = states.status_date.clone().expect("statusDate should always be Some");
 
         states.last_interest_period = Some(day_counter.day_count_fraction(

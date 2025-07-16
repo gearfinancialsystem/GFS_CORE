@@ -16,7 +16,7 @@ impl TraitPayOffFunction for POF_STD_CEG {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(

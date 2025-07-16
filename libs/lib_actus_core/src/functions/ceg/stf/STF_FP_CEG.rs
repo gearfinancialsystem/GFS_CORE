@@ -21,7 +21,7 @@ impl TraitStateTransitionFunction for STF_FP_CEG {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         if model.notional_principal.is_none() {

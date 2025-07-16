@@ -17,10 +17,10 @@ impl TraitPayOffFunction for POF_IP_PAM {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let interest_scaling_multiplier = states.interest_scaling_multiplier.as_ref().expect("interestScalingMultiplier should always be some");
         let accrued_interest = states.accrued_interest.as_ref().expect("accruedInterest should always be some");
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should always be some");

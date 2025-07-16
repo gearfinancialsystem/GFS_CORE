@@ -30,9 +30,10 @@ impl TraitStateTransitionFunction for STF_RRF_LAX {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         // Compute new rate
         let rate = self.scheduled_rate.clone() * model.rate_multiplier.clone().itself_or(1.0).value()
             + model.rate_spread.clone().itself_or(0.0).value()

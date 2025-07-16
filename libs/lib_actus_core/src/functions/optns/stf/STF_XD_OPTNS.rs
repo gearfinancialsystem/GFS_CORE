@@ -23,7 +23,7 @@ impl TraitStateTransitionFunction for STF_XD_OPTNS {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         let st = 1.0; // Placeholder for risk_factor_model logic

@@ -16,7 +16,7 @@ impl TraitPayOffFunction for POF_PRD_OPTNS {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.clone().expect("contract role should always exist");

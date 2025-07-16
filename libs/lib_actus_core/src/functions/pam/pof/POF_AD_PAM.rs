@@ -18,7 +18,7 @@ impl TraitPayOffFunction for POF_AD_PAM {
         _states: &StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         0.0

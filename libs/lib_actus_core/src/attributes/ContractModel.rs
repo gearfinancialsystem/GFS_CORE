@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
 use crate::attributes::ContractReference::ContractReference;
+use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
 use crate::terms::grp_boundary::BoundaryEffect::BoundaryEffect;
@@ -1719,7 +1720,6 @@ impl ContractModel {
                     None
                 };
 
-
                 let credit_event_type_covered_tmp  = CreditEventTypeCovered::provide_from_input_dict(sm, "creditEventTypeCovered");
                 let credit_event_type_covered = if credit_event_type_covered_tmp.is_none() {
                     Some(CreditEventTypeCovered::default())
@@ -1727,28 +1727,36 @@ impl ContractModel {
                     credit_event_type_covered_tmp
                 };
 
-                let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
-                let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
-                    let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
-                    CycleAnchorDateOfInterestPayment::from_str(&a).ok()
-                } else {
-                    CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
-                };
+                // let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
+                // let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
+                //     let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+                //     CycleAnchorDateOfInterestPayment::from_str(&a).ok()
+                // } else {
+                //     CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
+                // };
 
-                let day_count_convention = if let Some(maturity_date) = &maturity_date {
-                    DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
-                } else {
-                    None
-                };
+                // let day_count_convention = if let Some(maturity_date) = &maturity_date {
+                //     DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
+                // } else {
+                //     None
+                // };
 
-                let business_day_adjuster = {
+                let calendar_clone = Some(Rc::clone(&calendar));
+                let a = BusinessDayAdjuster::provide(
+                    sm,
+                    "businessDayAdjuster",
+                    calendar_clone.unwrap()
+                );
+                let mut business_day_adjuster = if a.is_some() {
+                    a
+                } else {
                     let calendar_clone = Some(Rc::clone(&calendar));
-                    BusinessDayAdjuster::provide(
-                        sm,
-                        "businessDayAdjuster",
-                        calendar_clone.unwrap()
-                    )
+                    BusinessDayAdjuster::new("NOS", calendar_clone.unwrap()).ok()
                 };
+
+
+                //this.bdConvention = new Same();
+                //this.scConvention = new ShiftCalc();
 
                 let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
                     if let Some(structure_vec) = contract_structure.as_vec() {
@@ -1766,6 +1774,37 @@ impl ContractModel {
                     EndOfMonthConvention::default()
                 } else {eomc.unwrap()};
 
+                let mut guaranteed_exposure = GuaranteedExposure::provide_from_input_dict(sm, "guaranteedExposure");
+                guaranteed_exposure = if guaranteed_exposure.is_none() {
+                    GuaranteedExposure::new(Some("NO")).ok()
+                } else {
+                    guaranteed_exposure
+                };
+
+                let mut coverage_of_credit_enhancement = CoverageOfCreditEnhancement::provide_from_input_dict(sm, "coverageOfCreditEnhancement");
+                coverage_of_credit_enhancement = if coverage_of_credit_enhancement.is_none() {
+                    CoverageOfCreditEnhancement::new(1.0).ok()
+                } else {
+                    coverage_of_credit_enhancement
+                };
+
+                let mut settlement_period =  SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod");
+                settlement_period = if settlement_period.is_none() {
+                    let a = SettlementPeriod::parse_from_string("P0D").unwrap();
+                    Some(SettlementPeriod::new(a.years, a.months, a.days))
+                } else {
+                    settlement_period
+                };
+
+                let mut exercise_amount = ExerciseAmount::provide_from_input_dict(sm, "exerciseAmount");
+                exercise_amount = if exercise_amount.is_none() {
+                    ExerciseAmount::new(0.0).ok()
+                } else {
+                    exercise_amount
+                };
+
+
+
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
@@ -1776,39 +1815,40 @@ impl ContractModel {
                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
                     counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
-                    market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
-                    contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
-                    non_performing_date: NonPerformingDate::provide_from_input_dict(sm, "nonPerformingDate"),
-                    grace_period: GracePeriod::provide_from_input_dict(sm, "gracePeriod"),
-                    delinquency_period: DelinquencyPeriod::provide_from_input_dict(sm, "delinquencyPeriod"),
-                    delinquency_rate: DelinquencyRate::provide_from_input_dict(sm, "delinquencyRate"),
-                    guaranteed_exposure: GuaranteedExposure::provide_from_input_dict(sm, "guaranteedExposure"),
-                    coverage_of_credit_enhancement: CoverageOfCreditEnhancement::provide_from_input_dict(sm, "coverageOfCreditEnhancement"),
+
+                    //contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
+                    //non_performing_date: NonPerformingDate::provide_from_input_dict(sm, "nonPerformingDate"),
+                    //grace_period: GracePeriod::provide_from_input_dict(sm, "gracePeriod"),
+                    //delinquency_period: DelinquencyPeriod::provide_from_input_dict(sm, "delinquencyPeriod"),
+                    //delinquency_rate: DelinquencyRate::provide_from_input_dict(sm, "delinquencyRate"),
+                    guaranteed_exposure: guaranteed_exposure,
+                    coverage_of_credit_enhancement: coverage_of_credit_enhancement,
                     credit_event_type_covered: credit_event_type_covered,
-                    cycle_anchor_date_of_fee: CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee"),
-                    cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
-                    fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
-                    fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
-                    fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
-                    cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
-                    cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
-                    nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
-                    day_count_convention: day_count_convention,
-                    currency: Currency::provide_from_input_dict(sm, "currency"),
-                    maturity_date: maturity_date,
-                    notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
-                    purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
-                    price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
-                    termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
-                    price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
+                    //cycle_anchor_date_of_fee: CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee"),
+                    //cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
+                    //fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
+                    //fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+                    //fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
+                    //cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
+                    //cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
+                    //nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
+                    //day_count_convention: day_count_convention,
+                    //currency: Currency::provide_from_input_dict(sm, "currency"),
+                    //maturity_date: maturity_date,
+                    //notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
+                    //purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
+                    //price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
+                    //termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
+                    //price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
                     exercise_date: ExerciseDate::provide_from_input_dict(sm, "exerciseDate"),
-                    exercise_amount: ExerciseAmount::provide_from_input_dict(sm, "exerciseAmount"),
-                    settlement_period: SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod"),
-                    cycle_of_dividend: CycleOfDividend::provide_from_input_dict(sm, "cycleOfDividend"),
-                    cycle_anchor_date_of_dividend: CycleAnchorDateOfDividend::provide_from_input_dict(sm, "cycleAnchorDateOfDividend"),
-                    next_dividend_payment_amount: NextDividendPaymentAmount::provide_from_input_dict(sm, "nextDividendPaymentAmount"),
-                    ex_dividend_date: ExDividendDate::provide_from_input_dict(sm, "exDividendDate"),
+                    exercise_amount: exercise_amount,
+                    settlement_period: settlement_period,
+                    //cycle_of_dividend: CycleOfDividend::provide_from_input_dict(sm, "cycleOfDividend"),
+                    //cycle_anchor_date_of_dividend: CycleAnchorDateOfDividend::provide_from_input_dict(sm, "cycleAnchorDateOfDividend"),
+                    //next_dividend_payment_amount: NextDividendPaymentAmount::provide_from_input_dict(sm, "nextDividendPaymentAmount"),
+                    //ex_dividend_date: ExDividendDate::provide_from_input_dict(sm, "exDividendDate"),
                     contract_structure: contract_structure,
+                    //market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
                     ..Default::default()
                 };
 

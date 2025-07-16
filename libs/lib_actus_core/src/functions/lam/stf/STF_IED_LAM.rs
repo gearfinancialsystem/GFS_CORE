@@ -24,9 +24,10 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let contract_role = model.contract_role.clone().expect("contractRole should always be Some");
         let notional_principal = model.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate = model.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");

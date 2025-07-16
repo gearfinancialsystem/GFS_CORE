@@ -222,7 +222,7 @@ impl TraitContractModel for SWPPV {
                 &mut states,
                 model,
                 observer,
-                model.day_count_convention.as_ref().unwrap(),
+                &model.day_count_convention.clone(),
                 model.business_day_adjuster.as_ref().unwrap(),
             );
         }

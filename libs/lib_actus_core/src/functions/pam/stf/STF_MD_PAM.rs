@@ -20,7 +20,7 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 

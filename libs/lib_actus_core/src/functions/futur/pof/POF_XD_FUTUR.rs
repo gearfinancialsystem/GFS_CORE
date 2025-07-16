@@ -16,7 +16,7 @@ impl TraitPayOffFunction for POF_XD_FUTUR {
         _states: &StateSpace,
         _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         // Remplacer les appels à settlement_currency_fx_rate ou risk_factor_model par 1.0

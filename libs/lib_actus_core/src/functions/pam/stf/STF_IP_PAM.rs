@@ -20,10 +20,10 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-        
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let status_date = states.status_date.as_ref().expect("status date should be some");
         let fee_rate_m = model.fee_rate.clone().expect("fee rate should be some");
         let notional_principal = states.notional_principal.clone().expect("notional principal should be some");

@@ -20,10 +20,10 @@ impl TraitPayOffFunction for POF_FP_PAM {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
-        
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let fee_basis = model.fee_basis.as_ref().expect("feebasis should always be some");
         let fee_rate = model.fee_rate.as_ref().expect("fee rate should always be some");
         

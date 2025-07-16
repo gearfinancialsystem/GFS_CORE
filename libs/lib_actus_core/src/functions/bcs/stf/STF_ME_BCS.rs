@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         

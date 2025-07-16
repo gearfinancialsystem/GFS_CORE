@@ -35,7 +35,7 @@ impl TraitContractModel for CEC {
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
         let maturity = Self::maturity(model);
-
+        println!("{:?}", maturity);
         // Maturity
         if model.exercise_date.is_none() {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
@@ -94,12 +94,13 @@ impl TraitContractModel for CEC {
 
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
+        
         for event in events.iter_mut() {
             event.eval(
                 &mut states,
                 model,
                 observer,
-                &model.day_count_convention.clone().unwrap(),
+                &model.day_count_convention.clone(),
                 &model.business_day_adjuster.clone().unwrap(),
             );
         }
@@ -180,7 +181,8 @@ impl CEC {
         let coverage = model.coverage_of_credit_enhancement.clone().unwrap();
 
         match model.guaranteed_exposure {
-            Some(GuaranteedExposure::NO(NO)) => coverage.value()
+            Some(GuaranteedExposure::NO(NO)) => {
+                coverage.value()
                 * role_sign
                 * states_at_time_point
                 .iter()
@@ -192,38 +194,40 @@ impl CEC {
                         s.notional_principal.clone().unwrap().value()
                     }
                 })
-                .sum::<f64>(),
-            Some(GuaranteedExposure::NI(NI)) => coverage.value()
-                * role_sign
-                * (states_at_time_point
-                .iter()
-                .map(|s| {
-                    if s.notional_principal.is_none() {
-                        NotionalPrincipal::new(0.0).ok().unwrap().value()
-                    }
-                    else {
-                        s.notional_principal.clone().unwrap().value()
-                    }
-                })
                 .sum::<f64>()
-                + states_at_time_point
-                .iter()
-                .map(|s| {
-                    if s.accrued_interest.is_none() {
-                        AccruedInterest::new(0.0).ok().unwrap().value()
-                    }
-                    else {
-                        s.accrued_interest.clone().unwrap().value()
-                    }
-                })
-                .sum::<f64>()),
+            },
+            Some(GuaranteedExposure::NI(NI)) => {
+                coverage.value() * role_sign * (
+                    states_at_time_point
+                    .iter()
+                    .map(|s| {
+                        if s.notional_principal.is_none() {
+                            NotionalPrincipal::new(0.0).ok().unwrap().value()
+                        }
+                        else {
+                            s.notional_principal.clone().unwrap().value()
+                        }
+                        })
+                    .sum::<f64>() + states_at_time_point
+                    .iter()
+                    .map(|s| {
+                        if s.accrued_interest.is_none() {
+                            AccruedInterest::new(0.0).ok().unwrap().value()
+                        }
+                        else {
+                            s.accrued_interest.clone().unwrap().value()
+                        }
+                    })
+                    .sum::<f64>())
+                },
             _ => {
                 let market_object_codes: Vec<String> = covered_contract_refs
-                    .iter()
-                    .map(|c| {
-                        c.object.as_cm().unwrap().market_object_code.clone().unwrap().value()
-                    })
-                    .collect();
+                .iter()
+                .map(|c| {
+                    let a = c.object.as_cm();
+                    c.object.as_cm().unwrap().market_object_code.clone().unwrap().value()
+                })
+                .collect();
 
                 coverage.value()
                     * role_sign

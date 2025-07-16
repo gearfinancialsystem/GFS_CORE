@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_PRD_ANN {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
 
@@ -30,6 +30,7 @@ impl TraitStateTransitionFunction for STF_PRD_ANN {
 
         let fee_rate_m = model.clone().fee_rate.clone().expect("feeRate should be some");
         let contract_role_m = model.clone().contract_role.clone().expect("contract role should be some");
+        let day_counter = day_counter.clone().expect("sould have day counter");
         
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
                                                                   time_adjuster.shift_sc(time));

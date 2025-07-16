@@ -20,7 +20,7 @@ impl TraitPayOffFunction for POF_FP_CEG {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
@@ -32,6 +32,8 @@ impl TraitPayOffFunction for POF_FP_CEG {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");
         let fee_rate = model.fee_rate.clone().expect("feeRate should always exist");
 
+        let day_counter = day_counter.clone().expect("sould have day counter");
+        
         let payoff = if FeeBasis::A(A) == model.fee_basis.clone().unwrap() {
             settlement_currency_fx_rate * contract_role.role_sign() * fee_rate.value()
         } else {

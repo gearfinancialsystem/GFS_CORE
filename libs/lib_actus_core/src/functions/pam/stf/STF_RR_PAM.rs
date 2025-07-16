@@ -21,9 +21,10 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let rate_multiplier = model.rate_multiplier.as_ref().expect("rate_multiplier should be some");
         let rate_spread = model.rate_spread.as_ref().expect("rate_spread should be some");
         let status_date = states.status_date.as_ref().expect("status date should be some");

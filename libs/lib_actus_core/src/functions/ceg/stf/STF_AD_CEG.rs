@@ -24,13 +24,13 @@ impl TraitStateTransitionFunction for STF_AD_CEG {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
         let status_date = states.status_date.clone().expect("statusDate should always be Some");
         let shifted_status_date = time_adjuster.shift_sc(&status_date.value());
         let shifted_time = time_adjuster.shift_sc(time);
-
+        let day_counter = day_counter.clone().expect("sould have day counter");
         //let fee_rate = model.fee_rate.clone().unwrap_or(0.0);
         let fee_rate = {
             if model.notional_principal.is_none() {

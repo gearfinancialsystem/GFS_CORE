@@ -18,7 +18,7 @@ impl TraitStateTransitionFunction for STF_CD_STK {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     )  {
         states.contract_performance = Some(ContractPerformance::new("DF").expect("ok cp"));

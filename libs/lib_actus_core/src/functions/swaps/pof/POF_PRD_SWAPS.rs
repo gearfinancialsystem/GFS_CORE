@@ -17,7 +17,7 @@ impl TraitPayOffFunction for POF_PRD_SWAPS {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let price_at_purchase_date = model.price_at_purchase_date.clone().expect("Price at purchase date should always be Some");

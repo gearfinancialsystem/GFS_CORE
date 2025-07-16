@@ -87,7 +87,7 @@ impl TraitContractModel for COM {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new(Some("AAISDA"), None, None).expect("etet"),
+                &DayCountConvention::new(Some("AAISDA"), None, None).ok(),
                 &BusinessDayAdjuster::new("NOS", model.calendar.clone()).expect("good NOS"),
             );
         }

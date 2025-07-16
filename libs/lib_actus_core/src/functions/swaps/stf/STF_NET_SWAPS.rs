@@ -29,7 +29,7 @@ impl TraitStateTransitionFunction for STF_NET_SWAPS {
         states: &mut StateSpace,
         _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         let e1_states = self.e1.clone().unwrap().states();

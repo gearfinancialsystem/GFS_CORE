@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_PP_PAM {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
-
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let status_date = states.status_date.as_ref().expect("status date should be some");
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should be some");
         let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be some");

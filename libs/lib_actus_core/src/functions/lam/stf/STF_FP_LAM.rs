@@ -20,9 +20,10 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         // Create a mutable copy of the states to update
 
         // Create a mutable copy of the states to update

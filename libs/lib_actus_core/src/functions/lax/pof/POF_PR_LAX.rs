@@ -24,7 +24,7 @@ impl TraitPayOffFunction for POF_PR_LAX {
         states: &StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = model.contract_role.as_ref().expect("contract role should always exist");

@@ -28,8 +28,8 @@ pub trait TraitContractEvent {}
 
 #[derive(Clone)]
 pub struct ContractEvent<T1, T2> {
-    _marker_t1: PhantomData<T1>,
-    _marker_t2: PhantomData<T2>,
+    pub _marker_t1: PhantomData<T1>,
+    pub _marker_t2: PhantomData<T2>,
     pub epoch_offset: Option<i64>,
     pub fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
     pub fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
@@ -141,7 +141,7 @@ where
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster) {
         if self.fpayoff.is_some() {
             self.payoff = Some(self.fpayoff.clone().unwrap().eval(

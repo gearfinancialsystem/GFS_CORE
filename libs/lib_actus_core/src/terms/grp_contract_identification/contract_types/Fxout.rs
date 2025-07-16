@@ -150,7 +150,7 @@ impl TraitContractModel for FXOUT {
                 &mut states,
                 model,
                 observer,
-                &DayCountConvention::new(Some("AAISDA"), None, None).expect(""),
+                &DayCountConvention::new(Some("AAISDA"), None, None).ok(),
                 model.business_day_adjuster.as_ref().unwrap(),
             );
         }

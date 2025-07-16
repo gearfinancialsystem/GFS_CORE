@@ -27,7 +27,7 @@ impl TraitStateTransitionFunction for STF_NET_CAPFL {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     )  {
         states.status_date = Some(StatusDate::from(*time));

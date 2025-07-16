@@ -209,7 +209,7 @@ impl CAPFL {
             &mut StateSpace::default(),
             model,
             observer,
-            &DayCountConvention::new(Some("AAISDA"), None, None).expect("dfe"),//&DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
+            &DayCountConvention::new(Some("AAISDA"), None, None).ok(),//&DayCountCalculator::new("AA", Box::new(NoHolidaysCalendar)),
             model.business_day_adjuster.as_ref().unwrap(),
         );
 

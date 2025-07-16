@@ -22,7 +22,7 @@ pub trait TraitStateTransitionFunction {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) ; // -> StateSpace
 }

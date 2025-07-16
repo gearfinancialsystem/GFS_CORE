@@ -17,7 +17,7 @@ impl TraitStateTransitionFunction for STF_DV_STK {
         states: &mut StateSpace,
         _model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     )  {
 

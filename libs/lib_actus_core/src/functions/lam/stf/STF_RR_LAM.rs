@@ -22,9 +22,10 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let accruedInterest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
         let status_date = states.status_date.clone().expect("statusDate should always be Some");
         let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");

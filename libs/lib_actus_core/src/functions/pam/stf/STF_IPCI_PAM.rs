@@ -19,10 +19,10 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         states: &mut StateSpace,
         model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        day_counter: &DayCountConvention,
+        day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
-        
+        let day_counter = day_counter.clone().expect("sould have day counter");
         let status_date = states.status_date.as_ref().expect("statusDate should always be Some");
         let accrued_interest = states.accrued_interest.as_ref().expect("accruedInterest should always be Some");
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should always be Some");

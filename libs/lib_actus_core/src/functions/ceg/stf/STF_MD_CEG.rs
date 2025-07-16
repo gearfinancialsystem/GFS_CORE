@@ -18,7 +18,7 @@ impl TraitStateTransitionFunction for STF_MD_CEG {
         states: &mut StateSpace,
         _model: &ContractModel,
         _risk_factor_model: &RiskFactorModel,
-        _day_counter: &DayCountConvention,
+        _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         states.notional_principal = NotionalPrincipal::new(0.0).ok();

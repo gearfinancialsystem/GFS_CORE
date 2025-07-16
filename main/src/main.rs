@@ -7,14 +7,15 @@ use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::S
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
 use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Ann::ANN;
+use lib_actus_core::terms::grp_contract_identification::contract_types::Cec::CEC;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Lax::LAX;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Nam::NAM;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Stk::STK;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Ump::UMP;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
-use lib_actus_core::util_tests::essai_load_terms;
-use lib_actus_core::util_tests::essai_load_data_observer;
+use lib_actus_core::util_tests::{essai_data_observer, essai_load_terms};
+use lib_actus_core::util_tests::essai_load_data_observed;
 use lib_actus_core::util_tests::essai_load_event_observed;
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
@@ -231,18 +232,19 @@ fn main() {
     let mut dico = essai_load_terms::load_test_case_terms(pathx,
                                                           test_id).unwrap();
 
-    let data_observed = essai_load_data_observer
+    let data_observed = essai_load_data_observed
     ::load_data_observed(pathx, test_id).unwrap();
 
     let events_observed = essai_load_event_observed::load_events_observed(
         pathx, test_id).unwrap();
-    // let dico_from_json = json_to_dico(json_value);
 
-    // let first_val = dico_from_json.get("swaps01").unwrap().extract_hmap().unwrap();
-    // let terms = first_val.get("terms").unwrap().extract_hmap().unwrap();
-    // 
-    // let contracts_structs = terms.get("contractStructure").unwrap().extract_vec().unwrap();
-    // let first_contract = contracts_structs.get(0).unwrap();
+
+    let observer = essai_data_observer::create_observer(data_observed,
+                                                        events_observed,
+                                                        "USD",
+    );
+    
+
     let contract_model = Box::new(ContractModel::new(&dico));
 
     //let contract_model = Box::new(ContractModel::new(&dico));
@@ -252,9 +254,9 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = SWAPS::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = CEC::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = SWAPS::apply(events_res, cm, &risk_factor_model).ok().unwrap();
+            let events2 = CEC::apply(events_res, cm, &observer).ok().unwrap();
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);

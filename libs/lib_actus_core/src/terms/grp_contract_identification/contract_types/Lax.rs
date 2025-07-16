@@ -471,7 +471,7 @@ impl TraitContractModel for LAX {
                 &mut states,
                 model,
                 observer,
-                &model.day_count_convention.clone().unwrap(),
+                &model.day_count_convention.clone(),
                 &model.business_day_adjuster.clone().unwrap(),
             );
         }
