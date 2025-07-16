@@ -3,7 +3,7 @@ use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
@@ -30,7 +30,9 @@ use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CEG;
 
@@ -140,7 +142,7 @@ impl TraitContractModel for CEG {
     fn apply(
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model);
         let mut events = Self::add_external_xd_event(model, events, observer, &maturity).unwrap();
@@ -164,7 +166,7 @@ impl TraitContractModel for CEG {
 
     fn init_state_space(
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         maturity: &Option<Rc<MaturityDate>>,
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
@@ -209,7 +211,7 @@ impl CEG {
     pub fn calculate_notional_principal(
         states: &StateSpace,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         time: &IsoDatetime,
     ) -> f64 {
 
@@ -277,7 +279,13 @@ impl CEG {
                     * role_sign
                     * market_object_codes
                     .iter()
-                    .map(|code| observer.state_at(code, time, states, model, true).unwrap())
+                    .map(|code|
+                        observer.state_at(
+                            code.clone(),
+                            time,
+                            states,
+                            model,
+                            true))
                     .sum::<f64>()
             }
         }
@@ -286,7 +294,7 @@ impl CEG {
     fn add_external_xd_event(
         model: &ContractModel,
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         maturity: &MaturityDate,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0

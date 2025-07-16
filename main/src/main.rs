@@ -1,11 +1,11 @@
 use std::collections::HashMap;
+use std::io::Error;
 use lib_actus_core::types::IsoDatetime::IsoDatetime;
 use lib_actus_core::attributes::ContractModel::ContractModel;
 
 use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
-use lib_actus_core::externals::RiskFactorModel::RiskFactorModel;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Ann::ANN;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Cec::CEC;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Lax::LAX;
@@ -241,8 +241,7 @@ fn main() {
 
     let observer = essai_data_observer::create_observer(data_observed,
                                                         events_observed,
-                                                        "USD",
-    );
+                                                        "USD");
     
 
     let contract_model = Box::new(ContractModel::new(&dico));
@@ -250,11 +249,14 @@ fn main() {
     //let contract_model = Box::new(ContractModel::new(&dico));
 
     let to_date = IsoDatetime::parse_from_str("2014-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-    
-    let risk_factor_model = RiskFactorModel;
+
+
+    let results = load_results("tests.json", "collateral02")?;
     
     if let Ok(cm) = contract_model.as_ref() {
         let mut events = CEC::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+
+        
         if let Ok(events_res) = events {
             let events2 = CEC::apply(events_res, cm, &observer).ok().unwrap();
             

@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::marker::PhantomData;
 use std::str::FromStr;
+use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventSequence::EventSequence;
 use crate::state_space::StateSpace::StateSpace;
@@ -9,6 +10,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::EventType::EventType;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::util_tests::essai_load_data_observed::ObservedDataSet;
 use crate::util_tests::essai_load_data_observed::ObservedDataPoint;
 use crate::util_tests::essai_load_event_observed::ObservedEvent;
@@ -26,9 +28,7 @@ impl DataObserver {
         }
     }
 
-    pub fn keys(&self) -> HashSet<String> {
-        self.multi_series.keys().cloned().collect()
-    }
+
 
     pub fn add(&mut self, symbol: String, series: HashMap<IsoDatetime, f64>) {
         self.multi_series.insert(symbol, series);
@@ -45,28 +45,37 @@ impl DataObserver {
         }
     }
 
-    pub fn state_at(
-        &self,
-        id: &str,
-        time: &IsoDatetime,
-        _contract_states: &StateSpace,
-        _contract_attributes: &impl TraitContractModel,
-        _is_market: bool
-    ) -> f64 {
-        self.multi_series
-            .get(id)
-            .and_then(|series| series.get(time))
-            .copied()
-            .unwrap_or(0.0)
+}
+impl TraitRiskFactorModel for DataObserver {
+
+    fn keys(&self) -> HashSet<String> {
+        self.multi_series.keys().cloned().collect()
     }
 
-    pub fn events(&self, _model: &impl TraitContractModel) -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>> {
+    fn events(&self, _model: &ContractModel) // &impl TraitContractModel
+        -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>> {
         self.events_observed
             .values()
             .flat_map(|list| list.iter().cloned())
             .collect()
     }
+
+    fn state_at(
+        &self,
+        id: String,
+        time: &IsoDatetime,
+        _contract_states: &StateSpace,
+        _contract_attributes: &ContractModel,
+        _is_market: bool
+    ) -> f64 {
+        self.multi_series
+            .get(id.as_str())
+            .and_then(|series| series.get(time))
+            .copied()
+            .unwrap_or(0.0)
+    }
 }
+
 
 // Fonction pour créer un DataObserver à partir des données chargées
 pub fn create_observer(

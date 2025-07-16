@@ -1,5 +1,5 @@
 use crate::attributes::ContractModel::ContractModel;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -11,7 +11,7 @@ use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-
+use crate::util_tests::essai_data_observer::DataObserver;
 #[allow(non_camel_case_types)]
 pub struct STF_RR_LAX {
     scheduled_rate: f64,
@@ -29,7 +29,7 @@ impl TraitStateTransitionFunction for STF_RR_LAX {
         time: &IsoDatetime,
         states: &mut StateSpace,
         model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        _risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {

@@ -8,7 +8,6 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::state_space::StateSpace::StateSpace;
@@ -16,6 +15,7 @@ use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Object {
@@ -109,7 +109,7 @@ impl ContractReference {
     //     }
     // }
 
-    pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &RiskFactorModel) -> StateSpace {
+    pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &DataObserver) -> StateSpace {
         let model = self.object.as_cm().unwrap();
         if self.reference_type == ReferenceType::CID {
             let mut events =  ContractType::schedule( Some(time.checked_add_days(Days::new(1))).unwrap(), &self.object.as_cm().unwrap()).unwrap();
@@ -130,7 +130,7 @@ impl ContractReference {
         StateSpace::default() // a checker
     }
 
-    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &RiskFactorModel ) -> ContractEvent<IsoDatetime, IsoDatetime> {
+    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &DataObserver ) -> ContractEvent<IsoDatetime, IsoDatetime> {
         let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = vec![];
         if self.reference_type == ReferenceType::CNT {
             events = ContractType::apply(

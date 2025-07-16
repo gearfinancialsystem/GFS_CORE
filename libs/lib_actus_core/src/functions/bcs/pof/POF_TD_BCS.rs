@@ -1,5 +1,6 @@
+use crate::util_tests::essai_data_observer::DataObserver;
 use crate::attributes::ContractModel::ContractModel;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -15,7 +16,7 @@ impl TraitPayOffFunction for POF_TD_BCS {
         _time: &IsoDatetime,
         _states: &StateSpace,
         _model: &ContractModel,
-        _risk_factor_model: &RiskFactorModel,
+        _risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

@@ -10,7 +10,7 @@ pub mod TraitCountConvention;
 pub mod TraitCalcConvention;
 
 pub mod TraitPayOffFunction;
-// pub mod RiskFactorModelTrait;
+pub mod TraitRiskFactorModel;
 pub mod TraitStateTransitionFunction;
 pub mod TraitMarqueurIsoDatetime;
 pub mod TraitMarqueurIsoCycle;

@@ -4,13 +4,14 @@ use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CSH;
 
@@ -25,7 +26,7 @@ impl TraitContractModel for  CSH {
     fn apply(
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
         let mut states = StateSpace::default();
@@ -51,7 +52,7 @@ impl TraitContractModel for  CSH {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         Ok(states)
     }

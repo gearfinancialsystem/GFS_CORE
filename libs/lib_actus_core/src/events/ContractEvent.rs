@@ -9,7 +9,6 @@ use std::hash::{Hash, Hasher};
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -23,6 +22,7 @@ use std::marker::PhantomData;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub trait TraitContractEvent {}
 
@@ -140,7 +140,7 @@ where
         &mut self,
         states: &mut StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster) {
         if self.fpayoff.is_some() {
@@ -164,6 +164,23 @@ where
             );
         }
     }
+
+    // pub fn copy(&self) -> Self {
+    //     ContractEvent {
+    //         _marker_t1: PhantomData,
+    //         _marker_t2: PhantomData,
+    //         epoch_offset: self.epoch_offset,
+    //         fstate: self.fstate.clone(),
+    //         fpayoff: self.fpayoff.clone(),
+    //         event_time: self.event_time.clone(),
+    //         schedule_time: self.schedule_time.clone(),
+    //         event_type: self.event_type.clone(),
+    //         currency: self.currency.clone(),
+    //         payoff: self.payoff,
+    //         state: self.state.clone(),
+    //         contract_id: self.contract_id.clone(),
+    //     }
+    // }
 
     pub fn copy(&self) -> Self {
         ContractEvent {
@@ -294,28 +311,77 @@ where
     }
 }
 
-// Implémentation manuelle de PartialEq pour ContractEvent
+
 impl<T1, T2> PartialEq for ContractEvent<T1, T2>
 where
     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn eq(&self, other: &Self) -> bool {
-        self.contract_id == other.contract_id
+        // Comparaison des champs standards
+        let base_eq = self.contract_id == other.contract_id
             && self.currency == other.currency
             && self.event_time == other.event_time
             && self.event_type == other.event_type
-            && self.schedule_time == other.schedule_time
-            // Comparer les pointeurs des traits dynamiques (optionnel)
-            && Rc::ptr_eq(&self.fpayoff.clone().unwrap(), &other.fpayoff.clone().unwrap())
-            && Rc::ptr_eq(&self.fstate.clone().unwrap(), &other.fstate.clone().unwrap())
+            && self.schedule_time == other.schedule_time;
+
+        // Comparaison des fonctions avec gestion des None
+        let fpayoff_eq = match (&self.fpayoff, &other.fpayoff) {
+            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+            (None, None) => true,
+            _ => false,
+        };
+
+        let fstate_eq = match (&self.fstate, &other.fstate) {
+            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+            (None, None) => true,
+            _ => false,
+        };
+
+        base_eq && fpayoff_eq && fstate_eq
     }
 }
+// 
+// // Implémentation manuelle de PartialEq pour ContractEvent
+// impl<T1, T2> PartialEq for ContractEvent<T1, T2>
+// where
+//     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+//     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+// {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.contract_id == other.contract_id
+//             && self.currency == other.currency
+//             && self.event_time == other.event_time
+//             && self.event_type == other.event_type
+//             && self.schedule_time == other.schedule_time
+//             // Comparer les pointeurs des traits dynamiques (optionnel)
+//             && Rc::ptr_eq(&self.fpayoff.clone().unwrap(), &other.fpayoff.clone().unwrap())
+//             && Rc::ptr_eq(&self.fstate.clone().unwrap(), &other.fstate.clone().unwrap())
+//     }
+// }
 impl<T1, T2> Eq for ContractEvent<T1, T2>
 where
     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
 {}
+
+// impl<T1, T2> Hash for ContractEvent<T1, T2>
+// where
+//     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
+//     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+// {
+//     fn hash<H: Hasher>(&self, state: &mut H) {
+//         self.contract_id.hash(state);
+//         self.currency.hash(state);
+//         self.event_time.clone().hash(state);
+//         self.event_type.hash(state);
+//         self.schedule_time.hash(state);
+// 
+//         // Hasher les pointeurs des traits dynamiques
+//         Rc::as_ptr(&self.fpayoff.clone().unwrap()).hash(state);
+//         Rc::as_ptr(&self.fstate.clone().unwrap()).hash(state);
+//     }
+// }
 
 impl<T1, T2> Hash for ContractEvent<T1, T2>
 where
@@ -323,14 +389,26 @@ where
     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
+        // Hachage des champs standards
         self.contract_id.hash(state);
         self.currency.hash(state);
-        self.event_time.clone().hash(state);
+        self.event_time.hash(state);
         self.event_type.hash(state);
         self.schedule_time.hash(state);
 
-        // Hasher les pointeurs des traits dynamiques
-        Rc::as_ptr(&self.fpayoff.clone().unwrap()).hash(state);
-        Rc::as_ptr(&self.fstate.clone().unwrap()).hash(state);
+        // Hachage des fonctions avec gestion des None
+        if let Some(f) = &self.fpayoff {
+            Rc::as_ptr(f).hash(state);
+        } else {
+            // Valeur sentinelle pour None
+            0usize.hash(state);
+        }
+
+        if let Some(f) = &self.fstate {
+            Rc::as_ptr(f).hash(state);
+        } else {
+            // Valeur sentinelle pour None
+            0usize.hash(state);
+        }
     }
 }

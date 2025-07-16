@@ -4,7 +4,7 @@ use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -25,6 +25,8 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct FUTUR;
 
@@ -145,7 +147,7 @@ impl FUTUR {
         Ok(events)
     }
 
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
+    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &DataObserver)
         -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut states = Self::init_state_space(model).expect("Failed to initialize state space.");
         let mut events = events.clone();

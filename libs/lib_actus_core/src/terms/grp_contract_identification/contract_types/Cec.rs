@@ -3,7 +3,6 @@ use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
-use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
@@ -24,7 +23,9 @@ use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CEC;
 
@@ -84,8 +85,9 @@ impl TraitContractModel for CEC {
     fn apply(
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+
         let maturity = Self::maturity(model);
         events = Self::add_external_xd_event(model, events, observer, &maturity.value()).unwrap();
 
@@ -94,7 +96,7 @@ impl TraitContractModel for CEC {
 
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
-        
+
         for event in events.iter_mut() {
             event.eval(
                 &mut states,
@@ -110,7 +112,7 @@ impl TraitContractModel for CEC {
 
     fn init_state_space(
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         maturity: &Option<Rc<MaturityDate>>,
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
@@ -162,7 +164,7 @@ impl CEC {
 
     pub fn calculate_notional_principal(
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         time: &IsoDatetime,
     ) -> f64 {
 
@@ -233,7 +235,13 @@ impl CEC {
                     * role_sign
                     * market_object_codes
                     .iter()
-                    .map(|code| observer.state_at(code, time, &StateSpace::default(), model, true).unwrap())
+                    .map(|code| 
+                        observer.state_at(
+                            code.clone(), 
+                            time, 
+                            &StateSpace::default(), 
+                            model, 
+                            true))
                     .sum::<f64>()
             }
         }
@@ -241,7 +249,7 @@ impl CEC {
 
     pub fn calculate_market_value_covering_contracts(
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         time: &IsoDatetime,
     ) -> f64 {
         let covering_contract_refs = model.contract_structure.clone().unwrap().0
@@ -258,14 +266,20 @@ impl CEC {
 
         market_object_codes
             .iter()
-            .map(|code| observer.state_at(code, time, &StateSpace::default(), model, true).unwrap())
+            .map(|code| 
+                observer.state_at(
+                    code.clone(), 
+                    time, 
+                    &StateSpace::default(), 
+                    model, 
+                    true))
             .sum()
     }
 
     fn add_external_xd_event(
         model: &ContractModel,
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
         maturity: &IsoDatetime,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0

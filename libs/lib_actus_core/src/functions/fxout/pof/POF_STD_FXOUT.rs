@@ -1,10 +1,12 @@
 use crate::attributes::ContractModel::ContractModel;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 #[allow(non_camel_case_types)]
 pub struct POF_STD_FXOUT;
@@ -15,7 +17,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -33,7 +35,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         let str_slices: Vec<String> = strings.iter().map(|s| s.value().clone().to_string()).collect();
         let joined = str_slices.join(" ");
 
-        let risk_factor_placeholder = risk_factor_model.state_at(&joined, time, states, model,true).unwrap();
+        let risk_factor_placeholder = risk_factor_model.state_at(joined, time, states, model,true);
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,

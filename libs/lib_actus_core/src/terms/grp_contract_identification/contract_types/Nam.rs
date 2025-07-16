@@ -6,7 +6,7 @@ use crate::attributes::ContractModel::ContractModel;
 
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
 use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
 use crate::functions::lam::pof::POF_PRD_LAM::POF_PRD_LAM;
@@ -57,6 +57,7 @@ use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct NAM;
 
@@ -444,7 +445,7 @@ impl TraitContractModel for NAM {
     fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let _maturity = &model.maturity_date.clone() ;
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
@@ -482,7 +483,7 @@ impl TraitContractModel for NAM {
     }
 
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();

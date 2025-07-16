@@ -64,3 +64,6 @@ NotionalPrincipal doit etre positive dans la norme (pour qui ne concerne qu'en f
 Pour le moment j'enleve la contrainte de positivite ; mais peut etre creer des termes specifiques pour les champs de state_space
 jai desactivé la positivité pour ces types, mais faudra la reactiver et recrire le netting des deux jambes de swaps (en soustrayant
 deux notionels positifs plutot que dadditioner un positif et un négatif)
+
+
+observer: DataObserver, // mettre au pluriel pour quon puisse contruire plusieur different dataobserver

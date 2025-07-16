@@ -4,7 +4,7 @@ use std::rc::Rc;
 
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::optns::pof::POF_MD_OPTNS::POF_MD_OPTNS;
 use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
 use crate::functions::optns::pof::POF_STD_OPTNS::POF_STD_OPTNS;
@@ -22,7 +22,9 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct OPTNS;
 
@@ -148,7 +150,7 @@ impl TraitContractModel for OPTNS {
     fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
@@ -188,7 +190,7 @@ impl TraitContractModel for OPTNS {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();

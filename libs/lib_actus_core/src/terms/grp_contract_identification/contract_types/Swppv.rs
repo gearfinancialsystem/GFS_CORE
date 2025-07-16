@@ -3,7 +3,7 @@ use std::fmt;
 use std::rc::Rc;
 use crate::attributes::ContractModel::ContractModel;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::fxout::pof::POF_PRD_FXOUT::POF_PRD_FXOUT;
 use crate::functions::fxout::pof::POF_TD_FXOUT::POF_TD_FXOUT;
 use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
@@ -34,6 +34,7 @@ use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct SWPPV;
 
@@ -208,7 +209,7 @@ impl TraitContractModel for SWPPV {
     fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
@@ -245,7 +246,7 @@ impl TraitContractModel for SWPPV {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();

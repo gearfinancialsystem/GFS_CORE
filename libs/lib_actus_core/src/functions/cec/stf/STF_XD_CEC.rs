@@ -1,5 +1,5 @@
 use crate::attributes::ContractModel::ContractModel;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -10,6 +10,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 #[allow(non_camel_case_types)]
 pub struct STF_XD_CEC;
@@ -20,7 +21,7 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
         time: &IsoDatetime,
         states: &mut StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

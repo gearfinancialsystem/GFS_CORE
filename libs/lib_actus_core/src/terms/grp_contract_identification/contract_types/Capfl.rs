@@ -5,7 +5,7 @@ use std::fmt;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
@@ -26,6 +26,7 @@ use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CAPFL;
 
@@ -114,7 +115,7 @@ impl TraitContractModel for CAPFL {
     fn apply(
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         events.sort_by(|a, b|
@@ -183,7 +184,7 @@ impl TraitContractModel for CAPFL {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         todo!()
     }
 }
@@ -193,7 +194,7 @@ impl CAPFL {
         e1: &ContractEvent<IsoDatetime, IsoDatetime>,
         e2: &ContractEvent<IsoDatetime, IsoDatetime>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> ContractEvent<IsoDatetime, IsoDatetime> {
         let mut e = EventFactory::create_event(
             &e1.event_time,

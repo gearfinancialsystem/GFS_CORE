@@ -5,7 +5,7 @@ use std::rc::Rc;
 use crate::events::ContractEvent::{ContractEvent};
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 
 use crate::functions::pam::pof::{
     POF_FP_PAM::POF_FP_PAM,
@@ -54,6 +54,7 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct PAM;
@@ -357,7 +358,7 @@ impl TraitContractModel for PAM {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &DataObserver) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
@@ -409,7 +410,7 @@ impl TraitContractModel for PAM {
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();

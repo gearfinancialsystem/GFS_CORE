@@ -4,7 +4,7 @@ use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 
 
 use crate::state_space::StateSpace::StateSpace;
@@ -24,6 +24,7 @@ use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 /// Represents the Principal At Maturity payoff algorithm
 pub struct STK;
@@ -136,7 +137,7 @@ impl TraitContractModel for STK {
     fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
         let _maturity = &model.maturity_date.clone();
@@ -161,7 +162,7 @@ impl TraitContractModel for STK {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>
+        model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>
     ) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.status_date = model.status_date.clone();

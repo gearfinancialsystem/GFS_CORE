@@ -6,7 +6,7 @@ use chrono::Days;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
@@ -53,6 +53,7 @@ use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct ANN;
 
@@ -462,7 +463,7 @@ impl TraitContractModel for ANN {
         Ok(events)
     }
 
-    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel)
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &DataObserver)
         -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let _maturity = &model.maturity_date.clone();
         let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state space");
@@ -499,7 +500,7 @@ impl TraitContractModel for ANN {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
         states.interest_scaling_multiplier = model.interest_scaling_multiplier.clone();

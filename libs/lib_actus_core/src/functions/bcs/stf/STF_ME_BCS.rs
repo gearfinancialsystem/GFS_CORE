@@ -1,6 +1,6 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::state_space::StateSpace::{BoundaryMonitoringFlag, StateSpace};
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
 use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
@@ -10,9 +10,10 @@ use crate::terms::grp_boundary::BoundaryValue::BoundaryValue;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-
+use crate::util_tests::essai_data_observer::DataObserver;
 #[allow(non_camel_case_types)]
 pub struct STF_ME_BCS;
 
@@ -23,7 +24,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
         time: &IsoDatetime,
         states: &mut StateSpace,
         model: &ContractModel,
-        risk_factor_model: &RiskFactorModel,
+        risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -34,7 +35,7 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
                     e.reference_role == ReferenceRole::externalReferenceIndex
                 }) {
                     let cbv = risk_factor_model.state_at(
-                        contract_reference.get_object().as_string().unwrap(),
+                        contract_reference.get_object().as_string().unwrap().clone(),
                         time,
                         states,
                         model,
@@ -48,8 +49,8 @@ impl TraitStateTransitionFunction for STF_ME_BCS {
 
 
 
-                    if (boundary_direction.clone() == BoundaryDirection::DECR(DECR) && cbv.clone().unwrap() <= boundary_value.value()) ||
-                        (boundary_direction.clone() == BoundaryDirection::INCR(INCR) && cbv.clone().unwrap() >= boundary_value.value()) {
+                    if (boundary_direction.clone() == BoundaryDirection::DECR(DECR) && cbv.clone() <= boundary_value.value()) ||
+                        (boundary_direction.clone() == BoundaryDirection::INCR(INCR) && cbv.clone() >= boundary_value.value()) {
 
                         // Update state space
                         states.boundary_monitoring_flag = Some(false);

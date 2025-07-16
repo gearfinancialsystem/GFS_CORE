@@ -6,7 +6,7 @@ use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::swaps::pof::POF_NET_SWAPS::POF_NET_SWAPS;
 use crate::functions::swaps::pof::POF_PRD_SWAPS::POF_PRD_SWAPS;
 use crate::functions::swaps::pof::POF_TD_SWAPS::POF_TD_SWAPS;
@@ -27,7 +27,7 @@ use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
-
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct SWAPS;
 
@@ -102,7 +102,7 @@ impl TraitContractModel for SWAPS {
     fn apply(
         events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         model: &ContractModel,
-        observer: &RiskFactorModel,
+        observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         let mut events = events;
@@ -223,7 +223,7 @@ impl TraitContractModel for SWAPS {
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(
-        model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>
+        model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>
     ) -> Result<StateSpace, String> { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let cs = model.clone().contract_structure.unwrap();
         let first_leg_model = cs.0.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();

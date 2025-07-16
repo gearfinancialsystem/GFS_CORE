@@ -23,7 +23,7 @@ use crate::terms::grp_contract_identification::contract_types::Nam::NAM;
 
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
 use crate::terms::grp_contract_identification::contract_types::Capfl::CAPFL;
 use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
@@ -39,6 +39,7 @@ use crate::terms::grp_contract_identification::contract_types::Stk::STK;
 use crate::terms::grp_contract_identification::contract_types::Swppv::SWPPV;
 use crate::terms::grp_contract_identification::contract_types::Ump::UMP;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ContractType;
@@ -72,7 +73,7 @@ impl ContractType {
         }
 
     }
-    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, cm: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    pub fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, cm: &ContractModel, observer: &DataObserver) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
 
         match cm.contract_type.clone().as_str() {
             "ANN" => ANN::apply(events, cm, observer),

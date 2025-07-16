@@ -5,7 +5,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::externals::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
 use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
 use crate::functions::lam::pof::POF_PRD_LAM::POF_PRD_LAM;
@@ -68,7 +68,7 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoDatetime::IsoDatetime;
-
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct LAX;
 
@@ -457,7 +457,7 @@ impl TraitContractModel for LAX {
         Ok(events)
     }
 
-    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &RiskFactorModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &DataObserver) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let maturity = Self::maturity(model);
         let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity)) ).expect("Failed to initialize state space");
         let mut events = events.clone();
@@ -493,7 +493,7 @@ impl TraitContractModel for LAX {
         Ok(events)
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &RiskFactorModel, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
         let mut states = StateSpace::default();
 
         states.status_date = model.status_date.clone();

@@ -3,9 +3,10 @@ use std::str::FromStr;
 use crate::attributes::ContractModel::ContractModel;
 use crate::util::Value::Value;
 use crate::exceptions::ParseError::ParseError;
-use crate::externals::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CommonUtils;
 
@@ -128,7 +129,7 @@ impl CommonUtils {
         }
     }
 
-    pub fn settlementCurrencyFxRate(riskFactorModel: &RiskFactorModel, model: &ContractModel, time: &IsoDatetime, state: &StateSpace) -> f64{    
+    pub fn settlementCurrencyFxRate(riskFactorModel: &DataObserver, model: &ContractModel, time: &IsoDatetime, state: &StateSpace) -> f64{    
         let settlement_currency = model.settlement_currency.clone();
         let currency = model.currency.clone();
         
@@ -141,7 +142,7 @@ impl CommonUtils {
             let str_slices: Vec<String> = strings.iter().map(|s| s.value()).collect();
             let joined = str_slices.join(" ");
 
-            riskFactorModel.state_at(&joined, time, state, model,true).unwrap()
+            riskFactorModel.state_at(joined, time, state, model,true)
         }
         
     }
