@@ -1,0 +1,124 @@
+use serde_json::{self, Value as JsonValue};
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::BufReader;
+
+
+#[derive(PartialEq, Debug, Clone)]
+pub struct ObservedDataSet {
+    identifier: String,
+    data: Vec<ObservedDataPoint>
+}
+
+impl ObservedDataSet {
+    pub fn new() -> ObservedDataSet {
+        ObservedDataSet {identifier: String::new(), data: Vec::new()}
+    }
+    pub fn get_identifier(&self) -> String {
+        self.identifier.clone()
+    }
+    pub fn set_identifier(&mut self, identifier: String) {
+        self.identifier = identifier;
+    }
+    pub fn get_data(&self) -> Vec<ObservedDataPoint> {
+        self.data.clone()
+    }
+    pub fn set_data(&mut self, data: Vec<ObservedDataPoint>) {
+        self.data = data;
+    }
+}
+
+#[derive(PartialEq, Debug, Clone)]
+pub struct ObservedDataPoint {
+    timestamp: String,
+    value: f64
+}
+
+impl ObservedDataPoint {
+    pub fn new(timestamp: String, value: f64) -> ObservedDataPoint {
+        ObservedDataPoint {timestamp, value}
+    }
+    pub fn get_timestamp(&self) -> String {
+        self.timestamp.clone()
+    }
+    pub fn set_timestamp(&mut self, timestamp: String) {
+        self.timestamp = timestamp;
+    }
+    pub fn get_value(&self) -> f64 {
+        self.value
+    }
+    pub fn set_value(&mut self, value: f64) {
+        self.value = value;
+    }
+}
+
+
+
+pub fn load_data_observed(
+    file_path: &str,
+    test_case_id: &str,
+) -> Result<HashMap<String, ObservedDataSet>, Box<dyn std::error::Error>> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+    let json: JsonValue = serde_json::from_reader(reader)?;
+
+    let test_case = json.get(test_case_id)
+        .ok_or_else(|| format!("Test case {} not found", test_case_id))?;
+
+    let data_observed = test_case.get("dataObserved")
+        .ok_or_else(|| format!("'dataObserved' section not found in {}", test_case_id))?;
+
+    if let JsonValue::Object(data_observed_map) = data_observed {
+        let mut result = HashMap::new();
+
+        for (market_object_code, dataset) in data_observed_map {
+            if let JsonValue::Object(dataset_obj) = dataset {
+                let mut observed_dataset = ObservedDataSet::new();
+
+                // Set identifier
+                if let Some(JsonValue::String(identifier)) = dataset_obj.get("identifier") {
+                    observed_dataset.set_identifier(identifier.clone());
+                } else {
+                    return Err("Missing identifier in observed dataset".into());
+                }
+
+                // Parse data points
+                if let Some(JsonValue::Array(data_points)) = dataset_obj.get("data") {
+                    let mut points = Vec::new();
+
+                    for point in data_points {
+                        if let JsonValue::Object(point_obj) = point {
+                            let timestamp = point_obj.get("timestamp")
+                                .and_then(|v| v.as_str())
+                                .ok_or("Missing timestamp in data point")?
+                                .to_string();
+
+                            let value_str = point_obj.get("value")
+                                .and_then(|v| v.as_str())
+                                .ok_or("Missing value in data point")?;
+
+                            let value = value_str.parse::<f64>()
+                                .map_err(|_| format!("Invalid float value: {}", value_str))?;
+
+                            points.push(ObservedDataPoint::new(timestamp, value));
+                        } else {
+                            return Err("Invalid data point format".into());
+                        }
+                    }
+
+                    observed_dataset.set_data(points);
+                } else {
+                    return Err("Missing data array in observed dataset".into());
+                }
+
+                result.insert(market_object_code.clone(), observed_dataset);
+            } else {
+                return Err("Invalid dataset format".into());
+            }
+        }
+
+        Ok(result)
+    } else {
+        Err("dataObserved should be an object".into())
+    }
+}

@@ -13,10 +13,13 @@ use lib_actus_core::terms::grp_contract_identification::contract_types::Stk::STK
 use lib_actus_core::terms::grp_contract_identification::contract_types::Ump::UMP;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
-
+use lib_actus_core::util_tests::essai_load_terms;
+use lib_actus_core::util_tests::essai_load_data_observer;
+use lib_actus_core::util_tests::essai_load_event_observed;
+//use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
-    let mut dico= HashMap::new(); // HashMap<String, String>
+    //let mut dico= HashMap::new(); // HashMap<String, String>
 
     // NAM01
     // dico.insert("contractType".to_string(), Value::Vstring("NAM".to_string()));
@@ -58,25 +61,25 @@ fn main() {
 
 
     // ANN01
-    dico.insert("contractType".to_string(), Value::Vstring("ANN".to_string()));
-    dico.insert("contractID".to_string(), Value::Vstring("ann01".to_string()));
-    dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
-    dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-28T00:00:00".to_string()));
-    dico.insert("initialExchangeDate".to_string(), Value::Vstring("2013-01-01T00:00:00".to_string()));
-    dico.insert("statusDate".to_string(), Value::Vstring("2012-12-30T00:00:00".to_string()));
-    dico.insert("notionalPrincipal".to_string(), Value::Vstring("5000".to_string()));
-    dico.insert("cycleAnchorDateOfPrincipalRedemption".to_string(), Value::Vstring("2013-02-01T00:00:00".to_string()));
-    dico.insert("nextPrincipalRedemptionPayment".to_string(), Value::Vstring("434.866594118346".to_string()));
-    dico.insert("dayCountConvention".to_string(), Value::Vstring("A365".to_string()));
-    dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.08".to_string()));
-    dico.insert("currency".to_string(), Value::Vstring("USD".to_string()));
-    dico.insert("cycleOfPrincipalRedemption".to_string(), Value::Vstring("P1ML0".to_string()));
-    dico.insert("maturityDate".to_string(), Value::Vstring("2014-01-01T00:00:00".to_string()));
-    dico.insert("rateMultiplier".to_string(), Value::Vstring("1.0".to_string()));
-    dico.insert("rateSpread".to_string(), Value::Vstring("0.0".to_string()));
-    dico.insert("fixingDays".to_string(), Value::Vstring("P0D".to_string()));
-    dico.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2013-02-01T00:00:00".to_string()));
-    dico.insert("cycleOfInterestPayment".to_string(), Value::Vstring("P1ML0".to_string()));
+    // dico.insert("contractType".to_string(), Value::Vstring("ANN".to_string()));
+    // dico.insert("contractID".to_string(), Value::Vstring("ann01".to_string()));
+    // dico.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
+    // dico.insert("contractDealDate".to_string(), Value::Vstring("2012-12-28T00:00:00".to_string()));
+    // dico.insert("initialExchangeDate".to_string(), Value::Vstring("2013-01-01T00:00:00".to_string()));
+    // dico.insert("statusDate".to_string(), Value::Vstring("2012-12-30T00:00:00".to_string()));
+    // dico.insert("notionalPrincipal".to_string(), Value::Vstring("5000".to_string()));
+    // dico.insert("cycleAnchorDateOfPrincipalRedemption".to_string(), Value::Vstring("2013-02-01T00:00:00".to_string()));
+    // dico.insert("nextPrincipalRedemptionPayment".to_string(), Value::Vstring("434.866594118346".to_string()));
+    // dico.insert("dayCountConvention".to_string(), Value::Vstring("A365".to_string()));
+    // dico.insert("nominalInterestRate".to_string(), Value::Vstring("0.08".to_string()));
+    // dico.insert("currency".to_string(), Value::Vstring("USD".to_string()));
+    // dico.insert("cycleOfPrincipalRedemption".to_string(), Value::Vstring("P1ML0".to_string()));
+    // dico.insert("maturityDate".to_string(), Value::Vstring("2014-01-01T00:00:00".to_string()));
+    // dico.insert("rateMultiplier".to_string(), Value::Vstring("1.0".to_string()));
+    // dico.insert("rateSpread".to_string(), Value::Vstring("0.0".to_string()));
+    // dico.insert("fixingDays".to_string(), Value::Vstring("P0D".to_string()));
+    // dico.insert("cycleAnchorDateOfInterestPayment".to_string(), Value::Vstring("2013-02-01T00:00:00".to_string()));
+    // dico.insert("cycleOfInterestPayment".to_string(), Value::Vstring("P1ML0".to_string()));
 
     // LAX01
     // dico.insert("contractType".to_string(), Value::Vstring("LAX".to_string()));
@@ -203,12 +206,12 @@ fn main() {
     // cs2.insert("object".to_string(), Value::VhashMap(obj2));
     // cs2.insert("referenceType".to_string(), Value::Vstring("CNT".to_string()));
     // cs2.insert("referenceRole".to_string(), Value::Vstring("SEL".to_string()));
-
-
+    //
+    //
     // let mut v: Vec<Value> = Vec::new();
     // v.push(Value::VhashMap(cs1.clone()));
     // v.push(Value::VhashMap(cs2.clone()));
-
+    //
     // dico.insert("contractStructure".to_string(), Value::VvecVal(v));
 
     // CASH 01
@@ -221,10 +224,20 @@ fn main() {
 
 
     // test loading avec functions
-    // let pathx = "libs/lib_actus_core/tests_sets/actus-tests-swaps.json";
-    // let json_value = test_read_and_parse_json(pathx).unwrap();
+    let pathx = "libs/lib_actus_core/test_sets/actus-tests-cec.json";
+    let test_id = "collateral02";
+
+    //let json_value = test_read_and_parse_json(pathx).unwrap();
+    let mut dico = essai_load_terms::load_test_case_terms(pathx,
+                                                          test_id).unwrap();
+
+    let data_observed = essai_load_data_observer
+    ::load_data_observed(pathx, test_id).unwrap();
+
+    let events_observed = essai_load_event_observed::load_events_observed(
+        pathx, test_id).unwrap();
     // let dico_from_json = json_to_dico(json_value);
-    // 
+
     // let first_val = dico_from_json.get("swaps01").unwrap().extract_hmap().unwrap();
     // let terms = first_val.get("terms").unwrap().extract_hmap().unwrap();
     // 
@@ -239,9 +252,9 @@ fn main() {
     let risk_factor_model = RiskFactorModel;
     
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = ANN::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = SWAPS::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
         if let Ok(events_res) = events {
-            let events2 = ANN::apply(events_res, cm, &risk_factor_model).ok().unwrap();
+            let events2 = SWAPS::apply(events_res, cm, &risk_factor_model).ok().unwrap();
             
             for ce in events2.iter() {
                 println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);

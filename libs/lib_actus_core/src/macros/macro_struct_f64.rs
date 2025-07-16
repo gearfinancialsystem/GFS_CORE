@@ -468,15 +468,6 @@ macro_rules! define_struct_f64 {
 mod tests {
     use super::*;
 
-    
-    // Define the TestStructs
-    
-    
-    
-    
-
-
-
     // TestStruct1 tests
     #[test]
     fn test_teststruct1_new() {

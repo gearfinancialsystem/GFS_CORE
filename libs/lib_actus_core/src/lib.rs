@@ -13,6 +13,5 @@ pub mod externals;
 
 
 pub mod macros;
-#[cfg(feature = "dev")]
 pub mod util_tests;
 
