@@ -73,7 +73,7 @@ impl CommonUtils {
     }
 
     pub fn provide_string(string_map: &HashMap<String, Value>, key: &str) -> Option<String> {
-        println!("{:?}", key);
+
         //string_map.get(key).unwrap().as_string()
 
 
@@ -87,10 +87,6 @@ impl CommonUtils {
     }
 
     pub fn provide_string_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<String>> {
-        println!("{:?}", key);
-        //string_map.get(key).unwrap().as_string()
-
-
         string_map
             .get(key)
             .and_then(|s| {
@@ -101,7 +97,7 @@ impl CommonUtils {
     }
 
     pub fn provide_f64_vec(string_map: &HashMap<String, Value>, key: &str) -> Option<Vec<f64>> {
-        println!("{:?}", key);
+
         //string_map.get(key).unwrap().as_string()
 
 

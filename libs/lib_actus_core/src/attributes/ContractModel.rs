@@ -376,6 +376,21 @@ impl ContractModel {
                     EndOfMonthConvention::default()
                 } else {eomc.unwrap()};
 
+                let mut rate_multiplier = RateMultiplier::provide_from_input_dict(sm, "rateMultiplier");
+                if rate_multiplier.is_none() {
+                    rate_multiplier = RateMultiplier::new(1.0).ok();
+                }
+  
+                let mut notional_scaling_multiplier = NotionalScalingMultiplier::provide_from_input_dict(sm, "notionalScalingMultiplier");
+                if notional_scaling_multiplier.is_none() {
+                    notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();
+                }
+
+                let mut interest_scaling_multiplier = InterestScalingMultiplier::provide_from_input_dict(sm, "interestScalingMultiplier");
+                if interest_scaling_multiplier.is_none() {
+                    interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
+                }
+                
                 let cm = ContractModel {
                     accrued_interest:                       accrued_interest,
                     business_day_adjuster:                  business_day_adjuster,
@@ -406,7 +421,7 @@ impl ContractModel {
                     fee_rate:                               fee_rate,
                     fixing_period:                          FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
                     initial_exchange_date:                  InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
-                    interest_scaling_multiplier:            InterestScalingMultiplier::provide_from_input_dict(sm, "interestScalingMultiplier"),
+                    interest_scaling_multiplier:            interest_scaling_multiplier,
                     life_cap:                               LifeCap::provide_from_input_dict(sm, "lifeCap"),
                     life_floor:                             LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
                     market_object_code:                     MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
@@ -416,7 +431,7 @@ impl ContractModel {
                     next_reset_rate:                        NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
                     nominal_interest_rate:                  NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
                     notional_principal:                     NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
-                    notional_scaling_multiplier:            NotionalScalingMultiplier::provide_from_input_dict(sm, "notionalScalingMultiplier"),
+                    notional_scaling_multiplier:            notional_scaling_multiplier,
                     object_code_of_prepayment_model:        ObjectCodeOfPrepaymentModel::provide_from_input_dict(sm, "objectCodeOfPrepaymentModel"),
                     penalty_rate:                           PenaltyRate::provide_from_input_dict(sm, "penaltyRate"),
                     penalty_type:                           PenaltyType::provide_from_input_dict(sm, "penaltyType"),
@@ -426,7 +441,7 @@ impl ContractModel {
                     price_at_purchase_date:                 PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
                     price_at_termination_date:              PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
                     purchase_date:                          PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
-                    rate_multiplier:                        RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
+                    rate_multiplier:                        rate_multiplier,
                     rate_spread:                            RateSpread::provide_from_input_dict(sm, "rateSpread"),
                     scaling_effect:                         ScalingEffect::provide_from_input_dict(sm, "scalingEffect"),
                     scaling_index_at_contract_deal_date:    ScalingIndexAtContractDealDate::provide_from_input_dict(sm, "scalingIndexAtContractDealDate"),
@@ -985,7 +1000,7 @@ impl ContractModel {
                 };
                 let z = ArrayCycleOfInterestPayment::provide_from_input_dict(sm, "arrayCycleOfInterestPayment");
 
-                println!("ok");
+                
                 let cm = ContractModel {
                     calendar: calendar,
                     business_day_adjuster: business_day_adjuster,
@@ -1833,7 +1848,7 @@ impl ContractModel {
                     //cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
                     //nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
                     //day_count_convention: day_count_convention,
-                    //currency: Currency::provide_from_input_dict(sm, "currency"),
+                    currency: Currency::provide_from_input_dict(sm, "currency"),
                     //maturity_date: maturity_date,
                     //notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
                     //purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),

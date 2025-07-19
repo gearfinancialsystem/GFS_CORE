@@ -35,12 +35,12 @@ impl TraitDayCountConvention for B252 {
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
         let mut date = start_time;
         let mut days_count = 0;
-
-        for _ in 0..(end_time - start_time).num_days() {
+        let q = end_time.numdays_between_dates(&start_time) as i32; // A voir
+        for _ in 0..q {
             if self.calendar.is_business_day(&date) {
                 days_count += 1;
             }
-            date = date + Duration::days(1);
+            date = IsoDatetime(*date + Duration::days(1));
         }
 
         days_count as f64

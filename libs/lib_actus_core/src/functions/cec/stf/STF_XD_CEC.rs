@@ -31,17 +31,17 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
             risk_factor_model,
             time
         );
-
-        states.notional_principal = NotionalPrincipal::new(CEC::calculate_notional_principal(
+        let a = CEC::calculate_notional_principal(
             model,
             risk_factor_model,
             time
-        )).ok();
+        );
+        states.notional_principal = NotionalPrincipal::new(a).ok();
 
         let exercise_amount = {
             ExerciseAmount::new({
                 if states.notional_principal.is_some(){
-                    states.notional_principal.clone().unwrap().value().min(market_value_covering_contracts)
+                    a.min(market_value_covering_contracts)
                 }
                 else {
                     0.0_f64.min(market_value_covering_contracts)

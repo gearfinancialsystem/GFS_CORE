@@ -17,6 +17,7 @@ use lib_actus_core::util::Value::Value;
 use lib_actus_core::util_tests::{essai_data_observer, essai_load_terms};
 use lib_actus_core::util_tests::essai_load_data_observed;
 use lib_actus_core::util_tests::essai_load_event_observed;
+use lib_actus_core::util_tests::essai_load_results::load_results;
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
@@ -225,8 +226,8 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_core/test_sets/actus-tests-cec.json";
-    let test_id = "collateral02";
+    let pathx = "libs/lib_actus_core/test_sets/actus-tests-pam.json";
+    let test_id = "pam01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let mut dico = essai_load_terms::load_test_case_terms(pathx,
@@ -249,26 +250,37 @@ fn main() {
     //let contract_model = Box::new(ContractModel::new(&dico));
 
     let to_date = IsoDatetime::parse_from_str("2014-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+    let q = load_results(pathx, test_id).ok();
 
-
-    let results = load_results("tests.json", "collateral02")?;
-    
+    let test_expected_res2 = load_results(pathx, test_id).unwrap().get(0).unwrap().get_expected_results();
+    println!("\nExpected Res: ");
+    for (key, value) in &test_expected_res2 {
+        println!("Key: {}: {}", key, value);
+    }
     if let Ok(cm) = contract_model.as_ref() {
-        let mut events = CEC::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+        let mut events = PAM::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
 
-        
         if let Ok(events_res) = events {
-            let events2 = CEC::apply(events_res, cm, &observer).ok().unwrap();
-            
+            let events2 = PAM::apply(events_res, cm, &observer).ok().unwrap();
+            let all_computed_res: Vec<HashMap<String, String>> = 
+                events2.clone().into_iter().map(|ce|
+                    ce.get_all_states().clone()).collect::<Vec<HashMap<String, String>>>();
+
+            let test_computed_res2 = events2.get(0).unwrap().get_computed_result().clone();
+            println!("\nComputed Res: ");
+            for (key, value) in &test_computed_res2 {
+                println!("Key: {}: {}", key, value);
+            }
             for ce in events2.iter() {
-                println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accrued_interest);
+                println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", 
+                         ce.event_time.unwrap(), 
+                         ce.event_type, 
+                         ce.payoff, 
+                         ce.state.accrued_interest);
             }
 
         }
     }
-
-    println!("ok");
-
 
 }
 

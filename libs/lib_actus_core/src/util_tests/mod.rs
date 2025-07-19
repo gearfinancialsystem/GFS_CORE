@@ -11,4 +11,4 @@ pub mod essai_load_terms;
 pub mod essai_load_data_observed;
 pub mod essai_load_event_observed;
 pub mod essai_data_observer;
-mod essai_load_results;
+pub mod essai_load_results;

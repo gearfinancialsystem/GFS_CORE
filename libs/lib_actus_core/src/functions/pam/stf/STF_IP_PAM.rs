@@ -36,6 +36,6 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
         states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
 
         states.status_date = Some(StatusDate::from(*time));
-        println!("stf ip pam : {:?}", time);
+
     }
 }

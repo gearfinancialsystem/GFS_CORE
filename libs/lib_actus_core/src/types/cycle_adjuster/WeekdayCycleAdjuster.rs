@@ -64,31 +64,32 @@ impl WeekdayCycleAdjuster {
 
 impl TraitCycleAdjuster for WeekdayCycleAdjuster {
     fn plus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
-        let test1 = time.checked_add_months(Months::new(1)).unwrap();
+        let test1 = time.0.checked_add_months(Months::new(1)).unwrap();
         let test2 = NaiveDate::from_weekday_of_month_opt(test1.year(), test1.month(), self.day_of_week, self.position as u8);
-        test2.unwrap().and_hms_opt(0,0,0).unwrap()
+        IsoDatetime(test2.unwrap().and_hms_opt(0,0,0).unwrap())
     }
 
     fn minus_cycle(&self, time: IsoDatetime) -> IsoDatetime {
-        let test1 = time.checked_sub_months(Months::new(1)).unwrap();
+        let test1 = time.0.checked_sub_months(Months::new(1)).unwrap();
         let test2 = NaiveDate::from_weekday_of_month_opt(test1.year(), test1.month(), self.day_of_week, self.position as u8);
-        test2.unwrap().and_hms_opt(0,0,0).unwrap()
+        IsoDatetime(test2.unwrap().and_hms_opt(0,0,0).unwrap())
     }
 }
 
 #[cfg(test)]
 mod tests_period_cycle_adjuster {
+    use std::str::FromStr;
     use crate::types::cycle_adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster;
     use crate::types::IsoDatetime::IsoDatetime;
     use super::*;
     #[test]
     fn test_plus_1MonShort(){
         let mut w_adjuster = WeekdayCycleAdjuster::new("1MonL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2019-02-04T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-01-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2019-02-04T00:00:00").unwrap();
 
         let mut test = w_adjuster.plus_cycle(t0) ;
-        println!("{:?}", test);
+
         assert_eq!(t1, test);
 
     }
@@ -96,8 +97,8 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_minus_1MonShort(){
         let mut w_adjuster = WeekdayCycleAdjuster::new("1MonL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2018-12-03T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-01-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2018-12-03T00:00:00").unwrap();
 
         let mut test = w_adjuster.minus_cycle(t0) ;
         assert_eq!(t1, test);
@@ -106,8 +107,8 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_plus_1FriShort(){
         let mut w_adjuster = WeekdayCycleAdjuster::new("1FriL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-07-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2019-08-02T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-07-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2019-08-02T00:00:00").unwrap();
 
         let mut test = w_adjuster.plus_cycle(t0) ;
         assert_eq!(t1, test);
@@ -116,8 +117,8 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_minus_1FriShort() {
         let mut w_adjuster = WeekdayCycleAdjuster::new("1FriL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-07-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2019-06-07T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-07-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2019-06-07T00:00:00").unwrap();
 
         let mut test = w_adjuster.minus_cycle(t0) ;
         assert_eq!(t1, test);
@@ -126,8 +127,8 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_plus_3SatShort() {
         let mut w_adjuster = WeekdayCycleAdjuster::new("3SatL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-10-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2019-11-16T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-10-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2019-11-16T00:00:00").unwrap();
 
         let mut test = w_adjuster.plus_cycle(t0) ;
         assert_eq!(t1, test);
@@ -136,8 +137,8 @@ mod tests_period_cycle_adjuster {
     #[test]
     fn test_minus_3SatShort() {
         let mut w_adjuster = WeekdayCycleAdjuster::new("3SatL1".to_string()).unwrap();
-        let mut t0 = IsoDatetime::parse_from_str("2019-10-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-        let mut t1 = IsoDatetime::parse_from_str("2019-09-21T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let mut t0 = IsoDatetime::from_str("2019-10-01T00:00:00").unwrap();
+        let mut t1 = IsoDatetime::from_str("2019-09-21T00:00:00").unwrap();
 
         let mut test = w_adjuster.minus_cycle(t0) ;
         assert_eq!(t1, test);

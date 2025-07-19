@@ -129,7 +129,7 @@
 //         //let mut dico = HashMap::new();
 //         let mut vec: Vec<Value> = Vec::new();
 //         for (k, v) in map {
-//             println!("{}", k);
+//             
 //             vec.push(serde_value_to_custom_value(v));
 //             //dico.insert(k, serde_value_to_custom_value(v));
 //         }

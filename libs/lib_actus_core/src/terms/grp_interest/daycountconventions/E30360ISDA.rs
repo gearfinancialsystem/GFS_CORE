@@ -80,7 +80,7 @@ mod tests {
     fn parse_date(date_str: &str) -> MaturityDate {
 
         let a = NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date");
-        MaturityDate::new(a).ok().unwrap()
+        MaturityDate::new(IsoDatetime(a)).ok().unwrap()
     }
 
     #[test]

@@ -96,7 +96,7 @@ impl TraitContractModel for ANN {
         } else {
             stf = Rc::new(STF_PR2_NAM)
         };
-        println!("{:?}", &model.cycle_anchor_date_of_principal_redemption);
+        
         let a = &ScheduleFactory::<
             CycleAnchorDateOfPrincipalRedemption,
             MaturityDate,

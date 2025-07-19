@@ -687,7 +687,6 @@ impl fmt::Display for SWAPS {
 //                 i = i + 1;
 //             }
 //
-//             println!("{:?}", vec_bool);
 //         }
 //         true
 //
@@ -774,12 +773,11 @@ impl fmt::Display for SWAPS {
 //                             .unwrap_or_default();
 //                         sub_res_hm.insert("accruedInterest".to_string(), Value::F64( accInt  ));
 //
-//                         println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", ce.event_time.unwrap(), ce.event_type, ce.payoff, ce.state.accruedInterest);
+//                        
 //                         vec_results.push(sub_res_hm);
 //                     }
 //
 //
-//                     println!("events");
 //                 }
 //             }
 //              // enlever pour faire les autres tests
@@ -788,7 +786,6 @@ impl fmt::Display for SWAPS {
 //             let mut v2  = convert_value_map_to_string_map_ref(&curr_results.clone());
 //             let t = are_contracts_equal(vec_results, curr_results.clone());
 //             //assert!(are_contracts_equal(&vec_results, &curr_results));
-//             println!("events");
 //             break;
 //
 //         }

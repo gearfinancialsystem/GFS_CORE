@@ -1,3 +1,4 @@
+use std::cmp::{Ordering, PartialOrd};
 use std::error::Error;
 use std::fmt;
 use std::ops::Deref;
@@ -29,6 +30,7 @@ use crate::util_tests::essai_data_observer::DataObserver;
 
 pub struct CEC;
 
+
 impl TraitContractModel for CEC {
     fn schedule(
         to: Option<IsoDatetime>,
@@ -36,7 +38,7 @@ impl TraitContractModel for CEC {
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let mut events = Vec::new();
         let maturity = Self::maturity(model);
-        println!("{:?}", maturity);
+
         // Maturity
         if model.exercise_date.is_none() {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
@@ -65,7 +67,7 @@ impl TraitContractModel for CEC {
             events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
-            let settlement_date = exercise_date.clone() + settlement_period.clone().value().clone();
+            let settlement_date = exercise_date + &settlement_period;
 
             let e: ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
                 &Some(settlement_date),
@@ -324,7 +326,8 @@ impl CEC {
             events.push(e.to_iso_datetime_event());
 
             let settlement_period = model.settlement_period.clone().unwrap();
-            let settlement_date = ce_event.event_time.clone().unwrap().value() + settlement_period.value().clone();
+            let event_time = ce_event.event_time.clone().unwrap();
+            let settlement_date = event_time + *settlement_period;
 
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(settlement_date),

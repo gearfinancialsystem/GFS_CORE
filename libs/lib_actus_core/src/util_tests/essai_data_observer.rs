@@ -125,7 +125,7 @@ fn convert_observed_events(
             .map_err(|_| format!("Invalid contract ID: {}", obs_event.get_contract_id()))?;
 
         // Calculer l'epoch offset
-        let epoch_offset = event_time.and_utc().timestamp_millis() +
+        let epoch_offset = event_time.0.and_utc().timestamp_millis() +
             EventSequence::time_offset(&event_type);
 
         // Créer l'événement de contrat

@@ -1,6 +1,8 @@
 #[macro_export]
 macro_rules! define_struct_string {
     ($struct_name:ident, "normale") => {
+        use std::fmt;
+        
         #[derive(PartialEq, Debug, Clone, Hash)]
         pub struct $struct_name(String);
 
@@ -37,8 +39,17 @@ macro_rules! define_struct_string {
                 $struct_name::new(value)
             }
         }
+
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
     };
     ($struct_name:ident, "currency") => {
+        
+        use std::fmt;
+        
         #[derive(PartialEq, Debug, Clone, Hash)]
         pub struct $struct_name(pub String);
 
@@ -88,7 +99,11 @@ macro_rules! define_struct_string {
         }
 
         // Implement Display trait for IsoPeriod to enable to_string method
-
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
 
     };
 }

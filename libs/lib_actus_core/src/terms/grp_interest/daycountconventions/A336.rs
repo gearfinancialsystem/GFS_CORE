@@ -13,7 +13,8 @@ impl A336 {
 impl TraitDayCountConvention for A336 {
     /// Calculates the number of days between two dates
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
-        (end_time - start_time).num_days() as f64
+        end_time.numdays_between_dates(&start_time)
+        //(end_time - start_time).num_days() as f64
     }
 
     /// Calculates the day count fraction between two dates using the A/336 convention
@@ -29,14 +30,15 @@ impl fmt::Display for A336 {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use super::*;
     use crate::terms::grp_interest::daycountconventions::A336::A336;
     use crate::types::IsoDatetime::IsoDatetime;
     
     fn set_vars() -> (IsoDatetime, IsoDatetime, IsoDatetime) {
-        let local_date1 = IsoDatetime::parse_from_str("2019-02-01 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
-        let local_date2 = IsoDatetime::parse_from_str("2019-04-30 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
-        let local_date3 = IsoDatetime::parse_from_str("2019-06-30 00:00:00", "%Y-%m-%dT%H:%M:%S").expect("");
+        let local_date1 = IsoDatetime::from_str("2019-02-01 00:00:00").expect("");
+        let local_date2 = IsoDatetime::from_str("2019-04-30 00:00:00").expect("");
+        let local_date3 = IsoDatetime::from_str("2019-06-30 00:00:00").expect("");
         (local_date1, local_date2, local_date3)
     }
     

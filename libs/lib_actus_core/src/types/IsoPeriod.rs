@@ -10,7 +10,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Days;
 use crate::util::Value::Value;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct IsoPeriod {
     pub years: i32,
     pub months: i32,
@@ -27,9 +27,9 @@ impl IsoPeriod {
     // Convert a IsoPeriod to an IsoDateTime by adding it to a reference NaiveDateTime
     pub fn to_iso_datetime(&self, reference: IsoDatetime) -> Option<IsoDatetime> {
         // Add years and months to the date part
-        let new_date = reference.date()
-            .with_year(reference.year() + self.years)?
-            .with_month(reference.month() + self.months as u32)?;
+        let new_date = reference.0.date()
+            .with_year(reference.0.year() + self.years)?
+            .with_month(reference.0.month() + self.months as u32)?;
 
         // Add days to the date
         let date_with_days = new_date.checked_add_days(chrono::Days::new(self.days as u64))?;
@@ -37,7 +37,7 @@ impl IsoPeriod {
         // Combine the new date with the original time
         let new_datetime = IsoDatetime::new(
             date_with_days,
-            reference.time(),
+            reference.0.time(),
         );
 
         Some(new_datetime)
@@ -232,61 +232,6 @@ impl IsoPeriod {
             None
         }
     }
-    // pub fn parse(text: &str) -> Option<Self> {
-    //     let re = match Regex::new(r"^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$") {
-    //         Ok(re) => re,
-    //         Err(e) => {
-    //             println!("Failed to create regex: {:?}", e);
-    //             panic!("Regex compilation failed");
-    //         }
-    //     };
-    //     println!("okok");
-    //     let text_upper = text.to_uppercase();
-    //     let caps = re.captures(&text_upper)?;
-    //
-    //     let global_sign = if let Some(sign) = caps.get(1) {
-    //         if sign.as_str() == "-" { -1 } else { 1 }
-    //     } else {
-    //         1
-    //     };
-    //
-    //     let parse_number = |s: Option<&str>| -> Option<i32> {
-    //         s.and_then(|s| {
-    //             let s = s; //.as_str();
-    //             if s.is_empty() {
-    //                 Some(0)
-    //             } else {
-    //                 s.parse::<i32>().ok().map(|value| {
-    //                     if s.starts_with('+') || s.starts_with('-') {
-    //                         value
-    //                     } else {
-    //                         value * global_sign
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //     };
-    //
-    //     let years = parse_number(caps.get(2).map(|m| m.as_str()))?;
-    //     let months = parse_number(caps.get(3).map(|m| m.as_str()))?;
-    //     let weeks = parse_number(caps.get(4).map(|m| m.as_str()))?;
-    //     let days_initial = parse_number(caps.get(5).map(|m| m.as_str()))?;
-    //
-    //     // Vérifier qu'au moins une section était présente
-    //     let has_any_section = caps.get(2).is_some() || caps.get(3).is_some() || caps.get(4).is_some() || caps.get(5).is_some();
-    //     if !has_any_section {
-    //         return None;
-    //     }
-    //
-    //     // Vérifier que semaines ne sont pas mélangées avec autres unités
-    //     if weeks != 0 && (years != 0 || months != 0 || days_initial != 0) {
-    //         return None;
-    //     }
-    //
-    //     let days = days_initial + weeks * 7;
-    //
-    //     Some(IsoPeriod { years, months, days })
-    // }
 
 
     // Returns a copy of this IsoPeriod with the specified IsoPeriod added
@@ -382,15 +327,14 @@ impl Hash for IsoPeriod {
 }
 
 
-
 impl Add<IsoDatetime> for IsoPeriod {
     type Output = IsoDatetime;
 
     fn add(self, other: IsoDatetime) -> IsoDatetime {
         // Convert Yards to Meters and add to self
-        other.checked_add_days(Days::new(self.days as u64)).unwrap()
+        IsoDatetime(other.0.checked_add_days(Days::new(self.days as u64)).unwrap()
             .checked_add_months(Months::new(self.months as u32)).unwrap()
-            .checked_add_months(Months::new((self.years * 12)as u32)).unwrap()
+            .checked_add_months(Months::new((self.years * 12)as u32)).unwrap())
     }
 }
 
@@ -399,8 +343,8 @@ impl Sub<IsoDatetime> for IsoPeriod {
 
     fn sub(self, other: IsoDatetime) -> IsoDatetime {
         // Convert Yards to Meters and add to self
-        other.checked_sub_days(Days::new(self.days as u64)).unwrap()
+        IsoDatetime(other.0.checked_sub_days(Days::new(self.days as u64)).unwrap()
             .checked_sub_months(Months::new(self.months as u32)).unwrap()
-            .checked_sub_months(Months::new((self.years * 12) as u32)).unwrap()
+            .checked_sub_months(Months::new((self.years * 12) as u32)).unwrap())
     }
 }

@@ -17,8 +17,5 @@ pub trait TraitContractModel {
                         observer: &DataObserver, // mettre au pluriel pour quon puisse contruire plusieur different dataobserver
                         maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String>;
 
-    // les erreurs doivent etre autre chose que String
-    
-    //fn get_as(&self, name: &str) -> Option<&dyn Any>;
 }
 

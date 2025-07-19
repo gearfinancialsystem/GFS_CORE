@@ -3,6 +3,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use chrono::NaiveDateTime;
 use crate::attributes::ContractModel::ContractModel;
 use crate::state_space::StateSpace::StateSpace;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
 
 #[allow(non_snake_case)]
@@ -18,7 +19,7 @@ pub trait TraitStateTransitionFunction {
     
     fn eval(
         &self,
-        time: &NaiveDateTime,
+        time: &IsoDatetime,
         states: &mut StateSpace,
         model: &ContractModel,
         risk_factor_model: &DataObserver,//&RiskFactorModel,

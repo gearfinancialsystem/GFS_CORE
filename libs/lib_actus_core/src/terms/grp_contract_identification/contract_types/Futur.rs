@@ -62,7 +62,7 @@ impl FUTUR {
             events.push(e.to_iso_datetime_event());
 
             let settlement_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
-                &(exercise_date.clone().value() + model.settlement_period.clone().unwrap().value().clone())
+                &(exercise_date.clone() + model.settlement_period.clone().unwrap())
             );
 
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(

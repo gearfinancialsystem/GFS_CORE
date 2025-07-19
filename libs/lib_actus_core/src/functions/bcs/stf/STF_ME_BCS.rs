@@ -1,7 +1,7 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 
-use crate::state_space::StateSpace::{BoundaryMonitoringFlag, StateSpace};
+use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_boundary::BoundaryDirection::BoundaryDirection;
 use crate::terms::grp_boundary::boundary_direction::DECR::DECR;
 use crate::terms::grp_boundary::boundary_direction::INCR::INCR;
@@ -14,6 +14,7 @@ use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
+
 #[allow(non_camel_case_types)]
 pub struct STF_ME_BCS;
 

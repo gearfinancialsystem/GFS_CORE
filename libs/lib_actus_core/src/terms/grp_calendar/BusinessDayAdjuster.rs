@@ -93,7 +93,6 @@ impl BusinessDayAdjuster {
                 match Self::parse(s.as_string().unwrap().as_str(), calendar) {
 
                     Ok(bdc) => {
-                        println!("{:?}", bdc);
                         Some(bdc)
 
                     },
@@ -126,6 +125,7 @@ mod tests_period_cycle_adjuster {
     use super::*;
     use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
     use std::rc::Rc;
+    use std::str::FromStr;
 
     #[test]
     fn test_SAME_NoHolidaysCalendar() {
@@ -136,22 +136,22 @@ mod tests_period_cycle_adjuster {
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
 
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -171,24 +171,24 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("NOS", calendar.clone()).expect("Adjuster good");
         // List of unadjusted times
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         // List of expected event times shifted according to the business day convention
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         // List of expected calculation times shifted according to the business day convention
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         // Shift times to event times according to the business day convention
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
@@ -210,22 +210,22 @@ mod tests_period_cycle_adjuster {
 
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -243,22 +243,22 @@ mod tests_period_cycle_adjuster {
         //let cycle_adjuster = BusinessDayAdjuster::new_SCF(calendar.clone());
         let adjuster = BusinessDayAdjuster::new("SCF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -275,22 +275,22 @@ mod tests_period_cycle_adjuster {
         let calendar = Rc::new(Calendar::new("NC").expect("good cal"));
         let adjuster = BusinessDayAdjuster::new("CSF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -308,22 +308,22 @@ mod tests_period_cycle_adjuster {
 
         let adjuster = BusinessDayAdjuster::new("CSF", calendar.clone()).expect("Adjuster good");
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -341,22 +341,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -374,22 +374,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -407,22 +407,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -440,22 +440,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSMF", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -473,22 +473,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -506,22 +506,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -539,22 +539,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -572,22 +572,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -605,22 +605,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -638,22 +638,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("SCMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -671,22 +671,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));
@@ -704,22 +704,22 @@ mod tests_period_cycle_adjuster {
         let adjuster = BusinessDayAdjuster::new("CSMP", calendar.clone()).expect("Adjuster good");
 
         let mut unadjustedTimes: Vec<IsoDatetime> = vec![];
-        unadjustedTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        unadjustedTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        unadjustedTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedEventTimes: Vec<IsoDatetime> = vec![];
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedEventTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
+        expectedEventTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut expectedCalcTimes: Vec<IsoDatetime> = vec![];
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("29-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("30-04-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("01-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
-        expectedCalcTimes.push(IsoDatetime::parse_from_str("02-05-2016 00:00:00", "%d-%m-%Y %H:%M:%S").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("29-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("30-04-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("01-05-2016 00:00:00").expect(""));
+        expectedCalcTimes.push(IsoDatetime::from_str("02-05-2016 00:00:00").expect(""));
 
         let mut shiftedEventTimes: Vec<IsoDatetime> = vec![];
         unadjustedTimes.iter().for_each(|ut| shiftedEventTimes.push(adjuster.shift_bd(ut)));

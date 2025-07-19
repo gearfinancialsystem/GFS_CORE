@@ -1,3 +1,4 @@
+use std::fmt;
 use std::str::FromStr;
 use crate::exceptions::ParseError::ParseError;
 #[derive(PartialEq, Eq, Debug, Clone, Copy, Hash, PartialOrd, Ord)]
@@ -96,5 +97,10 @@ impl FromStr for EventType {
                 message: format!("Invalid Event cont_type: {}", s),
             }),
         }
+    }
+}
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }

@@ -1,5 +1,6 @@
 use chrono::Duration;
 use std::{fmt, ptr};
+use std::ops::AddAssign;
 use std::rc::Rc;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
@@ -26,6 +27,7 @@ impl Following {
         Following { calendar }
     }
 }
+
 
 impl TraitBusinessDayAdjuster for Following {
     /// Décale la date tant que celle-ci n'est pas ouvrée selon le calendrier.

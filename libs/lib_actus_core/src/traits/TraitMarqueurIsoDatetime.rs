@@ -1,4 +1,4 @@
-use chrono::ParseResult;
+use chrono::{NaiveDateTime};
 use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitMarqueurIsoDatetime {
@@ -7,6 +7,6 @@ pub trait TraitMarqueurIsoDatetime {
 
     fn set_value(&mut self, value: &IsoDatetime);
 
-    fn parse_from_string(s: &str, fmt: &str) -> ParseResult<IsoDatetime>;
+    fn parse_from_string(s: &str, fmt: &str) -> Result<IsoDatetime, String>;
     
 }

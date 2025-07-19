@@ -30,6 +30,7 @@ pub trait TraitContractEvent {}
 pub struct ContractEvent<T1, T2> {
     pub _marker_t1: PhantomData<T1>,
     pub _marker_t2: PhantomData<T2>,
+
     pub epoch_offset: Option<i64>,
     pub fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
     pub fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
@@ -249,24 +250,85 @@ where
         if let Some(value) = self.state.nominal_interest_rate2.clone()  {
             attributes.insert("nominal_interest_rate2".to_string(), value.to_string_rounded(2));
         }
+        // ????
         if let Some(value) = self.state.non_performing_date.clone()  {
             attributes.insert("nonPerformingDate".to_string(), value.value().to_string());
         }
+
         if let Some(value) = self.state.notional_principal.clone()  {
             attributes.insert("notional_principal".to_string(), value.to_string_rounded(2));
         }
         if let Some(value) = self.state.notional_principal2.clone()  {
             attributes.insert("notional_principal2".to_string(), value.to_string_rounded(2));
         }
+
+
         if let Some(value) = self.state.notional_scaling_multiplier.clone()  {
             attributes.insert("notional_scaling_multiplier".to_string(), value.to_string_rounded(2));
         }
+
+        // ????
         if let Some(value) = self.state.last_interest_period.clone()  {
             attributes.insert("lastInterestPeriod".to_string(), value.to_string()); // a refaire ici
         }
         attributes
     }
+    pub fn get_computed_result(&self) -> HashMap<String, String> {
+        let mut attributes = HashMap::new();
 
+        attributes.insert("event_date".to_string(), self.event_time.as_ref().unwrap().value().to_string() );
+        attributes.insert("event_type".to_string(), format!("{:?}", self.event_type));
+        attributes.insert("currency".to_string(), self.currency.as_ref().unwrap().value()   );
+        attributes.insert("payoff".to_string(), self.payoff.as_ref().unwrap().to_string()   );
+        
+        // Ajoutez d'autres attributs ici en fonction des champs de StateSpace
+        if let Some(value) = self.state.accrued_interest.clone(){
+            attributes.insert("accrued_interest".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.accrued_interest2.clone()  {
+            attributes.insert("accrued_interest2".to_string(), value.to_string_rounded(10));
+        }
+        
+        if let Some(value) = self.state.exercise_amount.clone()  {
+            attributes.insert("exercise_amount".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.exercise_date.clone()  {
+            attributes.insert("exercise_date".to_string(), value.value().to_string());
+        }
+        
+        if let Some(value) = self.state.fee_accrued.clone()  {
+            attributes.insert("fee_accrued".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.interest_calculation_base_amount.clone()  {
+            attributes.insert("interest_calculation_base_amount".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.interest_scaling_multiplier.clone() {
+            attributes.insert("interest_scaling_multiplier".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.next_principal_redemption_payment.clone()  {
+            attributes.insert("next_principal_redemption_payment".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.nominal_interest_rate.clone()  {
+            attributes.insert("nominal_interest_rate".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.nominal_interest_rate2.clone()  {
+            attributes.insert("nominal_interest_rate2".to_string(), value.to_string_rounded(10));
+        }
+
+        if let Some(value) = self.state.notional_principal.clone()  {
+            attributes.insert("notional_principal".to_string(), value.to_string_rounded(10));
+        }
+        if let Some(value) = self.state.notional_principal2.clone()  {
+            attributes.insert("notional_principal2".to_string(), value.to_string_rounded(10));
+        }
+
+
+        if let Some(value) = self.state.notional_scaling_multiplier.clone()  {
+            attributes.insert("notional_scaling_multiplier".to_string(), value.to_string_rounded(10));
+        }
+        
+        attributes
+    }
 }
 
 // Implémentation manuelle de Debug pour ContractEvent
@@ -341,7 +403,7 @@ where
         base_eq && fpayoff_eq && fstate_eq
     }
 }
-// 
+//
 // // Implémentation manuelle de PartialEq pour ContractEvent
 // impl<T1, T2> PartialEq for ContractEvent<T1, T2>
 // where
@@ -376,7 +438,7 @@ where
 //         self.event_time.clone().hash(state);
 //         self.event_type.hash(state);
 //         self.schedule_time.hash(state);
-// 
+//
 //         // Hasher les pointeurs des traits dynamiques
 //         Rc::as_ptr(&self.fpayoff.clone().unwrap()).hash(state);
 //         Rc::as_ptr(&self.fstate.clone().unwrap()).hash(state);

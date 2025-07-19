@@ -32,7 +32,9 @@ macro_rules! define_option_ext {
                     some.0 -= other;
                 }
             }
+
         }
+
 
     }
 }
@@ -48,6 +50,7 @@ macro_rules! define_struct_f64 {
         use crate::util::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
+        use std::fmt;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::define_option_ext;
 
@@ -150,6 +153,11 @@ macro_rules! define_struct_f64 {
             }
         }
 
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{:.10}", self.0)
+            }
+        }
 
         // Implémentation du trait pour Option<$struct_name>
         define_option_ext!($struct_name);
@@ -158,7 +166,7 @@ macro_rules! define_struct_f64 {
 
     // Case with validation conditions but without a default value
     ($struct_name:ident, |$value:ident| {$($condition:expr => $error:expr),+ $(,)?}, {}) => {
-
+        use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
         use crate::util::Value::Value;
@@ -258,14 +266,19 @@ macro_rules! define_struct_f64 {
             }
         }
 
-
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{:.10}", self.0)
+            }
+        }
         // Implémentation du trait pour Option<$struct_name>
         define_option_ext!($struct_name);
+
     };
 
     // Case without validation conditions but with a default value
     ($struct_name:ident, |$value:ident| {}, {$default_value:expr}) => {
-
+        use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
         use crate::util::Value::Value;
@@ -361,15 +374,20 @@ macro_rules! define_struct_f64 {
             }
         }
 
-
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{:.10}", self.0)
+            }
+        }
 
         // Implémentation du trait pour Option<$struct_name>
         define_option_ext!($struct_name);
+
     };
 
     // Case without validation conditions and without a default value
     ($struct_name:ident, |$value:ident| {}, {}) => {
-
+        use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
         use crate::util::Value::Value;
@@ -457,8 +475,14 @@ macro_rules! define_struct_f64 {
             }
         }
 
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{:.10}", self.0)
+            }
+        }
         // Implémentation du trait pour Option<$struct_name>
         define_option_ext!($struct_name);
+
 
     };
 }

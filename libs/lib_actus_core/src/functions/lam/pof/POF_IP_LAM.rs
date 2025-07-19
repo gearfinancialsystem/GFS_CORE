@@ -40,7 +40,7 @@ impl TraitPayOffFunction for POF_IP_LAM {
             time_adjuster.shift_sc(&status_date.value()),
             time_adjuster.shift_sc(time)
         );
-        println!("pof ip lam : {:?}", time);
+
         settlement_currency_fx_rate * interest_scaling_multiplier.value()
             * (accrued_interest.value() + (timadj * nominal_interest_rate.value() * 
             interest_calculation_base_amount.value())

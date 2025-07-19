@@ -14,7 +14,7 @@ impl AAISDA {
 impl TraitDayCountConvention for AAISDA {
     /// Calculates the number of days between two dates
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
-        (end_time - start_time).num_days() as f64
+        end_time.numdays_between_dates(&start_time)
     }
 
     /// Calculates the day count fraction between two dates using the ISDA A/A convention
@@ -34,11 +34,11 @@ impl TraitDayCountConvention for AAISDA {
         let days_in_first_year = Self::day_count(
             &self,
             start_time,
-            NaiveDate::from_ymd_opt(y1 + 1, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap()
+            IsoDatetime(NaiveDate::from_ymd_opt(y1 + 1, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap())
         );
         let days_in_second_year = Self::day_count(
             &self,
-            NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap(),
+            IsoDatetime(NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap()),
             end_time
         );
 
@@ -69,7 +69,7 @@ mod tests {
         let local_date1 = parse_date("2019-02-01T00:00:00");
         let local_date2 = parse_date("2019-03-30T00:00:00");
         let result = 57.0;
-        assert_eq!(result, AAISDA.day_count(local_date1, local_date2));
+        assert_eq!(result, AAISDA.day_count(IsoDatetime(local_date1), IsoDatetime(local_date2)));
     }
 
     #[test]
@@ -77,7 +77,7 @@ mod tests {
         let local_date1 = parse_date("2019-02-01T00:00:00");
         let local_date2 = parse_date("2019-03-30T00:00:00");
         let result = 0.15616438356164383; // 57 divided by 365 (not leap year basis)
-        assert_eq!(result, AAISDA.day_count_fraction(local_date1, local_date2));
+        assert_eq!(result, AAISDA.day_count_fraction(IsoDatetime(local_date1), IsoDatetime(local_date2)));
     }
 
     #[test]
@@ -85,7 +85,7 @@ mod tests {
         let local_date1 = parse_date("2019-02-01T00:00:00");
         let local_date3 = parse_date("2019-07-30T00:00:00");
         let result = 179.0;
-        assert_eq!(result, AAISDA.day_count(local_date1, local_date3) as f64);
+        assert_eq!(result, AAISDA.day_count(IsoDatetime(local_date1), IsoDatetime(local_date3)) as f64);
     }
 
     #[test]
@@ -93,6 +93,6 @@ mod tests {
         let local_date1 = parse_date("2019-02-01T00:00:00");
         let local_date3 = parse_date("2019-07-30T00:00:00");
         let result = 0.4904109589041096; // 179 divided by 365 (not leap year basis)
-        assert_eq!(result, AAISDA.day_count_fraction(local_date1, local_date3));
+        assert_eq!(result, AAISDA.day_count_fraction(IsoDatetime(local_date1), IsoDatetime(local_date3)));
     }
 }

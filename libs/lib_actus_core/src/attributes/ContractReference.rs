@@ -110,8 +110,9 @@ impl ContractReference {
     // }
 
     pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &DataObserver) -> StateSpace {
+
         let model = self.object.as_cm().unwrap();
-        if self.reference_type == ReferenceType::CID {
+        if self.reference_type == ReferenceType::CNT {
             let mut events =  ContractType::schedule( Some(time.checked_add_days(Days::new(1))).unwrap(), &self.object.as_cm().unwrap()).unwrap();
             let analysis_event = EventFactory::create_event(
                 &Some(time),
@@ -125,7 +126,7 @@ impl ContractReference {
             events.push(analysis_event.clone());
             events.sort();
             events = ContractType::apply(events, &self.object.as_cm().unwrap(), observer).unwrap();
-            analysis_event.states();
+            return analysis_event.states()
         }
         StateSpace::default() // a checker
     }
