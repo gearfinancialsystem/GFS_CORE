@@ -1,9 +1,7 @@
-use crate::attributes::ContractModel::ContractModel;
-
+use crate::attributes::ContractTerms::ContractTerms;
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -18,11 +16,12 @@ impl TraitPayOffFunction for POF_FP_PAM {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        model: &ContractTerms,
         risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
+
         let day_counter = day_counter.clone().expect("sould have day counter");
         let fee_basis = model.fee_basis.as_ref().expect("feebasis should always be some");
         let fee_rate = model.fee_rate.as_ref().expect("fee rate should always be some");

@@ -1,6 +1,7 @@
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
-use chrono::NaiveDateTime;
+use crate::types::IsoDatetime::IsoDatetime;
+
 
 pub trait TraitShiftCalcConvention {
-    fn shift(&self, time: &NaiveDateTime, convention: &dyn TraitBusinessDayAdjuster) -> NaiveDateTime;
+    fn shift(&self, time: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime;
 }

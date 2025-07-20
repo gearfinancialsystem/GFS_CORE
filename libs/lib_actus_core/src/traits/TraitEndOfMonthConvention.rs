@@ -1,4 +1,5 @@
-use chrono::NaiveDateTime;
+
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitEndOfMonthConvention {
  /// Décale une date vers la fin du mois selon une convention spécifique.
@@ -10,6 +11,6 @@ pub trait TraitEndOfMonthConvention {
  /// # Retourne
  ///
  /// Une nouvelle date décalée.
- fn shift(&self, date: &NaiveDateTime) -> NaiveDateTime;
+ fn shift(&self, date: &IsoDatetime) -> IsoDatetime;
 }
  

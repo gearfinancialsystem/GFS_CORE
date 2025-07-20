@@ -5,7 +5,7 @@ use std::ops::Deref;
 use std::rc::Rc;
 use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
 use crate::state_space::StateSpace::StateSpace;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::functions::cec::pof::POF_STD_CEC::POF_STD_CEC;
 use crate::functions::cec::stf::STF_STD_CEC::STF_STD_CEC;

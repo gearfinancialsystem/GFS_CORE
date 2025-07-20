@@ -6,6 +6,7 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::types::IsoPeriod::IsoPeriod;
 
 #[derive(Clone, Debug)]
 pub struct Following {
@@ -34,7 +35,8 @@ impl TraitBusinessDayAdjuster for Following {
     fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         let mut shifted_date = *date;
         while !self.calendar.is_business_day(&shifted_date) {
-            shifted_date += Duration::days(1);
+            //shifted_date +=  IsoPeriod::new(0,0, 1) ; // Duration::days(1)
+            shifted_date = shifted_date + IsoPeriod::new(0,0, 1)
         }
         shifted_date
     }

@@ -1,4 +1,4 @@
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -20,7 +20,7 @@ pub trait TraitPayOffFunction {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
+        model: &ContractTerms,
         risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,

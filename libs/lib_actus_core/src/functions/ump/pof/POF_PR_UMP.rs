@@ -1,8 +1,9 @@
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
@@ -22,7 +23,7 @@ impl TraitPayOffFunction for POF_PR_UMP {
         &self,
         _time: &IsoDatetime,
         _states: &StateSpace,
-        model: &ContractModel,
+        model: &impl TraitContractModel,
         risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,

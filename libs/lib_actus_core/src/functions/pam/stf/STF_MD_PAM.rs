@@ -1,4 +1,4 @@
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -18,7 +18,7 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         &self,
         time: &IsoDatetime, 
         states: &mut StateSpace,
-        _model: &ContractModel,
+        _model: &ContractTerms,
         _risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,

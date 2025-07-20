@@ -98,22 +98,12 @@ impl ContractReference {
     pub fn get_object(&self) -> &Object {
         &self.object
     }
-
-    // pub fn get_contract_attribute(&self, contract_attribute: &str) -> Option<String> {
-    //     match &self.object {
-    //         Object::String(s) if contract_attribute == "marketObjectCode" && matches!(self.reference_type, ReferenceType::MOC) => Some(s.clone()),
-    //         Object::ContractModel(model) if matches!(self.reference_type, ReferenceType::CNT) => Some(model.get_field(contract_attribute)?.extract_vString()?),
-    //
-    //         Object::String(s) if matches!(self.reference_type, ReferenceType::CID) => Some(s.clone()),
-    //         _ => None,
-    //     }
-    // }
-
+    
     pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &DataObserver) -> StateSpace {
 
         let model = self.object.as_cm().unwrap();
         if self.reference_type == ReferenceType::CNT {
-            let mut events =  ContractType::schedule( Some(time.checked_add_days(Days::new(1))).unwrap(), &self.object.as_cm().unwrap()).unwrap();
+            let mut events =  ContractType::schedule(Some(IsoDatetime(time.checked_add_days(Days::new(1)).unwrap() )) , &self.object.as_cm().unwrap()).unwrap();
             let analysis_event = EventFactory::create_event(
                 &Some(time),
                 &EventType::AD,

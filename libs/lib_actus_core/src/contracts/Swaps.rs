@@ -1,7 +1,7 @@
 
 use std::fmt;
 use std::rc::Rc;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;

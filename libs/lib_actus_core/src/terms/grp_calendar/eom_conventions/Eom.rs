@@ -34,7 +34,7 @@ impl TraitEndOfMonthConvention for EOM {
         // Créer un `NaiveDateTime` avec la même heure que l'entrée
         let shifted_datetime = last_day;
 
-        shifted_datetime // .unwrap_or(last_day)
+        IsoDatetime(shifted_datetime) // .unwrap_or(last_day)
     }
 }
 

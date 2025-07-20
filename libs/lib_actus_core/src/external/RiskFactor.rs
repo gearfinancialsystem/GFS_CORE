@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::marker::PhantomData;
 use std::str::FromStr;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventSequence::EventSequence;
 use crate::state_space::StateSpace::StateSpace;
@@ -15,6 +15,7 @@ use crate::util_tests::essai_load_data_observed::ObservedDataSet;
 use crate::util_tests::essai_load_data_observed::ObservedDataPoint;
 use crate::util_tests::essai_load_event_observed::ObservedEvent;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct DataObserver {
     multi_series: HashMap<String, HashMap<IsoDatetime, f64>>,
     events_observed: HashMap<String, Vec<ContractEvent<IsoDatetime, IsoDatetime>>>,
@@ -52,7 +53,7 @@ impl TraitRiskFactorModel for DataObserver {
         self.multi_series.keys().cloned().collect()
     }
 
-    fn events(&self, _model: &ContractModel) // &impl TraitContractModel
+    fn events(&self, _model: &ContractTerms) // &impl TraitContractModel
         -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>> {
         self.events_observed
             .values()
@@ -65,7 +66,7 @@ impl TraitRiskFactorModel for DataObserver {
         id: String,
         time: &IsoDatetime,
         _contract_states: &StateSpace,
-        _contract_attributes: &ContractModel,
+        _contract_attributes: &ContractTerms,
         _is_market: bool
     ) -> f64 {
         self.multi_series

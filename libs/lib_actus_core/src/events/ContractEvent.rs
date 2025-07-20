@@ -6,7 +6,6 @@ pub type EventTime = IsoDatetime;
 pub type ScheduleTime = IsoDatetime;
 
 use std::hash::{Hash, Hasher};
-use crate::attributes::ContractModel::ContractModel;
 use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use crate::state_space::StateSpace::StateSpace;
@@ -19,6 +18,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
+use crate::attributes::ContractTerms::ContractTerms;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
@@ -140,7 +140,7 @@ where
     pub fn eval(
         &mut self,
         states: &mut StateSpace,
-        model: &ContractModel,
+        model: &ContractTerms,
         risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster) {

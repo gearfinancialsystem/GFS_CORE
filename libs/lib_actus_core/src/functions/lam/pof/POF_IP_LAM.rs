@@ -1,5 +1,5 @@
 use std::os::linux::raw::stat;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;

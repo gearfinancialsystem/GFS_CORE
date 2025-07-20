@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::io::Error;
 use lib_actus_core::types::IsoDatetime::IsoDatetime;
-use lib_actus_core::attributes::ContractModel::ContractModel;
+use lib_actus_core::attributes::ContractTerms::ContractModel;
 
 use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM;
 use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;

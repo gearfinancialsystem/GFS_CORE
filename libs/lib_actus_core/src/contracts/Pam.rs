@@ -1,7 +1,8 @@
-
+use std::collections::HashMap;
 use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
+use std::str::FromStr;
 use crate::events::ContractEvent::{ContractEvent};
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
@@ -45,26 +46,221 @@ use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_fees::FeeRate::FeeRate;
 use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
+use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
+use crate::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
 //use crate::events::AnyContractEvent::AnyContractEvent;
 
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MarketObjectCodeOfScalingIndex::MarketObjectCodeOfScalingIndex;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+use crate::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::terms::grp_optionality::CycleAnchorDateOfOptionality::CycleAnchorDateOfOptionality;
+use crate::terms::grp_optionality::CycleOfOptionality::CycleOfOptionality;
+use crate::terms::grp_optionality::ObjectCodeOfPrepaymentModel::ObjectCodeOfPrepaymentModel;
+use crate::terms::grp_optionality::PenaltyRate::PenaltyRate;
+use crate::terms::grp_optionality::PenaltyType::PenaltyType;
+use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
+use crate::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use crate::terms::grp_reset_rate::LifeCap::LifeCap;
+use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use crate::terms::grp_reset_rate::RateSpread::RateSpread;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::util::Value::Value;
 use crate::util_tests::essai_data_observer::DataObserver;
 
-/// Represents the Principal At Maturity payoff algorithm
-pub struct PAM;
+#[derive(Debug, Clone, PartialEq)]
+pub struct PAM {
+    pub contract_terms: ContractTerms,
+    pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub contract_data_observer: DataObserver,
+}
 
-impl TraitContractModel for PAM {
+impl TraitContractModel for PAM { // 
+
+    fn new() -> Self {
+        Self {
+            contract_terms: ContractTerms::default(),
+            contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
+            contract_data_observer: DataObserver::new(),
+        }
+    }
+
+    fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+        //let mut cm = ContractModel::init();
+        let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+        let maturity_date = if let Some(a) = maturity_date_tmp {
+            Some(Rc::new(a))
+        } else {
+            None
+        };
+        let calendar = Calendar::provide_rc(sm, "calendar");
+
+        let business_day_adjuster: Option<BusinessDayAdjuster> =  {
+            let calendar_clone = Some(Rc::clone(&calendar));
+            BusinessDayAdjuster::provide(
+                sm,
+                "BusinessDayAdjuster",
+                calendar_clone.expect("te")
+            )
+        };
+
+        let day_count_convention = if let Some(maturity_date) = &maturity_date {
+            DayCountConvention::provide_from_input_dict(
+                sm,
+                "dayCountConvention",
+                Some(Rc::clone(maturity_date)),
+                Some(Rc::clone(&calendar))
+            )
+        } else {
+            None
+        };
+
+        //map.put("cycleAnchorDateOfRateReset", (CommonUtils.isNull(attributes.get("cycleAnchorDateOfRateReset"))) ?
+        //  ((CommonUtils.isNull(attributes.get("cycleOfRateReset"))) ? null : LocalDateTime.parse(attributes.get("initialExchangeDate"))) : LocalDateTime.parse(attributes.get("cycleAnchorDateOfRateReset")));
+
+        let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset");
+        let cycle_anchor_date_of_rate_resetxx = CycleAnchorDateOfRateReset::provide_from_input_dict(sm, "cycleAnchorDateOfRateReset");
+        let cycle_anchor_date_of_rate_reset = if cycle_anchor_date_of_rate_resetxx.is_none() {
+            if cycle_of_rate_reset.is_none() {
+                None
+            }
+            else {
+                let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+                CycleAnchorDateOfRateReset::from_str(&a).ok()
+            }
+        } else {
+            cycle_anchor_date_of_rate_resetxx
+        };
+        // une valeur par default non specifier dans la norme mais dans la base de code
+        let mut accrued_interest = AccruedInterest::provide_from_input_dict(sm, "accruedInterest");
+        if accrued_interest.is_none() {
+            accrued_interest = AccruedInterest::new(0.0).ok();
+        }
+
+        let mut fee_rate = FeeRate::provide_from_input_dict(sm, "feeRate");
+        if fee_rate.is_none() {
+            fee_rate = FeeRate::new(0.0).ok();
+        }
+
+        let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+        let end_of_month_convention = if eomc.is_none() {
+            EndOfMonthConvention::default()
+        } else {eomc.unwrap()};
+
+        let mut rate_multiplier = RateMultiplier::provide_from_input_dict(sm, "rateMultiplier");
+        if rate_multiplier.is_none() {
+            rate_multiplier = RateMultiplier::new(1.0).ok();
+        }
+
+        let mut notional_scaling_multiplier = NotionalScalingMultiplier::provide_from_input_dict(sm, "notionalScalingMultiplier");
+        if notional_scaling_multiplier.is_none() {
+            notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();
+        }
+
+        let mut interest_scaling_multiplier = InterestScalingMultiplier::provide_from_input_dict(sm, "interestScalingMultiplier");
+        if interest_scaling_multiplier.is_none() {
+            interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
+        }
+
+        let ct = ContractTerms {
+            accrued_interest:                       accrued_interest,
+            business_day_adjuster:                  business_day_adjuster,
+            calendar:                               calendar,
+            capitalization_end_date:                CapitalizationEndDate::provide_from_input_dict(sm, "capitalizationEndDate"),
+            contract_id:                            ContractID::provide_from_input_dict(sm, "contractID"),
+            contract_performance:                   ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
+            contract_role:                          ContractRole::provide_from_input_dict(sm, "contractRole"),
+            contract_type:                          ContractType::provide_from_input_dict(sm, "contractType"),
+            counterparty_id:                        CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
+            currency:                               Currency::provide_from_input_dict(sm, "currency"),
+            cycle_anchor_date_of_fee:               CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee"),
+            cycle_anchor_date_of_interest_payment:  CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment"),
+            cycle_anchor_date_of_optionality:       CycleAnchorDateOfOptionality::provide_from_input_dict(sm, "cycleAnchorDateOfOptionality"),
+            cycle_anchor_date_of_rate_reset:        cycle_anchor_date_of_rate_reset,
+            cycle_anchor_date_of_scaling_index:     CycleAnchorDateOfScalingIndex::provide_from_input_dict(sm, "cycleAnchorDateOfScalingIndex"),
+            cycle_of_fee:                           CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
+            cycle_of_interest_payment:              CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
+            cycle_of_optionality:                   CycleOfOptionality::provide_from_input_dict(sm, "cycleOfOptionality"),
+            cycle_of_rate_reset:                    cycle_of_rate_reset,
+            cycle_of_scaling_index:                 CycleOfScalingIndex::provide_from_input_dict(sm, "cycleOfScalingIndex"),
+            cycle_point_of_interest_payment:        CyclePointOfInterestPayment::provide_from_input_dict(sm, "cyclePointOfInterestPayment"),
+            cycle_point_of_rate_reset:              CyclePointOfRateReset::provide_from_input_dict(sm, "cyclePointOfRateReset"),
+            day_count_convention:                   day_count_convention,
+            end_of_month_convention:                end_of_month_convention,
+            fee_accrued:                            FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
+            fee_basis:                              FeeBasis::provide_from_input_dict(sm, "feeBasis"),
+            fee_rate:                               fee_rate,
+            fixing_period:                          FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
+            initial_exchange_date:                  InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
+            interest_scaling_multiplier:            interest_scaling_multiplier,
+            life_cap:                               LifeCap::provide_from_input_dict(sm, "lifeCap"),
+            life_floor:                             LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
+            market_object_code:                     MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
+            market_object_code_of_rate_reset:       MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
+            market_object_code_of_scaling_index:    MarketObjectCodeOfScalingIndex::provide_from_input_dict(sm, "marketObjectCodeOfScalingIndex"),
+            maturity_date:                          maturity_date,
+            next_reset_rate:                        NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
+            nominal_interest_rate:                  NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
+            notional_principal:                     NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
+            notional_scaling_multiplier:            notional_scaling_multiplier,
+            object_code_of_prepayment_model:        ObjectCodeOfPrepaymentModel::provide_from_input_dict(sm, "objectCodeOfPrepaymentModel"),
+            penalty_rate:                           PenaltyRate::provide_from_input_dict(sm, "penaltyRate"),
+            penalty_type:                           PenaltyType::provide_from_input_dict(sm, "penaltyType"),
+            period_cap:                             PeriodCap::provide_from_input_dict(sm, "periodCap"),
+            period_floor:                           PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+            premium_discount_at_ied:                PremiumDiscountAtIED::provide_from_input_dict(sm, "premiumDiscountAtIED"),
+            price_at_purchase_date:                 PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
+            price_at_termination_date:              PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
+            purchase_date:                          PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
+            rate_multiplier:                        rate_multiplier,
+            rate_spread:                            RateSpread::provide_from_input_dict(sm, "rateSpread"),
+            scaling_effect:                         ScalingEffect::provide_from_input_dict(sm, "scalingEffect"),
+            scaling_index_at_contract_deal_date:    ScalingIndexAtContractDealDate::provide_from_input_dict(sm, "scalingIndexAtContractDealDate"),
+            status_date:                            StatusDate::provide_from_input_dict(sm, "statusDate"),
+            termination_date:                       TerminationDate::provide_from_input_dict(sm, "terminationDate"),
+            ..Default::default()
+        };
+
+        self.contract_terms = ct;
+    }
+
     /// Compute next events within the period up to `to` date based on the contract model
-    fn schedule(to: Option<IsoDatetime>, model: &ContractModel) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        
+    fn schedule(&mut self, to: Option<IsoDatetime>) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let model = &self.contract_terms;
+        let events = &mut self.contract_events;
         //let mut events: Vec<Box< dyn TraitContractEvent>> = Vec::new();
-        let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
+        //let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
         let maturity_date = model.maturity_date.clone().unwrap().deref().clone();
 
         ////////////////////////////
@@ -358,12 +554,17 @@ impl TraitContractModel for PAM {
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    fn apply(events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>, model: &ContractModel, observer: &DataObserver) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(&mut self) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+
+        let model = &self.contract_terms;
+        let observer = &self.contract_data_observer;
+        let events = &mut self.contract_events.clone();
+
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
         let _maturity = &model.maturity_date.clone();
-        let mut states = Self::init_state_space(model, observer, _maturity).expect("uncorrect state space initialization !");
+        let mut states = &self.init_state_space(_maturity).expect("uncorrect state space initialization !");
         let mut events = events.clone();
 
         //////////////////////////////////////////////////
@@ -410,7 +611,11 @@ impl TraitContractModel for PAM {
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+
+        let model = &self.contract_terms;
+        let observer = &self.contract_data_observer;
+
         let mut states = StateSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();

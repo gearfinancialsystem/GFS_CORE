@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
@@ -9,7 +9,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 pub struct RedemptionUtils;
 
 impl RedemptionUtils {
-    pub fn redemptionAmount(model: &ContractModel, state: &StateSpace) -> f64 {
+    pub fn redemptionAmount(model: &ContractTerms, state: &StateSpace) -> f64 {
         let redemption_amount: f64;
         let status_date = state.status_date.clone().unwrap();
         let maturity: IsoDatetime = if model.amortization_date.is_none() {
@@ -36,7 +36,7 @@ impl RedemptionUtils {
         event_times.retain(|e| e >= &status_date.value());
         event_times.remove(&status_date.value());
 
-        redemption_amount = match model.contract_type.clone().as_str() {
+        redemption_amount = match model.contract_type.clone().unwrap().to_string().as_str() {
             "LAM" => {
                 model.notional_principal.clone().unwrap().value() / event_times.len() as f64 // on est sur que cest len ?
             },

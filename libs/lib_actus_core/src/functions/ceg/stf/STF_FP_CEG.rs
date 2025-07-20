@@ -1,4 +1,4 @@
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 use crate::terms::grp_contract_identification::contract_types::Ceg::CEG;
 
 use crate::state_space::StateSpace::StateSpace;

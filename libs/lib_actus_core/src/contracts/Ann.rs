@@ -10,7 +10,7 @@ use crate::events::EventType::EventType;
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
 use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;

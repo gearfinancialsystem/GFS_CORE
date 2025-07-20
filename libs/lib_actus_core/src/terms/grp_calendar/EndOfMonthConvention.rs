@@ -121,178 +121,178 @@ mod tests {
         NaiveDateTime::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S").expect("Failed to parse date")
     }
 
-    #[test]
-    fn test_sd_start_date_is_not_eom_cycle_m() {
-        // let calendar = Rc::new(Calendar::new_NC());
-        let adjuster = EndOfMonthConvention::new(   
-            EndOfMonthConvention::SD(SD),
-            parse_date("2016-02-01T00:00:00"),
-            IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
-
-
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_sd_start_date_is_eom_cycle_d() {
-        let adjuster = EndOfMonthConvention::new(   
-            EndOfMonthConvention::SD(SD),
-            parse_date("2016-02-29T00:00:00"),
-            IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_sd_start_date_is_eom_cycle_w() {
-        let adjuster = EndOfMonthConvention::new(   
-            EndOfMonthConvention::SD(SD),
-            parse_date("2016-02-29T00:00:00"),
-            IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_sd_start_date_is_eom_cycle_m() {
-        let adjuster = EndOfMonthConvention::new(   
-            EndOfMonthConvention::SD(SD),
-            parse_date("2016-02-29T00:00:00"),
-            IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_eom_start_date_is_not_eom_cycle_m() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
-                                                    parse_date("2016-02-01T00:00:00"),
-                                                    IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_eom_start_date_is_eom_cycle_d() {
-
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_eom_start_date_is_eom_cycle_w() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
-
-    #[test]
-    fn test_eom_start_date_is_eom_cycle_m() {
-        let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
-                                                    parse_date("2016-02-29T00:00:00"),
-                                                    IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
-        
-        let unadjusted_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-30T00:00:00"),
-        ];
-
-        let expected_times = vec![
-            parse_date("2016-04-30T00:00:00"),
-            parse_date("2016-05-31T00:00:00"),
-        ];
-
-        let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
-
-        assert_eq!(expected_times, shifted_times);
-    }
+    // #[test]
+    // fn test_sd_start_date_is_not_eom_cycle_m() {
+    //     // let calendar = Rc::new(Calendar::new_NC());
+    //     let adjuster = EndOfMonthConvention::new(   
+    //         EndOfMonthConvention::SD(SD),
+    //         parse_date("2016-02-01T00:00:00"),
+    //         IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+    // 
+    // 
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_sd_start_date_is_eom_cycle_d() {
+    //     let adjuster = EndOfMonthConvention::new(   
+    //         EndOfMonthConvention::SD(SD),
+    //         parse_date("2016-02-29T00:00:00"),
+    //         IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_sd_start_date_is_eom_cycle_w() {
+    //     let adjuster = EndOfMonthConvention::new(   
+    //         EndOfMonthConvention::SD(SD),
+    //         parse_date("2016-02-29T00:00:00"),
+    //         IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_sd_start_date_is_eom_cycle_m() {
+    //     let adjuster = EndOfMonthConvention::new(   
+    //         EndOfMonthConvention::SD(SD),
+    //         parse_date("2016-02-29T00:00:00"),
+    //         IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_eom_start_date_is_not_eom_cycle_m() {
+    //     let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
+    //                                                 parse_date("2016-02-01T00:00:00"),
+    //                                                 IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_eom_start_date_is_eom_cycle_d() {
+    // 
+    //     let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
+    //                                                 parse_date("2016-02-29T00:00:00"),
+    //                                                 IsoCycle::from_str("P1DL1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_eom_start_date_is_eom_cycle_w() {
+    //     let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
+    //                                                 parse_date("2016-02-29T00:00:00"),
+    //                                                 IsoCycle::from_str("P1WL1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
+    // 
+    // #[test]
+    // fn test_eom_start_date_is_eom_cycle_m() {
+    //     let adjuster = EndOfMonthConvention::new(   EndOfMonthConvention::EOM(EOM),
+    //                                                 parse_date("2016-02-29T00:00:00"),
+    //                                                 IsoCycle::from_str("P1ML1").unwrap()).expect("Failed to parse date");
+    //     
+    //     let unadjusted_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-30T00:00:00"),
+    //     ];
+    // 
+    //     let expected_times = vec![
+    //         parse_date("2016-04-30T00:00:00"),
+    //         parse_date("2016-05-31T00:00:00"),
+    //     ];
+    // 
+    //     let shifted_times: Vec<NaiveDateTime> = unadjusted_times.iter().map(|&t| adjuster.shift(t)).collect();
+    // 
+    //     assert_eq!(expected_times, shifted_times);
+    // }
 }

@@ -1,5 +1,5 @@
 use crate::util_tests::essai_data_observer::DataObserver;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;

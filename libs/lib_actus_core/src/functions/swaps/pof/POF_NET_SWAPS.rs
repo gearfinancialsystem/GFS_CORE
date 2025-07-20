@@ -1,4 +1,4 @@
-use crate::util_tests::essai_data_observer::DataObserver;use crate::attributes::ContractModel::ContractModel;
+use crate::util_tests::essai_data_observer::DataObserver;use crate::attributes::ContractTerms::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 
 use crate::state_space::StateSpace::StateSpace;

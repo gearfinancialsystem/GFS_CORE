@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use chrono::NaiveDateTime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitBusinessDayCalendar: Debug{
     /// Returns whether a date is a business day or not
@@ -11,7 +11,7 @@ pub trait TraitBusinessDayCalendar: Debug{
     /// # Returns
     ///
     /// * `true` if `date` is a business day, `false` otherwise
-    fn is_business_day(&self, date: &NaiveDateTime) -> bool;
+    fn is_business_day(&self, date: &IsoDatetime) -> bool;
 }
 
 

@@ -5,6 +5,7 @@ use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::types::IsoPeriod::IsoPeriod;
 
 /// Implementation of the Modified Following business day convention
 ///
@@ -57,12 +58,14 @@ impl TraitBusinessDayAdjuster for ModifiedFollowing {
     fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
         let mut shifted_date = *date;
         while !self.calendar.is_business_day(&shifted_date) {
-            shifted_date += Duration::days(1);
+            //shifted_date += Duration::days(1);
+            shifted_date = shifted_date + IsoPeriod::new(0,0,1);
         }
         if shifted_date.month() != date.month() {
             shifted_date = *date;
             while !self.calendar.is_business_day(&shifted_date) {
-                shifted_date -= Duration::days(1);
+                //shifted_date -= Duration::days(1);
+                shifted_date = shifted_date - IsoPeriod::new(0,0,1);
             }
         }
         shifted_date

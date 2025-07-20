@@ -1,7 +1,7 @@
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractModel;
 
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
