@@ -2,12 +2,13 @@ use crate::attributes::ContractTerms::ContractTerms;
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactors::RiskFactors;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+
 #[allow(non_camel_case_types)]
 pub struct POF_FP_PAM;
 
@@ -17,7 +18,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
         time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractTerms,
-        risk_factor_model: &DataObserver,
+        risk_factor_model: &RiskFactors,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

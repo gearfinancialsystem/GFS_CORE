@@ -67,3 +67,30 @@ deux notionels positifs plutot que dadditioner un positif et un négatif)
 
 
 observer: DataObserver, // mettre au pluriel pour quon puisse contruire plusieur different dataobserver
+
+
+que peux contenir Contract Structure ?
+
+AD = Aucun
+ANN = Aucun
+CAPFL = ContractModel (car il y a un champs contract type)
+CEC = ContractModel (car il y a un champs contract type)
+CEG = ContractModel ou ContractIdentifier (un contract existant.. il doit y avoir un eventsObserved )
+CLM = Aucun
+COM = Aucun
+CSH = aucun
+FUTUR = MarketObjectCode (Sous jacent... il doit y avoir un dataObserved)
+FXOUT = Aucun
+LAM = Aucun
+LAX = Aucun
+NAM = Aucun
+OPTNS = MarketObjectCode (Sous jacent... il doit y avoir un dataObserved)
+PAM = Aucun
+STK = Aucun
+SWAPS = ContractModel (car il y a un champs contract type)
+SSPPV = Aucun
+UMP = Aucun
+
+
+dataObserved
+eventsObserved

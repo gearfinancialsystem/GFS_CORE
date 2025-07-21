@@ -2,17 +2,18 @@ use serde_json::{self, Value as JsonValue};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-
+use std::str::FromStr;
+use crate::types::IsoDatetime::IsoDatetime;
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct ObservedDataSet {
-    identifier: String,
-    data: Vec<ObservedDataPoint>
+pub struct DataObserver1 {
+    pub identifier: String,
+    pub data: Vec<ObservedDataPoint>
 }
 
-impl ObservedDataSet {
-    pub fn new() -> ObservedDataSet {
-        ObservedDataSet {identifier: String::new(), data: Vec::new()}
+impl DataObserver1 {
+    pub fn new() -> Self {
+        Self {identifier: String::new(), data: Vec::new()}
     }
     pub fn get_identifier(&self) -> String {
         self.identifier.clone()
@@ -30,18 +31,18 @@ impl ObservedDataSet {
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ObservedDataPoint {
-    timestamp: String,
-    value: f64
+    pub timestamp: IsoDatetime,
+    pub value: f64
 }
 
 impl ObservedDataPoint {
-    pub fn new(timestamp: String, value: f64) -> ObservedDataPoint {
+    pub fn new(timestamp: IsoDatetime, value: f64) -> ObservedDataPoint {
         ObservedDataPoint {timestamp, value}
     }
-    pub fn get_timestamp(&self) -> String {
+    pub fn get_timestamp(&self) -> IsoDatetime {
         self.timestamp.clone()
     }
-    pub fn set_timestamp(&mut self, timestamp: String) {
+    pub fn set_timestamp(&mut self, timestamp: IsoDatetime) {
         self.timestamp = timestamp;
     }
     pub fn get_value(&self) -> f64 {
@@ -57,7 +58,7 @@ impl ObservedDataPoint {
 pub fn load_data_observed(
     file_path: &str,
     test_case_id: &str,
-) -> Result<HashMap<String, ObservedDataSet>, Box<dyn std::error::Error>> {
+) -> Result<HashMap<String, DataObserver1>, Box<dyn std::error::Error>> {
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
     let json: JsonValue = serde_json::from_reader(reader)?;
@@ -73,7 +74,7 @@ pub fn load_data_observed(
 
         for (market_object_code, dataset) in data_observed_map {
             if let JsonValue::Object(dataset_obj) = dataset {
-                let mut observed_dataset = ObservedDataSet::new();
+                let mut observed_dataset = DataObserver1::new();
 
                 // Set identifier
                 if let Some(JsonValue::String(identifier)) = dataset_obj.get("identifier") {
@@ -89,9 +90,8 @@ pub fn load_data_observed(
                     for point in data_points {
                         if let JsonValue::Object(point_obj) = point {
                             let timestamp = point_obj.get("timestamp")
-                                .and_then(|v| v.as_str())
-                                .ok_or("Missing timestamp in data point")?
-                                .to_string();
+                                .and_then(|v| IsoDatetime::from_str(v.as_str().unwrap()).ok() )
+                                .ok_or("Missing timestamp in data point")?;
 
                             let value_str = point_obj.get("value")
                                 .and_then(|v| v.as_str())

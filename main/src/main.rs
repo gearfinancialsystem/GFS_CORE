@@ -1,22 +1,14 @@
 use std::collections::HashMap;
 use std::io::Error;
+use std::str::FromStr;
 use lib_actus_core::types::IsoDatetime::IsoDatetime;
-use lib_actus_core::attributes::ContractTerms::ContractModel;
-
-use lib_actus_core::terms::grp_contract_identification::contract_types::Pam::PAM;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Swaps::SWAPS;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Csh::CSH;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Ann::ANN;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Cec::CEC;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Lax::LAX;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Nam::NAM;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Stk::STK;
-use lib_actus_core::terms::grp_contract_identification::contract_types::Ump::UMP;
+use lib_actus_core::attributes::ContractTerms::ContractTerms;
+use lib_actus_core::attributes::ContractModel::ContractModel;
+use lib_actus_core::contracts::Pam::PAM;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::util::Value::Value;
-use lib_actus_core::util_tests::{essai_data_observer, essai_load_terms};
-use lib_actus_core::util_tests::essai_load_data_observed;
-use lib_actus_core::util_tests::essai_load_event_observed;
+use lib_actus_core::util_tests::essai_load_terms;
+
 use lib_actus_core::util_tests::essai_load_results::load_results;
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
@@ -233,54 +225,58 @@ fn main() {
     let mut dico = essai_load_terms::load_test_case_terms(pathx,
                                                           test_id).unwrap();
 
-    let data_observed = essai_load_data_observed
-    ::load_data_observed(pathx, test_id).unwrap();
+    // let data_observed = essai_load_data_observed
+    // ::load_data_observed(pathx, test_id).unwrap();
+    // 
+    // let events_observed = essai_load_event_observed::load_events_observed(
+    //     pathx, test_id).unwrap();
+    // 
+    // 
+    // let observer = essai_data_observer::create_observer(data_observed,
+    //                                                     events_observed,
+    //                                                     "USD");
 
-    let events_observed = essai_load_event_observed::load_events_observed(
-        pathx, test_id).unwrap();
-
-
-    let observer = essai_data_observer::create_observer(data_observed,
-                                                        events_observed,
-                                                        "USD");
+    let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
+    let mut contract_model = ContractModel::new(&dico).ok();
+    if let Some(contract_model) = &mut contract_model {
+        contract_model.run(Some(to))
+    }
     
-
-    let contract_model = Box::new(ContractModel::new(&dico));
-
+    println!("ok");
     //let contract_model = Box::new(ContractModel::new(&dico));
 
-    let to_date = IsoDatetime::parse_from_str("2014-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
-    let q = load_results(pathx, test_id).ok();
+    
+    //let q = load_results(pathx, test_id).ok();
 
-    let test_expected_res2 = load_results(pathx, test_id).unwrap().get(0).unwrap().get_expected_results();
-    println!("\nExpected Res: ");
-    for (key, value) in &test_expected_res2 {
-        println!("Key: {}: {}", key, value);
-    }
-    if let Ok(cm) = contract_model.as_ref() {
-        let mut events = PAM::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+    //let test_expected_res2 = load_results(pathx, test_id).unwrap().get(0).unwrap().get_expected_results();
+    // println!("\nExpected Res: ");
+    // for (key, value) in &test_expected_res2 {
+    //     println!("Key: {}: {}", key, value);
+    // }
+    // if let Ok(cm) = contract_model.as_ref() {
+    //     let mut events = PAM::schedule(Some(to_date), cm); //PrincipalAtMaturity::schedule(&to_date, cm);
+    // 
+    //     if let Ok(events_res) = events {
+    //         let events2 = PAM::apply(events_res, cm, &observer).ok().unwrap();
+    //         let all_computed_res: Vec<HashMap<String, String>> = 
+    //             events2.clone().into_iter().map(|ce|
+    //                 ce.get_all_states().clone()).collect::<Vec<HashMap<String, String>>>();
 
-        if let Ok(events_res) = events {
-            let events2 = PAM::apply(events_res, cm, &observer).ok().unwrap();
-            let all_computed_res: Vec<HashMap<String, String>> = 
-                events2.clone().into_iter().map(|ce|
-                    ce.get_all_states().clone()).collect::<Vec<HashMap<String, String>>>();
-
-            let test_computed_res2 = events2.get(0).unwrap().get_computed_result().clone();
-            println!("\nComputed Res: ");
-            for (key, value) in &test_computed_res2 {
-                println!("Key: {}: {}", key, value);
-            }
-            for ce in events2.iter() {
-                println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", 
-                         ce.event_time.unwrap(), 
-                         ce.event_type, 
-                         ce.payoff, 
-                         ce.state.accrued_interest);
-            }
-
-        }
-    }
+            // let test_computed_res2 = events2.get(0).unwrap().get_computed_result().clone();
+            // println!("\nComputed Res: ");
+            // for (key, value) in &test_computed_res2 {
+            //     println!("Key: {}: {}", key, value);
+            // }
+            // for ce in events2.iter() {
+            //     println!("EventTime: {:?} - EventType: {:?} - Payoff: {:?} - State.AccruedInterest: {:?}\n", 
+            //              ce.event_time.unwrap(), 
+            //              ce.event_type, 
+            //              ce.payoff, 
+            //              ce.state.accrued_interest);
+            // }
+    // 
+    //     }
+    // }
 
 }
 

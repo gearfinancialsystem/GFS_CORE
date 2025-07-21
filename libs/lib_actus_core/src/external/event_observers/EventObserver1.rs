@@ -25,20 +25,20 @@ use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::types::IsoDatetime::IsoDatetime;
 use std::str::FromStr;
 #[derive(PartialEq, Debug, Clone)]
-pub struct ObservedEvent {
+pub struct EventObserver1 {
     time: String,
     typex: String,
     value: f64,
     contract_id: String,
     states: StateSpace,
 }
-impl ObservedEvent {
+impl EventObserver1 {
     pub fn new(time: String,
                typex: String,
                value: f64,
                contract_id: String,
                states: StateSpace) -> Self {
-        ObservedEvent {time, typex, value, contract_id, states}
+        Self {time, typex, value, contract_id, states}
     }
     pub fn get_contract_id(&self) -> String {
         self.contract_id.clone()
@@ -75,7 +75,7 @@ impl ObservedEvent {
 pub fn load_events_observed(
     file_path: &str,
     test_case_id: &str,
-) -> Result<Vec<ObservedEvent>, Box<dyn std::error::Error>> {
+) -> Result<Vec<EventObserver1>, Box<dyn std::error::Error>> {
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
     let json: JsonValue = serde_json::from_reader(reader)?;
@@ -118,7 +118,7 @@ pub fn load_events_observed(
                 let states = parse_state_space(states_json)?;
 
                 // Créer l'événement observé
-                result.push(ObservedEvent::new(
+                result.push(EventObserver1::new(
                     time,
                     typex,
                     value,

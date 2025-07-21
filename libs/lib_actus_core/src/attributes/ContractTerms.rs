@@ -12,7 +12,7 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
+// use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::CreatorID::CreatorID;
 use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
@@ -152,7 +152,7 @@ pub struct ContractTerms {
     pub contract_id: Option<ContractID>,
     pub contract_performance: Option<ContractPerformance>,
     pub contract_role: Option<ContractRole>,
-    pub contract_structure: Option<ContractStructure>,
+    // pub contract_structure: Option<ContractStructure>,
     pub contract_type: Option<ContractType>, // le seul term different de la specification
     pub counterparty_id: Option<CounterpartyID>,
     pub coverage_of_credit_enhancement: Option<CoverageOfCreditEnhancement>,

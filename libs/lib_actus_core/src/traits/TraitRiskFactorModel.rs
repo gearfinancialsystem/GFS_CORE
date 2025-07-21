@@ -8,7 +8,7 @@ use crate::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitRiskFactorModel {
     /// Returns the set of unique risk factor IDs
-    fn keys(&self) -> HashSet<String>;
+    fn keys(&self) -> Option<HashSet<String>>;
 
     /// Returns the set of event times for a particular risk factor
     ///
@@ -23,5 +23,5 @@ pub trait TraitRiskFactorModel {
         states: &StateSpace,
         attributes: &ContractTerms,
         is_market: bool,
-    ) -> f64;
+    ) -> Option<f64>;
 }

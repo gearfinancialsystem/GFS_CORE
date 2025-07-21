@@ -7,4 +7,4 @@ pub mod event_observers;
 
 pub mod DataObserver;
 pub mod EventObserver;
-pub mod RiskFactor;
+pub mod RiskFactors;

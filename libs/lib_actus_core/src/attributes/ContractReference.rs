@@ -8,14 +8,16 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
+use crate::external::RiskFactors::RiskFactors;
 use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_contract_identification::ContractRole::ContractRole;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::traits::TraitContractModel::TraitContractModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
-use crate::util_tests::essai_data_observer::DataObserver;
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Object {
@@ -98,41 +100,57 @@ impl ContractReference {
     pub fn get_object(&self) -> &Object {
         &self.object
     }
-    
-    pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &DataObserver) -> StateSpace {
 
-        let model = self.object.as_cm().unwrap();
-        if self.reference_type == ReferenceType::CNT {
-            let mut events =  ContractType::schedule(Some(IsoDatetime(time.checked_add_days(Days::new(1)).unwrap() )) , &self.object.as_cm().unwrap()).unwrap();
-            let analysis_event = EventFactory::create_event(
-                &Some(time),
-                &EventType::AD,
-                &model.currency,
-                Some(Rc::new(POF_AD_PAM)),
-                Some(Rc::new(STF_AD_PAM)),
-                &None,
-                &model.contract_id
-            );
-            events.push(analysis_event.clone());
-            events.sort();
-            events = ContractType::apply(events, &self.object.as_cm().unwrap(), observer).unwrap();
-            return analysis_event.states()
-        }
-        StateSpace::default() // a checker
-    }
-
-    pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &DataObserver ) -> ContractEvent<IsoDatetime, IsoDatetime> {
-        let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = vec![];
-        if self.reference_type == ReferenceType::CNT {
-            events = ContractType::apply(
-                ContractType::schedule(None, &self.object.as_cm().unwrap()).unwrap(),
-                &self.object.as_cm().unwrap(),
-                observer
-            ).unwrap();
-            events.iter_mut().filter(|e| e.event_type == event_type);
-        }
-        events.get(0).unwrap().clone()
-    }
+    // pub fn get_state_space_at_time_point(&self, time: IsoDatetime, observer: &RiskFactors) -> StateSpace {
+    // 
+    //     let model = self.object.as_cm().unwrap();
+    // 
+    //     let model2 = match model {
+    //         ContractModel::PAM(PAM) => PAM,
+    //     };
+    // 
+    //     if self.reference_type == ReferenceType::CNT {
+    //         let mut events =  ContractType::schedule(
+    //             Some(IsoDatetime(time.checked_add_days(Days::new(1)).unwrap() )), 
+    //             &self.object.as_cm().unwrap()).unwrap();
+    //         //model2.apply()
+    //         
+    //         
+    //         let analysis_event = EventFactory::create_event(
+    //             &Some(time),
+    //             &EventType::AD,
+    //             &model.currency,
+    //             Some(Rc::new(POF_AD_PAM)),
+    //             Some(Rc::new(STF_AD_PAM)),
+    //             &None,
+    //             &model.contract_id
+    //         );
+    //         events.push(analysis_event.clone());
+    //         events.sort();
+    //         events = ContractType::apply(events, &self.object.as_cm().unwrap(), observer).unwrap();
+    //         return analysis_event.states()
+    //     }
+    //     StateSpace::default() // a checker
+    // }
+    // 
+    // pub fn get_event(&self, event_type: EventType, time: IsoDatetime, observer: &RiskFactors ) -> ContractEvent<IsoDatetime, IsoDatetime> {
+    //     let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>> = vec![];
+    //     if self.reference_type == ReferenceType::CNT {
+    //         //ct = self.objec .contract_type.clone().as_str()
+    //         //events = match
+    // 
+    //         events = ContractType::apply(
+    //             ContractType::schedule(None, &self.object.as_cm().unwrap()).unwrap(),
+    //             &self.object.as_cm().unwrap(),
+    //             observer
+    //         ).unwrap();
+    // 
+    // 
+    // 
+    //         events.iter_mut().filter(|e| e.event_type == event_type);
+    //     }
+    //     events.get(0).unwrap().clone()
+    // }
 
     // Ajoutez d'autres méthodes si nécessaire
 }

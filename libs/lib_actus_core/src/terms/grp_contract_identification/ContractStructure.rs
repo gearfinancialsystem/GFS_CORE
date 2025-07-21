@@ -1,4 +1,3 @@
-
 use crate::attributes::ContractReference::ContractReference;
 
 #[derive(Clone, Debug, PartialEq)]

@@ -55,7 +55,6 @@ impl TraitNaiveDateTimeExtension for IsoDatetime {
         else {
             false
         }
-
     }
 
     fn last_date_of_month(&self) -> IsoDatetime {

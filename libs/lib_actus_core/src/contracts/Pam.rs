@@ -3,6 +3,8 @@ use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
+use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractReference::ContractReference;
 use crate::events::ContractEvent::{ContractEvent};
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
@@ -47,6 +49,7 @@ use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractTerms::ContractTerms;
+use crate::external::RiskFactors::RiskFactors;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
@@ -60,9 +63,12 @@ use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
 use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_fees::FeeRate::FeeRate;
+use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
 use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
 use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
 use crate::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
@@ -72,6 +78,8 @@ use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDa
 use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
 use crate::terms::grp_notional_principal::MarketObjectCodeOfScalingIndex::MarketObjectCodeOfScalingIndex;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
 use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
@@ -95,24 +103,35 @@ use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
 use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
 use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use crate::terms::grp_reset_rate::RateSpread::RateSpread;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::util::Value::Value;
-use crate::util_tests::essai_data_observer::DataObserver;
+// use crate::util_tests::essai_load_results::ResultSet;
+
+use crate::attributes::ResultSet::ResultSet;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PAM {
     pub contract_terms: ContractTerms,
+    pub contract_risk_factors: RiskFactors,
+    pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-    pub contract_data_observer: DataObserver,
+    pub results_set_toggle: bool,
+    pub result_set: Option<Vec<ResultSet>>,
+
 }
 
-impl TraitContractModel for PAM { // 
+impl TraitContractModel for PAM { //
 
     fn new() -> Self {
         Self {
             contract_terms: ContractTerms::default(),
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
-            contract_data_observer: DataObserver::new(),
+            contract_risk_factors: RiskFactors::new(),
+            contract_structure: None,
+            results_set_toggle: false,
+            result_set: None,
         }
     }
 
@@ -255,8 +274,28 @@ impl TraitContractModel for PAM { //
         self.contract_terms = ct;
     }
 
+    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>) {
+        self.contract_risk_factors = RiskFactors::new();
+    }
+
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
+
+        self.contract_structure = None;
+        // let contract_structure = &mut self.contract_terms.contract_structure;
+        // if self.contract_terms.contract_structure.is_none() {
+        //     self.contract_structure = None;
+        // }
+        // else {
+        //     self.contract_structure = None;
+        //     todo!()
+        // }
+    }
+
+    fn set_result_set(&mut self) {
+        self.result_set = Some(Vec::<ResultSet>::new()) //ResultSet::new()
+    }
     /// Compute next events within the period up to `to` date based on the contract model
-    fn schedule(&mut self, to: Option<IsoDatetime>) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn schedule(&mut self, to: Option<IsoDatetime>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
         let model = &self.contract_terms;
         let events = &mut self.contract_events;
         //let mut events: Vec<Box< dyn TraitContractEvent>> = Vec::new();
@@ -550,21 +589,28 @@ impl TraitContractModel for PAM { //
         ///////////////////////////////////////////////////////
         events.sort();
 
-        Ok(events.clone())
+        self.contract_events = events.clone();
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
-    fn apply(&mut self) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(&mut self, result_set_toogle: bool) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+
+        if result_set_toogle == true {
+            self.results_set_toggle = true;
+            self.set_result_set();
+        }
+
+
 
         let model = &self.contract_terms;
-        let observer = &self.contract_data_observer;
+        let risk_factors = &self.contract_risk_factors;
         let events = &mut self.contract_events.clone();
 
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
         let _maturity = &model.maturity_date.clone();
-        let mut states = &self.init_state_space(_maturity).expect("uncorrect state space initialization !");
+        let mut states = &mut self.init_state_space(_maturity).expect("uncorrect state space initialization !");
         let mut events = events.clone();
 
         //////////////////////////////////////////////////
@@ -580,7 +626,7 @@ impl TraitContractModel for PAM { //
             event.eval(
                 &mut states,
                 model,
-                observer,
+                risk_factors,
                 &model.day_count_convention.clone(),
                 &model.business_day_adjuster.clone().unwrap(),
             );
@@ -607,14 +653,15 @@ impl TraitContractModel for PAM { //
         /////////////////////////////
         // Return evaluated events //
         /////////////////////////////
-        Ok(events)
+        //Ok(events)
+        self.contract_events = events.clone();
     }
 
     /// Initialize the StateSpace according to the model attributes
     fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
 
         let model = &self.contract_terms;
-        let observer = &self.contract_data_observer;
+        let risk_factors = &self.contract_risk_factors;
 
         let mut states = StateSpace::default();
 
@@ -681,6 +728,8 @@ impl TraitContractModel for PAM { //
 
         Ok(states)
     }
+
+
 }
 
 

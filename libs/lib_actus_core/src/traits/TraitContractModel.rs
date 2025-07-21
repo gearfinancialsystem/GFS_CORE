@@ -13,9 +13,15 @@ pub trait TraitContractModel {
 
     fn set_contract_terms(&mut self, sm: &HashMap<String, Value>);
 
-    fn schedule(&mut self, to: Option<IsoDatetime>) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>);
+
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>);
+
+    fn set_result_set(&mut self);
     
-    fn apply(&mut self) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+    fn schedule(&mut self, to: Option<IsoDatetime>); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+
+    fn apply(&mut self, result_set_toogle: bool); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
 
     fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String>;
 

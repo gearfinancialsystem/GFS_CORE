@@ -19,10 +19,26 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use crate::attributes::ContractTerms::ContractTerms;
+use crate::external::RiskFactors::RiskFactors;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+
+
+
 
 pub trait TraitContractEvent {}
 
@@ -39,7 +55,7 @@ pub struct ContractEvent<T1, T2> {
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
-    pub state: StateSpace,
+    pub state: StateSpace, // ce state space devrait etre une reference partagee, (initialise dans apply)
     pub contract_id: Option<ContractID>,
 }
 
@@ -141,7 +157,7 @@ where
         &mut self,
         states: &mut StateSpace,
         model: &ContractTerms,
-        risk_factor_model: &DataObserver,
+        risk_factor_model: &RiskFactors,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster) {
         if self.fpayoff.is_some() {
