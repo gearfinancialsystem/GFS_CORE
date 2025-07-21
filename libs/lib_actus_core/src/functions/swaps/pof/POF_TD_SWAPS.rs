@@ -1,11 +1,11 @@
-use crate::attributes::ContractTerms::ContractModel;
-
+use crate::attributes::ContractTerms::{ContractTerms};
+use crate::external::RiskFactors::RiskFactors;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+
 #[allow(non_camel_case_types)]
 pub struct POF_TD_SWAPS;
 
@@ -20,8 +20,8 @@ impl TraitPayOffFunction for POF_TD_SWAPS {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
-        risk_factor_model: &DataObserver,
+        model: &ContractTerms,
+        risk_factor_model: &RiskFactors,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

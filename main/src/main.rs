@@ -218,8 +218,8 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_core/test_sets/actus-tests-pam.json";
-    let test_id = "pam01";
+    let pathx = "libs/lib_actus_core/test_sets/actus-tests-swaps.json";
+    let test_id = "swaps01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let mut dico = essai_load_terms::load_test_case_terms(pathx,
@@ -239,7 +239,7 @@ fn main() {
     let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
     let mut contract_model = ContractModel::new(&dico).ok();
     if let Some(contract_model) = &mut contract_model {
-        contract_model.run(Some(to))
+        contract_model.run(Some(to), true)
     }
     
     println!("ok");

@@ -19,6 +19,10 @@ macro_rules! define_struct_isoperiod {
                 $struct_name(IsoPeriod::new(years, months, days))
             }
 
+            pub fn value(&self) -> IsoPeriod {
+                self.0
+            }
+
             pub fn set_value(&mut self, value: IsoPeriod) {
                 self.0 = value;
             }

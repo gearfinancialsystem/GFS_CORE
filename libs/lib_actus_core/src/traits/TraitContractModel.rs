@@ -17,8 +17,8 @@ pub trait TraitContractModel {
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>);
 
-    fn set_result_set(&mut self);
-    
+    fn set_result_vec(&mut self);
+
     fn schedule(&mut self, to: Option<IsoDatetime>); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
 
     fn apply(&mut self, result_set_toogle: bool); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;

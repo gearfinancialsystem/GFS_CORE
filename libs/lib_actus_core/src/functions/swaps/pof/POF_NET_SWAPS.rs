@@ -1,6 +1,7 @@
-use crate::util_tests::essai_data_observer::DataObserver;use crate::attributes::ContractTerms::ContractModel;
-use crate::events::ContractEvent::ContractEvent;
 
+use crate::attributes::ContractTerms::{ContractTerms};
+use crate::events::ContractEvent::ContractEvent;
+use crate::external::RiskFactors::RiskFactors;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -23,8 +24,8 @@ impl TraitPayOffFunction for POF_NET_SWAPS {
         &self,
         _time: &IsoDatetime,
         _states: &StateSpace,
-        _model: &ContractModel,
-        _risk_factor_model: &DataObserver,
+        _model: &ContractTerms,
+        _risk_factor_model: &RiskFactors,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

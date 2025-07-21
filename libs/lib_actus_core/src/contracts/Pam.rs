@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt;
+use std::io::ErrorKind::ResourceBusy;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
@@ -117,9 +118,8 @@ pub struct PAM {
     pub contract_risk_factors: RiskFactors,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-    pub results_set_toggle: bool,
-    pub result_set: Option<Vec<ResultSet>>,
-
+    pub result_vec_toggle: bool,
+    pub result_vec: Option<Vec<ResultSet>>,
 }
 
 impl TraitContractModel for PAM { //
@@ -130,8 +130,8 @@ impl TraitContractModel for PAM { //
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: RiskFactors::new(),
             contract_structure: None,
-            results_set_toggle: false,
-            result_set: None,
+            result_vec_toggle: false,
+            result_vec: None,
         }
     }
 
@@ -281,18 +281,11 @@ impl TraitContractModel for PAM { //
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
 
         self.contract_structure = None;
-        // let contract_structure = &mut self.contract_terms.contract_structure;
-        // if self.contract_terms.contract_structure.is_none() {
-        //     self.contract_structure = None;
-        // }
-        // else {
-        //     self.contract_structure = None;
-        //     todo!()
-        // }
+
     }
 
-    fn set_result_set(&mut self) {
-        self.result_set = Some(Vec::<ResultSet>::new()) //ResultSet::new()
+    fn set_result_vec(&mut self) {
+        self.result_vec = Some(Vec::<ResultSet>::new()) //ResultSet::new()
     }
     /// Compute next events within the period up to `to` date based on the contract model
     fn schedule(&mut self, to: Option<IsoDatetime>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
@@ -574,7 +567,7 @@ impl TraitContractModel for PAM { //
         // Remove all events after the `to` date //
         ///////////////////////////////////////////
         let to_event: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
-            &Some(to.clone().unwrap()),
+            &to.clone(),
             &EventType::AD,
             &model.currency,
             None,
@@ -595,12 +588,11 @@ impl TraitContractModel for PAM { //
     /// Apply a set of events to the current state of a contract and return the post-event states
     fn apply(&mut self, result_set_toogle: bool) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
+        // faut pas le mettre apres les borrow immutable ci dessous, lordre compte
         if result_set_toogle == true {
-            self.results_set_toggle = true;
-            self.set_result_set();
+            self.result_vec_toggle = true;
+            self.set_result_vec();
         }
-
-
 
         let model = &self.contract_terms;
         let risk_factors = &self.contract_risk_factors;
@@ -611,6 +603,9 @@ impl TraitContractModel for PAM { //
         ////////////////////////////////////////////
         let _maturity = &model.maturity_date.clone();
         let mut states = &mut self.init_state_space(_maturity).expect("uncorrect state space initialization !");
+
+
+
         let mut events = events.clone();
 
         //////////////////////////////////////////////////
@@ -630,6 +625,14 @@ impl TraitContractModel for PAM { //
                 &model.day_count_convention.clone(),
                 &model.business_day_adjuster.clone().unwrap(),
             );
+            if self.result_vec_toggle == true {
+                if let Some(rv) = &mut self.result_vec {
+                    let mut a = ResultSet::new();
+                    a.set_result_set(&states, &event);
+
+                    rv.push(a)
+                }
+            }
         }
 
         ////////////////////////////////////////////////////////

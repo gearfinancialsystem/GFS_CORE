@@ -1,4 +1,4 @@
-use crate::attributes::ContractTerms::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -6,7 +6,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+use crate::external::RiskFactors::RiskFactors;
 
 #[allow(non_camel_case_types)]
 pub struct POF_STD_FXOUT;
@@ -16,8 +16,8 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         &self,
         time: &IsoDatetime,
         states: &StateSpace,
-        model: &ContractModel,
-        risk_factor_model: &DataObserver,
+        model: &ContractTerms,
+        risk_factor_model: &RiskFactors,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -44,7 +44,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
             states
         );
 
-        let payoff = settlement_currency_fx_rate * contract_role_sign * (notional_principal.value() - risk_factor_placeholder * notional_principal_2.value());
+        let payoff = settlement_currency_fx_rate * contract_role_sign * (notional_principal.value() - risk_factor_placeholder.unwrap() * notional_principal_2.value());
 
         payoff
     }

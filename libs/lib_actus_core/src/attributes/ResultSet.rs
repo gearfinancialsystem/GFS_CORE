@@ -1,6 +1,6 @@
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
-use crate::state_space::StateSpace::{BoundaryLeg1ActiveFlag, BoundaryLeg2ActiveFlag, BoundaryMonitoringFlag};
+use crate::state_space::StateSpace::{BoundaryLeg1ActiveFlag, BoundaryLeg2ActiveFlag, BoundaryMonitoringFlag, StateSpace};
 use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -67,40 +67,39 @@ impl ResultSet {
         ResultSet::default()
     }
 
-    pub fn set_result_set(&mut self, source_ce: &ContractEvent<IsoDatetime, IsoDatetime>) {
-        let mut rs = ResultSet::new();
-
+    pub fn set_result_set(&mut self, curr_states: &StateSpace,  source_ce: &ContractEvent<IsoDatetime, IsoDatetime>) {
+        
         // comming from contract event
-        rs.epoch_offset = source_ce.epoch_offset;
-        rs.event_time = source_ce.event_time;
-        rs.event_type = Some(source_ce.event_type);
-        rs.currency = source_ce.currency.clone();
-        rs.contract_id = source_ce.contract_id.clone();
+        self.epoch_offset = source_ce.epoch_offset;
+        self.event_time = source_ce.event_time;
+        self.event_type = Some(source_ce.event_type);
+        self.currency = source_ce.currency.clone();
+        self.contract_id = source_ce.contract_id.clone();
 
         // all below comming from states
-        rs.accrued_interest = source_ce.state.accrued_interest.clone();
-        rs.accrued_interest2 = source_ce.state.accrued_interest2.clone();
-        rs.contract_performance = source_ce.state.contract_performance.clone();
-        rs.exercise_amount = source_ce.state.exercise_amount.clone();
-        rs.exercise_date = source_ce.state.exercise_date.clone();
-        rs.fee_accrued = source_ce.state.fee_accrued.clone();
-        rs.interest_calculation_base_amount = source_ce.state.interest_calculation_base_amount.clone();
-        rs.interest_scaling_multiplier = source_ce.state.interest_scaling_multiplier.clone();
-        rs.next_principal_redemption_payment = source_ce.state.next_principal_redemption_payment.clone();
-        rs.nominal_interest_rate = source_ce.state.nominal_interest_rate.clone();
-        rs.nominal_interest_rate2 = source_ce.state.nominal_interest_rate2.clone();
-        rs.non_performing_date = source_ce.state.non_performing_date.clone();
-        rs.notional_principal = source_ce.state.notional_principal.clone();
-        rs.notional_principal2 = source_ce.state.notional_principal2.clone();
-        rs.notional_scaling_multiplier = source_ce.state.notional_scaling_multiplier.clone();
-        rs.status_date = source_ce.state.status_date.clone();
-        rs.maturity_date = source_ce.state.maturity_date.clone();
-        rs.termination_date = source_ce.state.termination_date.clone();
-        rs.boundary_crossed_flag = source_ce.state.boundary_crossed_flag.clone();
-        rs.boundary_monitoring_flag = source_ce.state.boundary_monitoring_flag.clone();
-        rs.boundary_leg1_active_flag = source_ce.state.boundary_leg1_active_flag.clone();
-        rs.boundary_leg2_active_flag = source_ce.state.boundary_leg2_active_flag.clone();
-        rs.last_interest_period = source_ce.state.last_interest_period.clone();
+        self.accrued_interest = curr_states.accrued_interest.clone();
+        self.accrued_interest2 = curr_states.accrued_interest2.clone();
+        self.contract_performance = curr_states.contract_performance.clone();
+        self.exercise_amount = curr_states.exercise_amount.clone();
+        self.exercise_date = curr_states.exercise_date.clone();
+        self.fee_accrued = curr_states.fee_accrued.clone();
+        self.interest_calculation_base_amount = curr_states.interest_calculation_base_amount.clone();
+        self.interest_scaling_multiplier = curr_states.interest_scaling_multiplier.clone();
+        self.next_principal_redemption_payment = curr_states.next_principal_redemption_payment.clone();
+        self.nominal_interest_rate = curr_states.nominal_interest_rate.clone();
+        self.nominal_interest_rate2 = curr_states.nominal_interest_rate2.clone();
+        self.non_performing_date = curr_states.non_performing_date.clone();
+        self.notional_principal = curr_states.notional_principal.clone();
+        self.notional_principal2 = curr_states.notional_principal2.clone();
+        self.notional_scaling_multiplier = curr_states.notional_scaling_multiplier.clone();
+        self.status_date = curr_states.status_date.clone();
+        self.maturity_date = curr_states.maturity_date.clone();
+        self.termination_date = curr_states.termination_date.clone();
+        self.boundary_crossed_flag = curr_states.boundary_crossed_flag.clone();
+        self.boundary_monitoring_flag = curr_states.boundary_monitoring_flag.clone();
+        self.boundary_leg1_active_flag = curr_states.boundary_leg1_active_flag.clone();
+        self.boundary_leg2_active_flag = curr_states.boundary_leg2_active_flag.clone();
+        self.last_interest_period = curr_states.last_interest_period.clone();
 
     }
 }
