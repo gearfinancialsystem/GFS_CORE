@@ -8,7 +8,7 @@ use std::ops::Add;
 use std::ops::Sub;
 use crate::types::IsoDatetime::IsoDatetime;
 use chrono::Days;
-use crate::util::Value::Value;
+use crate::types::Value::Value;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct IsoPeriod {

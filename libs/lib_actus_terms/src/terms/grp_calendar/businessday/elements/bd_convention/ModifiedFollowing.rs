@@ -4,8 +4,8 @@ use std::{fmt, ptr};
 use std::rc::Rc;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::types::IsoPeriod::IsoPeriod;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoPeriod::IsoPeriod;
 
 /// Implementation of the Modified Following business day convention
 ///

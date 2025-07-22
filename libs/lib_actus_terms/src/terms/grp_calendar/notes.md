@@ -8,7 +8,7 @@ voici les code :
 code 1 :
 use std::str::FromStr;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
-use crate::util::ParseError::ParseError;
+use crate::util::String::String;
 
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;
 use crate::terms::grp_calendar::businessday::conventions::Scf::SCF;
@@ -109,7 +109,7 @@ impl<'a> BusinessDayAdjuster<'a> {
     pub fn parse ( // a la place de FromStr, car j'ai besoin de plus de parametre
             s: &str,
             calendar: &Calendar,
-        ) -> Result<BusinessDayAdjuster, ParseError> {
+        ) -> Result<BusinessDayAdjuster, String> {
         match s.to_uppercase().as_str() {
             ""      =>    Ok(BusinessDayAdjuster::default()),
             "NOS"   =>    Ok(BusinessDayAdjuster::new_NOS()),
@@ -121,7 +121,7 @@ impl<'a> BusinessDayAdjuster<'a> {
             "SCMP"  =>    Ok(BusinessDayAdjuster::new_SCMP(calendar)),
             "CSP"   =>    Ok(BusinessDayAdjuster::new_CSP(calendar)),
             "CSMP"  =>    Ok(BusinessDayAdjuster::new_CSMP(calendar)),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(String { message: format!("Invalid BusinessDayAdjuster: {}", s)})
         }
     }    
 }
@@ -220,7 +220,7 @@ code 4 :
 use std::str::FromStr;
 use chrono::NaiveDateTime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::util::ParseError::ParseError;
+use crate::util::String::String;
 
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
@@ -257,14 +257,14 @@ impl Calendar {
 }
 
 impl FromStr for Calendar {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "" => Ok(Calendar::default()),
             "NC" => Ok(Calendar::new_NC()),
             "MF" => Ok(Calendar::new_MF()),
-            _ => Err(ParseError {
+            _ => Err(String {
                 message: format!("Invalid Calendar type: {}", s),
             }),
         }

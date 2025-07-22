@@ -1,5 +1,5 @@
 
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitEndOfMonthConvention {
  /// Décale une date vers la fin du mois selon une convention spécifique.

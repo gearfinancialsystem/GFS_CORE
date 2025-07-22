@@ -10,8 +10,8 @@ use crate::terms::grp_notional_principal::unitx::PND::PND;
 use crate::terms::grp_notional_principal::unitx::STN::STN;
 use crate::terms::grp_notional_principal::unitx::TON::TON;
 use crate::terms::grp_notional_principal::unitx::TRO::TRO;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 pub enum Unit {
     BRL(BRL),
@@ -28,7 +28,7 @@ pub enum Unit {
 
 impl Unit {
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => Unit::from_str(n),
             None => Ok(Unit::None),
@@ -55,7 +55,7 @@ impl Default for Unit {
 }
 
 impl FromStr for Unit {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "BRL" => Ok(Self::BRL(BRL::new())),
@@ -67,7 +67,7 @@ impl FromStr for Unit {
             "STN" => Ok(Self::STN(STN::new())),
             "TON" => Ok(Self::TON(TON::new())),
             "TRO" => Ok(Self::TRO(TRO::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_contract_identification::contract_roles::{
     Rpa::RPA, Rpl::RPL, Rfl::RFL, Pfl::PFL,
     Rf::RF, Pf::PF, Buy::BUY, Sel::SEL,
     Col::COL, Cno::CNO, Udl::UDL, Udlp::UDLP,
     Udlm::UDLM,
 };
-use crate::util::Value::Value;
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ContractRole {
@@ -38,7 +38,7 @@ impl ContractRole {
         }
     }
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => ContractRole::from_str(n),
             None => Ok(ContractRole::None),
@@ -67,7 +67,7 @@ impl ContractRole {
 }
 
 impl FromStr for ContractRole {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "RPA"  => Ok(Self::RPA(RPA::new())),
@@ -83,7 +83,7 @@ impl FromStr for ContractRole {
             "UDL"  => Ok(Self::UDL(UDL::new())),
             "UDLP" => Ok(Self::UDLP(UDLP::new())),
             "UDLM" => Ok(Self::UDLM(UDLM::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

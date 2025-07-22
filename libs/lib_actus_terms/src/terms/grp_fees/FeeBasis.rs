@@ -1,8 +1,8 @@
 use std::{collections::HashMap, fmt, str::FromStr};
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_fees::fee_basis::N::N;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum FeeBasis {
@@ -13,7 +13,7 @@ pub enum FeeBasis {
 
 impl FeeBasis {
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => FeeBasis::from_str(n),
             None => Ok(FeeBasis::None),
@@ -45,12 +45,12 @@ impl FeeBasis {
 
 
 impl FromStr for FeeBasis {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "A" => Ok(Self::A(A::new())),
             "N" => Ok(Self::N(N::new())),
-            _ => Err(ParseError { message: format!("Invalid FeeBasis: {}", s)})
+            _ => Err(format!("Invalid FeeBasis:"))
         }
     }
 }

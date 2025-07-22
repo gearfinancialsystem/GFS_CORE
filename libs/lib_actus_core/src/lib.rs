@@ -12,7 +12,7 @@ pub mod events;
 
 
 
-pub mod macros;
+//pub mod macros;
 pub mod util_tests;
 pub mod contracts;
 pub mod external;

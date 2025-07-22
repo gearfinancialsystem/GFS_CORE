@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
-use crate::types::IsoDatetime::IsoDatetime;
 
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 pub trait TraitDayCountConvention {
     /// Compute the number of days between two time instances
     fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64;

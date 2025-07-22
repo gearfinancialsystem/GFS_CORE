@@ -1,4 +1,4 @@
-use lib_actus_core::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::risk_factors::risk_factor_model_1::composantes::ObservedDataPoint::ObservedDataPoint;
 
 #[derive(PartialEq, Debug, Clone)]

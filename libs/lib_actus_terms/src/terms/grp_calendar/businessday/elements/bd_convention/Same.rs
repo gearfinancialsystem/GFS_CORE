@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Same;

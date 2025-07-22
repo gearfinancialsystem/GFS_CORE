@@ -4,8 +4,8 @@ use std::str::FromStr;
 use crate::terms::grp_counterparty::contract_performance::Df::DF;
 use crate::terms::grp_counterparty::contract_performance::Dl::DL;
 use crate::terms::grp_counterparty::contract_performance::Dq::DQ;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CreditEventTypeCoveredElement {
@@ -14,7 +14,7 @@ pub enum CreditEventTypeCoveredElement {
     DF(DF)
 }
 impl CreditEventTypeCoveredElement {
-    pub fn new(value: &str) -> Result<Self, ParseError> {
+    pub fn new(value: &str) -> Result<Self, String> {
         let a = CreditEventTypeCoveredElement::from_str(value);
         match a {
             Ok(a) => Ok(a),
@@ -34,14 +34,14 @@ impl CreditEventTypeCoveredElement {
 
 
 impl FromStr for CreditEventTypeCoveredElement {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "DL" => Ok(CreditEventTypeCoveredElement::DL(DL::new())),
             "DQ" => Ok(CreditEventTypeCoveredElement::DQ(DQ::new())),
             "DF" => Ok(CreditEventTypeCoveredElement::DF(DF::new())),
-            _ => Err(ParseError { message: format!("Invalid CreditEventTypeCoveredElement: {}", s) }),
+            _ => Err(format!("Invalid CreditEventTypeCoveredElement: {}", s) ),
         }
     }
 }
@@ -51,7 +51,7 @@ pub struct CreditEventTypeCovered(pub Vec<CreditEventTypeCoveredElement>);
 
 impl CreditEventTypeCovered {
 
-    pub fn new(value: &str) -> Result<Self, ParseError> {
+    pub fn new(value: &str) -> Result<Self, String> {
         let a = CreditEventTypeCoveredElement::from_str(value);
         match a {
             Ok(a) => {

@@ -4,8 +4,8 @@ use std::str::FromStr;
 use crate::terms::grp_optionality::option_type::C::C;
 use crate::terms::grp_optionality::option_type::CP::CP;
 use crate::terms::grp_optionality::option_type::P::P;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum OptionType {
@@ -16,12 +16,12 @@ pub enum OptionType {
 
 impl OptionType {
     
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         OptionType::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
+        crate::utils::ProvideFuncs::provide(string_map, key)
     }
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
@@ -37,13 +37,13 @@ impl OptionType {
 }
 
 impl FromStr for OptionType {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "C" => Ok(Self::C(C::new())),
             "P" => Ok(Self::P(P::new())),
             "CP" => Ok(Self::CP(CP::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

@@ -153,6 +153,7 @@ name = "lib_actus_terms"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lib_actus_types",
  "log",
  "regex",
  "serde",

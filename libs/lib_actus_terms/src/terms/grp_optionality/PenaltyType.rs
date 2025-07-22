@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_optionality::penalty_type::N::N;
 use crate::terms::grp_optionality::penalty_type::A::A;
 use crate::terms::grp_optionality::penalty_type::R::R;
 use crate::terms::grp_optionality::penalty_type::I::I;
-use crate::util::CommonUtils::CommonUtils as cu;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum PenaltyType {
@@ -20,12 +20,13 @@ pub enum PenaltyType {
 impl PenaltyType {
 
 
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         PenaltyType::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        cu::provide(string_map, key)
+
+        crate::utils::ProvideFuncs::provide(string_map, key)
     }
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
@@ -41,14 +42,14 @@ impl PenaltyType {
 }
 
 impl FromStr for PenaltyType {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "N" => Ok(Self::N(N::new())),
             "A" => Ok(Self::A(A::new())),
             "R" => Ok(Self::R(R::new())),
             "I" => Ok(Self::I(I::new())),
-            _ => Err(ParseError { message: format!("Invalid PenaltyType {}", s)})
+            _ => Err(format!("Invalid PenaltyType {}", s))
         }
     }
 }

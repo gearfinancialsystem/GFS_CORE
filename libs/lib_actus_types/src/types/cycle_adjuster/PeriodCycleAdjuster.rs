@@ -1,6 +1,6 @@
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
-use crate::exceptions::AttributeConversionException::AttributeConversionException;
+// use crate::exceptions::String::String;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use crate::types::IsoCycle::{LONG_STUB, SHORT_STUB};
 
@@ -11,7 +11,7 @@ pub struct PeriodCycleAdjuster {
 }
 
 impl PeriodCycleAdjuster {
-    pub fn new(cycle: String) -> Result<Self, AttributeConversionException> {
+    pub fn new(cycle: String) -> Result<Self, String> {
         let period = Self::parse_period(cycle.clone());
         let stub = Self::parse_stub(cycle);
 
@@ -28,24 +28,24 @@ impl PeriodCycleAdjuster {
     /**
     * Parses a period from a cycle string.
     */
-    pub fn parse_period(cycle: String) -> Result<IsoPeriod, AttributeConversionException> {
+    pub fn parse_period(cycle: String) -> Result<IsoPeriod, String> {
         let period_part = cycle.split('L').next().unwrap();
         match IsoPeriod::parsex(period_part) {
             Some(period) => Ok(period),
-            None => Err(AttributeConversionException),
+            None => Err("te".to_string()),
         }
     }
 
     /**
     * Parses the stub from the cycle string.
     */
-    pub fn parse_stub(cycle: String) -> Result<char, AttributeConversionException> {
-        let stub_part = cycle.split('L').nth(1).ok_or(AttributeConversionException)?;
-        let stub = stub_part.chars().next().ok_or(AttributeConversionException)?;
+    pub fn parse_stub(cycle: String) -> Result<char, String> {
+        let stub_part = cycle.split('L').nth(1).ok_or("te".to_string())?;
+        let stub = stub_part.chars().next().ok_or("te".to_string())?;
         if stub == LONG_STUB || stub == SHORT_STUB {
             Ok(stub)
         } else {
-            Err(AttributeConversionException)
+            Err("te".to_string())
         }
     }
 

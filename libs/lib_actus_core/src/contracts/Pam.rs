@@ -46,7 +46,7 @@ use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
 use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -750,7 +750,7 @@ impl fmt::Display for PAM {
 //     use std::error::Error;
 //     use std::collections::HashMap;
 //     use crate::exceptions::ContractTypeUnknownException::ContractError;
-//     use c>rate::util::Value::Value;
+//     use c>rate::utils::Value::Value;
 //     use crate::util_tests::TestsUtils::test_read_and_parse_json;
 //     use crate::util_tests::TestsUtils::json_to_dico;
 

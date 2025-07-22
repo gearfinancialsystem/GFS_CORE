@@ -1,5 +1,4 @@
-use lib_actus_core::types::IsoDatetime::IsoDatetime;
-
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ObservedDataPoint {

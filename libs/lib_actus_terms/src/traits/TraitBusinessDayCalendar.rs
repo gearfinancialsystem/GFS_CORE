@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 pub trait TraitBusinessDayCalendar: Debug{
     /// Returns whether a date is a business day or not

@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::marker::PhantomData;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoCycle::{IsoCycle, LONG_STUB};
 use crate::types::IsoDatetime::IsoDatetime;
 

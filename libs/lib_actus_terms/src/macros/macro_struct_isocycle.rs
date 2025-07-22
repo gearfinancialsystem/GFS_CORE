@@ -3,6 +3,13 @@
 #[macro_export]
 macro_rules! define_struct_isocycle {
     ($struct_name:ident) => {
+        use lib_actus_types::types::Value::Value;
+        use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+        use lib_actus_types::types::IsoCycle::IsoCycle;
+        use std::str::FromStr;
+        use std::collections::HashMap;
+
+
         #[derive(Debug, Clone, PartialEq, Eq)]
         pub struct $struct_name(IsoCycle);
 

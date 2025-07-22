@@ -1,8 +1,8 @@
 
-use crate::types::IsoCycle::IsoCycle;
+use lib_actus_types::types::IsoCycle::IsoCycle;
 use std::str::FromStr;
 use std::collections::HashMap;
-use crate::util::Value::Value;
+use lib_actus_types::types::Value::Value;
 
 
 use crate::define_struct_vec_isocycle;

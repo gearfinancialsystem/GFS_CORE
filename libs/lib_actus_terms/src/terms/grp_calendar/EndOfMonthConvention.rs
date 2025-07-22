@@ -1,17 +1,19 @@
-use crate::exceptions::ParseError::ParseError;
+
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
-use crate::exceptions::AttributeConversionException::AttributeConversionException;
+
 
 use crate::terms::grp_calendar::eom_conventions::Eom::EOM;
 use crate::terms::grp_calendar::eom_conventions::Sd::SD;
 use crate::traits::TraitEndOfMonthConvention::TraitEndOfMonthConvention;
 
-use crate::types::IsoCycle::IsoCycle;
-use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
-use crate::util::Value::Value;
+
+use lib_actus_types::types::IsoCycle::IsoCycle;
+use lib_actus_types::types::IsoDatetime::{TraitNaiveDateTimeExtension, IsoDatetime};
+
+use lib_actus_types::types::Value::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum EndOfMonthConvention {
@@ -28,7 +30,7 @@ impl EndOfMonthConvention {
         }
     }
 
-    pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: IsoCycle) -> Result<Self, AttributeConversionException> {
+    pub fn new(end_of_month_convention: EndOfMonthConvention, ref_date: IsoDatetime, cycle: IsoCycle) -> Result<Self, String> {
         match end_of_month_convention {
             Self::EOM(EOM) => {
                 if ref_date == ref_date.last_date_of_month() &&
@@ -84,12 +86,12 @@ impl EndOfMonthConvention {
 }
 
 impl FromStr for EndOfMonthConvention {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "SD" => Ok(Self::new_SD()),
             "EOM" => Ok(Self::new_EOM()),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

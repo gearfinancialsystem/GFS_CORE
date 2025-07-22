@@ -1,6 +1,6 @@
 use std::fmt;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 /// No holiday calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -29,7 +29,7 @@ impl fmt::Display for NC {
 
 #[cfg(test)]
 mod tests_calendars_NoCalendar {
-    use crate::types::IsoDatetime::IsoDatetime;
+    use lib_actus_types::types::IsoDatetime::IsoDatetime;
     use super::*;
     #[test]
     fn test_SAME_NoHolidaysCalendar() {

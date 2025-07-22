@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
 use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use lib_actus_types::types::Value::Value;
 
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -14,23 +14,24 @@ pub enum IncreaseDecreaseElement {
 
 
 impl FromStr for IncreaseDecreaseElement {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "INC" => Ok(IncreaseDecreaseElement::INC(INC::new())),
             "DEC" => Ok(IncreaseDecreaseElement::DEC(DEC::new())),
-            _ => Err(ParseError { message: format!("Invalid IncreaseDecreaseElement: {}", s) }),
+            _ => Err(format!("Invalid IncreaseDecreaseElement: {}", s)),
         }
     }
 }
+
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct ArrayIncreaseDecrease(Vec<IncreaseDecreaseElement>);
 
 impl ArrayIncreaseDecrease {
 
-    pub fn new(value: &str) -> Result<Self, ParseError> {
+    pub fn new(value: &str) -> Result<Self, String> {
         let a = IncreaseDecreaseElement::from_str(value);
         match a {
             Ok(a) => {

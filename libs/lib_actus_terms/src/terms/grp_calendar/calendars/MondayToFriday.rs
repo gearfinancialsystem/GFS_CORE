@@ -1,6 +1,6 @@
 use chrono::Datelike;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use std::fmt;
 
 /// Monday to Friday Calendar

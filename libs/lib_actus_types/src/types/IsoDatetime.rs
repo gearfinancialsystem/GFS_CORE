@@ -7,9 +7,8 @@ use std::str::FromStr;
 use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, ParseResult, NaiveTime};
 use chrono::format::Numeric::IsoYearDiv100;
 use crate::types::IsoPeriod::IsoPeriod;
-use crate::util::Value::Value;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
+use crate::types::Value::Value;
 // pub type IsoDatetime = NaiveDateTime;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

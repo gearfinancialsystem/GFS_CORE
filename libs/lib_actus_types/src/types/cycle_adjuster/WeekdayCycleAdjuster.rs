@@ -1,5 +1,4 @@
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::exceptions::AttributeConversionException::AttributeConversionException;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
 use chrono::{Months, NaiveDate, Weekday};
 use chrono::Datelike;
@@ -13,7 +12,7 @@ pub struct WeekdayCycleAdjuster {
 }
 
 impl WeekdayCycleAdjuster {
-    pub fn new(cycle: String) -> Result<Self, AttributeConversionException> {
+    pub fn new(cycle: String) -> Result<Self, String> {
         let weekday = Self::parse_weekday(cycle.clone());
         let position = Self::parse_position(cycle.clone());
         let stub = Self::parse_stub(cycle);
@@ -23,12 +22,12 @@ impl WeekdayCycleAdjuster {
                 Ok( WeekdayCycleAdjuster {day_of_week: val_day_of_week, position: val_position as i32, stub: val_stub })
             }
             _ => {
-                Err(AttributeConversionException)
+                Err("gfd".to_string())
             }
         }
     }
 
-    pub fn parse_weekday(cycle: String) -> Result<Weekday, AttributeConversionException> {
+    pub fn parse_weekday(cycle: String) -> Result<Weekday, String> {
         let weekday_part = cycle.split('L').next().unwrap();
         let weekday_str = &weekday_part[1..4]; // Assuming the format is like "1MONL"
         match weekday_str {
@@ -39,24 +38,24 @@ impl WeekdayCycleAdjuster {
             "Fri" => Ok(Weekday::Fri),
             "Sat" => Ok(Weekday::Sat),
             "Sun" => Ok(Weekday::Sun),
-            _ => Err(AttributeConversionException),
+            _ => Err("tgdsg".to_string()),
         }
     }
 
 
-    pub fn parse_position(cycle: String) -> Result<u32, AttributeConversionException> {
-        let position_char = cycle.chars().next().ok_or(AttributeConversionException)?;
-        position_char.to_digit(10).ok_or(AttributeConversionException)
+    pub fn parse_position(cycle: String) -> Result<u32, String> {
+        let position_char = cycle.chars().next().ok_or("tgdsg".to_string())?;
+        position_char.to_digit(10).ok_or("tgdsg".to_string())
     }
 
 
-    pub fn parse_stub(cycle: String) -> Result<char, AttributeConversionException> {
-        let stub_part = cycle.split('L').nth(1).ok_or(AttributeConversionException)?;
-        let stub = stub_part.chars().next().ok_or(AttributeConversionException)?;
+    pub fn parse_stub(cycle: String) -> Result<char, String> {
+        let stub_part = cycle.split('L').nth(1).ok_or("tgdsg".to_string())?;
+        let stub = stub_part.chars().next().ok_or("tgdsg".to_string())?;
         if stub == LONG_STUB || stub == SHORT_STUB {
             Ok(stub)
         } else {
-            Err(AttributeConversionException)
+            Err("tgdsg".to_string())
         }
     }
 

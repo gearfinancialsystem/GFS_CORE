@@ -34,7 +34,7 @@ use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
@@ -690,7 +690,7 @@ impl fmt::Display for SWAPS {
 //     use super::*;
 //     use crate::util_tests::TestsUtils::{convert_value_map_to_string_map_ref, test_read_and_parse_json};
 //     use crate::util_tests::TestsUtils::json_to_dico;
-//     use crate::util::Value::Value;
+//     use crate::utils::Value::Value;
 //     use std::error::Error;
 //     use std::collections::{HashMap, HashSet};
 //     use std::hash::Hash;

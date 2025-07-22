@@ -1,5 +1,5 @@
 use std::fmt;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -33,7 +33,7 @@ mod tests {
     use std::str::FromStr;
     use super::*;
     use crate::terms::grp_interest::daycountconventions::A336::A336;
-    use crate::types::IsoDatetime::IsoDatetime;
+    use lib_actus_types::types::IsoDatetime::IsoDatetime;
     
     fn set_vars() -> (IsoDatetime, IsoDatetime, IsoDatetime) {
         let local_date1 = IsoDatetime::from_str("2019-02-01 00:00:00").expect("");

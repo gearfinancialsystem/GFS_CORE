@@ -1,9 +1,11 @@
 #[macro_export]
 macro_rules! define_struct_isoperiod {
     ($struct_name:ident) => {
-        use crate::types::IsoPeriod::IsoPeriod;
-        use crate::types::IsoDatetime::IsoDatetime; // Import manquant
-        use crate::util::Value::Value;
+
+        use lib_actus_types::types::IsoPeriod::IsoPeriod;
+        use lib_actus_types::types::IsoDatetime::IsoDatetime;
+        use lib_actus_types::types::Value::Value;
+        
         use std::collections::HashMap;
         use std::str::FromStr;
         use std::ops::Deref;

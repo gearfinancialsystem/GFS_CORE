@@ -1,7 +1,7 @@
 use std::{fmt, ptr};
 use std::rc::Rc;
 
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use chrono::Duration;
 use crate::terms::grp_calendar::Calendar::Calendar;

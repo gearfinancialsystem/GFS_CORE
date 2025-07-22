@@ -3,9 +3,9 @@ use std::fmt;
 use std::rc::Rc;
 use crate::terms::grp_calendar::{Calendar::Calendar};
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_interest::daycountconventions::A336::A336;
 use crate::terms::grp_interest::daycountconventions::A360::A360;
 use crate::terms::grp_interest::daycountconventions::A365::A365;
@@ -15,7 +15,7 @@ use crate::terms::grp_interest::daycountconventions::E30360::E30360;
 use crate::terms::grp_interest::daycountconventions::B252::B252;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::util::Value::Value;
+use lib_actus_types::types::Value::Value;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum DayCountConvention {
@@ -32,7 +32,7 @@ pub enum DayCountConvention {
 
 impl DayCountConvention {
     
-    pub fn new(element: Option<&str>, calendar: Option<Rc<Calendar>>, maturity_date: Option<Rc<MaturityDate>>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>, calendar: Option<Rc<Calendar>>, maturity_date: Option<Rc<MaturityDate>>) -> Result<Self, String> {
         match element {
 
             Some(n) => Self::parse(n, maturity_date, calendar),
@@ -72,7 +72,7 @@ impl DayCountConvention {
         s: &str,
         maturity_date: Option<Rc<MaturityDate>>,
         calendar: Option<Rc<Calendar>>,
-    ) -> Result<DayCountConvention, ParseError> {
+    ) -> Result<DayCountConvention, String> {
         match s.to_uppercase().as_str() {
             "AAISDA"     => Ok(  DayCountConvention::AAISDA(AAISDA::new())  ),
             "A360"       => Ok(  DayCountConvention::A360(A360::new())  ),
@@ -82,7 +82,7 @@ impl DayCountConvention {
             "E30360"     => Ok(  DayCountConvention::E30360(E30360::new())  ),
             "B252"       => Ok(  DayCountConvention::B252(B252::new( calendar.expect("expect Some maturity for E283666")  )   ))  ,
             "E283666"       => Ok(  DayCountConvention::E283666(E283666::new( maturity_date )))  ,
-            _ => Err(ParseError { message: format!("Invalid DayCountConvention: {}", s) }  ),
+            _ => Err(format!("Invalid DayCountConvention: ")   ),
         }
     }
 
