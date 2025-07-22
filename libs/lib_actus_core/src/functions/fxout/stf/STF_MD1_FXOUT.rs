@@ -6,7 +6,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 
 #[allow(non_camel_case_types)]
 pub struct STF_MD1_FXOUT;

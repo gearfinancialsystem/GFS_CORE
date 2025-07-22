@@ -2,7 +2,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use chrono::NaiveDateTime;
 use crate::attributes::ContractTerms::{ContractTerms};
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
 

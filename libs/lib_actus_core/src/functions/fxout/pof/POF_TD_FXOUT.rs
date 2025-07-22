@@ -5,7 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 
 #[allow(non_camel_case_types)]
 pub struct POF_TD_FXOUT;

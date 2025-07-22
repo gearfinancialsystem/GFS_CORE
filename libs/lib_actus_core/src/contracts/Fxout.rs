@@ -13,7 +13,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::ResultSet::ResultSet;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 use crate::functions::fxout::pof::POF_MD1_FXOUT::POF_MD1_FXOUT;
 use crate::functions::fxout::pof::POF_MD2_FXOUT::POF_MD2_FXOUT;
 use crate::functions::fxout::pof::POF_PRD_FXOUT::POF_PRD_FXOUT;

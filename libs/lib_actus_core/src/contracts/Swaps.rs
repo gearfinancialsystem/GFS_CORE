@@ -37,7 +37,7 @@ use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SWAPS {

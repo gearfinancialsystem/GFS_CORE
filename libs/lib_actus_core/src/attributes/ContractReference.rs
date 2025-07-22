@@ -8,7 +8,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::state_space::StateSpace::StateSpace;

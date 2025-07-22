@@ -1,5 +1,5 @@
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;

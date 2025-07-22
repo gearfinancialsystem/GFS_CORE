@@ -19,7 +19,7 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;

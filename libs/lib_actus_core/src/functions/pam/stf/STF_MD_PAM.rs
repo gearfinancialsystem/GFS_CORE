@@ -9,7 +9,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactors::RiskFactors;
+use crate::external::RiskFactorModels::RiskFactors;
 #[allow(non_camel_case_types)]
 pub struct STF_MD_PAM;
 
