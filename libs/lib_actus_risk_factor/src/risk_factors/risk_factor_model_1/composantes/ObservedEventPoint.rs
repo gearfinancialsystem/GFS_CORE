@@ -1,4 +1,4 @@
-
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct ObservedEventPoint {
@@ -6,7 +6,7 @@ pub struct ObservedEventPoint {
     typex: String,
     value: f64,
     contract_id: String,
-    states: StateSpace,
+    states: StatesSpace,
 }
 
 impl ObservedEventPoint {
@@ -14,7 +14,7 @@ impl ObservedEventPoint {
                typex: String,
                value: f64,
                contract_id: String,
-               states: StateSpace) -> Self {
+               states: StatesSpace) -> Self {
         Self { time, typex, value, contract_id, states }
     }
 
@@ -26,11 +26,11 @@ impl ObservedEventPoint {
         self.contract_id = contract_id;
     }
 
-    pub fn get_states(&self) -> StateSpace {
+    pub fn get_states(&self) -> StatesSpace {
         self.states.clone()
     }
 
-    pub fn set_states(&mut self, states: StateSpace) {
+    pub fn set_states(&mut self, states: StatesSpace) {
         self.states = states;
     }
 

@@ -4,7 +4,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_contract_identification::contract_types::Cec::CEC;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;

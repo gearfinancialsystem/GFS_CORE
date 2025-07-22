@@ -8,7 +8,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitOptionExt::TraitOptionExt;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
 
 #[allow(non_camel_case_types)]

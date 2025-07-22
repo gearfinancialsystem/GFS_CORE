@@ -5,7 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_fees::FeeBasis::FeeBasis;
 use crate::terms::grp_fees::fee_basis::A::A;
 use crate::terms::grp_fees::FeeRate::FeeRate;

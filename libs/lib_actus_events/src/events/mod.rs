@@ -6,4 +6,3 @@ pub mod EventType;
 pub mod EventFactory;
 pub mod EventSequence;
 
-pub mod any_contract_event;

@@ -1,0 +1,16 @@
+[package]
+name = "lib_actus_states_space"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "lib_actus_states_space"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+lib_actus_terms = { path = "../../libs/lib_actus_terms" }
+lib_actus_types = { path = "../../libs/lib_actus_types" }
+chrono = "0.4.41"
+regex = "1.11.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

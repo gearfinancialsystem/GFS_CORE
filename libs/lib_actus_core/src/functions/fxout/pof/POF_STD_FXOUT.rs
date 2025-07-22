@@ -1,12 +1,11 @@
-use crate::attributes::ContractTerms::ContractTerms;
+use lib_actus_terms::ContractTerms::ContractTerms;
 
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
@@ -16,9 +15,9 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &StateSpace,
+        states: &StatesSpace,
         model: &ContractTerms,
-        risk_factor_model: &RiskFactorModel,
+        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -36,7 +35,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         let str_slices: Vec<String> = strings.iter().map(|s| s.value().clone().to_string()).collect();
         let joined = str_slices.join("/");
 
-        let risk_factor_placeholder = risk_factor_model.state_at(
+        let risk_factor_placeholder = risk_factor_model.unwrap().state_at(
             joined,
             &maturity_date.value(),
             states,

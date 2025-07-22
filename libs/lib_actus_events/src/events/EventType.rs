@@ -1,6 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
+
 #[derive(PartialEq, Eq, Debug, Clone, Copy, Hash, PartialOrd, Ord)]
 pub enum EventType {
     AD,
@@ -64,7 +64,7 @@ impl EventType {
     }
 }
 impl FromStr for EventType {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "AD" => Ok(EventType::AD),
@@ -93,9 +93,8 @@ impl FromStr for EventType {
             "IPFX" => Ok(EventType::IPFX),
             "IPFL" => Ok(EventType::IPFL),
             "ME" => Ok(EventType::ME),
-            _ => Err(ParseError {
-                message: format!("Invalid Event cont_type: {}", s),
-            }),
+            _ => Err(format!("Invalid Event cont_type: {}", s),
+            ),
         }
     }
 }

@@ -4,8 +4,8 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
 #[allow(non_camel_case_types)]
 pub struct POF_PR_UMP {
@@ -22,7 +22,7 @@ impl TraitPayOffFunction for POF_PR_UMP {
     fn eval(
         &self,
         _time: &IsoDatetime,
-        _states: &StateSpace,
+        _states: &StatesSpace,
         model: &impl TraitContractModel,
         risk_factor_model: &DataObserver,
         _day_counter: &Option<DayCountConvention>,

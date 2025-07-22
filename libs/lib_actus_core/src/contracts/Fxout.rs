@@ -2,53 +2,56 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 use std::rc::Rc;
-use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
 
-use crate::state_space::StateSpace::StateSpace;
-use crate::types::IsoDatetime::IsoDatetime;
 
-use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
-use crate::attributes::ContractTerms::ContractTerms;
+use lib_actus_terms::ContractTerms::ContractTerms;
 use crate::attributes::ResultSet::ResultSet;
 use crate::external::RiskFactorModel::RiskFactorModel;
+
 use crate::functions::fxout::pof::POF_MD1_FXOUT::POF_MD1_FXOUT;
 use crate::functions::fxout::pof::POF_MD2_FXOUT::POF_MD2_FXOUT;
 use crate::functions::fxout::pof::POF_PRD_FXOUT::POF_PRD_FXOUT;
 use crate::functions::fxout::pof::POF_STD_FXOUT::POF_STD_FXOUT;
 use crate::functions::fxout::pof::POF_TD_FXOUT::POF_TD_FXOUT;
+
 use crate::functions::fxout::stf::STF_MD1_FXOUT::STF_MD1_FXOUT;
 use crate::functions::fxout::stf::STF_MD2_FXOUT::STF_MD2_FXOUT;
 use crate::functions::fxout::stf::STF_STD_FXOUT::STF_STD_FXOUT;
-use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
-use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::Currency2::Currency2;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::terms::grp_settlement::delivery_settlement::D::D;
-use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
+use crate::functions::fxout::stf::STF_TD_FXOUT::STF_TD_FXOUT;
+
+
+
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
+use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_notional_principal::Currency2::Currency2;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use lib_actus_terms::terms::grp_settlement::delivery_settlement::D::D;
+use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
 use crate::traits::TraitContractModel::TraitContractModel;
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::util::Value::Value;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::Value::Value;
+use crate::functions::fxout::stf::STF_PRD_FXOUT::STF_PRD_FXOUT;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FXOUT {
@@ -56,6 +59,7 @@ pub struct FXOUT {
     pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StatesSpace,
     pub result_vec_toggle: bool,
     pub result_vec: Option<Vec<ResultSet>>,
 }
@@ -68,6 +72,7 @@ impl TraitContractModel for FXOUT {
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: None,
             contract_structure: None,
+            states_space: StatesSpace::default(),
             result_vec_toggle: false,
             result_vec: None,
         }
@@ -142,13 +147,14 @@ impl TraitContractModel for FXOUT {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
         let model = &self.contract_terms;
         // Purchase event
+        
         if let Some(purchase_date) = &model.purchase_date {
             let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &Some(purchase_date.clone()),
                 &EventType::PRD,
                 &model.currency,
                 Some(Rc::new(POF_PRD_FXOUT)),
-                Some(Rc::new(STF_PRD_STK)),
+                Some(Rc::new(STF_PRD_FXOUT)), //
                 &None,
                 &model.contract_id,
             );
@@ -162,7 +168,7 @@ impl TraitContractModel for FXOUT {
                 &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_FXOUT)),
-                Some(Rc::new(STF_TD_STK)),
+                Some(Rc::new(STF_TD_FXOUT)), // STF_TD_STK
                 &None,
                 &model.contract_id,
             );
@@ -191,7 +197,7 @@ impl TraitContractModel for FXOUT {
                     &model.contract_id,
                 );
                 events.push(e.to_iso_datetime_event());
-            } 
+            }
             else {
                 let shifted_maturity_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
                     &(
@@ -255,43 +261,107 @@ impl TraitContractModel for FXOUT {
             self.set_result_vec();
         }
         let _maturity = &self.contract_terms.maturity_date.clone();
-        let mut states = self.init_state_space(_maturity).expect("Failed to initialize state space");
-        let model = &self.contract_terms;
-        let events = &mut self.contract_events;
-
+        self.init_state_space(_maturity);
+        //let model = &self.contract_terms;
+        // let events = &mut self.contract_events;
+        let events = &mut self.contract_events.clone();
 
         // let mut events = events.clone();
 
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
 
+        let mut i: usize = 0;
         for event in events.iter_mut() {
-            event.eval(
-                &mut states,
-                model,
-                &self.contract_risk_factors.clone().unwrap(),
-                &DayCountConvention::new(Some("AAISDA"), None, None).ok(),
-                model.business_day_adjuster.as_ref().unwrap(),
+            self.eval_pof_contract_event(i);
+            self.eval_stf_contract_event(i);
+            // event.eval(
+            //     &mut states,
+            //     model,
+            //     &self.contract_risk_factors.clone().unwrap(),
+            //     &DayCountConvention::new(Some("AAISDA"), None, None).ok(),
+            //     model.business_day_adjuster.as_ref().unwrap(),
+            // );
+            i+=1;
+        }
+
+    }
+
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>)  {
+        let model = &self.contract_terms;
+        let mut states = StatesSpace::default();
+        states.status_date = model.status_date.clone();
+        //Ok(states)
+        self.states_space = states
+    }
+
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                },
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
+            println!("{:?}", a);
+
+
+            self.contract_events[id_ce].payoff = Some(a);
+            // let curr_ce_clone = &curr_ce.clone();
             if self.result_vec_toggle == true {
                 if let Some(rv) = &mut self.result_vec {
                     let mut a = ResultSet::new();
-                    a.set_result_set(&states, &event);
+                    a.set_result_set(&self.states_space, &self.contract_events[id_ce]);
 
                     rv.push(a)
                 }
             }
         }
 
+        // on peut la retravailler pour etre plus direct et efficace
     }
 
-    fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
-        let model = &self.contract_terms;
-        let mut states = StateSpace::default();
-        states.status_date = model.status_date.clone();
-        Ok(states)
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let mut curr_ce= self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fstate.is_some() {
+            curr_ce.fstate.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &mut self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                }
+                ,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            )
+            //self.contract_events[id_ce].payoff = Some(a);
+            //let b = curr_ce.set_payoff(a);
+            // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
     }
 }
+
+
 impl fmt::Display for FXOUT {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "FXOUT")

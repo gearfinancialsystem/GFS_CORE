@@ -1,8 +1,8 @@
 use crate::attributes::ContractTerms::ContractModel;
 
 use crate::state_space::StateSpace::StateSpace;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
@@ -15,7 +15,7 @@ impl TraitPayOffFunction for POF_TD_LAM {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &StateSpace,
+        states: &StatesSpace,
         model: &ContractModel,
         risk_factor_model: &DataObserver,
         day_counter: &Option<DayCountConvention>,

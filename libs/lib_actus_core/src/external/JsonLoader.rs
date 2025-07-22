@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 use serde_json::{self, Value as JsonValue};
-use crate::util::Value::Value;
+use lib_actus_types::types::Value::Value;
 
 // Fonction de conversion
 fn convert_json_value(value: &JsonValue) -> Value {

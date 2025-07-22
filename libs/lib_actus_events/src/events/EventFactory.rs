@@ -4,16 +4,17 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::marker::PhantomData;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 //use crate::events::AnyContractEvent::AnyContractEvent;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_notional_principal::Currency::Currency;
+
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct EventFactory<T1, T2> {
     _marker_t1: PhantomData<T1>,
@@ -36,8 +37,8 @@ where
         schedule_time: &Option<T1>,
         event_type: &EventType,
         currency: &Option<Currency>,
-        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
-        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
+        pay_off: Option<Rc<dyn TraitPayOffFunction + 'static>>,
+        state_trans: Option<Rc<dyn TraitStateTransitionFunction + 'static>>,
         convention: &Option<BusinessDayAdjuster>,
         contract_id: &Option<ContractID>
     ) -> ContractEvent<T1, T2>

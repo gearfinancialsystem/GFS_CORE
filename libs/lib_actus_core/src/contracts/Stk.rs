@@ -141,7 +141,7 @@ impl TraitContractModel for STK {
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         // Initialize state space per status date
         let _maturity = &model.maturity_date.clone();
-        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize states_space");
         let mut events = events.clone();
         // Sort events according to their time sequence
         events.sort_by(|a, b|

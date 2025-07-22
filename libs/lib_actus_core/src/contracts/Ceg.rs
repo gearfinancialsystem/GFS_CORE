@@ -147,7 +147,7 @@ impl TraitContractModel for CEG {
         let maturity = Self::maturity(model);
         let mut events = Self::add_external_xd_event(model, events, observer, &maturity).unwrap();
 
-        let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity) )).expect("Failed to initialize state_space");
+        let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity) )).expect("Failed to initialize states_space");
 
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));

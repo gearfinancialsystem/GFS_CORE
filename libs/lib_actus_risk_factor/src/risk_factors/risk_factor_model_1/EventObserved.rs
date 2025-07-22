@@ -4,6 +4,31 @@ use std::fs::File;
 use std::io::BufReader;
 use std::marker::PhantomData;
 use std::str::FromStr;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventSequence::EventSequence;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use lib_actus_terms::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+use lib_actus_terms::terms::grp_interest::AccruedInterest2::AccruedInterest2;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::risk_factors::risk_factor_model_1::composantes::ObservedEventPoint::ObservedEventPoint;
 
@@ -62,7 +87,7 @@ impl EventObserved {
                 event_type,
                 currency: Some(currency_wrapper),
                 payoff: Some(obs_event.get_value()),
-                state: obs_event.get_states().clone(),
+                // state: obs_event.get_states().clone(),
                 contract_id: Some(contract_id_wrapper),
             };
 
@@ -187,8 +212,8 @@ impl EventObserved {
     }
 
     // Fonction pour parser le StateSpace à partir du JSON
-    fn parse_state_space(states_json: &JsonValue) -> Result<StateSpace, Box<dyn std::error::Error>> {
-        let mut state_space = StateSpace::default();
+    fn parse_state_space(states_json: &JsonValue) -> Result<StatesSpace, Box<dyn std::error::Error>> {
+        let mut state_space = StatesSpace::default();
 
         if let JsonValue::Object(states_obj) = states_json {
             for (key, value) in states_obj {

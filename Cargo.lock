@@ -118,10 +118,25 @@ name = "lib_actus_core"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lib_actus_events",
  "lib_actus_risk_factor",
+ "lib_actus_states_space",
  "lib_actus_terms",
  "lib_actus_types",
  "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "lib_actus_events"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lib_actus_states_space",
+ "lib_actus_terms",
+ "lib_actus_types",
  "regex",
  "serde",
  "serde_json",
@@ -138,6 +153,20 @@ dependencies = [
 
 [[package]]
 name = "lib_actus_risk_factor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lib_actus_events",
+ "lib_actus_states_space",
+ "lib_actus_terms",
+ "lib_actus_types",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "lib_actus_states_space"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -188,7 +217,11 @@ name = "main"
 version = "0.1.0"
 dependencies = [
  "lib_actus_core",
+ "lib_actus_events",
  "lib_actus_risk_factor",
+ "lib_actus_states_space",
+ "lib_actus_terms",
+ "lib_actus_types",
 ]
 
 [[package]]

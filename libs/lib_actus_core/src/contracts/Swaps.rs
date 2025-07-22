@@ -4,7 +4,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::{ContractReference, Object};
-use crate::attributes::ContractTerms::ContractTerms;
+use lib_actus_terms::ContractTerms::ContractTerms;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::attributes::ResultSet::ResultSet;
 use crate::events::ContractEvent::ContractEvent;
@@ -17,26 +17,26 @@ use crate::functions::swaps::stf::STF_NET_SWAPS::STF_NET_SWAPS;
 use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
+use lib_actus_states_space::state_space::StateSpace::StateSpace;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use lib_actus_terms::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::util::Value::Value;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,6 +45,7 @@ pub struct SWAPS {
     pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StateSpace,
     pub result_vec_toggle: bool,
     pub result_vec: Option<Vec<ResultSet>>,
 }
@@ -57,6 +58,7 @@ impl TraitContractModel for SWAPS {
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: None,
             contract_structure: None,
+            states_space: StateSpace::default(),
             result_vec_toggle: false,
             result_vec: None,
         }

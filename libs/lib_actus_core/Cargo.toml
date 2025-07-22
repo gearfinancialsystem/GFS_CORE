@@ -12,6 +12,9 @@ crate-type = ["rlib", "cdylib"]
 lib_actus_risk_factor = { path = "../../libs/lib_actus_risk_factor" }
 lib_actus_terms = { path = "../../libs/lib_actus_terms" }
 lib_actus_types = { path = "../../libs/lib_actus_types" }
+lib_actus_events = { path = "../../libs/lib_actus_events" }
+lib_actus_states_space = { path = "../../libs/lib_actus_states_space" }
+
 chrono = "0.4.41"
 regex = "1.11.1"
 log = "0.4.27"

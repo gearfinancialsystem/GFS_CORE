@@ -1,13 +1,12 @@
 use std::collections::HashSet;
-use crate::attributes::ContractTerms::ContractTerms;
-use crate::events::ContractEvent::ContractEvent;
-use crate::external::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_risk_factor::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 
-
-use crate::state_space::StateSpace::StateSpace;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use crate::types::IsoDatetime::IsoDatetime;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RiskFactorModel {
@@ -26,7 +25,7 @@ impl TraitRiskFactorModel for RiskFactorModel {
         }
     }
 
-    fn state_at(&self, id: String, time: &IsoDatetime, states: &StateSpace, attributes: &ContractTerms, is_market: bool) -> Option<f64> {
+    fn state_at(&self, id: String, time: &IsoDatetime, states: &StatesSpace, attributes: &ContractTerms, is_market: bool) -> Option<f64> {
         match self {
             RiskFactorModel::RiskFactorModel1(v) => {v.state_at(id, time, states, attributes, is_market)}
         }

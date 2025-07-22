@@ -5,6 +5,8 @@ members = [
     "libs/lib_actus_core",
     "libs/lib_actus_portfolio",
     "libs/lib_actus_risk_factor",
+    "libs/lib_actus_events",
+    "libs/lib_actus_states_space",
     "main",
     "playground"]
 resolver = "2"

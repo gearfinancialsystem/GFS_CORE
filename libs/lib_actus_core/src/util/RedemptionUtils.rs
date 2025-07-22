@@ -1,15 +1,15 @@
 use std::collections::HashSet;
-use crate::attributes::ContractTerms::ContractTerms;
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;
 
 impl RedemptionUtils {
-    pub fn redemptionAmount(model: &ContractTerms, state: &StateSpace) -> f64 {
+    pub fn redemptionAmount(model: &ContractTerms, state: &StatesSpace) -> f64 {
         let redemption_amount: f64;
         let status_date = state.status_date.clone().unwrap();
         let maturity: IsoDatetime = if model.amortization_date.is_none() {

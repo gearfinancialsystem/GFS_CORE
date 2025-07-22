@@ -1,29 +1,29 @@
-use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
-use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_terms::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use lib_actus_terms::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+use lib_actus_terms::terms::grp_interest::AccruedInterest2::AccruedInterest2;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
 
 pub type BoundaryMonitoringFlag = bool;
 pub type BoundaryLeg1ActiveFlag = bool;
 pub type BoundaryLeg2ActiveFlag = bool;
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct StateSpace {
+pub struct StatesSpace {
     pub accrued_interest: Option<AccruedInterest>,
     pub accrued_interest2: Option<AccruedInterest2>,
     pub contract_performance: Option<ContractPerformance>,
@@ -49,10 +49,10 @@ pub struct StateSpace {
     pub last_interest_period: Option<f64> // a voir
 }
 
-impl StateSpace {
+impl StatesSpace {
     // Méthode pour créer une copie de StateSpace
-    pub fn copy_state_space(original: &StateSpace) -> StateSpace {
-        StateSpace {
+    pub fn copy_state_space(original: &StatesSpace) -> StatesSpace {
+        StatesSpace {
             accrued_interest:       original.accrued_interest.clone(),
             accrued_interest2:      original.accrued_interest2.clone(),
             contract_performance:   original.contract_performance.clone(),
@@ -79,7 +79,7 @@ impl StateSpace {
         }
     }
 }
-impl Default for StateSpace {
+impl Default for StatesSpace {
     fn default() -> Self {
         Self {
             accrued_interest: AccruedInterest::new(0.0).ok(),

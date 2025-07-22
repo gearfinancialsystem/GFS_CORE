@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::util::Value::Value;
+
+
 
 
 pub trait TraitContractModel {
@@ -24,7 +26,11 @@ pub trait TraitContractModel {
 
     fn apply(&mut self, result_set_toogle: bool); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
 
-    fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String>;
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) ; // -> Result<StatesSpace, String>
 
+    fn eval_pof_contract_event(&mut self, id_ce: usize);
+
+    fn eval_stf_contract_event(&mut self, id_ce: usize);
+    
 }
 

@@ -8,7 +8,7 @@ use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPr
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::util_tests::essai_data_observer::DataObserver;
 
 #[allow(non_camel_case_types)]

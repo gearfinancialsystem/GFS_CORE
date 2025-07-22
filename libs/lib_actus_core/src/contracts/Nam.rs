@@ -448,7 +448,7 @@ impl TraitContractModel for NAM {
         observer: &DataObserver,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let _maturity = &model.maturity_date.clone() ;
-        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize state_space");
+        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize states_space");
         let mut events = events.clone();
 
         events.sort_by(|a, b|

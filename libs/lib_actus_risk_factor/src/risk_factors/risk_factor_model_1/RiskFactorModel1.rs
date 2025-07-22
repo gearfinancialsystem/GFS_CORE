@@ -1,9 +1,9 @@
 use std::collections::{HashMap, HashSet};
-use lib_actus_core::attributes::ContractTerms::ContractTerms;
-use lib_actus_core::events::ContractEvent::ContractEvent;
-use lib_actus_core::state_space::StateSpace::StateSpace;
-use lib_actus_core::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_core::types::IsoDatetime::IsoDatetime;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::risk_factors::risk_factor_model_1::DataObserved::DataObserved;
 use crate::risk_factors::risk_factor_model_1::EventObserved::EventObserved;
 
@@ -63,7 +63,7 @@ impl TraitRiskFactorModel for RiskFactorModel1 {
         &self,
         id: String,
         time: &IsoDatetime,
-        _contract_states: &StateSpace,
+        _contract_states: &StatesSpace,
         _contract_attributes: &ContractTerms,
         _is_market: bool
     ) -> Option<f64> {

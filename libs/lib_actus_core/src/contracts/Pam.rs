@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 use std::fmt;
-use std::io::ErrorKind::ResourceBusy;
+
 use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
-use crate::attributes::ContractModel::ContractModel;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_risk_factor::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
 use crate::attributes::ContractReference::ContractReference;
-use crate::events::ContractEvent::{ContractEvent};
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
+
 
 
 use crate::functions::pam::pof::{
@@ -36,78 +37,80 @@ use crate::functions::pam::stf::{
     STF_TD_PAM::STF_TD_PAM,
 };
 
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
-use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use lib_actus_terms::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
+
 use crate::time::ScheduleFactory::ScheduleFactory;
-use crate::attributes::ContractTerms::ContractTerms;
+use lib_actus_terms::ContractTerms::ContractTerms;
 use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_calendar::Calendar::Calendar;
-use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
-use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_fees::FeeRate::FeeRate;
-use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
-use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
-use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
-use crate::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
+use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
+use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
+use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
+use lib_actus_terms::terms::grp_interest::AccruedInterest2::AccruedInterest2;
+use lib_actus_terms::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
+use lib_actus_terms::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
+use lib_actus_terms::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
 //use crate::events::AnyContractEvent::AnyContractEvent;
 
-use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use crate::terms::grp_notional_principal::MarketObjectCodeOfScalingIndex::MarketObjectCodeOfScalingIndex;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
-use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
-use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use crate::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
-use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
-use crate::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::terms::grp_optionality::CycleAnchorDateOfOptionality::CycleAnchorDateOfOptionality;
-use crate::terms::grp_optionality::CycleOfOptionality::CycleOfOptionality;
-use crate::terms::grp_optionality::ObjectCodeOfPrepaymentModel::ObjectCodeOfPrepaymentModel;
-use crate::terms::grp_optionality::PenaltyRate::PenaltyRate;
-use crate::terms::grp_optionality::PenaltyType::PenaltyType;
-use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
-use crate::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
-use crate::terms::grp_reset_rate::LifeCap::LifeCap;
-use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
-use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
-use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
-use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
-use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
-use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
-use crate::terms::grp_reset_rate::RateSpread::RateSpread;
-use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::MarketObjectCodeOfScalingIndex::MarketObjectCodeOfScalingIndex;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
+use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
+use lib_actus_terms::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_optionality::CycleAnchorDateOfOptionality::CycleAnchorDateOfOptionality;
+use lib_actus_terms::terms::grp_optionality::CycleOfOptionality::CycleOfOptionality;
+use lib_actus_terms::terms::grp_optionality::ObjectCodeOfPrepaymentModel::ObjectCodeOfPrepaymentModel;
+use lib_actus_terms::terms::grp_optionality::PenaltyRate::PenaltyRate;
+use lib_actus_terms::terms::grp_optionality::PenaltyType::PenaltyType;
+use lib_actus_terms::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
+use lib_actus_terms::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
+use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use lib_actus_terms::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use lib_actus_terms::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use lib_actus_terms::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use lib_actus_terms::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use lib_actus_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use lib_actus_terms::terms::grp_reset_rate::RateSpread::RateSpread;
+use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::util::Value::Value;
+
 // use crate::util_tests::essai_load_results::ResultSet;
 
 use crate::attributes::ResultSet::ResultSet;
@@ -118,6 +121,7 @@ pub struct PAM {
     pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StatesSpace,
     pub result_vec_toggle: bool,
     pub result_vec: Option<Vec<ResultSet>>,
 }
@@ -130,6 +134,7 @@ impl TraitContractModel for PAM { //
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: None,
             contract_structure: None,
+            states_space: StatesSpace::default(),
             result_vec_toggle: false,
             result_vec: None,
         }
@@ -287,6 +292,7 @@ impl TraitContractModel for PAM { //
     fn set_result_vec(&mut self) {
         self.result_vec = Some(Vec::<ResultSet>::new()) //ResultSet::new()
     }
+    
     /// Compute next events within the period up to `to` date based on the contract model
     fn schedule(&mut self, to: Option<IsoDatetime>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
         let model = &self.contract_terms;
@@ -594,15 +600,16 @@ impl TraitContractModel for PAM { //
             self.set_result_vec();
         }
 
-        let model = &self.contract_terms;
+        //let model = &mut self.contract_terms;
         let risk_factors = &self.contract_risk_factors;
         let events = &mut self.contract_events.clone();
 
         ////////////////////////////////////////////
         // Initialize state space per status date //
         ////////////////////////////////////////////
-        let _maturity = &model.maturity_date.clone();
-        let mut states = &mut self.init_state_space(_maturity).expect("uncorrect state space initialization !");
+        let _maturity = &self.contract_terms.maturity_date.clone();
+        self.init_state_space(_maturity);
+        let mut states = &mut self.states_space;
 
 
 
@@ -617,37 +624,38 @@ impl TraitContractModel for PAM { //
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //
         ////////////////////////////////////////////////////////////////////
+        let mut i: usize = 0;
         for event in events.iter_mut() {
-            event.eval(
-                &mut states,
-                model,
-                &risk_factors.clone().unwrap(),
-                &model.day_count_convention.clone(),
-                &model.business_day_adjuster.clone().unwrap(),
-            );
-            if self.result_vec_toggle == true {
-                if let Some(rv) = &mut self.result_vec {
-                    let mut a = ResultSet::new();
-                    a.set_result_set(&states, &event);
-
-                    rv.push(a)
-                }
-            }
+            self.eval_pof_contract_event(i);
+            self.eval_stf_contract_event(i);
+            // model,
+            // &risk_factors.clone().unwrap(),
+            // &model.day_count_convention.clone(),
+            // &model.business_day_adjuster.clone().unwrap(),
+            // if self.result_vec_toggle == true {
+            //     if let Some(rv) = &mut self.result_vec {
+            //         let mut a = ResultSet::new();
+            //         a.set_result_set(&states, &event);
+            //
+            //         rv.push(a)
+            //     }
+            // }
+            i+=1;
         }
 
         ////////////////////////////////////////////////////////
         // Remove pre-purchase events if purchase date is set //
         ////////////////////////////////////////////////////////
-        if model.purchase_date.is_some() {
+        if self.contract_terms.purchase_date.is_some() {
             // let purchase_date = model.purchase_date;
             let purchase_event: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
-                &model.purchase_date,
+                &self.contract_terms.purchase_date,
                 &EventType::PRD,
-                &model.currency,
+                &self.contract_terms.currency,
                 None,
                 None,
                 &None,
-                &model.contract_id,
+                &self.contract_terms.contract_id,
             );
             events.retain(|e| {
                 e.get_event_type() == EventType::AD || e >= &purchase_event.to_iso_datetime_event()
@@ -661,12 +669,12 @@ impl TraitContractModel for PAM { //
     }
 
     /// Initialize the StateSpace according to the model attributes
-    fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>)  { // -> Result<StatesSpace, String>
 
         let model = &self.contract_terms;
         let risk_factors = &self.contract_risk_factors;
 
-        let mut states = StateSpace::default();
+        let mut states = StatesSpace::default();
 
         states.notional_scaling_multiplier = model.notional_scaling_multiplier.clone();
         states.interest_scaling_multiplier = model.interest_scaling_multiplier.clone();
@@ -729,10 +737,74 @@ impl TraitContractModel for PAM { //
         }
         // TODO: Implement last two possible initializations if needed
 
-        Ok(states)
+        self.states_space = states
+    }
+
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                },
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            );
+            println!("{:?}", a);
+            
+
+            self.contract_events[id_ce].payoff = Some(a);
+            // let curr_ce_clone = &curr_ce.clone();
+            if self.result_vec_toggle == true {
+                if let Some(rv) = &mut self.result_vec {
+                    let mut a = ResultSet::new();
+                    a.set_result_set(&self.states_space, &self.contract_events[id_ce]);
+
+                    rv.push(a)
+                }
+            }
+        }
+
+        // on peut la retravailler pour etre plus direct et efficace
     }
 
 
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let mut curr_ce= self.contract_events.get(id_ce).expect("ca marche forcement");
+
+            if curr_ce.fstate.is_some() {
+                curr_ce.fstate.clone().unwrap().eval(
+                    &curr_ce.get_schedule_time(),
+                    &mut self.states_space,
+                    &self.contract_terms,
+                    {
+                        let a = &self.contract_risk_factors;
+                        if let Some(rfm) = a {
+                            Some(rfm)
+                        } else {
+                            None
+                        }
+                    }
+                    ,
+                    &self.contract_terms.day_count_convention,
+                    &self.contract_terms.business_day_adjuster.clone().unwrap(),
+                )
+                //self.contract_events[id_ce].payoff = Some(a);
+                //let b = curr_ce.set_payoff(a);
+                // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
+    }
 }
 
 

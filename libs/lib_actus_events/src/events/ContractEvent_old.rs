@@ -2,43 +2,28 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-pub type EventTime = IsoDatetime;
-pub type ScheduleTime = IsoDatetime;
+//pub type EventTime = IsoDatetime;
+//pub type ScheduleTime = IsoDatetime;
 
 use std::hash::{Hash, Hasher};
 use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
 
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
-use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+
+
 use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
-
-
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 pub trait TraitContractEvent {}
 
@@ -55,7 +40,7 @@ pub struct ContractEvent<T1, T2> {
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
-    pub state: StateSpace, // ce state space devrait etre une reference partagee, (initialise dans apply)
+    pub state: StatesSpace, // ce state space devrait etre une reference partagee, (initialise dans apply)
     pub contract_id: Option<ContractID>,
 }
 
@@ -92,7 +77,7 @@ where
             event_type: event_type.clone(),
             currency: currency.clone(),
             payoff: Some(0.0),
-            state: StateSpace::default(),
+            state: StatesSpace::default(),
             contract_id: contract_id.clone(),
         }
     }
@@ -136,10 +121,10 @@ where
     pub fn payoff(&self) -> f64 {
         self.payoff.clone().unwrap()
     }
-    pub fn states(&self) -> StateSpace {
+    pub fn states(&self) -> StatesSpace {
         self.state.clone()
     }
-    pub fn setStates(&mut self, state: StateSpace) {
+    pub fn setStates(&mut self, state: StatesSpace) {
         self.state = state;
     }
     // Méthode pour changer fPayOff
@@ -153,34 +138,34 @@ where
     pub fn compare_to(&self, other: &ContractEvent<T1, T2>) -> i64 {
         (self.epoch_offset.unwrap() - other.epoch_offset.unwrap()).signum()
     }
-    pub fn eval(
-        &mut self,
-        states: &mut StateSpace,
-        model: &ContractTerms,
-        risk_factor_model: &RiskFactorModel,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster) {
-        if self.fpayoff.is_some() {
-            self.payoff = Some(self.fpayoff.clone().unwrap().eval(
-                &self.get_schedule_time(),
-                states,
-                model,
-                risk_factor_model,
-                day_counter,
-                time_adjuster,
-            ));
-        }
-        if self.fstate.is_some() {
-            self.fstate.clone().unwrap().eval(
-                &self.get_schedule_time(),
-                states,
-                model,
-                risk_factor_model,
-                day_counter,
-                time_adjuster,
-            );
-        }
-    }
+    // pub fn eval(
+    //     &mut self,
+    //     states: &mut StatesSpace,
+    //     model: &ContractTerms,
+    //     risk_factor_model: &RiskFactorModel,
+    //     day_counter: &Option<DayCountConvention>,
+    //     time_adjuster: &BusinessDayAdjuster) {
+    //     if self.fpayoff.is_some() {
+    //         self.payoff = Some(self.fpayoff.clone().unwrap().eval(
+    //             &self.get_schedule_time(),
+    //             states,
+    //             model,
+    //             risk_factor_model,
+    //             day_counter,
+    //             time_adjuster,
+    //         ));
+    //     }
+    //     if self.fstate.is_some() {
+    //         self.fstate.clone().unwrap().eval(
+    //             &self.get_schedule_time(),
+    //             states,
+    //             model,
+    //             risk_factor_model,
+    //             day_counter,
+    //             time_adjuster,
+    //         );
+    //     }
+    // }
 
     // pub fn copy(&self) -> Self {
     //     ContractEvent {

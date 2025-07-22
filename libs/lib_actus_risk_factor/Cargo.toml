@@ -10,6 +10,9 @@ crate-type = ["rlib", "cdylib"]
 [dependencies]
 lib_actus_terms = { path = "../../libs/lib_actus_terms" }
 lib_actus_types = { path = "../../libs/lib_actus_types" }
+lib_actus_states_space = { path = "../../libs/lib_actus_states_space" }
+lib_actus_events = { path = "../../libs/lib_actus_events" }
+
 chrono = "0.4.41"
 regex = "1.11.1"
 serde = { version = "1.0", features = ["derive"] }

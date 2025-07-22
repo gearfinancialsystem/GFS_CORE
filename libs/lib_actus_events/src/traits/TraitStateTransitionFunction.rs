@@ -1,11 +1,13 @@
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use chrono::NaiveDateTime;
-use crate::attributes::ContractTerms::{ContractTerms};
-use crate::external::RiskFactorModel::{RiskFactorModel};
-use crate::state_space::StateSpace::StateSpace;
-use crate::types::IsoDatetime::IsoDatetime;
 
+use chrono::NaiveDateTime;
+use lib_actus_terms::ContractTerms::{ContractTerms};
+
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_snake_case)]
 pub trait TraitStateTransitionFunction {
@@ -21,9 +23,9 @@ pub trait TraitStateTransitionFunction {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &mut StateSpace,
+        states: &mut StatesSpace,
         model: &ContractTerms,
-        risk_factor_model: &RiskFactorModel,//&RiskFactorModel,
+        risk_factor_model: Option<&dyn TraitRiskFactorModel>, //&RiskFactorModel,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) ; // -> StateSpace
