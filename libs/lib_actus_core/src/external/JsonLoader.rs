@@ -1,38 +1,8 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
-use std::str::FromStr;
-use crate::external::data_observers::DataObserver1::{DataObserver1, ObservedDataPoint};
-use crate::external::event_observers::EventObserver1::EventObserver1;
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
-use crate::terms::grp_notional_principal::NotionalPrincipal2::NotionalPrincipal2;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use crate::types::IsoDatetime::IsoDatetime;
-
 use serde_json::{self, Value as JsonValue};
 use crate::util::Value::Value;
-
-
-
-
-
 
 // Fonction de conversion
 fn convert_json_value(value: &JsonValue) -> Value {

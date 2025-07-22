@@ -8,7 +8,7 @@ use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::events::EventType::EventType;
-
+use crate::external::data_observers::DataObserver1::DataObserver1;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
@@ -25,11 +25,19 @@ pub struct RiskFactors {
 impl RiskFactors {
     pub fn new() -> Self {
         Self {
-            data_observed: Some(HashMap::new()),
-            events_observed: Some(HashMap::new()),
+            data_observed: None,
+            events_observed: None,
         }
     }
 
+    pub fn new_from(&self,
+                    file_path: &str,
+                    test_case_id: &str) -> DataObserved {
+        Self {
+            data_observed: Dat
+        }
+    }
+    
     pub fn add_data_observed_item(&mut self, symbol: String, series: HashMap<IsoDatetime, f64>) {
         if let Some( ms ) = &mut self.data_observed{
             ms.insert(symbol, series);
@@ -123,46 +131,3 @@ pub fn create_risk_factor(
 }
 
 // Conversion des événements observés
-fn convert_observed_events(
-    events: Vec<EventObserver>,
-    currency: &str
-) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn std::error::Error>> {
-    events.into_iter().map(|obs_event| {
-        // Convertir les temps
-        let event_time = IsoDatetime::from_str(&obs_event.get_time())?;
-        let schedule_time = event_time.clone(); // Même temps pour schedule_time
-
-        // Convertir le type d'événement
-        let event_type = EventType::from_str(&obs_event.get_typex())
-            .map_err(|_| format!("Unknown event type: {}", obs_event.get_typex()))?;
-
-        // Créer les wrappers nécessaires
-        let currency_wrapper = Currency::new(currency.to_string())
-            .map_err(|_| format!("Invalid currency: {}", currency))?;
-
-        let contract_id_wrapper = ContractID::new(obs_event.get_contract_id())
-            .map_err(|_| format!("Invalid contract ID: {}", obs_event.get_contract_id()))?;
-
-        // Calculer l'epoch offset
-        let epoch_offset = event_time.0.and_utc().timestamp_millis() +
-            EventSequence::time_offset(&event_type);
-
-        // Créer l'événement de contrat
-        let mut event = ContractEvent {
-            _marker_t1: PhantomData,
-            _marker_t2: PhantomData,
-            epoch_offset: Some(epoch_offset),
-            fstate: None,
-            fpayoff: None,
-            event_time: Some(event_time),
-            schedule_time: Some(schedule_time),
-            event_type,
-            currency: Some(currency_wrapper),
-            payoff: Some(obs_event.get_value()),
-            state: obs_event.get_states().clone(),
-            contract_id: Some(contract_id_wrapper),
-        };
-
-        Ok(event)
-    }).collect()
-}

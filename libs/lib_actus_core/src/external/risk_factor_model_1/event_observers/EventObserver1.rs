@@ -1,7 +1,7 @@
 use serde_json::{self, Value as JsonValue};
 use std::fs::File;
 use std::io::BufReader;
-
+use std::marker::PhantomData;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_boundary::BoundaryCrossedFlag::BoundaryCrossedFlag;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -22,58 +22,72 @@ use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalSca
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use crate::types::IsoDatetime::IsoDatetime;
 use std::str::FromStr;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventSequence::EventSequence;
+use crate::events::EventType::EventType;
+use crate::external::composantes::ObservedEventPoint::ObservedEventPoint;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::types::IsoDatetime::IsoDatetime;
+
 #[derive(PartialEq, Debug, Clone)]
 pub struct EventObserver1 {
-    time: String,
-    typex: String,
-    value: f64,
-    contract_id: String,
-    states: StateSpace,
+    event_serie_brute: Vec<ObservedEventPoint>,
+    event_serie: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
 }
 impl EventObserver1 {
-    pub fn new(time: String,
-               typex: String,
-               value: f64,
-               contract_id: String,
-               states: StateSpace) -> Self {
-        Self {time, typex, value, contract_id, states}
+    pub fn new() -> Self {
+        Self {
+            event_serie_brute: Vec::<ObservedEventPoint>::new(),
+            event_serie: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new()
+        }
     }
-    
-    pub fn get_contract_id(&self) -> String {
-        self.contract_id.clone()
-    }
-    
-    pub fn set_contract_id(&mut self, contract_id: String) {
-        self.contract_id = contract_id;
-    }
-    
-    pub fn get_states(&self) -> StateSpace {
-        self.states.clone()
-    }
-    
-    pub fn set_states(&mut self, states: StateSpace) {
-        self.states = states;
-    }
-    
-    pub fn get_time(&self) -> String {
-        self.time.clone()
-    }
-    pub fn set_time(&mut self, time: String) {
-        self.time = time;
-    }
-    
-    pub fn get_typex(&self) -> String {
-        self.typex.clone()
-    }
-    
-    pub fn set_typex(&mut self, typex: String) {
-        self.typex = typex;
-    }
-    
-    pub fn get_value(&self) -> f64 {
-        self.value
+
+    fn convert_vec_observed_event_point(
+        events: Vec<ObservedEventPoint>,
+        currency: &str
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, Box<dyn std::error::Error>> {
+
+        events.clone().into_iter().map(|obs_event| {
+            // Convertir les temps
+            let event_time = IsoDatetime::from_str(&obs_event.get_time())?;
+            let schedule_time = event_time.clone(); // Même temps pour schedule_time
+
+            // Convertir le type d'événement
+            let event_type = EventType::from_str(&obs_event.get_typex())
+                .map_err(|_| format!("Unknown event type: {}", obs_event.get_typex()))?;
+
+            // Créer les wrappers nécessaires
+            let currency_wrapper = Currency::new(currency.to_string())
+                .map_err(|_| format!("Invalid currency: {}", currency))?;
+
+            let contract_id_wrapper = ContractID::new(obs_event.get_contract_id())
+                .map_err(|_| format!("Invalid contract ID: {}", obs_event.get_contract_id()))?;
+
+            // Calculer l'epoch offset
+            let epoch_offset = event_time.0.and_utc().timestamp_millis() +
+                EventSequence::time_offset(&event_type);
+
+            // Créer l'événement de contrat
+            let mut event = ContractEvent {
+                _marker_t1: PhantomData,
+                _marker_t2: PhantomData,
+                epoch_offset: Some(epoch_offset),
+                fstate: None,
+                fpayoff: None,
+                event_time: Some(event_time),
+                schedule_time: Some(schedule_time),
+                event_type,
+                currency: Some(currency_wrapper),
+                payoff: Some(obs_event.get_value()),
+                state: obs_event.get_states().clone(),
+                contract_id: Some(contract_id_wrapper),
+            };
+
+            Ok(event)
+        }).collect()
+
     }
 
     pub fn new_from(
@@ -91,7 +105,7 @@ impl EventObserver1 {
             .ok_or_else(|| format!("'eventsObserved' section not found in {}", test_case_id))?;
 
         if let JsonValue::Array(events) = events_observed {
-            let mut result = Vec::new();
+            let mut result: Vec<ObservedEventPoint> = Vec::new();
 
             for event in events {
                 if let JsonValue::Object(event_obj) = event {
@@ -122,7 +136,7 @@ impl EventObserver1 {
                     let states = Self::parse_state_space(states_json)?;
 
                     // Créer l'événement observé
-                    result.push(EventObserver1::new(
+                    result.push(ObservedEventPoint::new(
                         time,
                         typex,
                         value,
@@ -134,7 +148,10 @@ impl EventObserver1 {
                 }
             }
 
-            Ok(result)
+            Ok(EventObserver1 {
+                event_serie_brute: result.clone(),
+                event_serie: Self::convert_vec_observed_event_point(result, "USD")? // ATTENTION ICI CORRIGER CURRENCY
+            })
         } else {
             Err("eventsObserved should be an array".into())
         }
