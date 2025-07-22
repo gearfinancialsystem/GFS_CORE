@@ -1,13 +1,24 @@
-use crate::external::data_observers::DataObserver1::{DataObserver1,
-                                                     ObservedDataPoint};
+use std::collections::HashMap;
+use serde_json::error::Category::Data;
+use crate::external::data_observers::DataObserver1::DataObserver1;
 
 
 #[derive(PartialEq, Debug, Clone)]
-pub enum DataObserver {
-    DataObserver1(DataObserver1)
+pub enum DataObserved {
+    DataObserved1(DataObserver1)
 }
 
-impl DataObserver {
+impl DataObserved {
+    pub fn load_data_observed(&self,
+                              file_path: &str,
+                              test_case_id: &str) -> DataObserver {
+        match self {
+            DataObserver::DataObserver1(v) => {
+                let a = DataObserver1::load_data_observed(file_path, test_case_id).expect("Error loading data");
+                DataObserver::DataObserver1(a)
+            },
+        }
+    }
 
     pub fn get_identifier(&self) -> String {
         match self {

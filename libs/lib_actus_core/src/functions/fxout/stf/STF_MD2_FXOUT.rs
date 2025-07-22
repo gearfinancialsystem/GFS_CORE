@@ -17,7 +17,7 @@ impl TraitStateTransitionFunction for STF_MD2_FXOUT {
         time: &IsoDatetime,
         states: &mut StateSpace,
         _model: &ContractTerms,
-        _risk_factor_model: &RiskFactors
+        _risk_factor_model: &RiskFactors,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

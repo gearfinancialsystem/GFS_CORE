@@ -1,5 +1,5 @@
 use crate::external::data_observers::DataObserver1::ObservedDataPoint;
-use crate::external::DataObserver::DataObserver;
+use crate::external::DataObserved::DataObserver;
 use crate::external::event_observers::EventObserver1::EventObserver1;
 use crate::state_space::StateSpace::StateSpace;
 
@@ -8,6 +8,8 @@ pub enum EventObserver {
 }
 
 impl EventObserver {
+    
+    
     
     pub fn get_contract_id(&self) -> String {
 

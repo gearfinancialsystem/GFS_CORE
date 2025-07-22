@@ -16,15 +16,15 @@ pub enum ContractModel {
 
 impl ContractModel {
     
-    pub fn new(sm: &HashMap<String, Value>) -> Result<ContractModel, String> {
-        let ct = sm.get("contractType").unwrap().as_string().unwrap().as_str();
+    pub fn new(sm_terms: &HashMap<String, Value>, sm_risk_factors: ) -> Result<ContractModel, String> {
+        let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
             "PAM" => {
                 Ok(Self::PAM({
                     let mut c = PAM::new();
-                    c.set_contract_terms(sm);
-                    c.set_contract_risk_factors(sm);
-                    c.set_contract_structure(sm);
+                    c.set_contract_terms(sm_terms);
+                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_structure(sm_terms);
 
                     c
                 }))
@@ -33,9 +33,9 @@ impl ContractModel {
             "SWAPS" => {
                 Ok(Self::SWAPS({
                     let mut c = SWAPS::new();
-                    c.set_contract_terms(sm);
-                    c.set_contract_risk_factors(sm);
-                    c.set_contract_structure(sm);
+                    c.set_contract_terms(sm_terms);
+                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_structure(sm_terms);
 
                     c
                 }))
@@ -44,9 +44,9 @@ impl ContractModel {
             "FXOUT" => {
                 Ok(Self::FXOUT({
                     let mut c = FXOUT::new();
-                    c.set_contract_terms(sm);
-                    c.set_contract_risk_factors(sm);
-                    c.set_contract_structure(sm);
+                    c.set_contract_terms(sm_terms);
+                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_structure(sm_terms);
 
                     c
                 }))

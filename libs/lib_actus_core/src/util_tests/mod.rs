@@ -7,5 +7,5 @@ pub mod ContractTestUtils;
 // pub mod ResultSet;
 //pub mod TestData;
 pub mod xTestsUtils;
-pub mod essai_load_terms;
-pub mod essai_load_results;
+//pub mod essai_load_terms;
+//pub mod essai_load_results;

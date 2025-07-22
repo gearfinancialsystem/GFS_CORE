@@ -15,4 +15,4 @@ pub mod events;
 pub mod macros;
 pub mod util_tests;
 pub mod contracts;
-mod external;
+pub mod external;

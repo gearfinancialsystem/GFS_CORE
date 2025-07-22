@@ -5,7 +5,8 @@ pub mod data_observers;
 pub mod event_observers;
 
 
-pub mod DataObserver;
-pub mod EventObserver;
+pub mod DataObserved;
+pub mod EventObserved;
 pub mod RiskFactors;
-mod JsonLoader;
+pub mod JsonLoader;
+mod composantes;

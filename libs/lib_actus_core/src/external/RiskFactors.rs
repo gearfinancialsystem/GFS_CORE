@@ -13,8 +13,8 @@ use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
-use crate::external::EventObserver::EventObserver;
-use crate::external::DataObserver::DataObserver;
+use crate::external::EventObserved::EventObserver;
+use crate::external::DataObserved::DataObserver;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RiskFactors {

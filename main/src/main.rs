@@ -1,15 +1,15 @@
-use std::collections::HashMap;
-use std::io::Error;
+
 use std::str::FromStr;
 use lib_actus_core::types::IsoDatetime::IsoDatetime;
-use lib_actus_core::attributes::ContractTerms::ContractTerms;
 use lib_actus_core::attributes::ContractModel::ContractModel;
-use lib_actus_core::contracts::Pam::PAM;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
-use lib_actus_core::util::Value::Value;
-use lib_actus_core::util_tests::essai_load_terms;
 
-use lib_actus_core::util_tests::essai_load_results::load_results;
+
+use lib_actus_core::external::JsonLoader::{load_test_case_terms,
+                                           load_events_observed,
+                                           load_data_observed};
+
+
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
@@ -222,7 +222,7 @@ fn main() {
     let test_id = "swaps01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
-    let mut dico = essai_load_terms::load_test_case_terms(pathx,
+    let mut dico = load_test_case_terms(pathx,
                                                           test_id).unwrap();
 
     // let data_observed = essai_load_data_observed
@@ -241,11 +241,11 @@ fn main() {
     if let Some(contract_model) = &mut contract_model {
         contract_model.run(Some(to), true)
     }
-    
+
     println!("ok");
     //let contract_model = Box::new(ContractModel::new(&dico));
 
-    
+
     //let q = load_results(pathx, test_id).ok();
 
     //let test_expected_res2 = load_results(pathx, test_id).unwrap().get(0).unwrap().get_expected_results();

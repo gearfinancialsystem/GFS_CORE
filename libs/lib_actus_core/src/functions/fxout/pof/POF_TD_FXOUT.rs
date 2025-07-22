@@ -16,7 +16,7 @@ impl TraitPayOffFunction for POF_TD_FXOUT {
         _time: &IsoDatetime,
         _states: &StateSpace,
         model: &ContractTerms,
-        _risk_factor_model: &RiskFactors
+        _risk_factor_model: &RiskFactors,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
