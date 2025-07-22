@@ -4,37 +4,26 @@ use std::fs::File;
 use std::io::BufReader;
 use std::str::FromStr;
 use crate::external::composantes::DataSerie::DataSerie;
+use crate::external::composantes::ObservedDataPoint::ObservedDataPoint;
 use crate::types::IsoDatetime::IsoDatetime;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct DataObserver1 {
-    pub data_series: HashMap<IsoDatetime, DataSerie>,
+    pub data_series: HashMap<String, DataSerie>,
 }
-  
+
 impl DataObserver1 {
     pub fn new() -> Self {
-        Self {identifier: String::new(), data: Vec::new()}
+        Self {
+            data_series: HashMap::new(),
+        }
     }
     
-    pub fn get_identifier(&self) -> String {
-        self.identifier.clone()
-    }
-    
-    pub fn set_identifier(&mut self, identifier: String) {
-        self.identifier = identifier;
-    }
-    pub fn get_data(&self) -> Vec<ObservedDataPoint> {
-        self.data.clone()
-    }
-    
-    pub fn set_data(&mut self, data: Vec<ObservedDataPoint>) {
-        self.data = data;
-    }
-    
-    pub fn load_data_observed(
+    // should use DataSerie & ObservedDataPoint
+    pub fn new_from(
         file_path: &str,
         test_case_id: &str,
-    ) -> Result<HashMap<String, DataObserver1>, Box<dyn std::error::Error>> {
+    ) -> Result<DataObserver1, Box<dyn std::error::Error>> { // HashMap<String, DataObserver1>
         let file = File::open(file_path)?;
         let reader = BufReader::new(file);
         let json: JsonValue = serde_json::from_reader(reader)?;
@@ -50,11 +39,11 @@ impl DataObserver1 {
 
             for (market_object_code, dataset) in data_observed_map {
                 if let JsonValue::Object(dataset_obj) = dataset {
-                    let mut observed_dataset = DataObserver1::new();
+                    let mut data_serie = DataSerie::new();
 
                     // Set identifier
                     if let Some(JsonValue::String(identifier)) = dataset_obj.get("identifier") {
-                        observed_dataset.set_identifier(identifier.clone());
+                        data_serie.set_identifier(identifier.clone());
                     } else {
                         return Err("Missing identifier in observed dataset".into());
                     }
@@ -82,18 +71,20 @@ impl DataObserver1 {
                             }
                         }
 
-                        observed_dataset.set_data(points);
+                        data_serie.set_data_serie(points);
                     } else {
                         return Err("Missing data array in observed dataset".into());
                     }
 
-                    result.insert(market_object_code.clone(), observed_dataset);
+                    result.insert(market_object_code.clone(), data_serie);
                 } else {
                     return Err("Invalid dataset format".into());
                 }
             }
 
-            Ok(result)
+            Ok(Self {
+                data_series : result
+            })
         } else {
             Err("dataObserved should be an object".into())
         }

@@ -13,13 +13,13 @@ use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
-use crate::external::EventObserved::EventObserver;
-use crate::external::DataObserved::DataObserver;
+use crate::external::EventObserved::EventObserved;
+use crate::external::DataObserved::DataObserved;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RiskFactors {
-    data_observed: Option<HashMap<String, HashMap<IsoDatetime, f64>>>,
-    events_observed: Option<HashMap<String, Vec<ContractEvent<IsoDatetime, IsoDatetime>>>>,
+    data_observed: Option<DataObserved>,
+    events_observed: Option<EventObserved>,
 }
 
 impl RiskFactors {
@@ -98,7 +98,7 @@ impl TraitRiskFactorModel for RiskFactors {
 
 // Fonction pour créer un DataObserver à partir des données chargées
 pub fn create_risk_factor(
-    data_observed: HashMap<String, DataObserver>,
+    data_observed: HashMap<String, DataObserved>,
     events_observed: Vec<EventObserver>,
     currency: &str
 ) -> RiskFactors {

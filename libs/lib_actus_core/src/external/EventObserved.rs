@@ -3,11 +3,11 @@ use crate::external::DataObserved::DataObserver;
 use crate::external::event_observers::EventObserver1::EventObserver1;
 use crate::state_space::StateSpace::StateSpace;
 
-pub enum EventObserver {
-    EventObserver1(EventObserver1)
+pub enum EventObserved {
+    EventObserved1(EventObserver1)
 }
 
-impl EventObserver {
+impl EventObserved {
     
     
     
