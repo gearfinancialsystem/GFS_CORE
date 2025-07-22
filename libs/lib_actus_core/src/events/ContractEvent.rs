@@ -19,7 +19,7 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
 use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
 use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
@@ -157,7 +157,7 @@ where
         &mut self,
         states: &mut StateSpace,
         model: &ContractTerms,
-        risk_factor_model: &RiskFactors,
+        risk_factor_model: &RiskFactorModel,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster) {
         if self.fpayoff.is_some() {

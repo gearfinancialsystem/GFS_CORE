@@ -125,11 +125,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib_risk_factor"
+name = "lib_actus_portfolio"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lib_actus_core",
  "regex",
+]
+
+[[package]]
+name = "lib_actus_risk_factor"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lib_actus_core",
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -149,7 +161,7 @@ name = "main"
 version = "0.1.0"
 dependencies = [
  "lib_actus_core",
- "lib_risk_factor",
+ "lib_actus_risk_factor",
 ]
 
 [[package]]

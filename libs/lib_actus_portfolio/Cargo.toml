@@ -1,0 +1,13 @@
+[package]
+name = "lib_actus_portfolio"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "lib_actus_portfolio"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+lib_actus_core = { path = "../../libs/lib_actus_core" }
+chrono = "0.4.41"
+regex = "1.11.1"

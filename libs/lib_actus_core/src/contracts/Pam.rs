@@ -50,7 +50,7 @@ use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
@@ -115,7 +115,7 @@ use crate::attributes::ResultSet::ResultSet;
 #[derive(Debug, Clone, PartialEq)]
 pub struct PAM {
     pub contract_terms: ContractTerms,
-    pub contract_risk_factors: RiskFactors,
+    pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
     pub result_vec_toggle: bool,
@@ -128,7 +128,7 @@ impl TraitContractModel for PAM { //
         Self {
             contract_terms: ContractTerms::default(),
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
-            contract_risk_factors: RiskFactors::new(),
+            contract_risk_factors: None,
             contract_structure: None,
             result_vec_toggle: false,
             result_vec: None,
@@ -274,11 +274,11 @@ impl TraitContractModel for PAM { //
         self.contract_terms = ct;
     }
 
-    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>) {
-        self.contract_risk_factors = RiskFactors::new();
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = None; // RiskFactorModel::new();
     }
 
-    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>)  {
 
         self.contract_structure = None;
 
@@ -621,7 +621,7 @@ impl TraitContractModel for PAM { //
             event.eval(
                 &mut states,
                 model,
-                risk_factors,
+                &risk_factors.clone().unwrap(),
                 &model.day_count_convention.clone(),
                 &model.business_day_adjuster.clone().unwrap(),
             );

@@ -10,7 +10,6 @@
             "maturityDate": "2014-12-31T23:59:59",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00"
@@ -98,12 +97,11 @@
             "maturityDate": "2014-10-30T00:00:00",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00",
             "deliverySettlement": "S",
-            "settlementPeriod": "P1DL0"
+            "settlementPeriod": "P1D"
         },
         "to": "2014-11-30T00:00:00",
         "dataObserved": {
@@ -143,12 +141,11 @@
             "maturityDate": "2014-10-30T00:00:00",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00",
             "deliverySettlement": "S",
-            "settlementPeriod": "P1DL0"
+            "settlementPeriod": "P1D"
         },
         "to": "2014-11-30T00:00:00",
         "dataObserved": {
@@ -188,12 +185,11 @@
             "maturityDate": "2015-01-01T00:00:00",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00",
             "deliverySettlement": "S",
-            "settlementPeriod": "P1DL0"
+            "settlementPeriod": "P1D"
         },
         "to": "2015-01-03T00:00:00",
         "dataObserved": {
@@ -233,7 +229,6 @@
             "maturityDate": "2014-12-31T23:59:59",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00",
@@ -270,7 +265,6 @@
             "maturityDate": "2014-12-31T23:59:59",
             "notionalPrincipal": "2000",
             "notionalPrincipal2": "1000",
-            "calendar": "NOCALENDAR",
             "endOfMonthConvention": "SD",
             "statusDate": "2013-12-30T00:00:00",
             "contractDealDate": "2013-12-20T00:00:00",
@@ -380,7 +374,7 @@
             "purchaseDate": "2014-04-01T00:00:00",
             "priceAtPurchaseDate": "50",
             "deliverySettlement": "S",
-            "settlementPeriod": "P1DL0"
+            "settlementPeriod": "P1D"
         },
         "to": "2015-01-02T00:00:00",
         "dataObserved": {

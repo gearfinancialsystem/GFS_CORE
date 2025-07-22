@@ -2,7 +2,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use chrono::NaiveDateTime;
 use crate::attributes::ContractTerms::{ContractTerms};
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::{RiskFactorModel};
 use crate::state_space::StateSpace::StateSpace;
 use crate::types::IsoDatetime::IsoDatetime;
 
@@ -23,7 +23,7 @@ pub trait TraitStateTransitionFunction {
         time: &IsoDatetime,
         states: &mut StateSpace,
         model: &ContractTerms,
-        risk_factor_model: &RiskFactors,//&RiskFactorModel,
+        risk_factor_model: &RiskFactorModel,//&RiskFactorModel,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) ; // -> StateSpace

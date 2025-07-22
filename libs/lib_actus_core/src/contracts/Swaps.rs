@@ -37,12 +37,12 @@ use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SWAPS {
     pub contract_terms: ContractTerms,
-    pub contract_risk_factors: RiskFactors,
+    pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
     pub result_vec_toggle: bool,
@@ -55,7 +55,7 @@ impl TraitContractModel for SWAPS {
         Self {
             contract_terms: ContractTerms::default(),
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
-            contract_risk_factors: RiskFactors::new(),
+            contract_risk_factors: None,
             contract_structure: None,
             result_vec_toggle: false,
             result_vec: None,
@@ -63,10 +63,6 @@ impl TraitContractModel for SWAPS {
     }
 
     fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
-
-        let contract_role = ContractRole::provide(sm, "contractRole");
-
-
 
         let ct = ContractTerms {
             contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
@@ -88,8 +84,8 @@ impl TraitContractModel for SWAPS {
         self.contract_terms = ct;
     }
 
-    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>) {
-        self.contract_risk_factors = RiskFactors::new();
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = None;// RiskFactorModel::new();
     }
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
@@ -97,7 +93,7 @@ impl TraitContractModel for SWAPS {
         let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
             if let Some(structure_vec) = contract_structure.as_vec() {
                 let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                    .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
+                    .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap(),  &self.contract_risk_factors))
                     .collect();
                 Some(contract_structure)
             } else {

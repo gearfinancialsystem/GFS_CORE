@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::util::Value::Value;
 use crate::exceptions::ParseError::ParseError;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::{RiskFactorModel};
 use crate::state_space::StateSpace::StateSpace;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -126,7 +126,7 @@ impl CommonUtils {
         }
     }
 
-    pub fn settlementCurrencyFxRate(riskFactorModel: &RiskFactors, model: &ContractTerms, time: &IsoDatetime, state: &StateSpace) -> f64{
+    pub fn settlementCurrencyFxRate(riskFactorModel: &RiskFactorModel, model: &ContractTerms, time: &IsoDatetime, state: &StateSpace) -> f64{
         let settlement_currency = model.settlement_currency.clone();
         let currency = model.currency.clone();
         

@@ -8,7 +8,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::state_space::StateSpace::StateSpace;
@@ -58,7 +58,9 @@ pub struct ContractReference {
 }
 
 impl ContractReference {
-    pub fn new(attributes: &HashMap<String, Value>, contract_role: &ContractRole) -> Self {
+    pub fn new(attributes: &HashMap<String, Value>,
+               contract_role: &ContractRole,
+               risk_factor_model: &Option<RiskFactorModel>) -> Self {
         let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().as_string().unwrap().as_str()).unwrap();
         let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().as_string().unwrap().as_str()).unwrap();
         let object = match reference_type {
@@ -78,7 +80,8 @@ impl ContractReference {
                         child_model.insert("contractRole".to_string(), Value::Vstring("RPA".to_string()));
                     }
                 }
-                Object::ContractModel(ContractModel::new(&child_model).unwrap())
+                
+                Object::ContractModel(ContractModel::new(&child_model, risk_factor_model).unwrap())
             },
             ReferenceType::CID => {
                 Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("contract_identifier").unwrap().to_string())

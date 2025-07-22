@@ -9,7 +9,7 @@ use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 #[allow(non_camel_case_types)]
 pub struct STF_RRF_PAM;
 
@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_RRF_PAM {
         time: &IsoDatetime, 
         states: &mut StateSpace,
         model: &ContractTerms,
-        _risk_factor_model: &RiskFactors,
+        _risk_factor_model: &RiskFactorModel,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {

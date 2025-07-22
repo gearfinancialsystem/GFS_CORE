@@ -13,7 +13,7 @@ use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::ResultSet::ResultSet;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::functions::fxout::pof::POF_MD1_FXOUT::POF_MD1_FXOUT;
 use crate::functions::fxout::pof::POF_MD2_FXOUT::POF_MD2_FXOUT;
 use crate::functions::fxout::pof::POF_PRD_FXOUT::POF_PRD_FXOUT;
@@ -53,7 +53,7 @@ use crate::util::Value::Value;
 #[derive(Debug, Clone, PartialEq)]
 pub struct FXOUT {
     pub contract_terms: ContractTerms,
-    pub contract_risk_factors: RiskFactors,
+    pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
     pub result_vec_toggle: bool,
@@ -66,7 +66,7 @@ impl TraitContractModel for FXOUT {
         Self {
             contract_terms: ContractTerms::default(),
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
-            contract_risk_factors: RiskFactors::new(),
+            contract_risk_factors: None,
             contract_structure: None,
             result_vec_toggle: false,
             result_vec: None,
@@ -74,6 +74,8 @@ impl TraitContractModel for FXOUT {
     }
 
     fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+
+
         let calendar = Calendar::provide_rc(sm, "calendar");
         let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
         let maturity_date = if let Some(a) = maturity_date_tmp {
@@ -124,8 +126,8 @@ impl TraitContractModel for FXOUT {
         self.contract_terms = ct
     }
 
-    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>) {
-        self.contract_risk_factors = RiskFactors::new();
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = risk_factors.clone(); // RiskFactorModel::new();
     }
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
@@ -189,7 +191,8 @@ impl TraitContractModel for FXOUT {
                     &model.contract_id,
                 );
                 events.push(e.to_iso_datetime_event());
-            } else {
+            } 
+            else {
                 let shifted_maturity_date = model.business_day_adjuster.as_ref().unwrap().shift_bd(
                     &(
 
@@ -224,7 +227,7 @@ impl TraitContractModel for FXOUT {
             &model.contract_id,
         );
 
-        events.retain(|e| e.to_iso_datetime_event() >= status_event.to_iso_datetime_event());
+        events.retain(|e| e.to_iso_datetime_event().compare_to(&status_event.to_iso_datetime_event()) != -1);
 
         // Remove all post to-date events
         let to_event = EventFactory::create_event(
@@ -237,7 +240,7 @@ impl TraitContractModel for FXOUT {
             &model.contract_id,
         );
 
-        events.retain(|e| e <= &to_event);
+        events.retain(|e| e.to_iso_datetime_event().compare_to(&to_event) != 1);
 
         // Sort events according to their time of occurrence
         events.sort();
@@ -266,7 +269,7 @@ impl TraitContractModel for FXOUT {
             event.eval(
                 &mut states,
                 model,
-                &self.contract_risk_factors,
+                &self.contract_risk_factors.clone().unwrap(),
                 &DayCountConvention::new(Some("AAISDA"), None, None).ok(),
                 model.business_day_adjuster.as_ref().unwrap(),
             );

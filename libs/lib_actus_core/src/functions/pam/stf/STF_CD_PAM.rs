@@ -1,5 +1,5 @@
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -19,7 +19,7 @@ impl TraitStateTransitionFunction for STF_CD_PAM {
         time: &IsoDatetime, 
         states: &mut StateSpace,
         model: &ContractTerms,
-        _risk_factor_model: &RiskFactors,
+        _risk_factor_model: &RiskFactorModel,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 use crate::events::ContractEvent::ContractEvent;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::types::IsoDatetime::IsoDatetime;
@@ -13,7 +14,7 @@ pub trait TraitContractModel {
 
     fn set_contract_terms(&mut self, sm: &HashMap<String, Value>);
 
-    fn set_contract_risk_factors(&mut self, sm: &HashMap<String, Value>);
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>);
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>);
 

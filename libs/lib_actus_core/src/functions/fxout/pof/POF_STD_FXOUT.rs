@@ -6,7 +6,8 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct POF_STD_FXOUT;
@@ -17,7 +18,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         time: &IsoDatetime,
         states: &StateSpace,
         model: &ContractTerms,
-        risk_factor_model: &RiskFactors,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -25,7 +26,7 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         let contract_role_sign = contract_role.role_sign();
         let notional_principal = model.notional_principal.clone().expect("notionalPrincipal should always exist");
         let notional_principal_2 = model.notional_principal2.clone().expect("notionalPrincipal2 should always exist");
-        
+        let maturity_date = model.maturity_date.clone().expect("maturity date should always exist");
 
         let strings = vec![
                             model.currency2.clone().unwrap().to_currency(),
@@ -33,9 +34,14 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         ];
 
         let str_slices: Vec<String> = strings.iter().map(|s| s.value().clone().to_string()).collect();
-        let joined = str_slices.join(" ");
+        let joined = str_slices.join("/");
 
-        let risk_factor_placeholder = risk_factor_model.state_at(joined, time, states, model,true);
+        let risk_factor_placeholder = risk_factor_model.state_at(
+            joined,
+            &maturity_date.value(),
+            states,
+            model,
+            true);
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
@@ -44,7 +50,13 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
             states
         );
 
-        let payoff = settlement_currency_fx_rate * contract_role_sign * (notional_principal.value() - risk_factor_placeholder.unwrap() * notional_principal_2.value());
+        let payoff = settlement_currency_fx_rate *
+                          contract_role_sign *
+                          (
+                                  notional_principal.value() -
+                                  risk_factor_placeholder.unwrap() *
+                                      notional_principal_2.value()
+                          );
 
         payoff
     }

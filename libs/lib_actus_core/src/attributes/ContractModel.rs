@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use crate::contracts::Pam::PAM;
 use crate::contracts::Swaps::SWAPS;
 use crate::contracts::Fxout::FXOUT;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::util::Value::Value;
@@ -16,15 +17,17 @@ pub enum ContractModel {
 
 impl ContractModel {
     
-    pub fn new(sm_terms: &HashMap<String, Value>, sm_risk_factors: ) -> Result<ContractModel, String> {
+    pub fn new(sm_terms: &HashMap<String, Value>,
+               risk_factors: &Option<RiskFactorModel>) -> Result<ContractModel, String> {
         let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
             "PAM" => {
                 Ok(Self::PAM({
                     let mut c = PAM::new();
                     c.set_contract_terms(sm_terms);
-                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_risk_factors(risk_factors);
                     c.set_contract_structure(sm_terms);
+
 
                     c
                 }))
@@ -34,7 +37,7 @@ impl ContractModel {
                 Ok(Self::SWAPS({
                     let mut c = SWAPS::new();
                     c.set_contract_terms(sm_terms);
-                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_risk_factors(risk_factors);
                     c.set_contract_structure(sm_terms);
 
                     c
@@ -45,7 +48,7 @@ impl ContractModel {
                 Ok(Self::FXOUT({
                     let mut c = FXOUT::new();
                     c.set_contract_terms(sm_terms);
-                    c.set_contract_risk_factors(sm_terms);
+                    c.set_contract_risk_factors(risk_factors);
                     c.set_contract_structure(sm_terms);
 
                     c

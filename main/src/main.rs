@@ -5,11 +5,9 @@ use lib_actus_core::attributes::ContractModel::ContractModel;
 use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 
 
-use lib_actus_core::external::JsonLoader::{load_test_case_terms,
-                                           load_events_observed,
-                                           load_data_observed};
-
-
+use lib_actus_core::external::JsonLoader::{load_test_case_terms};
+use lib_actus_core::external::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
+use lib_actus_core::external::RiskFactorModel::RiskFactorModel;
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
@@ -218,8 +216,8 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_core/test_sets/actus-tests-swaps.json";
-    let test_id = "swaps01";
+    let pathx = "libs/lib_actus_core/test_sets/actus-tests-fxout.json";
+    let test_id = "fxout07";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let mut dico = load_test_case_terms(pathx,
@@ -236,8 +234,14 @@ fn main() {
     //                                                     events_observed,
     //                                                     "USD");
 
-    let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
-    let mut contract_model = ContractModel::new(&dico).ok();
+
+    let rf = RiskFactorModel::RiskFactorModel1(RiskFactorModel1::new_from(
+        pathx,
+        test_id
+    ));
+
+    let to = IsoDatetime::from_str("2014-12-31T23:59:59").unwrap();
+    let mut contract_model = ContractModel::new(&dico, &Some(rf)).ok();
     if let Some(contract_model) = &mut contract_model {
         contract_model.run(Some(to), true)
     }

@@ -13,7 +13,7 @@ pub trait TraitRiskFactorModel {
     /// Returns the set of event times for a particular risk factor
     ///
     /// The default implementation returns an empty set of events.
-    fn events(&self, attributes: &ContractTerms) -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>>;
+    fn events(&self, contract_id: String) -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>>;
 
     /// Returns the state of a particular risk factor at a future time
     fn state_at(

@@ -9,6 +9,7 @@ path = "src/lib.rs"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
+lib_actus_risk_factor = { path = "../../libs/lib_actus_risk_factor" }
 chrono = "0.4.41"
 regex = "1.11.1"
 log = "0.4.27"

@@ -1,6 +1,6 @@
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::events::ContractEvent::ContractEvent;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::state_space::StateSpace::StateSpace;
 use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -28,7 +28,7 @@ impl TraitStateTransitionFunction for STF_NET_SWAPS {
         time: &IsoDatetime,
         states: &mut StateSpace,
         _model: &ContractTerms,
-        risk_factor_model: &RiskFactors,
+        risk_factor_model: &RiskFactorModel,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

@@ -5,7 +5,7 @@ use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModels::RiskFactors;
+use crate::external::RiskFactorModel::RiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct POF_TD_FXOUT;
@@ -16,7 +16,7 @@ impl TraitPayOffFunction for POF_TD_FXOUT {
         _time: &IsoDatetime,
         _states: &StateSpace,
         model: &ContractTerms,
-        _risk_factor_model: &RiskFactors,
+        _risk_factor_model: &RiskFactorModel,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

@@ -35,6 +35,7 @@ pub struct ResultSet {
     pub event_type: Option<EventType>,
     pub currency: Option<Currency>,
     pub contract_id: Option<ContractID>,
+    pub payoff: Option<f64>,
 
     // all below comming from states
     pub accrued_interest: Option<AccruedInterest>,
@@ -75,6 +76,7 @@ impl ResultSet {
         self.event_type = Some(source_ce.event_type);
         self.currency = source_ce.currency.clone();
         self.contract_id = source_ce.contract_id.clone();
+        self.payoff = source_ce.payoff.clone();
 
         // all below comming from states
         self.accrued_interest = curr_states.accrued_interest.clone();
