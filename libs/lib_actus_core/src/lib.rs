@@ -2,7 +2,7 @@ pub mod util;
 //pub mod terms;
 pub mod traits;
 pub mod exceptions;
-pub mod types;
+//pub mod types;
 pub mod time;
 pub mod attributes;
 

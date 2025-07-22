@@ -8,7 +8,8 @@ name = "lib_actus_risk_factor"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-lib_actus_core = { path = "../../libs/lib_actus_core" }
+lib_actus_terms = { path = "../../libs/lib_actus_terms" }
+lib_actus_types = { path = "../../libs/lib_actus_types" }
 chrono = "0.4.41"
 regex = "1.11.1"
 serde = { version = "1.0", features = ["derive"] }

@@ -118,6 +118,9 @@ name = "lib_actus_core"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lib_actus_risk_factor",
+ "lib_actus_terms",
+ "lib_actus_types",
  "log",
  "regex",
  "serde",
@@ -138,7 +141,30 @@ name = "lib_actus_risk_factor"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "lib_actus_core",
+ "lib_actus_terms",
+ "lib_actus_types",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "lib_actus_terms"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "lib_actus_types"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "log",
  "regex",
  "serde",
  "serde_json",

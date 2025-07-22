@@ -1,0 +1,9 @@
+mod macro_struct_f64;
+mod macro_struct_bool;
+mod macro_struct_isodatetime;
+mod macro_struct_isoperiod;
+mod macro_struct_isocycle;
+mod macro_struct_vec_isodatetime;
+mod macro_struct_vec_isocycle;
+mod macro_struct_vec_f64;
+mod macro_struct_string;
