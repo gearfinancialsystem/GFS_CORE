@@ -1,15 +1,16 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::contracts::Ceg::CEG;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::external::RiskFactorModel::RiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_CEG;
@@ -19,25 +20,27 @@ impl TraitStateTransitionFunction for STF_PRD_CEG {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        contract_structure: &Option<Vec<ContractReference>>,
+        risk_factor_model: &Option<RiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
         // Set notionalPrincipal if it is not already set
-        if model.notional_principal.is_none() {
-            states.notional_principal = NotionalPrincipal::new(Some(CEG::calculate_notional_principal(
-                states,
-                model,
-                risk_factor_model,
-                time,
+        if contract_terms.notional_principal.is_none() {
+            states.notional_principal = NotionalPrincipal::new(Some(
+                CEG::calculate_notional_principal(
+                    contract_terms,
+                    &contract_structure.clone().expect("should be one"),
+                    &risk_factor_model.clone().expect("should have one"),
+                    time
             )).unwrap()).ok();
         }
 
         // Set feeAccrued based on feeRate or existing feeAccrued
-        if let Some(fee_rate) = model.fee_rate.clone() {
+        if let Some(fee_rate) = contract_terms.fee_rate.clone() {
             states.fee_accrued = FeeAccrued::new(fee_rate.value()).ok();
-        } else if let Some(fee_accrued) = model.fee_accrued.clone() {
+        } else if let Some(fee_accrued) = contract_terms.fee_accrued.clone() {
             states.fee_accrued = FeeAccrued::new(fee_accrued.value()).ok();
         }
         // TODO: Implement last two possible initializations

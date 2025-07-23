@@ -1,17 +1,20 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
 
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::contracts::Cec::CEC;
+use crate::traits::TraitContractModel::TraitContractModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_XD_CEC;
@@ -21,20 +24,23 @@ impl TraitStateTransitionFunction for STF_XD_CEC {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        contract_structure: &Option<Vec<ContractReference>>,
+        risk_factor_model: &Option<RiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-
-        let market_value_covering_contracts = CEC::calculate_market_value_covering_contracts(
-            model,
-            risk_factor_model,
+        
+        let market_value_covering_contracts =  CEC::calculate_market_value_covering_contracts(
+            contract_terms,
+            &contract_structure.clone().expect("should be one"),
+            &risk_factor_model.clone().expect("should have one"),
             time
         );
         let a = CEC::calculate_notional_principal(
-            model,
-            risk_factor_model,
+            contract_terms,
+            &contract_structure.clone().expect("should be one"),
+            &risk_factor_model.clone().expect("should have one"),
             time
         );
         states.notional_principal = NotionalPrincipal::new(a).ok();

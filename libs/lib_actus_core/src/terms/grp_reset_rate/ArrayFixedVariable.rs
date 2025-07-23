@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_reset_rate::fixed_variable::F::F;
 use crate::terms::grp_reset_rate::fixed_variable::V::V;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FixedVariableElement {
@@ -12,7 +12,7 @@ pub enum FixedVariableElement {
     None
 }
 impl FixedVariableElement {
-    pub fn new(value: &str) -> Result<Self, ParseError> {
+    pub fn new(value: &str) -> Result<Self, String> {
         let a = FixedVariableElement::from_str(value);
         match a {
             Ok(a) => Ok(a),
@@ -23,13 +23,13 @@ impl FixedVariableElement {
 }
 
 impl FromStr for FixedVariableElement {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "F" => Ok(FixedVariableElement::F(F::new())),
             "V" => Ok(FixedVariableElement::V(V::new())),
-            _ => Err(ParseError { message: format!("Invalid CreditEventTypeCoveredElement: {}", s) }),
+            _ => Err(format!("Invalid CreditEventTypeCoveredElement: {}", s) ),
         }
     }
 }
@@ -46,7 +46,7 @@ impl ArrayFixedVariable {
     pub fn values(&self) -> &Vec<FixedVariableElement> {
         &self.0
     }
-    pub fn new(value: &str) -> Result<Self, ParseError> {
+    pub fn new(value: &str) -> Result<Self, String> {
         let a = FixedVariableElement::from_str(value);
         match a {
             Ok(a) => {

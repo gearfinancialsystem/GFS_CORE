@@ -2,14 +2,14 @@ use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ResultSet::ResultSet;
@@ -43,62 +43,62 @@ use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
 use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
 use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
 use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
-use lib_actus_terms::terms::grp_interest::interest_calculation_base::Nt::NT;
-use lib_actus_terms::terms::grp_interest::interest_calculation_base::Ntl::NTL;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
-use lib_actus_terms::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestCalculationBase::CycleAnchorDateOfInterestCalculationBase;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestCalculationBase::CycleOfInterestCalculationBase;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
-use lib_actus_terms::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
-use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
-use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
-use lib_actus_terms::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::PeriodCap::PeriodCap;
-use lib_actus_terms::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
-use lib_actus_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
-use lib_actus_terms::terms::grp_reset_rate::RateSpread::RateSpread;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::ArrayCycleOfInterestPayment::ArrayCycleOfInterestPayment;
-use lib_actus_terms::terms::grp_notional_principal::ArrayCycleAnchorDateOfPrincipalRedemption::ArrayCycleAnchorDateOfPrincipalRedemption;
-use lib_actus_terms::terms::grp_notional_principal::ArrayCycleOfPrincipalRedemption::ArrayCycleOfPrincipalRedemption;
-use lib_actus_terms::terms::grp_notional_principal::ArrayIncreaseDecrease::{ArrayIncreaseDecrease, IncreaseDecreaseElement};
-use lib_actus_terms::terms::grp_notional_principal::ArrayNextPrincipalRedemptionPayment::ArrayNextPrincipalRedemptionPayment;
-use lib_actus_terms::terms::grp_notional_principal::increase_decrease::DEC::DEC;
-use lib_actus_terms::terms::grp_notional_principal::increase_decrease::INC::INC;
-use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_reset_rate::ArrayCycleAnchorDateOfRateReset::ArrayCycleAnchorDateOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::ArrayCycleOfRateReset::ArrayCycleOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::ArrayFixedVariable::{ArrayFixedVariable, FixedVariableElement};
-use lib_actus_terms::terms::grp_reset_rate::ArrayRate::ArrayRate;
-use lib_actus_terms::terms::grp_reset_rate::fixed_variable::F::F;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_types::types::IsoCycle::IsoCycle;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
+use crate::terms::grp_interest::interest_calculation_base::Nt::NT;
+use crate::terms::grp_interest::interest_calculation_base::Ntl::NTL;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_fees::FeeRate::FeeRate;
+use crate::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestCalculationBase::CycleAnchorDateOfInterestCalculationBase;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestCalculationBase::CycleOfInterestCalculationBase;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::PremiumDiscountAtIED::PremiumDiscountAtIED;
+use crate::terms::grp_reset_rate::LifeCap::LifeCap;
+use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use crate::terms::grp_reset_rate::RateSpread::RateSpread;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::ArrayCycleOfInterestPayment::ArrayCycleOfInterestPayment;
+use crate::terms::grp_notional_principal::ArrayCycleAnchorDateOfPrincipalRedemption::ArrayCycleAnchorDateOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::ArrayCycleOfPrincipalRedemption::ArrayCycleOfPrincipalRedemption;
+use crate::terms::grp_notional_principal::ArrayIncreaseDecrease::{ArrayIncreaseDecrease, IncreaseDecreaseElement};
+use crate::terms::grp_notional_principal::ArrayNextPrincipalRedemptionPayment::ArrayNextPrincipalRedemptionPayment;
+use crate::terms::grp_notional_principal::increase_decrease::DEC::DEC;
+use crate::terms::grp_notional_principal::increase_decrease::INC::INC;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_reset_rate::ArrayCycleAnchorDateOfRateReset::ArrayCycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::ArrayCycleOfRateReset::ArrayCycleOfRateReset;
+use crate::terms::grp_reset_rate::ArrayFixedVariable::{ArrayFixedVariable, FixedVariableElement};
+use crate::terms::grp_reset_rate::ArrayRate::ArrayRate;
+use crate::terms::grp_reset_rate::fixed_variable::F::F;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::IsoCycle::IsoCycle;
+use crate::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
 
@@ -734,14 +734,8 @@ impl TraitContractModel for LAX {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -771,15 +765,8 @@ impl TraitContractModel for LAX {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )

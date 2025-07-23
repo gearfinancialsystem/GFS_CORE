@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::rc::Rc;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_types::types::Value::Value;
+use crate::events::ContractEvent::ContractEvent;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::types::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
 
 

@@ -1,17 +1,17 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitOptionExt::TraitOptionExt;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::attributes::ContractReference::ContractReference;
 #[allow(non_camel_case_types)]
 pub struct STF_CD_SWPPV;
 
@@ -20,8 +20,9 @@ impl TraitStateTransitionFunction for STF_CD_SWPPV {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -35,7 +36,7 @@ impl TraitStateTransitionFunction for STF_CD_SWPPV {
             time_adjuster.shift_sc(time)
         );
 
-        let model_nominal_interest_rate = model.nominal_interest_rate.clone().itself_or(0.0);
+        let model_nominal_interest_rate = contract_terms.nominal_interest_rate.clone().itself_or(0.0);
 
         states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
             accrued_interest += (model_nominal_interest_rate.value() - nominal_interest_rate.value()) * notional_principal.value() * time_from_last_event;

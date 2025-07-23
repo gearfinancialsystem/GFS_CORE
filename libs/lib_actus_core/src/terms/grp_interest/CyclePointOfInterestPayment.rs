@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_interest::cycle_point_of_interest_payment::B::B;
 use crate::terms::grp_interest::cycle_point_of_interest_payment::E::E;
-use crate::util::CommonUtils::CommonUtils as cu;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CyclePointOfInterestPayment {
@@ -16,12 +16,14 @@ pub enum CyclePointOfInterestPayment {
 impl CyclePointOfInterestPayment {
 
 
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         CyclePointOfInterestPayment::from_str(element)
     }
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        cu::provide(string_map, key)
+        //cu::provide(string_map, key)
+
+        crate::util::ProvideFuncs::provide(string_map, key)
     }
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
@@ -37,12 +39,12 @@ impl CyclePointOfInterestPayment {
 }
 
 impl FromStr for CyclePointOfInterestPayment {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "B" => Ok(CyclePointOfInterestPayment::B(B)),
             "E" => Ok(CyclePointOfInterestPayment::E(E)),
-            _ => Err(ParseError { message: format!("Invalid CyclePointOfInterestPayment: {}", s)})
+            _ => Err(format!("Invalid CyclePointOfInterestPayment: {}", s))
         }
     }
 }

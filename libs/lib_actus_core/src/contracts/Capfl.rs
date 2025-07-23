@@ -2,12 +2,12 @@
 use std::rc::Rc;
 use std::collections::HashMap;
 use std::fmt;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
 
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
@@ -20,23 +20,23 @@ use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
-use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::terms::grp_reset_rate::LifeCap::LifeCap;
+use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -276,14 +276,8 @@ impl TraitContractModel for CAPFL {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -313,15 +307,8 @@ impl TraitContractModel for CAPFL {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )

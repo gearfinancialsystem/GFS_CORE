@@ -4,8 +4,8 @@ use std::str::FromStr;
 use crate::terms::grp_optionality::option_exercise_type::A::A;
 use crate::terms::grp_optionality::option_exercise_type::B::B;
 use crate::terms::grp_optionality::option_exercise_type::E::E;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum OptionExerciseType {
@@ -18,7 +18,7 @@ pub enum OptionExerciseType {
 impl OptionExerciseType {
 
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => OptionExerciseType::from_str(n),
             None => Ok(OptionExerciseType::None),
@@ -38,13 +38,13 @@ impl OptionExerciseType {
 }
 
 impl FromStr for OptionExerciseType {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "E" => Ok(Self::E(E::new())),
             "B" => Ok(Self::B(B::new())),
             "A" => Ok(Self::A(A::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

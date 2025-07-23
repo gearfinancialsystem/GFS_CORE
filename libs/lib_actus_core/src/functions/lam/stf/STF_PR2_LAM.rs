@@ -1,18 +1,19 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PR2_LAM;
@@ -22,8 +23,9 @@ impl TraitStateTransitionFunction for STF_PR2_LAM {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -33,7 +35,7 @@ impl TraitStateTransitionFunction for STF_PR2_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always be Some");
-        let contract_role = model.contract_role.clone().expect("contract role should always be Some");
+        let contract_role = contract_terms.contract_role.clone().expect("contract role should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.clone().value()),
@@ -47,10 +49,10 @@ impl TraitStateTransitionFunction for STF_PR2_LAM {
 
         states.fee_accrued = FeeAccrued::new({
             let fee_rate = {
-                if model.fee_rate.is_none() {
+                if contract_terms.fee_rate.is_none() {
                     0.0
                 }
-                else { model.fee_rate.clone().unwrap().value() }
+                else { contract_terms.fee_rate.clone().unwrap().value() }
             };
             states.fee_accrued.clone().unwrap().value() + fee_rate * {
                 if states.notional_principal.is_none() {
@@ -60,7 +62,7 @@ impl TraitStateTransitionFunction for STF_PR2_LAM {
         }).ok();
 
 
-        let contract_role = model.contract_role.clone().expect("contractRole should always be Some");
+        let contract_role = contract_terms.contract_role.clone().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();
 
         let redemption = next_principal_redemption_payment.value() - role_sign * (next_principal_redemption_payment.value().abs() - notional_principal.value().abs()).max(0.0);

@@ -3,8 +3,8 @@ use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
 pub enum DeliverySettlement {
@@ -15,7 +15,7 @@ pub enum DeliverySettlement {
 impl DeliverySettlement {
 
     
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         DeliverySettlement::from_str(element)
     }
 
@@ -45,15 +45,14 @@ impl DeliverySettlement {
 }
 
 impl FromStr for DeliverySettlement {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "S" => Ok(DeliverySettlement::S(S::new())),
             "D" => Ok(DeliverySettlement::D(D::new())),
-            _ => Err(ParseError {
-                message: format!("Invalid Delivery Settlement: {}", s),
-            }),
+            _ => Err(format!("Invalid Delivery Settlement: {}", s),
+            ),
         }
     }
 }

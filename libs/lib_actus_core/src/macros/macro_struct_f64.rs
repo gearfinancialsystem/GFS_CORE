@@ -47,7 +47,7 @@ macro_rules! define_struct_f64 {
     ($struct_name:ident, |$value:ident| {$($condition:expr => $error:expr),+ $(,)?}, {$default_value:expr}) => {
         use std::str::FromStr;
         use std::collections::HashMap;
-        use crate::util::Value::Value;
+        use crate::types::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
         use std::fmt;
@@ -169,7 +169,7 @@ macro_rules! define_struct_f64 {
         use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
-        use crate::util::Value::Value;
+        use crate::types::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
         use crate::traits::TraitOptionExt::TraitOptionExt;
@@ -281,7 +281,7 @@ macro_rules! define_struct_f64 {
         use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
-        use crate::util::Value::Value;
+        use crate::types::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
         use crate::traits::TraitOptionExt::TraitOptionExt;
@@ -390,7 +390,7 @@ macro_rules! define_struct_f64 {
         use std::fmt;
         use std::str::FromStr;
         use std::collections::HashMap;
-        use crate::util::Value::Value;
+        use crate::types::Value::Value;
         use std::ops::AddAssign;
         use std::ops::SubAssign;
         use crate::traits::TraitOptionExt::TraitOptionExt;

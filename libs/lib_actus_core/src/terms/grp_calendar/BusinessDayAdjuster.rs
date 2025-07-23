@@ -3,7 +3,6 @@ use std::fmt;
 use std::rc::Rc;
 
 
-use crate::exceptions::ParseError::ParseError;
 use crate::terms::grp_calendar::businessday::conventions::Nos::NOS;
 use crate::terms::grp_calendar::businessday::conventions::Scf::SCF;
 use crate::terms::grp_calendar::businessday::conventions::Scmf::SCMF;
@@ -14,8 +13,9 @@ use crate::terms::grp_calendar::businessday::conventions::Scmp::SCMP;
 use crate::terms::grp_calendar::businessday::conventions::Csp::CSP;
 use crate::terms::grp_calendar::businessday::conventions::Csmp::CSMP;
 use crate::terms::grp_calendar::Calendar::Calendar;
+// use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::util::Value::Value;
+use crate::types::Value::Value;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayAdjuster {
@@ -32,7 +32,7 @@ pub enum BusinessDayAdjuster {
 
 impl BusinessDayAdjuster {
 
-    pub fn new(element: &str, calendar: Rc<Calendar>) -> Result<Self, ParseError> {
+    pub fn new(element: &str, calendar: Rc<Calendar>) -> Result<Self, String> {
         BusinessDayAdjuster::parse(element, calendar)
     }
     
@@ -70,7 +70,7 @@ impl BusinessDayAdjuster {
     }
 
     /// Fonction de parsing qui prend en paramètre le calendrier (boxed)
-    pub fn parse(s: &str, calendar: Rc<Calendar>) -> Result<BusinessDayAdjuster, ParseError> {
+    pub fn parse(s: &str, calendar: Rc<Calendar>) -> Result<BusinessDayAdjuster, String> {
         match s.to_uppercase().as_str() {
             "NOS"   => Ok(Self::NOS(NOS::new(calendar))),
             "SCF"   => Ok(Self::SCF(SCF::new(calendar))),
@@ -81,7 +81,7 @@ impl BusinessDayAdjuster {
             "SCMP"  => Ok(Self::SCMP(SCMP::new(calendar))),
             "CSP"   => Ok(Self::CSP(CSP::new(calendar))),
             "CSMP"  => Ok(Self::CSMP(CSMP::new(calendar))),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s) })
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s) )
         }
     }    
 

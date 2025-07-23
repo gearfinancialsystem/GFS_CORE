@@ -10,12 +10,12 @@ macro_rules! define_struct_isodatetime {
         use std::ops::Sub;
         use std::hash::Hash;
         use std::hash::Hasher;
+
         use crate::types::IsoDatetime::IsoDatetime;
         use crate::types::IsoPeriod::IsoPeriod;
-
-        use crate::util::Value::Value;
-
+        use crate::types::Value::Value;
         use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub struct $struct_name(IsoDatetime);

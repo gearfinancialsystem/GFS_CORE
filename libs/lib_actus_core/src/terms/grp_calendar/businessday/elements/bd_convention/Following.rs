@@ -6,8 +6,8 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::types::IsoPeriod::IsoPeriod;
 
+use crate::types::IsoPeriod::IsoPeriod;
 #[derive(Clone, Debug)]
 pub struct Following {
     pub calendar: Rc<Calendar>,

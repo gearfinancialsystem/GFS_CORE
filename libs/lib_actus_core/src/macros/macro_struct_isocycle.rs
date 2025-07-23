@@ -3,6 +3,13 @@
 #[macro_export]
 macro_rules! define_struct_isocycle {
     ($struct_name:ident) => {
+        use crate::types::Value::Value;
+        use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+        use crate::types::IsoCycle::IsoCycle;
+        use std::str::FromStr;
+        use std::collections::HashMap;
+
+
         #[derive(Debug, Clone, PartialEq, Eq)]
         pub struct $struct_name(IsoCycle);
 

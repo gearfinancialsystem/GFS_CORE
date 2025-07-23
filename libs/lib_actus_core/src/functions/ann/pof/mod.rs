@@ -18,4 +18,4 @@ pub mod POF_TD_ANN;
 pub mod POF_RRF_ANN;
 
 pub mod POF_PR_ANN;
-mod POF_CE_ANN;
+pub mod POF_CE_ANN;

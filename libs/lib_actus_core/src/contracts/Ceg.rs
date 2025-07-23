@@ -3,48 +3,48 @@ use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
-use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
-use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
-use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
-use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use lib_actus_terms::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
-use lib_actus_terms::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
-use lib_actus_terms::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
-use lib_actus_terms::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
-use lib_actus_terms::terms::grp_counterparty::GracePeriod::GracePeriod;
-use lib_actus_terms::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
-use lib_actus_terms::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
-use lib_actus_terms::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
-use lib_actus_terms::terms::grp_dividend::ExDividendDate::ExDividendDate;
-use lib_actus_terms::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
-use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_fees::FeeRate::FeeRate;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::CreatorID::CreatorID;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
+use crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
+use crate::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
+use crate::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
+use crate::terms::grp_counterparty::GracePeriod::GracePeriod;
+use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use crate::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
+use crate::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
+use crate::terms::grp_dividend::ExDividendDate::ExDividendDate;
+use crate::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
@@ -60,18 +60,18 @@ use crate::functions::ceg::stf::STF_STD_CEG::STF_STD_CEG;
 use crate::functions::ceg::stf::STF_XD_CEG::STF_XD_CEG;
 use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
-use lib_actus_terms::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
-use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NI::NI;
-use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
+use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
 
@@ -392,14 +392,8 @@ impl TraitContractModel for CEG {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -429,15 +423,8 @@ impl TraitContractModel for CEG {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )
@@ -452,7 +439,12 @@ impl TraitContractModel for CEG {
 }
 
 impl CEG {
-    pub fn calculate_notional_principal(&self, time: &IsoDatetime) -> f64 {
+    pub fn calculate_notional_principal(
+        contract_terms: &ContractTerms,
+        contract_structure : &Vec<ContractReference>,
+        risk_factor_model: &RiskFactorModel,
+        time: &IsoDatetime
+    ) -> f64 {
 
         let covered_contract_refs = self.contract_structure.clone().unwrap().0
             .iter()
@@ -530,7 +522,13 @@ impl CEG {
         }
     }
 
-    fn add_external_xd_event(&self, maturity: &MaturityDate) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn add_external_xd_event(
+        contract_terms: &ContractTerms,
+        contract_structure: &Vec<ContractReference>,
+        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+        risk_factor_model: &RiskFactorModel,
+        maturity: &IsoDatetime,
+    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
         let contract_identifiers: Vec<String> = self.contract_structure.clone().unwrap().0
             .iter()
             .map(|c|     {

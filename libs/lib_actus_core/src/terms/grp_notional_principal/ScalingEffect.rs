@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_notional_principal::scaling_effect::Ooo::OOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ono::ONO;
 use crate::terms::grp_notional_principal::scaling_effect::Ioo::IOO;
 use crate::terms::grp_notional_principal::scaling_effect::Ino::INO;
 
-use crate::util::CommonUtils::CommonUtils as cu;
-use crate::util::Value::Value;
+use crate::types::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum ScalingEffect {
@@ -21,13 +20,14 @@ pub enum ScalingEffect {
 impl ScalingEffect {
 
     
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         ScalingEffect::from_str(element)
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         // on stock dans Rc car business day convention cont_type va aussi l'utiliser et la modifier
-        cu::provide(string_map, key)
+        
+        crate::util::ProvideFuncs::provide(string_map, key)
     }
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
@@ -43,14 +43,14 @@ impl ScalingEffect {
 }
 
 impl FromStr for ScalingEffect {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "OOO" => Ok(ScalingEffect::OOO(OOO::new())),
             "IOO" => Ok(ScalingEffect::IOO(IOO::new())),
             "ONO" => Ok(ScalingEffect::ONO(ONO::new())),
             "INO" => Ok(ScalingEffect::INO(INO::new())),
-            _ => Err(ParseError { message: format!("Invalid ScalingEffect: {}", s)})
+            _ => Err(format!("Invalid ScalingEffect: {}", s))
         }
     }
 }

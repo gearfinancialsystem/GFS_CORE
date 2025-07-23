@@ -2,12 +2,13 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
+
 use chrono::Datelike;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::IsoDatetime::TraitNaiveDateTimeExtension;
 #[derive(Clone, PartialEq, Debug)]
 pub struct E283666 {
     pub maturity_date: Option<Rc<MaturityDate>>,

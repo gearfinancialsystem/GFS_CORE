@@ -1,17 +1,19 @@
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitOptionExt::TraitOptionExt;
 
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::attributes::ContractReference::ContractReference;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_RR_PAM;
@@ -21,23 +23,37 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        _contract_structure: &Option<Vec<ContractReference>>,
+        risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
         let day_counter = day_counter.clone().expect("sould have day counter");
-        let rate_multiplier = model.rate_multiplier.as_ref().expect("rate_multiplier should be some");
-        let rate_spread = model.rate_spread.as_ref().expect("rate_spread should be some");
+        let rate_multiplier = contract_terms.rate_multiplier.as_ref().expect("rate_multiplier should be some");
+        let rate_spread = contract_terms.rate_spread.as_ref().expect("rate_spread should be some");
         let status_date = states.status_date.as_ref().expect("status date should be some");
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should be some");
         let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be some");
-        let period_floor = model.period_floor.as_ref().expect("period floor should be some");
-        let period_cap = model.period_cap.as_ref().expect("period cap should be some");
-        let life_floor = model.life_floor.as_ref().expect("lifeFloor should be some");
-        let life_cap = model.life_cap.as_ref().expect("lifeCap should be some");
-        
-        let mut rate = 1.0 * rate_multiplier.value() + rate_spread.value();
+        let period_floor = contract_terms.period_floor.as_ref().expect("period floor should be some");
+        let period_cap = contract_terms.period_cap.as_ref().expect("period cap should be some");
+        let life_floor = contract_terms.life_floor.as_ref().expect("lifeFloor should be some");
+        let life_cap = contract_terms.life_cap.as_ref().expect("lifeCap should be some");
+
+        let mut cbv = None;
+        if let Some(rfm) = risk_factor_model {
+            cbv = rfm.state_at(
+                contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
+                time,
+                states,
+                contract_terms,
+                true
+            );
+        } else {
+            cbv = None
+        }
+
+        let mut rate = cbv.unwrap() * rate_multiplier.value() + rate_spread.value();
         let mut delta_rate = rate - nominal_interest_rate.value();
 
         delta_rate = delta_rate.max(period_floor.value()).min(period_cap.value());

@@ -3,12 +3,12 @@ use std::str::FromStr;
 use std::rc::Rc;
 use std::fmt;
 
-use crate::exceptions::ParseError::ParseError;
+
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::types::IsoDatetime::IsoDatetime;
-use crate::util::Value::Value;
+use crate::types::Value::Value;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -18,7 +18,7 @@ pub enum Calendar {
 
 impl Calendar {
     
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         Calendar::from_str(element)
     }
     
@@ -46,15 +46,14 @@ impl TraitBusinessDayCalendar for Calendar {
 }
 
 impl FromStr for Calendar {
-    type Err = ParseError;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "NC" => Ok(Self::NC(NC::new())),
             "MF" => Ok(Self::MF(MF::new())),
-            _ => Err(ParseError {
-                message: format!("Invalid Calendar cont_type: {}", s),
-            }),
+            _ => Err(format!("Invalid Calendar cont_type: {}", s),
+            ),
         }
     }
 }

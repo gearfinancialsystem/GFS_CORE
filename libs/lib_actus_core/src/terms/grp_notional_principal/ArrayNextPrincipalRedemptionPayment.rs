@@ -1,7 +1,7 @@
 
 use std::str::FromStr;
 use std::collections::HashMap;
-use crate::util::Value::Value;
+use crate::types::Value::Value;
 use crate::define_struct_vec_f64;
 
 

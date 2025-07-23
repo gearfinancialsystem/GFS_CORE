@@ -1,47 +1,47 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
-use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
-use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
-use lib_actus_terms::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
-use lib_actus_terms::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
-use lib_actus_terms::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
-use lib_actus_terms::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
-use lib_actus_terms::terms::grp_counterparty::GracePeriod::GracePeriod;
-use lib_actus_terms::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
-use lib_actus_terms::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
-use lib_actus_terms::terms::grp_counterparty::PrepaymentPeriod::PrepaymentPeriod;
-use lib_actus_terms::terms::grp_counterparty::Seniority::Seniority;
-use lib_actus_terms::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
-use lib_actus_terms::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
-use lib_actus_terms::terms::grp_dividend::ExDividendDate::ExDividendDate;
-use lib_actus_terms::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
-use lib_actus_terms::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::ArrayCycleOfInterestPayment::ArrayCycleOfInterestPayment;
-use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::CreatorID::CreatorID;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
+use crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
+use crate::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
+use crate::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
+use crate::terms::grp_counterparty::GracePeriod::GracePeriod;
+use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use crate::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use crate::terms::grp_counterparty::PrepaymentPeriod::PrepaymentPeriod;
+use crate::terms::grp_counterparty::Seniority::Seniority;
+use crate::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
+use crate::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
+use crate::terms::grp_dividend::ExDividendDate::ExDividendDate;
+use crate::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
+use crate::terms::grp_interest::ArrayCycleAnchorDateOfInterestPayment::ArrayCycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::ArrayCycleOfInterestPayment::ArrayCycleOfInterestPayment;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ResultSet::ResultSet;
 use crate::external::RiskFactorModel::RiskFactorModel;
@@ -55,15 +55,15 @@ use crate::functions::optns::stf::STF_STD_OPTNS::STF_STD_OPTNS;
 use crate::functions::optns::stf::STF_XD_OPTNS::STF_XD_OPTNS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_optionality::OptionStrike1;
-use lib_actus_terms::terms::grp_optionality::OptionStrike2::OptionStrike2;
-use lib_actus_terms::terms::grp_optionality::OptionType::OptionType;
-use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_optionality::OptionStrike1;
+use crate::terms::grp_optionality::OptionStrike2::OptionStrike2;
+use crate::terms::grp_optionality::OptionType::OptionType;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -374,14 +374,8 @@ impl TraitContractModel for OPTNS {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -411,15 +405,8 @@ impl TraitContractModel for OPTNS {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )

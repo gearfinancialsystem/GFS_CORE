@@ -3,8 +3,8 @@ use std::fmt;
 use std::str::FromStr;
 use crate::terms::grp_counterparty::seniority::J::J;
 use crate::terms::grp_counterparty::seniority::S::S;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum Seniority {
@@ -15,7 +15,7 @@ pub enum Seniority {
 
 impl Seniority {
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => Seniority::from_str(n),
             None => Ok(Seniority::None),
@@ -23,7 +23,7 @@ impl Seniority {
     }
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
+        crate::util::ProvideFuncs::provide(string_map, key)
     }
     pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         match string_map.get(key) {
@@ -39,12 +39,12 @@ impl Seniority {
 }
 
 impl FromStr for Seniority {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "S" => Ok(Self::S(S::new())),
             "J" => Ok(Self::J(J::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

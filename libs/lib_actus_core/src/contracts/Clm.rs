@@ -2,39 +2,39 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
-use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
-use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
-use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
-use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
-use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
-use lib_actus_terms::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::NextResetRate::NextResetRate;
-use lib_actus_terms::terms::grp_reset_rate::PeriodCap::PeriodCap;
-use lib_actus_terms::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
-use lib_actus_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
-use lib_actus_terms::terms::grp_reset_rate::RateSpread::RateSpread;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use crate::terms::grp_fees::CycleOfFee::CycleOfFee;
+use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
+use crate::terms::grp_fees::FeeBasis::FeeBasis;
+use crate::terms::grp_fees::FeeRate::FeeRate;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use crate::terms::grp_reset_rate::LifeCap::LifeCap;
+use crate::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use crate::terms::grp_reset_rate::RateSpread::RateSpread;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::ContractReference;
@@ -53,19 +53,19 @@ use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
 use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
 use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use lib_actus_terms::terms::grp_notional_principal::XDayNotice::XDayNotice;
-use lib_actus_terms::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_notional_principal::XDayNotice::XDayNotice;
+use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -431,14 +431,8 @@ impl TraitContractModel for CLM {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -468,15 +462,8 @@ impl TraitContractModel for CLM {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )

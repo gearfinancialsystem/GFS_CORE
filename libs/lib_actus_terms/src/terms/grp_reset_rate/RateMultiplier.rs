@@ -1,4 +1,0 @@
-
-use crate::define_struct_f64;
-define_struct_f64!(RateMultiplier, |value| {
-}, {1.0});

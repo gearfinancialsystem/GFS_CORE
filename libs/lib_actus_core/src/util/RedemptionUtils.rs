@@ -1,10 +1,10 @@
 use std::collections::HashSet;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;
 

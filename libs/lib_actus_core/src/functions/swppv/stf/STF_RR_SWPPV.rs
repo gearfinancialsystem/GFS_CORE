@@ -1,19 +1,20 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use lib_actus_terms::terms::grp_settlement::delivery_settlement::D::D;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
 
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitOptionExt::TraitOptionExt;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::attributes::ContractReference::ContractReference;
 #[allow(non_camel_case_types)]
 pub struct STF_RR_SWPPV;
 
@@ -22,8 +23,9 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        _contract_structure: &Option<Vec<ContractReference>>,
+        risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -37,8 +39,8 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
             time_adjuster.shift_sc(time)
         );
 
-        let model_nominal_interest_rate = model.nominal_interest_rate.clone().itself_or(0.0);
-        let delivery_settlement = model.delivery_settlement.clone().expect("deliverySettlement should always be Some");
+        let model_nominal_interest_rate = contract_terms.nominal_interest_rate.clone().itself_or(0.0);
+        let delivery_settlement = contract_terms.delivery_settlement.clone().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
             DeliverySettlement::D(D) => model_nominal_interest_rate,
@@ -56,20 +58,25 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         });
 
         // Placeholder for risk factor calculation
-        //let market_object_code_of_rate_reset = model.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
-        let rate_multiplier = model.rate_multiplier.clone().itself_or(1.0);
-        let rate_spread = model.rate_spread.clone().itself_or(0.0);
+        //let market_object_code_of_rate_reset = contract_terms.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should always be Some");
+        let rate_multiplier = contract_terms.rate_multiplier.clone().itself_or(1.0);
+        let rate_spread = contract_terms.rate_spread.clone().itself_or(0.0);
 
         // Simplified calculation as a placeholder
-        let risk_factor_value = 1.0; // risk_factor_model.state_at(
-        //     market_object_code_of_rate_reset,
-        //     time,
-        //     states,
-        //     model,
-        //     true
-        // );
+        let mut cbv = None;
+        if let Some(rfm) = risk_factor_model {
+            cbv = rfm.state_at(
+                contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
+                time,
+                states,
+                contract_terms,
+                true
+            );
+        } else {
+            cbv = None
+        }
 
-        states.nominal_interest_rate = NominalInterestRate::new(risk_factor_value * rate_multiplier.value() + rate_spread.value()).ok();
+        states.nominal_interest_rate = NominalInterestRate::new(cbv.unwrap() * rate_multiplier.value() + rate_spread.value()).ok();
 
         states.status_date = Some(StatusDate::from(*time));;
     }

@@ -1,14 +1,14 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 
-use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-
+use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::attributes::ContractReference::ContractReference;
 #[allow(non_camel_case_types)]
 pub struct POF_PR_NAM;
 
@@ -17,13 +17,14 @@ impl TraitPayOffFunction for POF_PR_NAM {
         &self,
         time: &IsoDatetime,
         states: &StatesSpace,
-        model: &ContractTerms,
-        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+contract_structure: &Option<Vec<ContractReference>>,
+        risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let day_counter = day_counter.clone().expect("sould have day counter");
-        let contract_role = model.contract_role.clone().expect("contract role should always exist");
+        let contract_role = contract_terms.contract_role.clone().expect("contract role should always exist");
         let status_date = states.status_date.clone().expect("status date should always exist");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always exist");
         let accrued_interest = states.accrued_interest.clone().expect("accruedInterest should always exist");
@@ -45,7 +46,7 @@ impl TraitPayOffFunction for POF_PR_NAM {
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_model,
-            model,
+            contract_terms,
             time,
             states
         );

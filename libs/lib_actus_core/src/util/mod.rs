@@ -6,4 +6,6 @@
 pub mod CommonUtils;
 //pub mod CycleUtils;
 pub mod RedemptionUtils;
+pub mod ProvideFuncs;
+pub mod CurrencyValues;
 //pub mod Value;

@@ -4,29 +4,29 @@ use std::error::Error;
 use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
-use lib_actus_terms::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
-use lib_actus_terms::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
-use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
-use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::CreatorID::CreatorID;
+use crate::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
+use crate::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
+use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
+use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::attributes::ResultSet::ResultSet;
 use crate::external::RiskFactorModel::RiskFactorModel;
@@ -36,14 +36,14 @@ use crate::functions::cec::stf::STF_XD_CEC::STF_XD_CEC;
 use crate::functions::ceg::pof::POF_MD_CEG::POF_MD_CEG;
 use crate::functions::ceg::stf::STF_MD_CEG::STF_MD_CEG;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
-use lib_actus_terms::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
-use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NI::NI;
-use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
+use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
@@ -336,14 +336,8 @@ impl TraitContractModel for CEC {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -373,15 +367,8 @@ impl TraitContractModel for CEC {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )
@@ -419,9 +406,13 @@ impl CEC {
         MaturityDate::new(maturity_dates.last().unwrap().clone()).ok().unwrap()
     }
 
-    pub fn calculate_notional_principal(&self, time: &IsoDatetime) -> f64 {
+    pub fn calculate_notional_principal(
+        contract_terms: &ContractTerms, 
+        contract_structure : &Vec<ContractReference>,
+        risk_factor_model: &RiskFactorModel,
+        time: &IsoDatetime) -> f64 {
 
-        let covered_contract_refs = &self.contract_structure.clone().unwrap().0
+        let covered_contract_refs = contract_structure.clone()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
@@ -429,13 +420,13 @@ impl CEC {
 
         let states_at_time_point: Vec<StatesSpace> = covered_contract_refs
             .iter()
-            .map(|c| c.get_state_space_at_time_point(time.clone(), &self.contract_terms))
+            .map(|c| c.get_state_space_at_time_point(time.clone(), contract_terms))
             .collect();
 
-        let role_sign = &self.contract_terms.contract_role.clone().unwrap().role_sign();
-        let coverage = &self.contract_terms.coverage_of_credit_enhancement.clone().unwrap();
+        let role_sign = contract_terms.contract_role.clone().unwrap().role_sign();
+        let coverage = contract_terms.coverage_of_credit_enhancement.clone().unwrap();
 
-        match &self.contract_terms.guaranteed_exposure {
+        match contract_terms.guaranteed_exposure {
             Some(GuaranteedExposure::NO(NO)) => {
                 coverage.value()
                 * role_sign
@@ -489,21 +480,24 @@ impl CEC {
                     * market_object_codes
                     .iter()
                     .map(|code|
-                        &self.contract_risk_factors.state_at(
+                        risk_factor_model.state_at(
                             code.clone(), 
                             time, 
                             &StatesSpace::default(),
-                            &self.contract_terms, 
+                            contract_terms, 
                             true))
                     .sum::<f64>()
             }
         }
     }
 
-    pub fn calculate_market_value_covering_contracts(&self,
+    pub fn calculate_market_value_covering_contracts(
+        contract_terms: &ContractTerms, 
+        contract_structure: &Vec<ContractReference>,
+        risk_factor_model: &RiskFactorModel,
         time: &IsoDatetime,
     ) -> f64 {
-        let covering_contract_refs = &self.contract_structure.clone().unwrap().0
+        let covering_contract_refs = contract_structure.clone()
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVI)
             .map(|cr| cr.clone())
@@ -518,36 +512,37 @@ impl CEC {
         market_object_codes
             .iter()
             .map(|code|
-                &self.contract_risk_factors.state_at(
+                risk_factor_model.state_at(
                     code.clone(), 
                     time, 
                     &StatesSpace::default(),
-                    &self.contract_terms, 
+                    contract_terms, 
                     true))
             .sum()
     }
 
     fn add_external_xd_event(
-        model: &ContractModel,
+        contract_terms: &ContractTerms,
+        contract_structure: &Vec<ContractReference>,
         mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        observer: &DataObserver,
+        risk_factor_model: &RiskFactorModel,
         maturity: &IsoDatetime,
     ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0
+        let contract_identifiers: Vec<String> = contract_structure.clone()
             .iter()
             .map(|c| {
                 c.object.as_cm().unwrap().contract_id.clone().unwrap().value()
             })
             .collect();
 
-        let a_credit_event_type_covered = model.credit_event_type_covered.clone().unwrap().0
+        let a_credit_event_type_covered = contract_terms.credit_event_type_covered.clone().unwrap().0
             .iter()
             .map(|cr| cr.clone())
             .collect::<Vec<_>>();
         let credit_event_type_covered = a_credit_event_type_covered.get(0).unwrap();
 
 
-        let observed_events = observer.events(model);
+        let observed_events = risk_factor_model.events(contract_terms);
 
         let ce_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = observed_events
             .into_iter()
@@ -566,26 +561,26 @@ impl CEC {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(ce_event.event_time.clone().unwrap()),
                 &EventType::XD,
-                &model.currency,
+                contract_terms.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEC)),
                 &None,
-                &model.contract_id,
+                contract_terms.contract_id,
             );
             events.push(e.to_iso_datetime_event());
 
-            let settlement_period = model.settlement_period.clone().unwrap();
+            let settlement_period = contract_terms.settlement_period.clone().unwrap();
             let event_time = ce_event.event_time.clone().unwrap();
             let settlement_date = event_time + *settlement_period;
 
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(settlement_date),
                 &EventType::STD,
-                &model.currency,
+                contract_terms.currency,
                 Some(Rc::new(POF_STD_CEC)),
                 Some(Rc::new(STF_STD_CEC)),
-                &model.business_day_adjuster,
-                &model.contract_id,
+                contract_terms.business_day_adjuster,
+                contract_terms.contract_id,
             );
             events.push(e.to_iso_datetime_event());
         }

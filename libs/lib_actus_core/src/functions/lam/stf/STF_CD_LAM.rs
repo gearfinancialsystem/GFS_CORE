@@ -1,16 +1,17 @@
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractReference::ContractReference;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
 
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitOptionExt::TraitOptionExt;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_CD_LAM;
@@ -20,8 +21,9 @@ impl TraitStateTransitionFunction for STF_CD_LAM {
         &self,
         time: &IsoDatetime,
         states: &mut StatesSpace,
-        model: &ContractTerms,
-        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<RiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -31,7 +33,7 @@ impl TraitStateTransitionFunction for STF_CD_LAM {
         let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
-        let fee_rate = model.fee_rate.clone().expect("fee rate should always be Some");
+        let fee_rate = contract_terms.fee_rate.clone().expect("fee rate should always be Some");
         
         // Update state space
         let time_from_last_event = day_counter.day_count_fraction(

@@ -2,12 +2,12 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
-use lib_actus_events::events::ContractEvent::ContractEvent;
-use lib_actus_events::events::EventFactory::EventFactory;
-use lib_actus_events::events::EventType::EventType;
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::events::ContractEvent::ContractEvent;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventType::EventType;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::attributes::ContractTerms::ContractTerms;
+use crate::types::IsoDatetime::IsoDatetime;
 
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ResultSet::ResultSet;
@@ -29,48 +29,48 @@ use crate::functions::swppv::stf::STF_MD_SWPPV::STF_MD_SWPPV;
 use crate::functions::swppv::stf::STF_PRD_SWPPV::STF_PRD_SWPPV;
 use crate::functions::swppv::stf::STF_RR_SWPPV::STF_RR_SWPPV;
 use crate::functions::swppv::stf::STF_TD_SWPPV::STF_TD_SWPPV;
-use lib_actus_terms::terms::grp_interest::AccruedInterest2::AccruedInterest2;
-use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use lib_actus_terms::terms::grp_settlement::delivery_settlement::D::D;
-use lib_actus_types::types::Value::Value;
+use crate::terms::grp_interest::AccruedInterest2::AccruedInterest2;
+use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
+use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use crate::terms::grp_settlement::delivery_settlement::D::D;
+use crate::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use lib_actus_terms::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
-use lib_actus_terms::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
-use lib_actus_terms::terms::grp_reset_rate::NextResetRate::NextResetRate;
-use lib_actus_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
-use lib_actus_terms::terms::grp_reset_rate::RateSpread::RateSpread;
-use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
-use lib_actus_terms::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use crate::terms::grp_contract_identification::ContractID::ContractID;
+use crate::terms::grp_contract_identification::ContractRole::ContractRole;
+use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use crate::terms::grp_calendar::Calendar::Calendar;
+use crate::terms::grp_contract_identification::StatusDate::StatusDate;
+use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use crate::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use crate::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use crate::terms::grp_notional_principal::Currency::Currency;
+use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use crate::terms::grp_reset_rate::CyclePointOfRateReset::CyclePointOfRateReset;
+use crate::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use crate::terms::grp_reset_rate::RateSpread::RateSpread;
+use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::terms::grp_contract_identification::ContractType::ContractType;
+use crate::terms::grp_contract_identification::CreatorID::CreatorID;
+use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
+use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SWPPV {
@@ -443,14 +443,8 @@ impl TraitContractModel for SWPPV {
                 &curr_ce.get_schedule_time(),
                 &self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                },
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
@@ -480,15 +474,8 @@ impl TraitContractModel for SWPPV {
                 &curr_ce.get_schedule_time(),
                 &mut self.states_space,
                 &self.contract_terms,
-                {
-                    let a = &self.contract_risk_factors;
-                    if let Some(rfm) = a {
-                        Some(rfm)
-                    } else {
-                        None
-                    }
-                }
-                ,
+                &self.contract_structure,
+                &self.contract_risk_factors,
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             )

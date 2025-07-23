@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use crate::terms::grp_boundary::boundary_leg_initially_active::FIL::FIL;
 use crate::terms::grp_boundary::boundary_leg_initially_active::SEL::SEL;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum BoundaryLegInitiallyActive {
@@ -21,7 +21,7 @@ impl BoundaryLegInitiallyActive {
         }
     }
 
-    pub fn new(element: Option<&str>) -> Result<Self, ParseError> {
+    pub fn new(element: Option<&str>) -> Result<Self, String> {
         match element {
             Some(n) => BoundaryLegInitiallyActive::from_str(n),
             None => Ok(BoundaryLegInitiallyActive::None),
@@ -29,13 +29,14 @@ impl BoundaryLegInitiallyActive {
     }
 
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
-        crate::util::CommonUtils::CommonUtils::provide(string_map, key)
+        crate::util::ProvideFuncs::provide(string_map, key)
     }
-    pub fn to_stringx(&self) -> Result<String, ParseError> {
+    pub fn to_stringx(&self) -> Result<String, String> {
         match self {
             Self::FIL(FIL) => Ok("FIL".to_string()),
             Self::SEL(SEL) => Ok("SEL".to_string()),
-            _ => Err(ParseError { message: format!("Invalid TOSTRING ContractPerformance ")})
+            Self::SEL(SEL) => Ok("SEL".to_string()),
+            _ => Err(format!("Invalid TOSTRING ContractPerformance "))
         }
 
     }
@@ -53,12 +54,12 @@ impl BoundaryLegInitiallyActive {
 }
 
 impl FromStr for BoundaryLegInitiallyActive {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "FIL" => Ok(Self::FIL(FIL::new())),
             "SEL" => Ok(Self::SEL(SEL::new())),
-            _ => Err(ParseError { message: format!("Invalid BoundaryLegInitiallyActive: {}", s)})
+            _ => Err(format!("Invalid BoundaryLegInitiallyActive: {}", s))
         }
     }
 }

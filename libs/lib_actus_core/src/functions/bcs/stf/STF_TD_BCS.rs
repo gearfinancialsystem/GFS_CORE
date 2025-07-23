@@ -1,12 +1,13 @@
-use lib_actus_terms::ContractTerms::ContractTerms;
+use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::ContractTerms::ContractTerms;
 
-use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
-use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::states_space::StatesSpace::StatesSpace;
+use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
+use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::types::IsoDatetime::IsoDatetime;
+use crate::external::RiskFactorModel::RiskFactorModel;
 #[allow(non_camel_case_types)]
 pub struct STF_TD_BCS;
 
@@ -15,8 +16,9 @@ impl TraitStateTransitionFunction for STF_TD_BCS {
         &self,
         _time: &IsoDatetime,
         states: &mut StatesSpace,
-        _model: &ContractTerms,
-        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
+        _contract_terms: &ContractTerms,
+contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<RiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

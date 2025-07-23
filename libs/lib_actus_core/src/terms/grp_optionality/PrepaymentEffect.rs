@@ -4,8 +4,8 @@ use std::str::FromStr;
 use crate::terms::grp_optionality::prepayment_effect::A::A;
 use crate::terms::grp_optionality::prepayment_effect::M::M;
 use crate::terms::grp_optionality::prepayment_effect::N::N;
-use crate::exceptions::ParseError::ParseError;
-use crate::util::Value::Value;
+
+use crate::types::Value::Value;
 
 #[derive(PartialEq, Eq)]
 pub enum PrepaymentEffect {
@@ -16,7 +16,7 @@ pub enum PrepaymentEffect {
 
 impl PrepaymentEffect {
     
-    pub fn new(element: &str) -> Result<Self, ParseError> {
+    pub fn new(element: &str) -> Result<Self, String> {
         PrepaymentEffect::from_str(element)
     }
     
@@ -34,13 +34,13 @@ impl PrepaymentEffect {
 }
 
 impl FromStr for PrepaymentEffect {
-    type Err = ParseError;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "N" => Ok(Self::N(N::new())),
             "A" => Ok(Self::A(A::new())),
             "M" => Ok(Self::M(M::new())),
-            _ => Err(ParseError { message: format!("Invalid BusinessDayAdjuster: {}", s)})
+            _ => Err(format!("Invalid BusinessDayAdjuster: {}", s))
         }
     }
 }

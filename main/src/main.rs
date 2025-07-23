@@ -7,8 +7,8 @@ use lib_actus_core::traits::TraitContractModel::TraitContractModel;
 use lib_actus_core::external::JsonLoader::{load_test_case_terms};
 
 use lib_actus_core::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_risk_factor::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_core::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
+use lib_actus_core::types::IsoDatetime::IsoDatetime;
 //use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
@@ -217,8 +217,8 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_core/test_sets/actus-tests-fxout.json";
-    let test_id = "fxout03";
+    let pathx = "libs/lib_actus_core/test_sets/actus-tests-pam.json";
+    let test_id = "pam01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let mut dico = load_test_case_terms(pathx,
