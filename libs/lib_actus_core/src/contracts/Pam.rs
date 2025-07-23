@@ -290,7 +290,7 @@ impl TraitContractModel for PAM { //
     }
 
     fn set_result_vec(&mut self) {
-        self.result_vec = Some(Vec::<ResultSet>::new()) //ResultSet::new()
+        self.result_vec = Some(Vec::<ResultSet>::new()); //ResultSet::new()
     }
     
     /// Compute next events within the period up to `to` date based on the contract model
@@ -628,18 +628,7 @@ impl TraitContractModel for PAM { //
         for event in events.iter_mut() {
             self.eval_pof_contract_event(i);
             self.eval_stf_contract_event(i);
-            // model,
-            // &risk_factors.clone().unwrap(),
-            // &model.day_count_convention.clone(),
-            // &model.business_day_adjuster.clone().unwrap(),
-            // if self.result_vec_toggle == true {
-            //     if let Some(rv) = &mut self.result_vec {
-            //         let mut a = ResultSet::new();
-            //         a.set_result_set(&states, &event);
-            //
-            //         rv.push(a)
-            //     }
-            // }
+
             i+=1;
         }
 
@@ -805,6 +794,8 @@ impl TraitContractModel for PAM { //
         }
         // on peut la retravailler pour etre plus direct et efficace
     }
+
+
 }
 
 

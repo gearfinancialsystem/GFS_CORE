@@ -415,7 +415,7 @@ pub struct ContractTerms {
 //                     termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
 //                     price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
 //                     delivery_settlement: DeliverySettlement::provide_from_input_dict(sm, "deliverySettlement"),
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_structure: contract_structure,
 //                     ..Default::default()
 //                 };
@@ -458,7 +458,7 @@ pub struct ContractTerms {
 //                 } else {eomc.unwrap()};
 //
 //                 let cm = ContractModel {
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -571,7 +571,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -807,7 +807,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -962,7 +962,7 @@ pub struct ContractTerms {
 //                     array_rate: ArrayRate::provide_from_input_dict(sm, "arrayRate"),
 //                     array_fixed_variable: ArrayFixedVariable::provide_from_input_dict(sm, "arrayFixedVariable"),
 //                     market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     fee_rate: fee_rate,
 //                     end_of_month_convention: end_of_month_convention,
 //                     rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
@@ -1048,7 +1048,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -1112,7 +1112,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1138,7 +1138,7 @@ pub struct ContractTerms {
 //             "COM" => {
 //
 //                 let cm = ContractModel {
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1160,7 +1160,7 @@ pub struct ContractTerms {
 //             "CSH" => {
 //
 //                 let cm = ContractModel {
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1279,7 +1279,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1378,7 +1378,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1602,7 +1602,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
@@ -1759,7 +1759,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: contract_role,
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -1866,7 +1866,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: contract_role,
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -1955,7 +1955,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -2061,7 +2061,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: contract_role,
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -2153,7 +2153,7 @@ pub struct ContractTerms {
 //                     calendar: calendar,
 //                     business_day_adjuster: business_day_adjuster,
 //                     end_of_month_convention: end_of_month_convention,
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
 //                     creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
@@ -2214,7 +2214,7 @@ pub struct ContractTerms {
 //                 } else {None};
 //
 //                 let cm = ContractModel {
-//                     contract_type: ct_str.to_string(),
+//                     contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
 //                     status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
 //                     contract_role: contract_role,
 //                     contract_id: ContractID::provide_from_input_dict(sm, "contractID"),

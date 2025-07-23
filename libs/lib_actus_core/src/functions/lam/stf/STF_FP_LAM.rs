@@ -1,15 +1,16 @@
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::state_space::StateSpace::StateSpace;
-use crate::attributes::ContractTerms::ContractModel;
+use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
 
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::traits::TraitOptionExt::TraitOptionExt;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_FP_LAM;
@@ -18,9 +19,9 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &mut StateSpace,
-        _model: &ContractModel,
-        _risk_factor_model: &DataObserver,
+        states: &mut StatesSpace,
+        _model: &ContractTerms,
+        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {

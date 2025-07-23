@@ -2,41 +2,118 @@
 use std::rc::Rc;
 use std::collections::HashMap;
 use std::fmt;
-use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
-use crate::state_space::StateSpace::StateSpace;
 use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
+use crate::attributes::ResultSet::ResultSet;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::functions::capfl::pof::POF_NET_CAPFL::POF_NET_CAPFL;
 use crate::functions::capfl::stf::STF_NET_CAPFL::STF_NET_CAPFL;
 use crate::functions::stk::pof::POF_PRD_STK::POF_PRD_STK;
 use crate::functions::stk::pof::POF_TD_STK::POF_TD_STK;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use crate::terms::grp_contract_identification::contract_types::Bcs::BCS;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
+use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use lib_actus_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
 
-pub struct CAPFL;
+#[derive(Debug, Clone, PartialEq)]
+pub struct CAPFL {
+    pub contract_terms: ContractTerms,
+    pub contract_risk_factors: Option<RiskFactorModel>,
+    pub contract_structure: Option<Vec<ContractReference>>,
+    pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StatesSpace,
+    pub result_vec_toggle: bool,
+    pub result_vec: Option<Vec<ResultSet>>,
+}
 
 impl TraitContractModel for CAPFL {
-    fn schedule(
-        to: Option<IsoDatetime>,
-        model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn new() -> Self {
+        Self {
+            contract_terms: ContractTerms::default(),
+            contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
+            contract_risk_factors: None,
+            contract_structure: None,
+            states_space: StatesSpace::default(),
+            result_vec_toggle: false,
+            result_vec: None,
+        }
+    }
+
+    fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+        let contract_role = ContractRole::provide(sm, "contractRole");
+
+        // let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
+        //     if let Some(structure_vec) = contract_structure.as_vec() {
+        //         let contract_structure: Vec<ContractReference> = structure_vec.iter()
+        //             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
+        //             .collect();
+        //         Some(ContractStructure::new(contract_structure))
+        //     } else {
+        //         None
+        //     }
+        //
+        // } else {None};
+
+        let ct = ContractTerms {
+            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
+            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
+            contract_role: contract_role,
+            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
+            currency: Currency::provide_from_input_dict(sm, "currency"),
+            purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
+            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
+            termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
+            price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
+            life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
+            life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
+            ..Default::default()
+        };
+
+        self.contract_terms = ct;
+    }
+
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = None;
+    }
+
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
+        self.contract_structure = None;
+    }
+
+    fn set_result_vec(&mut self) {
+        self.result_vec = Some(Vec::<ResultSet>::new());
+    }
+
+    fn schedule(&mut self, to: Option<IsoDatetime>) {
         // Compute underlying event schedule
-        let underlying_model = model.contract_structure.clone().unwrap().0
+        let model = &self.contract_terms;
+        let underlying_model = &self.contract_structure.clone().unwrap().0
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone().as_cm()))
@@ -109,20 +186,23 @@ impl TraitContractModel for CAPFL {
 
         events.retain(|e| e.compare_to(&to_event) != 1);
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-    fn apply(
-        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        model: &ContractModel,
-        observer: &DataObserver,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(&mut self, result_set_toogle: bool) {
 
+        // faut pas le mettre apres les borrow immutable ci dessous, lordre compte
+        if result_set_toogle == true {
+            self.result_vec_toggle = true;
+            self.set_result_vec();
+        }
+
+        let events = &mut self.contract_events.clone();
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
 
         // Evaluate events of underlying without cap/floor applied
-        let underlying_model = model.contract_structure.clone().unwrap().0
+        let underlying_model = &self.contract_structure.clone().unwrap()
             .iter()
             .find(|c| c.reference_role == ReferenceRole::UDL)
             .and_then(|c| Some(c.object.clone()))
@@ -135,8 +215,8 @@ impl TraitContractModel for CAPFL {
 
         // Evaluate events of underlying with cap/floor applied
         let mut underlying_model_with_cap_floor = underlying_model.clone().as_cm().unwrap();
-        underlying_model_with_cap_floor.life_cap = model.life_cap.clone();
-        underlying_model_with_cap_floor.life_floor = model.life_floor.clone();
+        underlying_model_with_cap_floor.life_cap = &self.contract_terms.life_cap.clone();
+        underlying_model_with_cap_floor.life_floor = &self.contract_terms.life_floor.clone();
 
         let mut underlying_with_cap_floor_events = events
             .into_iter()
@@ -167,34 +247,99 @@ impl TraitContractModel for CAPFL {
         events.sort();
 
         // Remove pre-purchase events if purchase date set
-        if let Some(purchase_date) = &model.purchase_date {
+        if let Some(purchase_date) = &self.contract_terms.purchase_date {
             let purchase_event: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
                 &Some(purchase_date.clone()),
                 &EventType::PRD,
-                &model.currency,
+                &self.contract_terms.currency,
                 None,
                 None,
                 &None,
-                &model.contract_id,
+                &self.contract_terms.contract_id,
             );
 
             events.retain(|e| e.event_type == EventType::AD || e.compare_to(&purchase_event.to_iso_datetime_event()) != -1);
         }
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) {
         todo!()
     }
+
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                },
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            );
+            println!("{:?}", a);
+
+
+            self.contract_events[id_ce].payoff = Some(a);
+            // let curr_ce_clone = &curr_ce.clone();
+            if self.result_vec_toggle == true {
+                if let Some(rv) = &mut self.result_vec {
+                    let mut a = ResultSet::new();
+                    a.set_result_set(&self.states_space, &self.contract_events[id_ce]);
+
+                    rv.push(a)
+                }
+            }
+        }
+
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let mut curr_ce= self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fstate.is_some() {
+            curr_ce.fstate.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &mut self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                }
+                ,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            )
+            //self.contract_events[id_ce].payoff = Some(a);
+            //let b = curr_ce.set_payoff(a);
+            // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
 }
 
 impl CAPFL {
     pub fn netting_event(
+        &self,
         e1: &ContractEvent<IsoDatetime, IsoDatetime>,
         e2: &ContractEvent<IsoDatetime, IsoDatetime>,
-        model: &ContractModel,
-        observer: &DataObserver,
     ) -> ContractEvent<IsoDatetime, IsoDatetime> {
         let mut e = EventFactory::create_event(
             &e1.event_time,
@@ -203,7 +348,7 @@ impl CAPFL {
             Some(Rc::new(POF_NET_CAPFL::new(e1.clone(), e2.clone()))),
             Some(Rc::new(STF_NET_CAPFL::new(e1.clone(), e2.clone()))),
             &None,
-            &model.contract_id,
+            &self.contract_terms.contract_id,
         );
 
         e.eval(

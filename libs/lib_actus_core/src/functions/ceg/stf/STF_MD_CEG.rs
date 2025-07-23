@@ -1,13 +1,13 @@
-use crate::attributes::ContractTerms::ContractModel;
+use lib_actus_terms::ContractTerms::ContractTerms;
 
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_MD_CEG;
@@ -16,9 +16,9 @@ impl TraitStateTransitionFunction for STF_MD_CEG {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &mut StateSpace,
-        _model: &ContractModel,
-        _risk_factor_model: &DataObserver,
+        states: &mut StatesSpace,
+        _model: &ContractTerms,
+        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

@@ -1,13 +1,45 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
-use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
-
-use crate::state_space::StateSpace::StateSpace;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
+use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
+use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_reset_rate::FixingPeriod::FixingPeriod;
+use lib_actus_terms::terms::grp_reset_rate::LifeCap::LifeCap;
+use lib_actus_terms::terms::grp_reset_rate::LifeFloor::LifeFloor;
+use lib_actus_terms::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeOfRateReset;
+use lib_actus_terms::terms::grp_reset_rate::NextResetRate::NextResetRate;
+use lib_actus_terms::terms::grp_reset_rate::PeriodCap::PeriodCap;
+use lib_actus_terms::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
+use lib_actus_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
+use lib_actus_terms::terms::grp_reset_rate::RateSpread::RateSpread;
+use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::ResultSet::ResultSet;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::functions::clm::pof::POF_IED_CLM::POF_IED_CLM;
 use crate::functions::clm::pof::POF_IP_CLM::POF_IP_CLM;
 use crate::functions::clm::stf::STF_IP_CLM::STF_IP_CLM;
@@ -21,34 +53,162 @@ use crate::functions::pam::stf::STF_IPCI_PAM::STF_IPCI_PAM;
 use crate::functions::pam::stf::STF_MD_PAM::STF_MD_PAM;
 use crate::functions::pam::stf::STF_RR_PAM::STF_RR_PAM;
 use crate::functions::pam::stf::STF_RRF_PAM::STF_RRF_PAM;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
-use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
-use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
-use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
+use lib_actus_terms::terms::grp_notional_principal::XDayNotice::XDayNotice;
+use lib_actus_terms::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
+use lib_actus_terms::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
 
-pub struct CLM;
+#[derive(Debug, Clone, PartialEq)]
+pub struct CLM {
+    pub contract_terms: ContractTerms,
+    pub contract_risk_factors: Option<RiskFactorModel>,
+    pub contract_structure: Option<Vec<ContractReference>>,
+    pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StatesSpace,
+    pub result_vec_toggle: bool,
+    pub result_vec: Option<Vec<ResultSet>>,
+}
 
 impl TraitContractModel for CLM {
-    fn schedule(
-        to: Option<IsoDatetime>,
-        model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn new() -> Self {
+        Self {
+            contract_terms: ContractTerms::default(),
+            contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
+            contract_risk_factors: None,
+            contract_structure: None,
+            states_space: StatesSpace::default(),
+            result_vec_toggle: false,
+            result_vec: None,
+        }
 
+    }
+
+    fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+        let calendar = Calendar::provide_rc(sm, "calendar");
+
+        let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+        let maturity_date = if let Some(a) = maturity_date_tmp {
+            Some(Rc::new(a))
+        } else {
+            None
+        };
+
+
+        let cycle_of_fee = CycleOfFee::provide_from_input_dict(sm, "cycleOfFee");
+        let cycle_anchor_date_of_fee = if cycle_of_fee.is_none() {
+            let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+            CycleAnchorDateOfFee::from_str(&a).ok()
+        } else {
+            CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee")
+        };
+
+        let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
+        let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
+            let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+            CycleAnchorDateOfInterestPayment::from_str(&a).ok()
+        } else {
+            CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
+        };
+
+        let day_count_convention = if let Some(maturity_date) = &maturity_date {
+            DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
+        } else {
+            None
+        };
+
+
+        let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset");
+        let cycle_anchor_date_of_rate_reset = if cycle_of_rate_reset.is_none() {
+            let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+            CycleAnchorDateOfRateReset::from_str(&a).ok()
+        } else {
+            CycleAnchorDateOfRateReset::provide_from_input_dict(sm,"cycleAnchorDateOfRateReset" )
+        };
+
+        let business_day_adjuster = {
+            let calendar_clone = Some(Rc::clone(&calendar));
+            BusinessDayAdjuster::provide(
+                sm,
+                "businessDayAdjuster",
+                calendar_clone.unwrap()
+            )
+        };
+        let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+        let end_of_month_convention = if eomc.is_none() {
+            EndOfMonthConvention::default()
+        } else {eomc.unwrap()};
+
+        let ct = ContractTerms {
+            calendar: calendar,
+            business_day_adjuster: business_day_adjuster,
+            end_of_month_convention: end_of_month_convention,
+            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
+            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
+            contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
+            cycle_anchor_date_of_fee: cycle_anchor_date_of_fee,
+            cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
+            fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
+            fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+            fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
+            cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
+            cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
+            nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
+            day_count_convention: day_count_convention,
+            accrued_interest: AccruedInterest::provide_from_input_dict(sm, "accruedInterest"),
+            currency: Currency::provide_from_input_dict(sm, "currency"),
+            initial_exchange_date: InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
+            notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
+            maturity_date: maturity_date,
+            x_day_notice: XDayNotice::provide_from_input_dict(sm, "xDayNotice"),
+            cycle_anchor_date_of_rate_reset: cycle_anchor_date_of_rate_reset,
+            cycle_of_rate_reset: CycleOfRateReset::provide_from_input_dict(sm, "cycleOfRateReset"),
+            rate_spread: RateSpread::provide_from_input_dict(sm, "rateSpread"),
+            market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
+            fixing_period: FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
+            next_reset_rate: NextResetRate::provide_from_input_dict(sm, "nextResetRate"),
+            rate_multiplier: RateMultiplier::provide_from_input_dict(sm, "rateMultiplier"),
+            life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
+            life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
+            period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
+            period_floor: PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+            ..Default::default()
+        };
+
+
+        self.contract_terms = ct;
+    }
+
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = None; // RiskFactorModel::new();
+    }
+
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
+        self.contract_structure = None;
+    }
+
+    fn set_result_vec(&mut self) {
+        self.result_vec = Some(Vec::<ResultSet>::new());
+    }
+
+    fn schedule(&mut self, to: Option<IsoDatetime>) {
+        let model= &self.contract_terms;
         let mut events : Vec<ContractEvent<IsoDatetime, IsoDatetime>>= Vec::new();
 
         // Determine maturity of the contract
-        let maturity = Self::maturity(model, &to.unwrap());
+        self.maturity(&to.unwrap());
 
         // Initial exchange
         let e = EventFactory::<InitialExchangeDate, InitialExchangeDate>::create_event(
@@ -214,40 +374,39 @@ impl TraitContractModel for CLM {
         // Sort the events according to their time of occurrence
         events.sort();
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-    fn apply(
-        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        model: &ContractModel,
-        observer: &DataObserver,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        // Initialize state space per status date
-        let _maturity = &model.maturity_date.clone();
-        let mut states = Self::init_state_space(model, observer, _maturity).expect("Failed to initialize states_space");
+    fn apply(&mut self, result_set_toogle: bool) {
+        // faut pas le mettre apres les borrow immutable ci dessous, lordre compte
+        if result_set_toogle == true {
+            self.result_vec_toggle = true;
+            self.set_result_vec();
+        }
 
+        // Initialize state space per status date
+        let _maturity = &self.contract_terms.maturity_date.clone();
+        self.init_state_space(_maturity);
+        let events = &mut self.contract_events.clone();
         // Sort the events according to their time sequence
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
 
         // Apply events according to their time sequence to current state
+        let mut i: usize = 0;
         for event in events.iter_mut() {
-            event.eval(
-                &mut states,
-                model,
-                observer,
-                &model.day_count_convention.clone(),
-                &model.business_day_adjuster.clone().unwrap(),
-            );
+            self.eval_pof_contract_event(i);
+            self.eval_stf_contract_event(i);
+
+            i+=1;
         }
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-
-
-    fn init_state_space(model: &ContractModel, _observer: &DataObserver, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> {
-        let mut states = StateSpace::default();
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) {
+        let model = &self.contract_terms;
+        let mut states = StatesSpace::default();
 
         states.notional_scaling_multiplier = NotionalScalingMultiplier::new(1.0).ok();
         states.interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
@@ -261,13 +420,81 @@ impl TraitContractModel for CLM {
             states.fee_accrued = model.fee_accrued.clone();
         }
 
-        Ok(states)
+        self.states_space = states;
     }
+
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                },
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            );
+            println!("{:?}", a);
+
+
+            self.contract_events[id_ce].payoff = Some(a);
+            // let curr_ce_clone = &curr_ce.clone();
+            if self.result_vec_toggle == true {
+                if let Some(rv) = &mut self.result_vec {
+                    let mut a = ResultSet::new();
+                    a.set_result_set(&self.states_space, &self.contract_events[id_ce]);
+
+                    rv.push(a)
+                }
+            }
+        }
+
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let mut curr_ce= self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fstate.is_some() {
+            curr_ce.fstate.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &mut self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                }
+                ,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            )
+            //self.contract_events[id_ce].payoff = Some(a);
+            //let b = curr_ce.set_payoff(a);
+            // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
 }
 
+
+
 impl CLM {
-    fn maturity(model: &ContractModel, to: &IsoDatetime) -> MaturityDate {
-        MaturityDate::from_str(model.maturity_date.clone().unwrap().value().to_string().as_str()).unwrap()
+    fn maturity(&self, to: &IsoDatetime) -> MaturityDate {
+        MaturityDate::from_str(self.contract_terms.maturity_date.clone().unwrap().value().to_string().as_str()).unwrap()
     }
 }
 

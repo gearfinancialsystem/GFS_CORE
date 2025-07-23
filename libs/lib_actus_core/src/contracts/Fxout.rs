@@ -52,6 +52,8 @@ use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
 use crate::functions::fxout::stf::STF_PRD_FXOUT::STF_PRD_FXOUT;
+use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
+use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FXOUT {
@@ -154,7 +156,7 @@ impl TraitContractModel for FXOUT {
                 &EventType::PRD,
                 &model.currency,
                 Some(Rc::new(POF_PRD_FXOUT)),
-                Some(Rc::new(STF_PRD_FXOUT)), //
+                Some(Rc::new(STF_PRD_STK)), //
                 &None,
                 &model.contract_id,
             );
@@ -168,7 +170,7 @@ impl TraitContractModel for FXOUT {
                 &EventType::TD,
                 &model.currency,
                 Some(Rc::new(POF_TD_FXOUT)),
-                Some(Rc::new(STF_TD_FXOUT)), // STF_TD_STK
+                Some(Rc::new(STF_TD_STK)), // STF_TD_STK
                 &None,
                 &model.contract_id,
             );

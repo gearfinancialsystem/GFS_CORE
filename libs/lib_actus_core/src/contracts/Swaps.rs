@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 use std::str::FromStr;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::ContractReference::{ContractReference, Object};
 use lib_actus_terms::ContractTerms::ContractTerms;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
 use crate::attributes::ResultSet::ResultSet;
-use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
 use crate::functions::swaps::pof::POF_NET_SWAPS::POF_NET_SWAPS;
 use crate::functions::swaps::pof::POF_PRD_SWAPS::POF_PRD_SWAPS;
 use crate::functions::swaps::pof::POF_TD_SWAPS::POF_TD_SWAPS;
@@ -17,20 +17,9 @@ use crate::functions::swaps::stf::STF_NET_SWAPS::STF_NET_SWAPS;
 use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
 use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
 use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
-use lib_actus_states_space::state_space::StateSpace::StateSpace;
-use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
-use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
-use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use lib_actus_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use lib_actus_terms::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -38,6 +27,20 @@ use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SWAPS {
@@ -45,7 +48,7 @@ pub struct SWAPS {
     pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-    pub states_space: StateSpace,
+    pub states_space: StatesSpace,
     pub result_vec_toggle: bool,
     pub result_vec: Option<Vec<ResultSet>>,
 }
@@ -58,7 +61,7 @@ impl TraitContractModel for SWAPS {
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: None,
             contract_structure: None,
-            states_space: StateSpace::default(),
+            states_space: StatesSpace::default(),
             result_vec_toggle: false,
             result_vec: None,
         }
@@ -248,7 +251,7 @@ impl TraitContractModel for SWAPS {
         self.contract_events.iter().for_each(|event| {
             if event.get_contract_id() == self.contract_terms.contract_id.clone().unwrap() {
                 if event.event_type == EventType::PRD || event.event_type == EventType::TD {
-                    let mut parent_state = StateSpace::default();
+                    let mut parent_state = StatesSpace::default();
 
                     let first_leg_events = self.get_legs_events_by_refrole(ReferenceRole::FIL);
                     let second_leg_events = self.get_legs_events_by_refrole(ReferenceRole::SEL);
@@ -334,12 +337,11 @@ impl TraitContractModel for SWAPS {
                 println!("ok");
             }
         }
-
-        println!("temp");
+        
     }
 
-    /// Initialize the StateSpace according to the model attributes
-    fn init_state_space(&self, _maturity: &Option<Rc<MaturityDate>>) -> Result<StateSpace, String> { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
+    /// Initialize the StatesSpace according to the model attributes
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let model = &self.contract_terms;
         let cs = &self.contract_structure.clone().expect("On attend un contract structure ici");
 
@@ -349,9 +351,9 @@ impl TraitContractModel for SWAPS {
 
         //let event_t0_status_date = event_at_t0.states().status_date;
         //let mut states = if event_t0_status_date.is_some() {
-        //    StateSpace::default()
+        //    StatesSpace::default()
         //} else { event_at_t0.states() };
-        let mut states = StateSpace::default();
+        let mut states = StatesSpace::default();
 
         states.status_date = model.status_date.clone();
         states.contract_performance = if model.contract_performance.is_some() {
@@ -379,10 +381,16 @@ impl TraitContractModel for SWAPS {
         };
         //states.accrued_interest = event_at_t0.states().accrued_interest;
         states.accrued_interest = AccruedInterest::new(0.0).ok();
-        Ok(states)
+        self.states_space = states;
     }
 
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        todo!()
+    }
 
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        todo!()
+    }
 }
 
 impl SWAPS {

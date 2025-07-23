@@ -1,12 +1,55 @@
-
+use std::collections::HashMap;
 use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
-use crate::events::{ContractEvent::ContractEvent, EventFactory::EventFactory, EventType::EventType};
-
-use crate::state_space::StateSpace::StateSpace;
+use std::str::FromStr;
+use lib_actus_events::events::ContractEvent::ContractEvent;
+use lib_actus_events::events::EventFactory::EventFactory;
+use lib_actus_events::events::EventType::EventType;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::ContractTerms::ContractTerms;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
+use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use lib_actus_terms::terms::grp_fees::CycleAnchorDateOfFee::CycleAnchorDateOfFee;
+use lib_actus_terms::terms::grp_fees::CycleOfFee::CycleOfFee;
+use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
+use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
+use lib_actus_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
+use lib_actus_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use lib_actus_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use lib_actus_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
+use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
+use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerformance;
+use lib_actus_terms::terms::grp_counterparty::CoverageOfCreditEnhancement::CoverageOfCreditEnhancement;
+use lib_actus_terms::terms::grp_counterparty::CreditEventTypeCovered::CreditEventTypeCovered;
+use lib_actus_terms::terms::grp_counterparty::DelinquencyPeriod::DelinquencyPeriod;
+use lib_actus_terms::terms::grp_counterparty::DelinquencyRate::DelinquencyRate;
+use lib_actus_terms::terms::grp_counterparty::GracePeriod::GracePeriod;
+use lib_actus_terms::terms::grp_counterparty::NonPerformingDate::NonPerformingDate;
+use lib_actus_terms::terms::grp_dividend::CycleAnchorDateOfDividend::CycleAnchorDateOfDividend;
+use lib_actus_terms::terms::grp_dividend::CycleOfDividend::CycleOfDividend;
+use lib_actus_terms::terms::grp_dividend::ExDividendDate::ExDividendDate;
+use lib_actus_terms::terms::grp_dividend::NextDividendPaymentAmount::NextDividendPaymentAmount;
+use lib_actus_terms::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::attributes::ContractModel::ContractModel;
+use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
+use crate::attributes::ResultSet::ResultSet;
+use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::functions::ceg::pof::POF_FP_CEG::POF_FP_CEG;
 use crate::functions::ceg::pof::POF_MD_CEG::POF_MD_CEG;
 use crate::functions::ceg::pof::POF_STD_CEG::POF_STD_CEG;
@@ -17,31 +60,166 @@ use crate::functions::ceg::stf::STF_STD_CEG::STF_STD_CEG;
 use crate::functions::ceg::stf::STF_XD_CEG::STF_XD_CEG;
 use crate::functions::optns::pof::POF_PRD_OPTNS::POF_PRD_OPTNS;
 use crate::functions::optns::pof::POF_XD_OPTNS::POF_XD_OPTNS;
-use crate::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
-use crate::terms::grp_counterparty::guaranteed_exposure::NI::NI;
-use crate::terms::grp_counterparty::guaranteed_exposure::NO::NO;
-use crate::terms::grp_fees::FeeAccrued::FeeAccrued;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
-use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_terms::terms::grp_counterparty::GuaranteedExposure::GuaranteedExposure;
+use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NI::NI;
+use lib_actus_terms::terms::grp_counterparty::guaranteed_exposure::NO::NO;
+use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
+use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_types::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
 
-pub struct CEG;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CEG {
+    pub contract_terms: ContractTerms,
+    pub contract_risk_factors: Option<RiskFactorModel>,
+    pub contract_structure: Option<Vec<ContractReference>>,
+    pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub states_space: StatesSpace,
+    pub result_vec_toggle: bool,
+    pub result_vec: Option<Vec<ResultSet>>,
+}
 
 impl TraitContractModel for CEG {
-    fn schedule(
-        to: Option<IsoDatetime>,
-        model: &ContractModel,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn new() -> Self {
+        Self {
+            contract_terms: ContractTerms::default(),
+            contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
+            contract_risk_factors: None,
+            contract_structure: None,
+            states_space: StatesSpace::default(),
+            result_vec_toggle: false,
+            result_vec: None,
+        }
+    }
+
+    fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+        // Déclarations simples sans dépendances
+        let calendar = Calendar::provide_rc(sm, "calendar");
+        let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+        let maturity_date = if let Some(a) = maturity_date_tmp {
+            Some(Rc::new(a))
+        } else {
+            None
+        };
+        let contract_role = ContractRole::provide(sm, "contractRole");
+
+
+        let credit_event_type_covered_tmp  = CreditEventTypeCovered::provide_from_input_dict(sm, "creditEventTypeCovered");
+        let credit_event_type_covered = if credit_event_type_covered_tmp.is_none() {
+            Some(CreditEventTypeCovered::default())
+        } else {
+            credit_event_type_covered_tmp
+        };
+
+        let cycle_of_interest_payment = CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment");
+        let cycle_anchor_date_of_interest_payment = if cycle_of_interest_payment.is_none() {
+            let a = InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate").unwrap().value().to_string();
+            CycleAnchorDateOfInterestPayment::from_str(&a).ok()
+        } else {
+            CycleAnchorDateOfInterestPayment::provide_from_input_dict(sm, "cycleAnchorDateOfInterestPayment")
+        };
+
+        let day_count_convention = if let (Some(maturity_date)) = (&maturity_date) {
+            DayCountConvention::provide_from_input_dict(sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
+        } else {
+            None
+        };
+
+        let business_day_adjuster =  {
+            let calendar_clone = Some(Rc::clone(&calendar));
+            BusinessDayAdjuster::provide(
+                sm,
+                "businessDayAdjuster",
+                calendar_clone.unwrap()
+            )
+        };
+
+        // let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
+        //     if let Some(structure_vec) = contract_structure.as_vec() {
+        //         let contract_structure: Vec<ContractReference> = structure_vec.iter()
+        //             .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap()))
+        //             .collect();
+        //         Some(ContractStructure::new(contract_structure))
+        //     } else {
+        //         None
+        //     }
+        // 
+        // } else {None};
+        let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+        let end_of_month_convention = if eomc.is_none() {
+            EndOfMonthConvention::default()
+        } else {eomc.unwrap()};
+        let ct = ContractTerms {
+            calendar: calendar,
+            business_day_adjuster: business_day_adjuster,
+            end_of_month_convention: end_of_month_convention,
+            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
+            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
+            contract_role: contract_role,
+            creator_id: CreatorID::provide_from_input_dict(sm, "creatorID"),
+            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
+            contract_performance: ContractPerformance::provide_from_input_dict(sm, "contractPerformance"),
+            non_performing_date: NonPerformingDate::provide_from_input_dict(sm, "nonPerformingDate"),
+            grace_period: GracePeriod::provide_from_input_dict(sm, "gracePeriod"),
+            delinquency_period: DelinquencyPeriod::provide_from_input_dict(sm, "delinquencyPeriod"),
+            delinquency_rate: DelinquencyRate::provide_from_input_dict(sm, "delinquencyRate"),
+            guaranteed_exposure: GuaranteedExposure::provide_from_input_dict(sm, "guaranteedExposure"),
+            coverage_of_credit_enhancement: CoverageOfCreditEnhancement::provide_from_input_dict(sm, "coverageOfCreditEnhancement"),
+            credit_event_type_covered: credit_event_type_covered,
+            cycle_anchor_date_of_dividend: CycleAnchorDateOfDividend::provide_from_input_dict(sm, "cycleAnchorDateOfDividend"),
+            cycle_of_dividend: CycleOfDividend::provide_from_input_dict(sm, "cycleOfDividend"),
+            next_dividend_payment_amount: NextDividendPaymentAmount::provide_from_input_dict(sm, "nextDividendPaymentAmount"),
+            ex_dividend_date: ExDividendDate::provide_from_input_dict(sm, "exDividendDate"),
+            cycle_anchor_date_of_fee: CycleAnchorDateOfFee::provide_from_input_dict(sm, "cycleAnchorDateOfFee"),
+            cycle_of_fee: CycleOfFee::provide_from_input_dict(sm, "cycleOfFee"),
+            fee_basis: FeeBasis::provide_from_input_dict(sm, "feeBasis"),
+            fee_rate: FeeRate::provide_from_input_dict(sm, "feeRate"),
+            fee_accrued: FeeAccrued::provide_from_input_dict(sm, "feeAccrued"),
+            cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
+            cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(sm, "cycleOfInterestPayment"),
+            nominal_interest_rate: NominalInterestRate::provide_from_input_dict(sm, "nominalInterestRate"),
+            day_count_convention: day_count_convention,
+            currency: Currency::provide_from_input_dict(sm, "currency"),
+            exercise_date: ExerciseDate::provide_from_input_dict(sm, "exerciseDate"),
+            exercise_amount: ExerciseAmount::provide_from_input_dict(sm, "exerciseAmount"),
+            settlement_period: SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod"),
+            purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
+            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
+            termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
+            price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
+            ..Default::default()
+        };
+
+
+        self.contract_terms = ct;
+    }
+
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
+        self.contract_risk_factors = None;
+    }
+
+    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
+        self.contract_structure = None;
+    }
+
+    fn set_result_vec(&mut self) {
+        self.result_vec = Some(Vec::<ResultSet>::new());
+    }
+
+    fn schedule(&mut self, to: Option<IsoDatetime>) {
         let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
+        let model = &self.contract_terms;
         let maturity = Self::maturity(model);
 
         // Purchase
@@ -122,12 +300,12 @@ impl TraitContractModel for CEG {
             );
             events.push(e.to_iso_datetime_event());
 
-            let settlement_period = model.settlement_period.clone().unwrap();
+            let settlement_period = &self.contract_terms.settlement_period.clone().unwrap();
             let settlement_date = exercise_date.clone() + settlement_period.clone().value().clone();
             let e: ContractEvent<ExerciseDate, ExerciseDate> = EventFactory::create_event(
                 &Some(settlement_date),
                 &EventType::STD,
-                &model.currency,
+                &self.contract_terms.currency,
                 Some(Rc::new(POF_STD_CEG)),
                 Some(Rc::new(STF_STD_CEG)),
                 &model.business_day_adjuster,
@@ -136,40 +314,42 @@ impl TraitContractModel for CEG {
             events.push(e.to_iso_datetime_event());
         }
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-    fn apply(
-        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        model: &ContractModel,
-        observer: &DataObserver,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+    fn apply(&mut self, result_set_toogle: bool) {
+
+        // faut pas le mettre apres les borrow immutable ci dessous, lordre compte
+        if result_set_toogle == true {
+            self.result_vec_toggle = true;
+            self.set_result_vec();
+        }
+
+        let model = &self.contract_terms;
+
         let maturity = Self::maturity(model);
         let mut events = Self::add_external_xd_event(model, events, observer, &maturity).unwrap();
 
-        let mut states = Self::init_state_space(model, observer, &Some(Rc::new(maturity) )).expect("Failed to initialize states_space");
+        self.init_state_space(maturity);
+
 
         events.sort_by(|a, b|
             a.epoch_offset.cmp(&b.epoch_offset));
+
+        let mut i: usize = 0;
         for event in events.iter_mut() {
-            event.eval(
-                &mut states,
-                model,
-                observer,
-                &model.day_count_convention.clone(),
-                &model.business_day_adjuster.clone().unwrap(),
-            );
+            self.eval_pof_contract_event(i);
+            self.eval_stf_contract_event(i);
+
+            i+=1;
         }
 
-        Ok(events)
+        self.contract_events = events.clone();
     }
 
-    fn init_state_space(
-        model: &ContractModel,
-        observer: &DataObserver,
-        maturity: &Option<Rc<MaturityDate>>,
-    ) -> Result<StateSpace, String> {
-        let mut states = StateSpace::default();
+    fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) {
+        let model = &self.contract_terms;
+        let mut states = StatesSpace::default();
         states.maturity_date = Some(maturity.clone().unwrap().as_ref().clone());
         states.status_date = model.status_date.clone();
 
@@ -201,35 +381,94 @@ impl TraitContractModel for CEG {
         states.exercise_amount = model.exercise_amount.clone();
         states.exercise_date = model.exercise_date.clone();
 
-        Ok(states)
+        self.states_space = states;
     }
 
+    fn eval_pof_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                },
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            );
+            println!("{:?}", a);
+
+
+            self.contract_events[id_ce].payoff = Some(a);
+            // let curr_ce_clone = &curr_ce.clone();
+            if self.result_vec_toggle == true {
+                if let Some(rv) = &mut self.result_vec {
+                    let mut a = ResultSet::new();
+                    a.set_result_set(&self.states_space, &self.contract_events[id_ce]);
+
+                    rv.push(a)
+                }
+            }
+        }
+
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
+    fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let mut curr_ce= self.contract_events.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fstate.is_some() {
+            curr_ce.fstate.clone().unwrap().eval(
+                &curr_ce.get_schedule_time(),
+                &mut self.states_space,
+                &self.contract_terms,
+                {
+                    let a = &self.contract_risk_factors;
+                    if let Some(rfm) = a {
+                        Some(rfm)
+                    } else {
+                        None
+                    }
+                }
+                ,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            )
+            //self.contract_events[id_ce].payoff = Some(a);
+            //let b = curr_ce.set_payoff(a);
+            // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
+    }
 
 }
 
 impl CEG {
-    pub fn calculate_notional_principal(
-        states: &StateSpace,
-        model: &ContractModel,
-        observer: &DataObserver,
-        time: &IsoDatetime,
-    ) -> f64 {
+    pub fn calculate_notional_principal(&self, time: &IsoDatetime) -> f64 {
 
-        let covered_contract_refs = model.contract_structure.clone().unwrap().0
+        let covered_contract_refs = self.contract_structure.clone().unwrap().0
             .iter()
             .filter(|e| e.reference_role == ReferenceRole::COVE)
             .map(|cr| cr.clone())
             .collect::<Vec<_>>();
 
-        let states_at_time_point: Vec<StateSpace> = covered_contract_refs
+        let states_at_time_point: Vec<StatesSpace> = covered_contract_refs
             .iter()
             .map(|c| c.get_state_space_at_time_point(time.clone(), observer))
             .collect();
 
-        let role_sign = &model.contract_role.clone().unwrap().role_sign();
-        let coverage = model.coverage_of_credit_enhancement.clone().unwrap();
+        let role_sign = self.contract_terms.contract_role.clone().unwrap().role_sign();
+        let coverage = self.contract_terms.coverage_of_credit_enhancement.clone().unwrap();
 
-        match &model.guaranteed_exposure {
+        match &self.contract_terms.guaranteed_exposure {
             Some(GuaranteedExposure::NO(NO)) => coverage.value()
                 * role_sign
                 * states_at_time_point
@@ -280,7 +519,7 @@ impl CEG {
                     * market_object_codes
                     .iter()
                     .map(|code|
-                        observer.state_at(
+                        self.contract_risk_factors.state_at(
                             code.clone(),
                             time,
                             states,
@@ -291,13 +530,8 @@ impl CEG {
         }
     }
 
-    fn add_external_xd_event(
-        model: &ContractModel,
-        mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        observer: &DataObserver,
-        maturity: &MaturityDate,
-    ) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
-        let contract_identifiers: Vec<String> = model.contract_structure.clone().unwrap().0
+    fn add_external_xd_event(&self, maturity: &MaturityDate) -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String> {
+        let contract_identifiers: Vec<String> = self.contract_structure.clone().unwrap().0
             .iter()
             .map(|c|     {
                 let a = c.object.as_cm().unwrap().contract_id.clone().unwrap().value();
@@ -305,9 +539,9 @@ impl CEG {
             })
             .collect();
 
-        let credit_event_type_covered = model.credit_event_type_covered.clone().unwrap().values()[0].clone();
+        let credit_event_type_covered = self.contract_terms.credit_event_type_covered.clone().unwrap().values()[0].clone();
 
-        let observed_events = observer.events(model);
+        let observed_events = self.contract_risk_factors.events(&self.contract_terms);
 
         let ce_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = observed_events
             .into_iter()
@@ -326,11 +560,11 @@ impl CEG {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(ce_event.event_time.clone().unwrap()),
                 &EventType::XD,
-                &model.currency,
+                &self.contract_terms.currency,
                 Some(Rc::new(POF_XD_OPTNS)),
                 Some(Rc::new(STF_XD_CEG)),
                 &None,
-                &model.contract_id,
+                &self.contract_terms.contract_id,
             );
             events.push(e.to_owned());
 
@@ -340,11 +574,11 @@ impl CEG {
             let e: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::create_event(
                 &Some(settlement_date),
                 &EventType::STD,
-                &model.currency,
+                &self.contract_terms.currency,
                 Some(Rc::new(POF_STD_CEG)),
                 Some(Rc::new(STF_STD_CEG)),
-                &model.business_day_adjuster,
-                &model.contract_id,
+                &self.contract_terms.business_day_adjuster,
+                &self.contract_terms.contract_id,
             );
             events.push(e.to_iso_datetime_event());
         }
@@ -352,11 +586,11 @@ impl CEG {
         Ok(events)
     }
 
-    fn maturity(model: &ContractModel) -> MaturityDate {
-        if let Some(maturity_date) = model.maturity_date.clone().map(|rc| (*rc).clone()) {
+    fn maturity(&self) -> MaturityDate {
+        if let Some(maturity_date) = &self.contract_terms.maturity_date.clone().map(|rc| (*rc).clone()) {
             maturity_date.clone()
         } else {
-            let covered_contract_refs = model.contract_structure.clone().unwrap().0
+            let covered_contract_refs = &self.contract_structure.clone().unwrap()
                 .iter()
                 .filter(|e| e.reference_role == ReferenceRole::COVE)
                 .map(|cr| cr.clone())

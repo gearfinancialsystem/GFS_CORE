@@ -1,19 +1,19 @@
-use crate::attributes::ContractTerms::ContractModel;
+use lib_actus_terms::ContractTerms::ContractTerms;
 
-use crate::state_space::StateSpace::StateSpace;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_events::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::terms::grp_fees::FeeBasis::FeeBasis;
-use crate::terms::grp_fees::fee_basis::A::A;
-use crate::terms::grp_fees::FeeRate::FeeRate;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::traits::TraitOptionExt::TraitOptionExt;
-use crate::util_tests::essai_data_observer::DataObserver;
+use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
+use lib_actus_terms::terms::grp_fees::fee_basis::A::A;
+use lib_actus_terms::terms::grp_fees::FeeRate::FeeRate;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
+use lib_actus_types::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_AD_CEG;
@@ -22,9 +22,9 @@ impl TraitStateTransitionFunction for STF_AD_CEG {
     fn eval(
         &self,
         time: &IsoDatetime,
-        states: &mut StateSpace,
-        model: &ContractModel,
-        _risk_factor_model: &DataObserver,
+        states: &mut StatesSpace,
+        model: &ContractTerms,
+        _risk_factor_model: Option<&dyn TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -50,7 +50,7 @@ impl TraitStateTransitionFunction for STF_AD_CEG {
                 let cycle_period = cycle_of_fee.value().extract_period().unwrap();
 
                     //CycleUtils::parse_period(cycle_of_fee);
-                let future_status_date = status_date + cycle_period;
+                let future_status_date = status_date.value() + cycle_period;
                 let shifted_future_status_date = time_adjuster.shift_sc(&future_status_date.value());
 
                 let time_full_fee_cycle = day_counter.day_count_fraction(shifted_status_date, shifted_future_status_date);

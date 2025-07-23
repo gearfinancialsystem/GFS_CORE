@@ -1,13 +1,14 @@
 use std::os::linux::raw::stat;
-use crate::attributes::ContractTerms::ContractModel;
+use lib_actus_terms::ContractTerms::ContractTerms;
 
-use crate::state_space::StateSpace::StateSpace;
+use lib_actus_states_space::states_space::StatesSpace::StatesSpace;
 use lib_actus_events::traits::TraitPayOffFunction::TraitPayOffFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
-use crate::util_tests::essai_data_observer::DataObserver;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+
+use lib_actus_events::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_types::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct POF_IP_LAM;
@@ -17,8 +18,8 @@ impl TraitPayOffFunction for POF_IP_LAM {
         &self,
         time: &IsoDatetime,
         states: &StatesSpace,
-        model: &ContractModel,
-        risk_factor_model: &DataObserver,
+        model: &ContractTerms,
+        risk_factor_model: Option<&dyn TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
