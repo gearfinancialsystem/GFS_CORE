@@ -35,7 +35,7 @@ impl TraitStateTransitionFunction for STF_MD_OPTNS {
             let mut cbv = None;
             if let Some(rfm) = risk_factor_model {
                 cbv = rfm.state_at(
-                    contract_structure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap()
+                    contract_structure.clone().unwrap().get(0).unwrap().object.as_cm().unwrap(),
                     time,
                     states,
                     contract_terms,

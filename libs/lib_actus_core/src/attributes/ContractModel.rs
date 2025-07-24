@@ -50,7 +50,8 @@ pub enum ContractModel {
 impl ContractModel {
     
     pub fn new(sm_terms: &HashMap<String, Value>,
-               risk_factors: &Option<RiskFactorModel>) -> Result<ContractModel, String> {
+               risk_factors: &Option<RiskFactorModel>, 
+               result_set_toogle: bool) -> Result<ContractModel, String> {
         let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
             // "ANN" => {
@@ -183,8 +184,10 @@ impl ContractModel {
                 Ok(Self::PAM({
                     let mut c = PAM::new();
                     c.set_contract_terms(sm_terms);
+                    c.set_result_vec(result_set_toogle);
                     c.set_contract_risk_factors(risk_factors);
                     c.set_contract_structure(sm_terms);
+                    c.set_init_state_space();
                     c
                 }))
             },
@@ -260,34 +263,81 @@ impl ContractModel {
         }
     }
 
-    pub fn run_apply(&mut self, result_set_toogle: bool) {
+    pub fn run_apply(&mut self, stop_states_space_date: Option<IsoDatetime>) {
         match self {
-            // ContractModel::ANN(c) => {c.apply(result_set_toogle)},
-            // ContractModel::BCS(c) => {c.apply(result_set_toogle)},
-            // ContractModel::CAPFL(c) => {c.apply(result_set_toogle)},
-            // ContractModel::CEC(c) => {c.apply(result_set_toogle)},
-            // ContractModel::CEG(c) => {c.apply(result_set_toogle)},
-            // ContractModel::CLM(c) => {c.apply(result_set_toogle)},
-            // ContractModel::COM(c) => {c.apply(result_set_toogle)},
-            // ContractModel::CSH(c) => {c.apply(result_set_toogle)},
-            // ContractModel::FUTUR(c) => {c.apply(result_set_toogle)},
-            // ContractModel::FXOUT(c) => {c.apply(result_set_toogle)},
-            // ContractModel::LAM(c) => {c.apply(result_set_toogle)},
-            // ContractModel::LAX(c) => {c.apply(result_set_toogle)},
-            // ContractModel::NAM(c) => {c.apply(result_set_toogle)},
-            // ContractModel::OPTNS(c) => {c.apply(result_set_toogle)},
-            ContractModel::PAM(c) => {c.apply(result_set_toogle)},
-            // ContractModel::STK(c) => {c.apply(result_set_toogle)},
-            // ContractModel::SWAPS(c) => {c.apply(result_set_toogle)},
-            // ContractModel::SWPPV(c) => {c.apply(result_set_toogle)},
-            // ContractModel::UMP(c) => {c.apply(result_set_toogle)},
-
+            // ContractModel::ANN(c) => {c.apply()},
+            // ContractModel::BCS(c) => {c.apply()},
+            // ContractModel::CAPFL(c) => {c.apply()},
+            // ContractModel::CEC(c) => {c.apply()},
+            // ContractModel::CEG(c) => {c.apply()},
+            // ContractModel::CLM(c) => {c.apply()},
+            // ContractModel::COM(c) => {c.apply()},
+            // ContractModel::CSH(c) => {c.apply()},
+            // ContractModel::FUTUR(c) => {c.apply()},
+            // ContractModel::FXOUT(c) => {c.apply()},
+            // ContractModel::LAM(c) => {c.apply()},
+            // ContractModel::LAX(c) => {c.apply()},
+            // ContractModel::NAM(c) => {c.apply()},
+            // ContractModel::OPTNS(c) => {c.apply()},
+            ContractModel::PAM(c) => {c.apply(stop_states_space_date)},
+            // ContractModel::STK(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => {c.apply()},
+            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::UMP(c) => {c.apply()},
         }
     }
 
-    pub fn run(&mut self, to: Option<IsoDatetime>, result_set_toogle: bool) {
+    pub fn next(&mut self) {
+        match self {
+            // ContractModel::ANN(c) => {c.apply()},
+            // ContractModel::BCS(c) => {c.apply()},
+            // ContractModel::CAPFL(c) => {c.apply()},
+            // ContractModel::CEC(c) => {c.apply()},
+            // ContractModel::CEG(c) => {c.apply()},
+            // ContractModel::CLM(c) => {c.apply()},
+            // ContractModel::COM(c) => {c.apply()},
+            // ContractModel::CSH(c) => {c.apply()},
+            // ContractModel::FUTUR(c) => {c.apply()},
+            // ContractModel::FXOUT(c) => {c.apply()},
+            // ContractModel::LAM(c) => {c.apply()},
+            // ContractModel::LAX(c) => {c.apply()},
+            // ContractModel::NAM(c) => {c.apply()},
+            // ContractModel::OPTNS(c) => {c.apply()},
+            ContractModel::PAM(c) => {c.next()},
+            // ContractModel::STK(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => {c.apply()},
+            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::UMP(c) => {c.apply()},
+        }
+    }
+
+    pub fn get_current_datetime(&self) -> Option<IsoDatetime> {
+        match self {
+            // ContractModel::ANN(c) => {c.apply()},
+            // ContractModel::BCS(c) => {c.apply()},
+            // ContractModel::CAPFL(c) => {c.apply()},
+            // ContractModel::CEC(c) => {c.apply()},
+            // ContractModel::CEG(c) => {c.apply()},
+            // ContractModel::CLM(c) => {c.apply()},
+            // ContractModel::COM(c) => {c.apply()},
+            // ContractModel::CSH(c) => {c.apply()},
+            // ContractModel::FUTUR(c) => {c.apply()},
+            // ContractModel::FXOUT(c) => {c.apply()},
+            // ContractModel::LAM(c) => {c.apply()},
+            // ContractModel::LAX(c) => {c.apply()},
+            // ContractModel::NAM(c) => {c.apply()},
+            // ContractModel::OPTNS(c) => {c.apply()},
+            ContractModel::PAM(c) => {c.current_datetime},
+            // ContractModel::STK(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => {c.apply()},
+            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::UMP(c) => {c.apply()},
+        }
+    }
+    
+    pub fn run(&mut self, to: Option<IsoDatetime>, stop_states_space_date: Option<IsoDatetime>) {
         self.run_schedule(to);
-        self.run_apply(result_set_toogle);
+        self.run_apply(stop_states_space_date);
     }
 
 }

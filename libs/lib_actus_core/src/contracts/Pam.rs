@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 use std::ops::Deref;
+use std::process::exit;
 use std::rc::Rc;
 use std::str::FromStr;
 use crate::events::ContractEvent::ContractEvent;
@@ -114,12 +115,14 @@ use crate::traits::TraitContractModel::TraitContractModel;
 // use crate::util_tests::essai_load_results::ResultSet;
 
 use crate::attributes::ResultSet::ResultSet;
+use crate::types::IsoPeriod::IsoPeriod;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PAM {
     pub contract_terms: ContractTerms,
     pub contract_risk_factors: Option<RiskFactorModel>,
     pub contract_structure: Option<Vec<ContractReference>>,
+    pub current_datetime: Option<IsoDatetime>,
     pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
     pub states_space: StatesSpace,
     pub result_vec_toggle: bool,
@@ -134,6 +137,7 @@ impl TraitContractModel for PAM { //
             contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
             contract_risk_factors: None,
             contract_structure: None,
+            current_datetime: Some(IsoDatetime::from_str("1900-01-01T00:00:00").expect("have to be ok")),
             states_space: StatesSpace::default(),
             result_vec_toggle: false,
             result_vec: None,
@@ -289,12 +293,21 @@ impl TraitContractModel for PAM { //
 
     }
 
-    fn set_result_vec(&mut self) {
-        self.result_vec = Some(Vec::<ResultSet>::new()); //ResultSet::new()
+    fn set_result_vec(&mut self, result_set_toogle: bool) {
+        if result_set_toogle == true {
+            self.result_vec_toggle = true;
+            self.result_vec = Some(Vec::<ResultSet>::new());
+        }
+        //ResultSet::new()
     }
-    
-    /// Compute next events within the period up to `to` date based on the contract model
+
+    fn set_init_state_space(&mut self) {
+        let maturity = &self.contract_terms.maturity_date.clone();
+        self.init_state_space(maturity);
+    }
+
     fn schedule(&mut self, to: Option<IsoDatetime>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+
         let model = &self.contract_terms;
         let events = &mut self.contract_events;
         //let mut events: Vec<Box< dyn TraitContractEvent>> = Vec::new();
@@ -591,44 +604,27 @@ impl TraitContractModel for PAM { //
         self.contract_events = events.clone();
     }
 
-    /// Apply a set of events to the current state of a contract and return the post-event states
-    fn apply(&mut self, result_set_toogle: bool) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+    fn apply(&mut self, stop_states_space_date: Option<IsoDatetime>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
-        // faut pas le mettre apres les borrow immutable ci dessous, lordre compte
-        if result_set_toogle == true {
-            self.result_vec_toggle = true;
-            self.set_result_vec();
-        }
-
-        //let model = &mut self.contract_terms;
-        let risk_factors = &self.contract_risk_factors;
         let events = &mut self.contract_events.clone();
-
-        ////////////////////////////////////////////
-        // Initialize state space per status date //
-        ////////////////////////////////////////////
-        let _maturity = &self.contract_terms.maturity_date.clone();
-        self.init_state_space(_maturity);
-        let mut states = &mut self.states_space;
-
-
-
-        let mut events = events.clone();
+        // let mut events = events.clone();
 
         //////////////////////////////////////////////////
         // Sort events according to their time sequence //
         //////////////////////////////////////////////////
-        events.sort_by(|a, b|
-            a.epoch_offset.cmp(&b.epoch_offset));
+        self.sort_events();
 
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //
         ////////////////////////////////////////////////////////////////////
         let mut i: usize = 0;
         for event in events.iter_mut() {
+            if event.event_time > stop_states_space_date {
+                break
+            }
             self.eval_pof_contract_event(i);
             self.eval_stf_contract_event(i);
-
+            
             i+=1;
         }
 
@@ -657,11 +653,91 @@ impl TraitContractModel for PAM { //
         self.contract_events = events.clone();
     }
 
-    /// Initialize the StateSpace according to the model attributes
+    fn next(&mut self) {
+
+        // le but ici est de determiner le prochain event a executer, soit un event, soit None car cest fini
+        // pourrait largement etre simplifier
+        let mut next_event_datetime: Option<IsoDatetime> = None;
+        if self.current_datetime == Some(IsoDatetime::from_str("1900-01-01T00:00:00").expect("have to be ok")) {
+            next_event_datetime = {
+                let a = self.contract_events.get(0);
+                if a.is_some() {
+                    a.unwrap().event_time
+                }
+                else {
+                    None
+                }
+            };
+
+        }
+        else {
+            next_event_datetime = {
+                let filtered_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = self.contract_events.iter()
+                    .filter(|e| {
+                        e.event_time.map_or(false, |event_time| Some(event_time) > self.current_datetime)
+                    })
+                    .cloned()
+                    .collect();
+
+                let a: Option<Vec<ContractEvent<IsoDatetime, IsoDatetime>>> = if filtered_events.is_empty() {
+                    None
+                } else {
+                    Some(filtered_events)
+                };
+
+
+                if a.is_some() {
+                    let t = a.clone().unwrap().get(0).unwrap().clone();
+                    let q = t.event_time;
+                    // println!("q {:?}",q.unwrap());
+                    q
+                }
+                else {
+                    None
+                }
+            };
+        }
+
+        if next_event_datetime.is_none() {
+            return;
+        }
+        println!("curr date {:?}", self.current_datetime);
+        println!("next_event_datetime {:?}", next_event_datetime);
+        // filter tous les events avec cette date
+        if let Some(next_event_datetime) = next_event_datetime {
+            let (vec_indices, _vec_events) = self.contract_events
+                .iter()
+                .enumerate()
+                .filter(|(_, ce)| {
+                    ce.event_time.map_or(false, |event_time| event_time == next_event_datetime)
+                })
+                .fold((Vec::new(), Vec::new()),  |(mut indices, mut events), (index, ce)| {
+                        indices.push(index);
+                        events.push(ce.clone());
+                        (indices, events)
+                    });
+
+            for i_ce in vec_indices.into_iter() {
+                self.eval_pof_contract_event(i_ce);
+                self.eval_stf_contract_event(i_ce);
+            }
+
+            // self.current_datetime = next_event_datetime;
+
+        }
+
+        // println!("next_event_datetime {:?}", next_event_datetime);
+        self.current_datetime = next_event_datetime;
+
+    }
+
+    fn sort_events(&mut self) {
+        self.contract_events.sort_by(|a, b| a.epoch_offset.cmp(&b.epoch_offset));
+    }
+
     fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>)  { // -> Result<StatesSpace, String>
 
         let model = &self.contract_terms;
-        let risk_factors = &self.contract_risk_factors;
 
         let mut states = StatesSpace::default();
 
@@ -742,9 +818,7 @@ impl TraitContractModel for PAM { //
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
-            println!("{:?}", a);
-            
-
+            println!("{:?}\n", a);
             self.contract_events[id_ce].payoff = Some(a);
             // let curr_ce_clone = &curr_ce.clone();
             if self.result_vec_toggle == true {

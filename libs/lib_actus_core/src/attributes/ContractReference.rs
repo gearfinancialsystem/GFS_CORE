@@ -52,7 +52,9 @@ pub struct ContractReference {
 impl ContractReference {
     pub fn new(attributes: &HashMap<String, Value>,
                contract_role: &ContractRole,
-               risk_factor_model: &Option<RiskFactorModel>) -> Self {
+               risk_factor_model: &Option<RiskFactorModel>,
+               result_set_toogle: bool
+        ) -> Self {
         let reference_role = ReferenceRole::from_str(attributes.get("referenceRole").unwrap().as_string().unwrap().as_str()).unwrap();
         let reference_type = ReferenceType::from_str(attributes.get("referenceType").unwrap().as_string().unwrap().as_str()).unwrap();
         let object = match reference_type {
@@ -73,7 +75,7 @@ impl ContractReference {
                     }
                 }
                 
-                Object::ContractModel(ContractModel::new(&child_model, risk_factor_model).unwrap())
+                Object::ContractModel(ContractModel::new(&child_model, risk_factor_model, result_set_toogle).unwrap())
             },
             ReferenceType::CID => {
                 Object::String(attributes.get("object").unwrap().as_hashmap().unwrap().get("contract_identifier").unwrap().to_string())

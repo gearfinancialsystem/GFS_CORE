@@ -241,12 +241,22 @@ fn main() {
         test_id
     ));
 
-    let to = IsoDatetime::from_str("2014-12-31T23:59:59").unwrap();
-    let mut contract_model = ContractModel::new(&dico, &Some(rf)).ok();
+    let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
+    let stop_states_space_date = IsoDatetime::from_str("2013-06-01T00:00:00").unwrap();
+    let mut contract_model = ContractModel::new(&dico, &Some(rf), true).ok();
+
     if let Some(contract_model) = &mut contract_model {
-        contract_model.run(Some(to), true)
+         contract_model.run(Some(to), Some(stop_states_space_date))
     }
-    
+    // if let Some(contract_model) = &mut contract_model {
+    //     contract_model.run_schedule(Some(to));
+    //     
+    //     while contract_model.get_current_datetime().is_some() {
+    //         contract_model.next();
+    //     }
+    // }
+
+
     println!("ok");
     //let contract_model = Box::new(ContractModel::new(&dico));
 

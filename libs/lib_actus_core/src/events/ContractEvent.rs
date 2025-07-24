@@ -1,12 +1,6 @@
-
 use std::fmt;
 use std::rc::Rc;
-
-
-
 use std::hash::{Hash, Hasher};
-
-
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
@@ -14,12 +8,8 @@ use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::terms::grp_contract_identification::ContractID::ContractID;
-
-
-
 use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
-
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 

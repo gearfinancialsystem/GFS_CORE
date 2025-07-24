@@ -20,11 +20,17 @@ pub trait TraitContractModel {
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>);
 
-    fn set_result_vec(&mut self);
+    fn set_result_vec(&mut self, result_set_toogle: bool);
+    
+    fn set_init_state_space(&mut self);
 
     fn schedule(&mut self, to: Option<IsoDatetime>); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
 
-    fn apply(&mut self, result_set_toogle: bool); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+    fn apply(&mut self, stop_states_space_date: Option<IsoDatetime>); // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+
+    fn next(&mut self);
+
+    fn sort_events(&mut self);
 
     fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) ; // -> Result<StatesSpace, String>
 
