@@ -3,7 +3,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::time::ScheduleFactory::ScheduleFactory;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 pub struct RedemptionUtils;

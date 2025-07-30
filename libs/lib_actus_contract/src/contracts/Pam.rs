@@ -50,7 +50,7 @@ use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRa
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use lib_actus_terms::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
 use lib_actus_terms::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractTerms::ContractTerms;

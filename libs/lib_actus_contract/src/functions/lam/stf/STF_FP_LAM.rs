@@ -11,7 +11,7 @@ use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::external::RiskFactorModel::RiskFactorModel;
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_FP_LAM;

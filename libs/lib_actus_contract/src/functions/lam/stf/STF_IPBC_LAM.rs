@@ -12,7 +12,7 @@ use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::Interes
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_IPCB_LAM;

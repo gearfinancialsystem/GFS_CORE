@@ -6,7 +6,7 @@ use chrono::Datelike;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 
 
@@ -79,7 +79,7 @@ mod tests {
     use std::str::FromStr;
     use super::*;
     use chrono::NaiveDateTime;
-    use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+    use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
     use super::E30360ISDA;
     //use super::E30360ISDA;
     fn parse_date(date_str: &str) -> MaturityDate {

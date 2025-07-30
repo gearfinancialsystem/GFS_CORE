@@ -7,7 +7,7 @@ use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjust
 use lib_actus_terms::terms::grp_fees::fee_basis::A::A;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
 
 #[allow(non_camel_case_types)]

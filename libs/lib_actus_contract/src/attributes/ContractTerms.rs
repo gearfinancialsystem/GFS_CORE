@@ -12,7 +12,6 @@ use lib_actus_terms::terms::grp_calendar::Calendar::Calendar;
 use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
 use lib_actus_terms::terms::grp_contract_identification::ContractRole::ContractRole;
-// use crate::terms::grp_contract_identification::ContractStructure::ContractStructure;
 use lib_actus_terms::terms::grp_contract_identification::ContractType::ContractType;
 use lib_actus_terms::terms::grp_contract_identification::CreatorID::CreatorID;
 use lib_actus_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
@@ -115,7 +114,8 @@ use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use lib_actus_terms::terms::grp_settlement::FuturesPrice::FuturesPrice;
 use lib_actus_terms::terms::grp_settlement::SettlementCurrency::SettlementCurrency;
 use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+
 //use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension};
 
 use lib_actus_types::types::Value::Value;

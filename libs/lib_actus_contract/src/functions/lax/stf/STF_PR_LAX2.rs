@@ -13,7 +13,7 @@ use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::traits::TraitOptionExt::TraitOptionExt;
 
 #[allow(non_camel_case_types)]

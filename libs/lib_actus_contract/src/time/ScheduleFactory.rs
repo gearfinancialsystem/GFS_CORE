@@ -6,7 +6,7 @@ use std::marker::PhantomData;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use lib_actus_terms::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoCycle::{IsoCycle, LONG_STUB};
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 

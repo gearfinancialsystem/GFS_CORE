@@ -12,7 +12,7 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
 #[allow(non_camel_case_types)]
 pub struct STF_RRF_LAX {

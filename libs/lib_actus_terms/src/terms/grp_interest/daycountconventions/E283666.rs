@@ -7,7 +7,7 @@ use chrono::Datelike;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct E283666 {

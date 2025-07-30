@@ -1,8 +1,33 @@
 #[macro_export]
+macro_rules! define_phantom_imports_isodatetime {
+    (PhantomIsoDatetimeW) => {
+
+    };
+    ($struct_name:ident) => {
+        use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_phantom_type_isodatetime {
+    (PhantomIsoDatetimeW) => {
+        // Implémentation spécifique pour PhantomIsoDatetimeW
+        fn to_phantom_type(&self) -> Self {
+            *self
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_phantom_type(&self) -> PhantomIsoDatetimeW {
+            PhantomIsoDatetimeW::new(self.value()).expect("Conversion to PhantomIsoDatetimeW doesn't work")
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! define_struct_isodatetime {
     ($struct_name:ident) => {
         use chrono::NaiveDateTime;
-        use chrono::ParseResult;
         use std::str::FromStr;
         use std::collections::HashMap;
         use std::fmt;
@@ -14,7 +39,8 @@ macro_rules! define_struct_isodatetime {
         use lib_actus_types::types::IsoDatetime::IsoDatetime;
         use lib_actus_types::types::IsoPeriod::IsoPeriod;
         use lib_actus_types::types::Value::Value;
-        use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+        use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+        define_phantom_imports_isodatetime!($struct_name);
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
         pub struct $struct_name(IsoDatetime);
@@ -34,6 +60,9 @@ macro_rules! define_struct_isodatetime {
                     Err(e) => Err(format!("{}", e)),
                 }
             }
+
+            define_to_phantom_type_isodatetime!($struct_name);
+
         }
 
         impl $struct_name {
@@ -62,9 +91,14 @@ macro_rules! define_struct_isodatetime {
                 }
             }
 
-            pub fn add_period(&self, period: IsoPeriod) -> Self {
-                $struct_name(self.0.add(period))
+            pub fn add_period<P: Into<IsoPeriod>>(&self, period: P) -> Self {
+                $struct_name(self.0.add(period.into()))
             }
+
+            pub fn sub_period<P: Into<IsoPeriod>>(&self, period: P) -> Self {
+                $struct_name(self.0.sub(period.into()))
+            }
+
         }
 
         impl From<IsoDatetime> for $struct_name {
@@ -101,26 +135,7 @@ macro_rules! define_struct_isodatetime {
                 write!(f, "{}", self.0)
             }
         }
-        
-        impl<'a, P> Add<&'a P> for &'a $struct_name
-        where
-            P: AsRef<IsoPeriod> + 'a,
-        {
-            type Output = $struct_name;
-            fn add(self, other: &'a P) -> Self::Output {
-                self.add_period(other.as_ref().clone())
-            }
-        }
 
-        impl<'a, P> Sub<&'a P> for &'a $struct_name
-        where
-            P: AsRef<IsoPeriod> + 'a,
-        {
-            type Output = $struct_name;
-            fn sub(self, other: &'a P) -> Self::Output {
-                self.add_period(other.as_ref().clone())
-            }
-        }
 
     };
 }

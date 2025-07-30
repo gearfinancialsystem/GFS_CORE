@@ -8,7 +8,7 @@ use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjust
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 
 use crate::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct POF_TD_LAM;

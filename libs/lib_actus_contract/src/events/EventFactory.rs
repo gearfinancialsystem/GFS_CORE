@@ -12,7 +12,7 @@ use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;

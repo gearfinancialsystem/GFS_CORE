@@ -91,6 +91,7 @@ impl IsoPeriod {
     pub fn get_chronology(&self) -> String {
         "ISO".to_string()
     }
+    
     // Gets the amount of days of this IsoPeriod
     pub fn get_days(&self) -> i32 {
         self.days
@@ -232,8 +233,7 @@ impl IsoPeriod {
             None
         }
     }
-
-
+    
     // Returns a copy of this IsoPeriod with the specified IsoPeriod added
     pub fn plus(&self, amount_to_add: &IsoPeriod) -> Self {
         IsoPeriod {
@@ -293,6 +293,7 @@ impl IsoPeriod {
     pub fn to_total_months(&self) -> i32 {
         self.years * 12 + self.months
     }
+    
     pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
         string_map.get(key).and_then(|s| IsoPeriod::parsex(s.as_string().unwrap().as_str()))
     }
@@ -316,7 +317,6 @@ impl fmt::Display for IsoPeriod {
     }
 }
 
-
 // Implement Hash trait for IsoPeriod to enable hash_code method
 impl Hash for IsoPeriod {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -327,24 +327,3 @@ impl Hash for IsoPeriod {
 }
 
 
-impl Add<IsoDatetime> for IsoPeriod {
-    type Output = IsoDatetime;
-
-    fn add(self, other: IsoDatetime) -> IsoDatetime {
-        // Convert Yards to Meters and add to self
-        IsoDatetime(other.0.checked_add_days(Days::new(self.days as u64)).unwrap()
-            .checked_add_months(Months::new(self.months as u32)).unwrap()
-            .checked_add_months(Months::new((self.years * 12)as u32)).unwrap())
-    }
-}
-
-impl Sub<IsoDatetime> for IsoPeriod {
-    type Output = IsoDatetime;
-
-    fn sub(self, other: IsoDatetime) -> IsoDatetime {
-        // Convert Yards to Meters and add to self
-        IsoDatetime(other.0.checked_sub_days(Days::new(self.days as u64)).unwrap()
-            .checked_sub_months(Months::new(self.months as u32)).unwrap()
-            .checked_sub_months(Months::new((self.years * 12) as u32)).unwrap())
-    }
-}

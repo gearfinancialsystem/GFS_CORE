@@ -20,7 +20,7 @@ use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 
 
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;

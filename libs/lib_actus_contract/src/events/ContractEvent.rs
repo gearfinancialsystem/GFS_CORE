@@ -11,7 +11,7 @@ use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -40,8 +40,8 @@ impl<T1, T2> TraitContractEvent for ContractEvent<T1, T2> {}
 
 impl<T1, T2> ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
 {
     pub fn new (
         schedule_time: &Option<T1>,

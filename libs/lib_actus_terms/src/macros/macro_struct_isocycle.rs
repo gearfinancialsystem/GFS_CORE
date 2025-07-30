@@ -1,15 +1,40 @@
+#[macro_export]
+macro_rules! define_phantom_imports_isocycle {
+    (PhantomIsoCycleW) => {
 
+    };
+    ($struct_name:ident) => {
+        use crate::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_phantom_type_isocycle {
+    (PhantomIsoCycleW) => {
+        // Implémentation spécifique pour PhantomIsoDatetimeW
+        fn to_phantom_type(&self) -> Self {
+            *self
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_phantom_type(&self) -> PhantomIsoCycleW {
+            PhantomIsoCycleW::new(self.value().to_string()).expect("Conversion to PhantomIsoCycleW doesn't work")
+        }
+    };
+}
 
 #[macro_export]
 macro_rules! define_struct_isocycle {
     ($struct_name:ident) => {
         use lib_actus_types::types::Value::Value;
-        use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
+        use crate::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
         use lib_actus_types::types::IsoCycle::IsoCycle;
         use std::str::FromStr;
         use std::collections::HashMap;
         use std::fmt;
-
+        define_phantom_imports_isocycle!($struct_name);
+        
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
         pub struct $struct_name(IsoCycle);
 
@@ -47,6 +72,8 @@ macro_rules! define_struct_isocycle {
             fn set_value(&mut self, value: &IsoCycle) {
                 self.0 = value.clone();
             }
+            
+            define_to_phantom_type_isocycle!($struct_name);
         }
 
         //Implémentation du trait From<IsoDatetime>

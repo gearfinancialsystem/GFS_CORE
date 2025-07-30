@@ -16,7 +16,7 @@ use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_XD_CEG;
