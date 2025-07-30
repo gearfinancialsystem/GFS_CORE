@@ -1,7 +1,10 @@
 [workspace]
 members = [
-    "libs/lib_actus_core",
+    "libs/lib_actus_contract",
+    "libs/lib_actus_simulation",
     "libs/lib_actus_portfolio",
+    "libs/lib_actus_terms",
+    "libs/lib_actus_types",
     "main",
     "playground"]
 resolver = "2"

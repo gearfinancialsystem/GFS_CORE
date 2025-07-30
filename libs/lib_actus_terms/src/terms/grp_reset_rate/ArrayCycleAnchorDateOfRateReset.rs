@@ -1,0 +1,4 @@
+
+
+use crate::define_struct_vec_isodatetime;
+define_struct_vec_isodatetime!(ArrayCycleAnchorDateOfRateReset);

@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lib_actus_core = { path = "../libs/lib_actus_core" }
+lib_actus_contract = { path = "../libs/lib_actus_contract" }
+lib_actus_types = { path = "../libs/lib_actus_types" }
 
 

@@ -114,10 +114,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib_actus_core"
+name = "lib_actus_contract"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lib_actus_terms",
+ "lib_actus_types",
  "log",
  "regex",
  "serde",
@@ -129,8 +131,40 @@ name = "lib_actus_portfolio"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "lib_actus_core",
+ "lib_actus_contract",
  "regex",
+]
+
+[[package]]
+name = "lib_actus_simulation"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lib_actus_contract",
+ "regex",
+]
+
+[[package]]
+name = "lib_actus_terms"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "lib_actus_types",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "lib_actus_types"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -149,7 +183,8 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 name = "main"
 version = "0.1.0"
 dependencies = [
- "lib_actus_core",
+ "lib_actus_contract",
+ "lib_actus_types",
 ]
 
 [[package]]

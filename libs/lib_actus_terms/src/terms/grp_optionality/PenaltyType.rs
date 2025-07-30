@@ -1,0 +1,72 @@
+use std::collections::HashMap;
+use std::fmt;
+use std::str::FromStr;
+
+use crate::terms::grp_optionality::penalty_type::N::N;
+use crate::terms::grp_optionality::penalty_type::A::A;
+use crate::terms::grp_optionality::penalty_type::R::R;
+use crate::terms::grp_optionality::penalty_type::I::I;
+
+use lib_actus_types::types::Value::Value;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum PenaltyType {
+    N(N),
+    A(A),
+    R(R),
+    I(I),
+}
+
+impl PenaltyType {
+
+
+    pub fn new(element: &str) -> Result<Self, String> {
+        PenaltyType::from_str(element)
+    }
+
+    pub fn provide(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+
+        crate::utils::ProvideFuncs::provide(string_map, key)
+    }
+    pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
+        match string_map.get(key) {
+            None => None,// A VERIFIER // Clé absente : valeur par défaut dans un Some
+            Some(s) => {
+                match Self::from_str(s.as_string().unwrap().as_str()) {
+                    Ok(value) => Some(value), // Valeur valide
+                    Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?}", key, s),
+                }
+            }
+        }
+    }
+}
+
+impl FromStr for PenaltyType {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "N" => Ok(Self::N(N::new())),
+            "A" => Ok(Self::A(A::new())),
+            "R" => Ok(Self::R(R::new())),
+            "I" => Ok(Self::I(I::new())),
+            _ => Err(format!("Invalid PenaltyType {}", s))
+        }
+    }
+}
+
+impl Default for PenaltyType {
+    fn default() -> Self {
+        Self::N(N)
+    }
+}
+
+impl fmt::Display for PenaltyType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Self::N(N) => write!(f, "PenaltyType: {}", N.to_string()),
+            Self::A(A) => write!(f, "PenaltyType: {}", A.to_string()),
+            Self::R(R) => write!(f, "PenaltyType: {}", R.to_string()),
+            Self::I(I) => write!(f, "PenaltyType: {}", I.to_string()),
+        }
+    }
+}

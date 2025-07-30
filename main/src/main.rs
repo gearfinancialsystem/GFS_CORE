@@ -1,15 +1,11 @@
 
 use std::str::FromStr;
-
-use lib_actus_core::attributes::ContractModel::ContractModel;
-use lib_actus_core::traits::TraitContractModel::TraitContractModel;
-
-use lib_actus_core::external::JsonLoader::{load_test_case_terms};
-
-use lib_actus_core::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_core::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
-use lib_actus_core::types::IsoDatetime::IsoDatetime;
-//use lib_actus_core::util_tests::xTestsUtils::test_read_and_parse_json;
+// use lib_actus_contract::attributes::ContractModel::ContractModel;
+// use lib_actus_contract::external::JsonLoader::load_test_case_terms;
+// use lib_actus_contract::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
+// use lib_actus_contract::external::RiskFactorModel::RiskFactorModel;
+use lib_actus_types::types::IsoDatetime::IsoDatetime;
+//use lib_actus_contract::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
     //let mut dico= HashMap::new(); // HashMap<String, String>
@@ -217,12 +213,11 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_core/test_sets/actus-tests-pam.json";
+    let pathx = "libs/lib_actus_contract/test_sets/actus-tests-pam.json";
     let test_id = "pam01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
-    let mut dico = load_test_case_terms(pathx,
-                                                          test_id).unwrap();
+    // let mut dico = load_test_case_terms(pathx,test_id).unwrap();
 
     // let data_observed = essai_load_data_observed
     // ::load_data_observed(pathx, test_id).unwrap();
@@ -236,18 +231,18 @@ fn main() {
     //                                                     "USD");
 
 
-    let rf = RiskFactorModel::RiskFactorModel1(RiskFactorModel1::new_from(
-        pathx,
-        test_id
-    ));
+    //let rf = RiskFactorModel::RiskFactorModel1(RiskFactorModel1::new_from(
+    //    pathx,
+    //    test_id
+    //));
 
-    let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
-    let stop_states_space_date = IsoDatetime::from_str("2013-06-01T00:00:00").unwrap();
-    let mut contract_model = ContractModel::new(&dico, &Some(rf), true).ok();
+    //let to = IsoDatetime::from_str("2014-01-01T00:00:00").unwrap();
+    //let stop_states_space_date = IsoDatetime::from_str("2013-06-01T00:00:00").unwrap();
+    //let mut contract_model = ContractModel::new(&dico, &Some(rf), true).ok();
 
-    if let Some(contract_model) = &mut contract_model {
-         contract_model.run(Some(to), Some(stop_states_space_date))
-    }
+   // if let Some(contract_model) = &mut contract_model {
+    //     contract_model.run(Some(to), Some(stop_states_space_date))
+   // }
     // if let Some(contract_model) = &mut contract_model {
     //     contract_model.run_schedule(Some(to));
     //     
