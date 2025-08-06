@@ -48,7 +48,7 @@ use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::D::D;
 use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::Value::Value;
 use crate::functions::fxout::stf::STF_PRD_FXOUT::STF_PRD_FXOUT;

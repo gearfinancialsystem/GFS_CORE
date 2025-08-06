@@ -74,7 +74,7 @@ impl ResultSet {
     pub fn set_result_set(&mut self, curr_states: &StatesSpace,  source_ce: &ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>) {
         
         // comming from contract event
-        self.epoch_offset = source_ce.epoch_offset;
+        self.epoch_offset = source_ce.clone().epoch_offset;
         self.event_time = source_ce.event_time;
         self.event_type = Some(source_ce.event_type);
         self.currency = source_ce.currency.clone();

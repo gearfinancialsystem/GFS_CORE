@@ -7,6 +7,8 @@ use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::IsoPeriod::IsoPeriod;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 
 /// Implementation of the Modified Preceding business day convention
 ///
@@ -48,17 +50,17 @@ impl TraitBusinessDayAdjuster for ModifiedPreceeding {
     /// # Returns
     ///
     /// * The shifted date (a business day)
-    fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
+    fn shift(&self, date: &PhantomIsoDatetimeW) -> PhantomIsoDatetimeW {
         let mut shifted_date = *date;
         while !self.calendar.is_business_day(&shifted_date) {
             // shifted_date -= Duration::days(1);
-            shifted_date = shifted_date - IsoPeriod::new(0,0,1);
+            shifted_date = shifted_date.sub_period(PhantomIsoPeriodW::new(0,0, 1));
         }
         if shifted_date.month() != date.month() {
             shifted_date = *date;
             while !self.calendar.is_business_day(&shifted_date) {
                 //shifted_date += Duration::days(1);
-                shifted_date = shifted_date + IsoPeriod::new(0,0,1);
+                shifted_date = shifted_date.add_period(PhantomIsoPeriodW::new(0,0, 1));
             }
         }
         shifted_date

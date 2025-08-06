@@ -7,7 +7,7 @@ use crate::attributes::ContractTerms::ContractTerms;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 

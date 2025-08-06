@@ -9,6 +9,7 @@ use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum Calendar {
@@ -37,7 +38,7 @@ impl Calendar {
 }
 
 impl TraitBusinessDayCalendar for Calendar {
-    fn is_business_day(&self, date: &IsoDatetime) -> bool {
+    fn is_business_day(&self, date: &PhantomIsoDatetimeW) -> bool {
         match self {
             Self::NC(NC) => NC.is_business_day(date),
             Self::MF(MF) => MF.is_business_day(date)

@@ -5,9 +5,11 @@ use std::rc::Rc;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use lib_actus_types::types::IsoPeriod::IsoPeriod;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
+
 #[derive(Clone, Debug)]
 pub struct Following {
     pub calendar: Rc<Calendar>,
@@ -32,11 +34,11 @@ impl Following {
 
 impl TraitBusinessDayAdjuster for Following {
     /// Décale la date tant que celle-ci n'est pas ouvrée selon le calendrier.
-    fn shift(&self, date: &IsoDatetime) -> IsoDatetime {
+    fn shift(&self, date: &PhantomIsoDatetimeW) -> PhantomIsoDatetimeW {
         let mut shifted_date = *date;
         while !self.calendar.is_business_day(&shifted_date) {
             //shifted_date +=  IsoPeriod::new(0,0, 1) ; // Duration::days(1)
-            shifted_date = shifted_date + IsoPeriod::new(0,0, 1)
+            shifted_date = shifted_date.add_period(PhantomIsoPeriodW::new(0,0, 1))
         }
         shifted_date
     }

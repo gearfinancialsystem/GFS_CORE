@@ -20,7 +20,7 @@ use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
 use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_dividend::CycleAnchorDateOfDividendPayment::CycleAnchorDateOfDividendPayment;
 use crate::terms::grp_dividend::CycleOfDividendPayment::CycleOfDividendPayment;
@@ -39,7 +39,7 @@ use crate::terms::grp_notional_principal::MarketValueObserved::MarketValueObserv
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_notional_principal::Quantity::Quantity;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;

@@ -33,7 +33,7 @@ use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
 use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
 use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use crate::terms::grp_reset_rate::RateSpread::RateSpread;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::ContractModel::ContractModel;
@@ -64,7 +64,7 @@ use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalSca
 use crate::terms::grp_notional_principal::XDayNotice::XDayNotice;
 use crate::terms::grp_reset_rate::CycleAnchorDateOfRateReset::CycleAnchorDateOfRateReset;
 use crate::terms::grp_reset_rate::CycleOfRateReset::CycleOfRateReset;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 

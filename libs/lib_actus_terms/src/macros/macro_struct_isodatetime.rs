@@ -28,6 +28,8 @@ macro_rules! define_to_phantom_type_isodatetime {
 macro_rules! define_struct_isodatetime {
     ($struct_name:ident) => {
         use chrono::NaiveDateTime;
+        use chrono::Weekday;
+        use chrono::Datelike;
         use std::str::FromStr;
         use std::collections::HashMap;
         use std::fmt;
@@ -99,6 +101,31 @@ macro_rules! define_struct_isodatetime {
                 $struct_name(self.0.sub(period.into()))
             }
 
+            pub fn year(&self) -> i32 {
+                self.0.0.year()
+            }
+
+            pub fn month(&self) -> u32 {
+                self.0.0.month()
+            }
+
+            pub fn day(&self) -> u32 {
+                self.0.0.day()
+            }
+
+            pub fn leap_year(&self) -> bool {
+                self.0.0.date().leap_year()
+            }
+
+            pub fn weekday(&self) -> Weekday {
+                self.0.0.date().weekday()
+            }
+            pub fn is_last_day_of_month(&self) -> bool {
+                self.0.is_last_day_of_month()
+            }
+            pub fn timestamp_millis(&self) -> i64 {
+                self.0.0.and_utc().timestamp_millis()
+            }
         }
 
         impl From<IsoDatetime> for $struct_name {

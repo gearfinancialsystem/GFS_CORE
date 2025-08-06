@@ -8,7 +8,7 @@ use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
 use crate::traits::TraitOptionExt::TraitOptionExt;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 
 

@@ -12,7 +12,7 @@ use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -24,8 +24,8 @@ pub struct EventFactory<T1, T2> {
 
 impl<T1, T2> EventFactory<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T1: TraitMarkerIsoDatetime + From<IsoDatetime>,
+    T2: TraitMarkerIsoDatetime + From<IsoDatetime>,
 {
     // Créez une nouvelle instance de EventFactory
     pub fn new() -> Self {
@@ -52,7 +52,7 @@ where
             dd = Some(T2::from(schedule_time_copy));
         }
         else {
-            let time = schedule_time.as_ref().unwrap().value();
+            let time = schedule_time.as_ref().unwrap().as_ref().unwrap().value();
             let adjusted_time = convention.clone().unwrap().shift_bd(&time);
             let conventionx = Some(T2::from(adjusted_time));
             dd = conventionx.clone()

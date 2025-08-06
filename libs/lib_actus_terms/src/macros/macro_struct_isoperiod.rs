@@ -1,3 +1,29 @@
+
+#[macro_export]
+macro_rules! define_phantom_imports_isoperiod {
+    (PhantomIsoPeriodW) => {
+
+    };
+    ($struct_name:ident) => {
+        use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_phantom_type_isoperiod {
+    (PhantomIsoPeriodW) => {
+        fn to_phantom_type(&self) -> Self {
+            self.clone()
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_phantom_type(&self) -> PhantomIsoPeriodW {
+            PhantomIsoPeriodW::new(self.years, self.months, self.days)
+        }
+    };
+}
+
 #[macro_export]
 macro_rules! define_struct_isoperiod {
     ($struct_name:ident) => {
@@ -5,32 +31,23 @@ macro_rules! define_struct_isoperiod {
         use lib_actus_types::types::IsoPeriod::IsoPeriod;
         use lib_actus_types::types::IsoDatetime::IsoDatetime;
         use lib_actus_types::types::Value::Value;
-        
+        use crate::traits::types_markers::TraitMarkerIsoPeriod::TraitMarkerIsoPeriod;
         use std::collections::HashMap;
+        use std::fmt;
         use std::str::FromStr;
         use std::ops::Deref;
         use std::convert::AsRef;
         use std::borrow::Borrow;
         use std::ops::{Add, Sub};
 
-        #[derive(PartialEq, Debug, Clone)]
+        define_phantom_imports_isoperiod!($struct_name);
+
+        #[derive(PartialEq, Debug, Clone, Copy, Hash)]
         pub struct $struct_name(IsoPeriod);
 
         impl $struct_name {
             pub fn new(years: i32, months: i32, days: i32) -> Self {
                 $struct_name(IsoPeriod::new(years, months, days))
-            }
-
-            pub fn value(&self) -> IsoPeriod {
-                self.0
-            }
-
-            pub fn set_value(&mut self, value: IsoPeriod) {
-                self.0 = value;
-            }
-
-            pub fn parse_from_string(s: &str) -> Option<IsoPeriod> {
-                IsoPeriod::parsex(s)
             }
             
             pub fn provide_from_input_dict(string_map: &HashMap<String, Value>, key: &str) -> Option<Self> {
@@ -44,6 +61,23 @@ macro_rules! define_struct_isoperiod {
                     }
                 }
             }
+        }
+
+
+        impl TraitMarkerIsoPeriod for $struct_name {
+            fn value(&self) -> IsoPeriod {
+                self.0
+            }
+
+            fn set_value(&mut self, value: &IsoPeriod) {
+                self.0 = *value;
+            }
+
+            fn parse_from_string(s: &str) -> Result<IsoPeriod, String> {
+                IsoPeriod::parsex(s).ok_or_else(|| "parsing err".to_string())
+            }
+
+            define_to_phantom_type_isoperiod!($struct_name);
         }
 
         impl FromStr for $struct_name {
@@ -83,16 +117,11 @@ macro_rules! define_struct_isoperiod {
             }
         }
         
-        
-        impl<'a, DT> Add<&'a DT> for &'a $struct_name
-        where
-            DT: AsRef<IsoDatetime> + 'a,
-        {
-            type Output = IsoDatetime;
-            fn add(self, other: &'a DT) -> Self::Output {
-                // Accès via le trait AsRef
-                other.as_ref().add(self.0.clone())
+        impl fmt::Display for $struct_name {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{}", self.0)
             }
         }
+
     };
 }

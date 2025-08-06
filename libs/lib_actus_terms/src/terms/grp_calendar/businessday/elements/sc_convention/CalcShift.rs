@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[derive(Clone, Debug, Eq, PartialEq, Copy)]
 pub struct CalcShift;
@@ -15,7 +15,7 @@ impl CalcShift {
 
 impl TraitShiftCalcConvention for CalcShift {
     /// Returns the `time` unshifted
-    fn shift(&self, time: &IsoDatetime, _convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
+    fn shift(&self, time: &PhantomIsoDatetimeW, _convention: &dyn TraitBusinessDayAdjuster) -> PhantomIsoDatetimeW {
         *time
     }
     

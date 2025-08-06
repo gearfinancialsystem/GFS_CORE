@@ -4,6 +4,7 @@ use std::rc::Rc;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use chrono::Datelike;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
@@ -21,7 +22,7 @@ impl E283666 {
 }
 impl TraitDayCountConvention for E283666 {
     /// Calcule le nombre de jours, selon la convention 28/336
-    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    fn day_count(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         // Ajustement de d1
         let mut d1 = start_time.day();
         if start_time.is_last_day_of_month() {
@@ -33,7 +34,7 @@ impl TraitDayCountConvention for E283666 {
 
         if self.maturity_date.is_some() {
             let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
-            if !(end_time == a.value() || end_time.month() == 2)
+            if !(end_time == a.to_phantom_type() || end_time.month() == 2)
             && end_time.is_last_day_of_month() {
                 d2 = 28;
             }
@@ -50,7 +51,7 @@ impl TraitDayCountConvention for E283666 {
     }
 
     /// Calcule la fraction (days / 336.0)
-    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    fn day_count_fraction(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         self.day_count(start_time, end_time) / 336.0
     }
 }

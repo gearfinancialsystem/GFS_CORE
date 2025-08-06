@@ -16,6 +16,7 @@ use crate::terms::grp_interest::daycountconventions::B252::B252;
 use crate::terms::grp_interest::daycountconventions::E30360ISDA::E30360ISDA;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use lib_actus_types::types::Value::Value;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum DayCountConvention {
@@ -40,7 +41,7 @@ impl DayCountConvention {
         }
     }
 
-    pub fn day_count(&self,start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    pub fn day_count(&self,start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         match self {
             DayCountConvention::AAISDA(AAISDA) => AAISDA.day_count(start_time, end_time),
             DayCountConvention::A360(A360) => A360.day_count(start_time, end_time),
@@ -54,7 +55,7 @@ impl DayCountConvention {
         }
     }
 
-    pub fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    pub fn day_count_fraction(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         match self {
             DayCountConvention::AAISDA(AAISDA) => AAISDA.day_count_fraction(start_time, end_time),
             DayCountConvention::A360(A360) => A360.day_count_fraction(start_time, end_time),

@@ -66,11 +66,11 @@ use crate::terms::grp_reset_rate::MarketObjectCodeOfRateReset::MarketObjectCodeO
 use crate::terms::grp_reset_rate::NextResetRate::NextResetRate;
 use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use crate::terms::grp_reset_rate::RateSpread::RateSpread;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::CreatorID::CreatorID;
 use crate::terms::grp_interest::NominalInterestRate2::NominalInterestRate2;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SWPPV {

@@ -68,7 +68,7 @@ use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::ExerciseAmount::ExerciseAmount;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;

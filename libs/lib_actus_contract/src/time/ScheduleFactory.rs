@@ -3,10 +3,9 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::marker::PhantomData;
-use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
-use lib_actus_terms::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoCycle::{IsoCycle, LONG_STUB};
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
@@ -17,10 +16,10 @@ pub struct ScheduleFactory<T1, T2,U, TO, > {
 
 impl<T1, T2, U, TO> ScheduleFactory<T1, T2,U, TO>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    U: TraitMarqueurIsoCycle + Clone + PartialEq + Debug + Hash + From<IsoCycle>,
-    TO: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime> + Eq,
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    U: TraitMarkerIsoCycle + Clone + PartialEq + Debug + Hash + From<IsoCycle>,
+    TO: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime> + Eq,
 {
 
     pub fn create_schedule(

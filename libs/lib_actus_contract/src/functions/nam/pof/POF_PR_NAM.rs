@@ -7,7 +7,7 @@ use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
 #[allow(non_camel_case_types)]
 pub struct POF_PR_NAM;

@@ -114,7 +114,7 @@ use lib_actus_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use lib_actus_terms::terms::grp_settlement::FuturesPrice::FuturesPrice;
 use lib_actus_terms::terms::grp_settlement::SettlementCurrency::SettlementCurrency;
 use lib_actus_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 //use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension};
 

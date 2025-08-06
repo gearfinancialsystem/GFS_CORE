@@ -7,6 +7,7 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitBusinessDayAdjuster::TraitBusinessDayAdjuster;
 use crate::traits::TraitCalcConvention::TraitShiftCalcConvention;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CSF {
@@ -25,12 +26,12 @@ impl CSF {
     
     /// Applique le décalage selon la convention de shift (scConvention)
     /// en passant un trait object pour la BDC.
-    pub fn shift_sc(&self, date: &IsoDatetime, convention: &dyn TraitBusinessDayAdjuster) -> IsoDatetime {
+    pub fn shift_sc(&self, date: &PhantomIsoDatetimeW, convention: &dyn TraitBusinessDayAdjuster) -> PhantomIsoDatetimeW {
         self.scConvention.shift(date, convention)
     }
 
     /// Applique le décalage via la BDC locale (bdConvention)
-    pub fn shift_bd(&self, date: &IsoDatetime) -> IsoDatetime {
+    pub fn shift_bd(&self, date: &PhantomIsoDatetimeW) -> PhantomIsoDatetimeW {
         self.bdConvention.shift(date)
     }
 }

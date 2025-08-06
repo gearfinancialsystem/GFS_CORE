@@ -1,6 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-// use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+// use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::types::cycle_adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster;
 use crate::types::cycle_adjuster::WeekdayCycleAdjuster::WeekdayCycleAdjuster;
 use crate::types::IsoPeriod::IsoPeriod;
@@ -39,7 +39,7 @@ impl IsoCycle {
     }
 }
 
-// impl TraitMarqueurIsoCycle for IsoCycle {
+// impl TraitMarkerIsoCycle for IsoCycle {
 //     // Get the IsoCycle value
 //     fn value(&self) -> IsoCycle {
 //         self.clone()

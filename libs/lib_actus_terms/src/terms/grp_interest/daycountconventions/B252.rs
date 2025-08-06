@@ -4,6 +4,8 @@ use std::rc::Rc;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use chrono::Duration;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 use crate::terms::grp_calendar::Calendar::Calendar;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
@@ -32,7 +34,7 @@ impl B252 {
 impl TraitDayCountConvention for B252 {
 
     /// Calculates the number of business days between two dates
-    fn day_count(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    fn day_count(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         let mut date = start_time;
         let mut days_count = 0;
         let q = end_time.numdays_between_dates(&start_time) as i32; // A voir
@@ -40,14 +42,15 @@ impl TraitDayCountConvention for B252 {
             if self.calendar.is_business_day(&date) {
                 days_count += 1;
             }
-            date = IsoDatetime(*date + Duration::days(1));
+            date = date.add_period(PhantomIsoPeriodW::new(0,0,1));
+                
         }
 
         days_count as f64
     }
 
     /// Calculates the day count fraction based on the Business-252 convention
-    fn day_count_fraction(&self, start_time: IsoDatetime, end_time: IsoDatetime) -> f64 {
+    fn day_count_fraction(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
         self.day_count(start_time, end_time) as f64 / 252.0
     }
 }

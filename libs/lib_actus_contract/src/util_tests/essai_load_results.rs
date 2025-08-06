@@ -295,7 +295,7 @@ pub fn load_results(
 }
 
 use std::fmt;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 impl fmt::Display for ResultSet {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

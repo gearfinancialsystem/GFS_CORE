@@ -2,6 +2,7 @@ use chrono::Datelike;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use std::fmt;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 /// Monday to Friday Calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -15,7 +16,7 @@ impl MF {
 }
 
 impl TraitBusinessDayCalendar for MF {
-    fn is_business_day(&self, date: &IsoDatetime) -> bool {
+    fn is_business_day(&self, date: &PhantomIsoDatetimeW) -> bool {
         let day_of_week = date.weekday().number_from_monday();
         day_of_week <= 5
     }

@@ -57,7 +57,7 @@ use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
 use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
 use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use crate::terms::grp_reset_rate::RateSpread::RateSpread;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
 use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
@@ -65,7 +65,7 @@ use crate::terms::grp_notional_principal::InterestScalingMultiplier::InterestSca
 use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use crate::terms::grp_notional_principal::XDayNotice::XDayNotice;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;
 

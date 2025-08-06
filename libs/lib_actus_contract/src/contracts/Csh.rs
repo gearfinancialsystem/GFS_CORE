@@ -87,7 +87,7 @@ use crate::terms::grp_reset_rate::PeriodCap::PeriodCap;
 use crate::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
 use crate::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use crate::terms::grp_reset_rate::RateSpread::RateSpread;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::CreatorID::CreatorID;

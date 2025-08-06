@@ -23,7 +23,7 @@ use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
 use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::Value::Value;
 use crate::external::RiskFactorModel::RiskFactorModel;
@@ -36,7 +36,7 @@ use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
 use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 

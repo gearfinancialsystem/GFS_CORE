@@ -20,7 +20,7 @@ use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 
 
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -50,8 +50,8 @@ impl<T1, T2> TraitContractEvent for ContractEvent<T1, T2> {}
 
 impl<T1, T2> ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
 {
     pub fn new (
         schedule_time: &Option<T1>,
@@ -335,8 +335,8 @@ where
 // Implémentation manuelle de Debug pour ContractEvent
 impl<T1, T2> Debug for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
@@ -356,8 +356,8 @@ where
 
 impl<T1, T2> PartialOrd for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -366,8 +366,8 @@ where
 
 impl<T1, T2> Ord for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn cmp(&self, other: &Self) -> Ordering {
         self.epoch_offset.cmp(&other.epoch_offset)
@@ -377,8 +377,8 @@ where
 
 impl<T1, T2> PartialEq for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn eq(&self, other: &Self) -> bool {
         // Comparaison des champs standards
@@ -408,8 +408,8 @@ where
 // // Implémentation manuelle de PartialEq pour ContractEvent
 // impl<T1, T2> PartialEq for ContractEvent<T1, T2>
 // where
-//     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-//     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+//     T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+//     T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 // {
 //     fn eq(&self, other: &Self) -> bool {
 //         self.contract_id == other.contract_id
@@ -424,14 +424,14 @@ where
 // }
 impl<T1, T2> Eq for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {}
 
 // impl<T1, T2> Hash for ContractEvent<T1, T2>
 // where
-//     T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-//     T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+//     T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+//     T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 // {
 //     fn hash<H: Hasher>(&self, state: &mut H) {
 //         self.contract_id.hash(state);
@@ -448,8 +448,8 @@ where
 
 impl<T1, T2> Hash for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
         // Hachage des champs standards

@@ -1,6 +1,7 @@
 use std::fmt;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 /// No holiday calendar
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -14,7 +15,7 @@ impl NC {
 }
 
 impl TraitBusinessDayCalendar for NC {
-    fn is_business_day(&self, _date: &IsoDatetime) -> bool {
+    fn is_business_day(&self, _date: &PhantomIsoDatetimeW) -> bool {
         true
     }
 }

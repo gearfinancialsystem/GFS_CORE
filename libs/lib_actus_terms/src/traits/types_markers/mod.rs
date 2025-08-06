@@ -1,4 +1,4 @@
 pub mod TraitMarkerIsoCycle;
 pub mod TraitMarkerIsoDatetime;
-mod TraitMarkerF64;
-mod TraitIsoPeriod;
+pub mod TraitMarkerF64;
+pub mod TraitMarkerIsoPeriod;

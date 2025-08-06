@@ -16,6 +16,7 @@ use crate::terms::grp_calendar::Calendar::Calendar;
 // use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
+use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BusinessDayAdjuster {
@@ -36,7 +37,7 @@ impl BusinessDayAdjuster {
         BusinessDayAdjuster::parse(element, calendar)
     }
     
-    pub fn shift_bd(&self, date: &IsoDatetime) -> IsoDatetime {
+    pub fn shift_bd(&self, date: &PhantomIsoDatetimeW) -> PhantomIsoDatetimeW {
         match self {
             Self::NOS(v)   => v.shift_bd(date),
             Self::SCF(v)   => v.shift_bd(date),
@@ -50,7 +51,7 @@ impl BusinessDayAdjuster {
         }
     }
 
-    pub fn shift_sc(&self, date: &IsoDatetime) -> IsoDatetime { // convention: &dyn TraitBusinessDayAdjuster
+    pub fn shift_sc(&self, date: &PhantomIsoDatetimeW) -> PhantomIsoDatetimeW { // convention: &dyn TraitBusinessDayAdjuster
         match self {
             Self::NOS(v)   => v.shift_sc(date, &v.bdConvention), // convention
             Self::SCF(v)   => v.shift_sc(date, &v.bdConvention),

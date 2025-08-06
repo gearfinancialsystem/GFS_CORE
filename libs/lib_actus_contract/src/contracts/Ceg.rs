@@ -30,7 +30,7 @@ use crate::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDa
 use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
 use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
 use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::traits::TraitMarqueurIsoCycle::TraitMarqueurIsoCycle;
+use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::CreatorID::CreatorID;
 use crate::terms::grp_counterparty::ContractPerformance::ContractPerformance;
@@ -70,7 +70,7 @@ use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use crate::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use crate::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::types::Value::Value;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::traits::TraitContractModel::TraitContractModel;

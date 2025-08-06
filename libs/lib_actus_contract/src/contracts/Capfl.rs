@@ -26,7 +26,7 @@ use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCod
 use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
 use crate::terms::grp_notional_principal::Currency::Currency;
 use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use crate::traits::TraitMarqueurIsoDatetime::TraitMarqueurIsoDatetime;
+use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::terms::grp_contract_identification::ContractType::ContractType;
 use crate::terms::grp_contract_identification::StatusDate::StatusDate;
 use crate::terms::grp_interest::DayCountConvention::DayCountConvention;

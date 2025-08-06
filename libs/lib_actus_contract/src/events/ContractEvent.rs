@@ -11,7 +11,7 @@ use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
-use lib_actus_terms::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -102,8 +102,8 @@ where
     pub fn chg_event_type(&mut self, event_type: EventType) {
         self.event_type = event_type;
         // this.epoch_offset = event_time.toEpochSecond(ZoneOffset.UTC) + EventSequence.timeOffset(event_type);
-        let a = self.get_event_time().and_utc().timestamp_millis() + EventSequence::time_offset(&event_type);
-        self.epoch_offset = Some(PhantomF64W::new(a as f64).unwrap() );
+        let a = self.get_event_time().timestamp_millis() as f64 + EventSequence::time_offset(&event_type) as f64;
+        self.epoch_offset = Some(PhantomF64W::new(a).unwrap() );
     }
     pub fn currency(&self) -> Currency {
         self.currency.clone().unwrap()
@@ -131,7 +131,7 @@ where
         ContractEvent {
             _marker_t1: PhantomData,
             _marker_t2: PhantomData,
-            epoch_offset: self.epoch_offset,
+            epoch_offset: self.epoch_offset.clone(),
             fstate: self.fstate.clone(),
             fpayoff: self.fpayoff.clone(),
             event_time: self.event_time.clone(),
@@ -146,7 +146,7 @@ where
     pub fn to_string(&self) -> String {
         format!(
             "{} {} {} {:?} {} {}",
-            self.epoch_offset.unwrap(),
+            self.epoch_offset.clone().unwrap(),
             self.get_event_time(),
             self.get_schedule_time(),
             self.event_type,
@@ -161,8 +161,8 @@ where
 // Implémentation manuelle de Debug pour ContractEvent
 impl<T1, T2> Debug for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
@@ -179,8 +179,8 @@ where
 
 impl<T1, T2> PartialOrd for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -189,8 +189,8 @@ where
 
 impl<T1, T2> Ord for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn cmp(&self, other: &Self) -> Ordering {
         self.epoch_offset.cmp(&other.epoch_offset)
@@ -200,8 +200,8 @@ where
 
 impl<T1, T2> PartialEq for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn eq(&self, other: &Self) -> bool {
         // Comparaison des champs standards
@@ -230,15 +230,15 @@ where
 
 impl<T1, T2> Eq for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {}
 
 
 impl<T1, T2> Hash for ContractEvent<T1, T2>
 where
-    T1: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarqueurIsoDatetime + Clone + PartialEq + Debug + Hash
+    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
+    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
         // Hachage des champs standards
