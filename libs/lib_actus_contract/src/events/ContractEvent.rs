@@ -53,6 +53,7 @@ where
         contract_id: &Option<ContractID>,
     ) -> Self
     {
+        println!("ok2");
         let epoch_millis = event_time.clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
         let epoch_offset = epoch_millis + EventSequence::time_offset(event_type);
 
