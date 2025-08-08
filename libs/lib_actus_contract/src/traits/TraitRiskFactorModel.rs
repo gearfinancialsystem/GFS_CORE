@@ -8,7 +8,7 @@ use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 
 
-pub trait TraitRiskFactorModel {
+pub trait TraitRiskFactorModel: Copy + Clone {
     /// Returns the set of unique risk factor IDs
     fn keys(&self) -> Option<HashSet<String>>;
 

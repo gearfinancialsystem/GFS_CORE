@@ -24,8 +24,8 @@ pub struct ContractEvent<T1, T2> {
     pub _marker_t2: PhantomData<T2>,
 
     pub epoch_offset: Option<PhantomF64W>,
-    pub fstate: Option<Rc<dyn TraitStateTransitionFunction>>,
-    pub fpayoff: Option<Rc<dyn TraitPayOffFunction>>,
+    pub fstate: Option<impl TraitStateTransitionFunction>,
+    pub fpayoff: Option<impl TraitPayOffFunction>,
     pub event_time: Option<T2>,
     pub schedule_time: Option<T1>,
     pub event_type: EventType,
@@ -48,8 +48,8 @@ where
         event_time: &Option<T2>,
         event_type: &EventType,
         currency: &Option<Currency>,
-        fpayoff: Option<Rc<dyn TraitPayOffFunction + 'static >>,
-        fstate: Option<Rc<dyn TraitStateTransitionFunction + 'static >>,
+        fpayoff: Option<impl TraitPayOffFunction>,
+        fstate: Option<impl TraitStateTransitionFunction>,
         contract_id: &Option<ContractID>,
     ) -> Self
     {
