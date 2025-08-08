@@ -23,11 +23,11 @@ pub struct STF_ME_BCS;
 impl TraitStateTransitionFunction for STF_ME_BCS {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -67,7 +67,7 @@ contract_structure: &Option<Vec<ContractReference>>,
                         // Update state space
                         states.boundary_monitoring_flag = Some(false);
                         states.boundary_crossed_flag = BoundaryCrossedFlag::new(true).ok();
-                        states.status_date = Some(StatusDate::from(*time));
+                        states.status_date = StatusDate::new(time.value()).ok();
                     }
                 }
             }

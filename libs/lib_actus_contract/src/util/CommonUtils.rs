@@ -1,13 +1,9 @@
-use std::collections::HashMap;
-use std::str::FromStr;
+
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::exceptions::ParseError::ParseError;
-use crate::external::RiskFactorModel::{RiskFactorModel};
-
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
-
 
 
 pub struct CommonUtils;
@@ -16,9 +12,9 @@ pub struct CommonUtils;
 impl CommonUtils {
 
 
-    pub fn settlementCurrencyFxRate(riskFactorModel: &Option<RiskFactorModel>, 
+    pub fn settlementCurrencyFxRate(riskFactorModel: &Option<impl TraitRiskFactorModel>, 
                                     model: &ContractTerms, 
-                                    time: &IsoDatetime, 
+                                    time: &PhantomIsoDatetimeW,
                                     state: &StatesSpace) -> f64{
         let settlement_currency = model.settlement_currency.clone();
         let currency = model.currency.clone();
@@ -33,7 +29,7 @@ impl CommonUtils {
             let joined = str_slices.join(" ");
             
             if riskFactorModel.is_none() {
-                riskFactorModel.clone().unwrap().state_at(joined, time, state, model,true).expect("expect curr value")
+                riskFactorModel.unwrap().state_at(joined, time, state, model,true).expect("expect curr value")
             } else { 
                 1.0 // a verifier
             }

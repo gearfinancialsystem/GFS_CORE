@@ -19,11 +19,11 @@ pub struct STF_XD_FUTUR;
 impl TraitStateTransitionFunction for STF_XD_FUTUR {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -46,6 +46,6 @@ impl TraitStateTransitionFunction for STF_XD_FUTUR {
         
         
         states.exercise_amount = ExerciseAmount::new(cbv.unwrap() - futures_price.value()).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

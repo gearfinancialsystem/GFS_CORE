@@ -20,11 +20,11 @@ pub struct STF_PRD_SWPPV;
 impl TraitStateTransitionFunction for STF_PRD_SWPPV {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -56,6 +56,6 @@ contract_structure: &Option<Vec<ContractReference>>,
             accrued_interest2
         });
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

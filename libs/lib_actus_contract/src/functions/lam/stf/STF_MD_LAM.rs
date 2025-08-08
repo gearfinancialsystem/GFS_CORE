@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -9,20 +10,22 @@ use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+
 #[allow(non_camel_case_types)]
 pub struct STF_MD_LAM;
 
 impl TraitStateTransitionFunction for STF_MD_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
-contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -30,6 +33,6 @@ contract_structure: &Option<Vec<ContractReference>>,
         states.accrued_interest = AccruedInterest::new(0.0).ok();
         states.fee_accrued = FeeAccrued::new(0.0).ok();
         states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

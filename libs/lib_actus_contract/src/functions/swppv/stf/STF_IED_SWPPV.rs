@@ -18,11 +18,11 @@ pub struct STF_IED_SWPPV;
 impl TraitStateTransitionFunction for STF_IED_SWPPV {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -35,6 +35,6 @@ contract_structure: &Option<Vec<ContractReference>>,
         let nominal_interest_rate = contract_terms.nominal_interest_rate2.clone().itself_or(0.0);
         states.nominal_interest_rate = NominalInterestRate::new(nominal_interest_rate.value()).ok();
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

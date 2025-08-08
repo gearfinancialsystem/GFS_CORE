@@ -15,11 +15,11 @@ pub struct POF_PR_NAM;
 impl TraitPayOffFunction for POF_PR_NAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -10,8 +11,9 @@ use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PR_LAM;
@@ -19,11 +21,11 @@ pub struct STF_PR_LAM;
 impl TraitStateTransitionFunction for STF_PR_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        contract_structure: &Option<Vec<ContractReference>>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -36,7 +38,7 @@ contract_structure: &Option<Vec<ContractReference>>,
         let contract_role = contract_terms.contract_role.clone().expect("contractRole should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().value()),
+            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
             time_adjuster.shift_sc(time)
         );
 
@@ -64,6 +66,6 @@ contract_structure: &Option<Vec<ContractReference>>,
 
         let redemption = next_principal_redemption_payment.value() - role_sign * (next_principal_redemption_payment.value().abs() - notional_principal.value().abs()).max(0.0);
         states.notional_principal = NotionalPrincipal::new(notional_principal.value() - role_sign * redemption).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

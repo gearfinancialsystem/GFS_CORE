@@ -17,11 +17,11 @@ pub struct STF_PRD_ANN;
 impl TraitStateTransitionFunction for STF_PRD_ANN {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -44,7 +44,7 @@ impl TraitStateTransitionFunction for STF_PRD_ANN {
         states.fee_accrued.add_assign(time_from_last_event * notional_principal.value() * fee_rate_m.value());
         
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
         states.next_principal_redemption_payment = NextPrincipalRedemptionPayment::new(
             contract_role_m.role_sign() * 1.0).ok(); // implementer redemptionm utile
 

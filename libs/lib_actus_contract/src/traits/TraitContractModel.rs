@@ -1,14 +1,9 @@
 use std::collections::HashMap;
 use std::rc::Rc;
-use crate::events::ContractEvent::ContractEvent;
-use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
-use crate::external::RiskFactorModel::RiskFactorModel;
-
-
-
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 pub trait TraitContractModel {
 
@@ -16,7 +11,7 @@ pub trait TraitContractModel {
 
     fn set_contract_terms(&mut self, sm: &HashMap<String, Value>);
 
-    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>);
+    fn set_contract_risk_factors(&mut self, risk_factors: &Option<impl TraitRiskFactorModel>);
 
     fn set_contract_structure(&mut self, sm: &HashMap<String, Value>);
 

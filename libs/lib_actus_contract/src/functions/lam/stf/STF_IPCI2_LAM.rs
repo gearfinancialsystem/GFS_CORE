@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -12,9 +13,10 @@ use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalP
 
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_IPCI2_LAM;
@@ -22,11 +24,11 @@ pub struct STF_IPCI2_LAM;
 impl TraitStateTransitionFunction for STF_IPCI2_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -41,7 +43,7 @@ contract_structure: &Option<Vec<ContractReference>>,
 
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().value()),
+            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
             time_adjuster.shift_sc(time)
         );
 
@@ -54,7 +56,7 @@ contract_structure: &Option<Vec<ContractReference>>,
         states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
 
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
         states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok();
     }
 }

@@ -14,11 +14,11 @@ pub struct POF_TD_FXOUT;
 impl TraitPayOffFunction for POF_TD_FXOUT {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        _time: &PhantomIsoDatetimeW,
         _states: &StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

@@ -2,25 +2,26 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_fees::fee_basis::A::A;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_fees::FeeBasis::FeeBasis;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
-
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 #[allow(non_camel_case_types)]
 pub struct POF_FP_PAM;
 
 impl TraitPayOffFunction for POF_FP_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -44,7 +45,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
             let fee_accrued = states.fee_accrued.as_ref().expect("fee accrued should always be some");
             let status_date = states.status_date.as_ref().expect("status date should always be some");
             
-            settlement_currency_fx_rate * (fee_accrued.value() + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()), time_adjuster.shift_sc(time))) * fee_rate.value() * notional_principal.value()
+            settlement_currency_fx_rate * (fee_accrued.value() + day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()), time_adjuster.shift_sc(time))) * fee_rate.value() * notional_principal.value()
         }
         
    

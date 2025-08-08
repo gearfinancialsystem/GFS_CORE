@@ -16,11 +16,11 @@ pub struct POF_IP_SWPPV;
 impl TraitPayOffFunction for POF_IP_SWPPV {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

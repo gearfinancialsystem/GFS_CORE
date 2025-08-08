@@ -1,5 +1,6 @@
 
 use std::collections::HashSet;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::states_space::StatesSpace::StatesSpace;
@@ -14,13 +15,13 @@ pub trait TraitRiskFactorModel {
     /// Returns the set of event times for a particular risk factor
     ///
     /// The default implementation returns an empty set of events.
-    fn events(&self, contract_id: String) -> HashSet<ContractEvent<IsoDatetime, IsoDatetime>>;
+    fn events(&self, contract_id: String) -> HashSet<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>;
 
     /// Returns the state of a particular risk factor at a future time
     fn state_at(
         &self,
         id: String,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         attributes: &ContractTerms,
         is_market: bool,

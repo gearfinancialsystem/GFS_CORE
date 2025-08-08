@@ -21,11 +21,11 @@ pub struct STF_XD_OPTNS;
 impl TraitStateTransitionFunction for STF_XD_OPTNS {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -53,6 +53,6 @@ impl TraitStateTransitionFunction for STF_XD_OPTNS {
             }
         };
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

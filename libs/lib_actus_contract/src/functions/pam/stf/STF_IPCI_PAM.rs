@@ -1,7 +1,7 @@
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
@@ -10,6 +10,8 @@ use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerI
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[allow(non_camel_case_types)]
 pub struct STF_IPCI_PAM;
@@ -17,11 +19,11 @@ pub struct STF_IPCI_PAM;
 impl TraitStateTransitionFunction for STF_IPCI_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -35,7 +37,7 @@ contract_structure: &Option<Vec<ContractReference>>,
         
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.value()),
+            time_adjuster.shift_sc(&status_date.to_phantom_type()),
             time_adjuster.shift_sc(&time),
         );
 

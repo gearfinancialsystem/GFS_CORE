@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -14,7 +15,7 @@ use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_terms::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
@@ -23,11 +24,11 @@ pub struct STF_PP_LAM;
 impl TraitStateTransitionFunction for STF_PP_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -38,7 +39,7 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().value()),
+            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
             time_adjuster.shift_sc(time)
         );
 
@@ -89,6 +90,6 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
             }
         }
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

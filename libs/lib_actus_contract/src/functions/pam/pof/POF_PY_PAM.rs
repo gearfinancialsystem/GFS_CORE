@@ -1,16 +1,14 @@
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_optionality::PenaltyType::PenaltyType;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 
 #[allow(non_camel_case_types)]
 pub struct POF_PY_PAM;
@@ -18,11 +16,11 @@ pub struct POF_PY_PAM;
 impl TraitPayOffFunction for POF_PY_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -50,7 +48,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be Some");
 
                 settlement_currency_fx_rate * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()), time_adjuster.shift_sc(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()), time_adjuster.shift_sc(&time))
                 * penalty_rate.value() * notional_principal.value()
             }
             _ => {
@@ -71,7 +69,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                     cbv = None
                 }
                 settlement_currency_fx_rate * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()), time_adjuster.shift_sc(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()), time_adjuster.shift_sc(&time))
                     * notional_principal.value()
                     * 0.0f64.max(nominal_interest_rate.value() - cbv.unwrap())
             }

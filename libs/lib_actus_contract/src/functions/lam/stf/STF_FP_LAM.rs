@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -9,9 +10,10 @@ use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
 
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_FP_LAM;
@@ -19,11 +21,11 @@ pub struct STF_FP_LAM;
 impl TraitStateTransitionFunction for STF_FP_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -38,14 +40,14 @@ contract_structure: &Option<Vec<ContractReference>>,
 
         // Update state space
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().value()),
+            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
             time_adjuster.shift_sc(time),
         );
 
         states.accrued_interest.add_assign(nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event);
 
         states.fee_accrued = FeeAccrued::new(0.0).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
 
 
     }

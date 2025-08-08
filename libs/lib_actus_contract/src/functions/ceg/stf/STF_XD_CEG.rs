@@ -24,11 +24,11 @@ pub struct STF_XD_CEG;
 impl TraitStateTransitionFunction for STF_XD_CEG {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -77,6 +77,6 @@ impl TraitStateTransitionFunction for STF_XD_CEG {
             states.fee_accrued.add_assign(notional_principal.value() * time_from_last_event * fee_rate.value());
         }
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

@@ -8,10 +8,10 @@ use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
 use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[allow(non_camel_case_types)]
 pub struct STF_TD_PAM;
@@ -19,11 +19,11 @@ pub struct STF_TD_PAM;
 impl TraitStateTransitionFunction for STF_TD_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -31,7 +31,7 @@ contract_structure: &Option<Vec<ContractReference>>,
         states.notional_principal = NotionalPrincipal::new(0.0).ok();
         states.accrued_interest = AccruedInterest::new(0.0).ok();
         states.fee_accrued = FeeAccrued::new(0.0).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
         
     }
 }

@@ -29,11 +29,11 @@ impl STF_RR_LAX {
 impl TraitStateTransitionFunction for STF_RR_LAX {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -85,6 +85,6 @@ impl TraitStateTransitionFunction for STF_RR_LAX {
         }).unwrap()).ok();
 
         states.nominal_interest_rate = NominalInterestRate::new(new_rate).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

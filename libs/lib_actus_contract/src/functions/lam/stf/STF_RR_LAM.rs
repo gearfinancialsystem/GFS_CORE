@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -10,7 +11,7 @@ use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRa
 
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
@@ -20,11 +21,11 @@ pub struct STF_RR_LAM;
 impl TraitStateTransitionFunction for STF_RR_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -46,7 +47,7 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
 
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().value()),
+            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
             time_adjuster.shift_sc(time)
         );
 
@@ -74,6 +75,6 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
 
 
         states.nominal_interest_rate = NominalInterestRate::new(rate).ok();
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

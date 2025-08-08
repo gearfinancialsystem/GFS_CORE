@@ -1,24 +1,25 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::attributes::ContractTerms::ContractTerms;
-
-use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::states_space::StatesSpace::StatesSpace;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+
 #[allow(non_camel_case_types)]
 pub struct STF_NET_SWAPS {
-    pub e1: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
-    pub e2: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub e1: Option<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
+    pub e2: Option<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
 }
 
 impl STF_NET_SWAPS {
-    pub fn new(e1: ContractEvent<IsoDatetime, IsoDatetime>, e2: ContractEvent<IsoDatetime, IsoDatetime>) -> Self {
+    pub fn new(e1: ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>, e2: ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>) -> Self {
         STF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
     }
 }
@@ -26,11 +27,11 @@ impl STF_NET_SWAPS {
 impl TraitStateTransitionFunction for STF_NET_SWAPS {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -45,6 +46,6 @@ impl TraitStateTransitionFunction for STF_NET_SWAPS {
         states.notional_principal = NotionalPrincipal::new(notional_principal_e1.value() + notional_principal_e2.value()).ok();
         states.accrued_interest = AccruedInterest::new(accrued_interest_e1.value() + accrued_interest_e2.value()).ok();
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

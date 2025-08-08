@@ -14,11 +14,11 @@ pub struct POF_XD_FUTUR;
 impl TraitPayOffFunction for POF_XD_FUTUR {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        _time: &PhantomIsoDatetimeW,
         _states: &StatesSpace,
         _contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

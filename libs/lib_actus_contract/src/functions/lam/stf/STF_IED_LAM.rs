@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -13,8 +14,9 @@ use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalP
 
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_IED_LAM;
@@ -22,11 +24,11 @@ pub struct STF_IED_LAM;
 impl TraitStateTransitionFunction for STF_IED_LAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -35,7 +37,7 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         let notional_principal = contract_terms.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate = contract_terms.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
 
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
         states.notional_principal = NotionalPrincipal::new(contract_role.role_sign() * notional_principal.value()).ok();
         states.nominal_interest_rate = Some(nominal_interest_rate);
 
@@ -51,9 +53,9 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         if let Some(accrued_interest) = contract_terms.accrued_interest.clone() {
             states.accrued_interest = AccruedInterest::new(contract_role.role_sign() * accrued_interest.value()).ok();
         } else if let Some(cycle_anchor_date_of_interest_payment) = contract_terms.cycle_anchor_date_of_interest_payment.clone() {
-            if cycle_anchor_date_of_interest_payment.value() < *time {
+            if cycle_anchor_date_of_interest_payment.to_phantom_type() < *time {
                 let time_from_last_event = day_counter.day_count_fraction(
-                    time_adjuster.shift_sc(&cycle_anchor_date_of_interest_payment.value()),
+                    time_adjuster.shift_sc(&cycle_anchor_date_of_interest_payment.to_phantom_type()),
                     time_adjuster.shift_sc(time)
                 );
 

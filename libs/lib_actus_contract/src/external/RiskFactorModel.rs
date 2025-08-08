@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::ContractEvent::ContractEvent;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
@@ -27,7 +28,7 @@ impl TraitRiskFactorModel for RiskFactorModel {
 
     fn state_at(&self,
                 id: String,
-                time: &IsoDatetime,
+                time: &PhantomIsoDatetimeW,
                 states: &StatesSpace,
                 attributes: &ContractTerms,
                 is_market: bool

@@ -15,11 +15,11 @@ pub struct STF_IP_CLM;
 impl TraitStateTransitionFunction for STF_IP_CLM {
     fn eval(
         &self,
-        _time: &IsoDatetime,
+        _time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
 contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<RiskFactorModel>,
+        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

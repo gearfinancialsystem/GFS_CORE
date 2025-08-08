@@ -11,9 +11,10 @@ use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerI
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::external::RiskFactorModel::RiskFactorModel;
+
 use crate::attributes::ContractReference::ContractReference;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 #[allow(non_camel_case_types)]
 pub struct STF_SC_PAM;
@@ -21,11 +22,11 @@ pub struct STF_SC_PAM;
 impl TraitStateTransitionFunction for STF_SC_PAM {
     fn eval(
         &self,
-        time: &IsoDatetime,
+        time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<RiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) { // ->StateSpace
@@ -36,7 +37,7 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
         let fee_rate = contract_terms.fee_rate.as_ref().expect("fee rate should always be None");
         let scaling_effect = contract_terms.scaling_effect.as_ref().expect("scalingEffect should always be None");
         
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()),
                                                                   time_adjuster.shift_sc(time));
 
 
@@ -63,7 +64,7 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
             states.notional_scaling_multiplier = NotionalScalingMultiplier::new(cbv.unwrap()).ok();//
         }
         
-        states.status_date = Some(StatusDate::from(*time));
+        states.status_date = StatusDate::new(time.value()).ok();
         
     }
 }
