@@ -6,7 +6,7 @@ use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
 pub trait TraitMarkerIsoDatetime
 where
-    Self: Clone + Copy + Hash + Debug + Display + FromStr
+    Self: Clone + Copy + Hash + Debug + Display + FromStr + From<IsoDatetime>
 {
 
     fn value(&self) -> IsoDatetime;

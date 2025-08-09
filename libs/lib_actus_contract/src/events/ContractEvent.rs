@@ -5,6 +5,8 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::str::FromStr;
+use lib_actus_terms::non_terms::EventTime::EventTime;
+use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
 use lib_actus_terms::phantom_terms::PhantomF64::PhantomF64W;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::EventSequence::EventSequence;
@@ -19,15 +21,15 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 pub trait TraitContractEvent {}
 
 #[derive(Clone)]
-pub struct ContractEvent<T1, T2> {
-    pub _marker_t1: PhantomData<T1>,
-    pub _marker_t2: PhantomData<T2>,
+pub struct ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2> {
+    pub _marker_t1: PhantomData<Tdtime1>,
+    pub _marker_t2: PhantomData<Tdtime2>,
 
     pub epoch_offset: Option<PhantomF64W>,
-    pub fstate: Option<impl TraitStateTransitionFunction>,
-    pub fpayoff: Option<impl TraitPayOffFunction>,
-    pub event_time: Option<T2>,
-    pub schedule_time: Option<T1>,
+    pub fstate: Option<TfState>,
+    pub fpayoff: Option<TfPayoff>,
+    pub event_time: Option<Tdtime2>,
+    pub schedule_time: Option<Tdtime1>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
@@ -35,17 +37,18 @@ pub struct ContractEvent<T1, T2> {
 }
 
 
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> TraitContractEvent for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2> {}
 
-impl<T1, T2> TraitContractEvent for ContractEvent<T1, T2> {}
-
-impl<T1, T2> ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     pub fn new (
-        schedule_time: &Option<T1>,
-        event_time: &Option<T2>,
+        schedule_time: &Option<Tdtime1>,
+        event_time: &Option<Tdtime2>,
         event_type: &EventType,
         currency: &Option<Currency>,
         fpayoff: Option<impl TraitPayOffFunction>,
@@ -71,22 +74,23 @@ where
             contract_id: contract_id.clone(),
         }
     }
-    pub fn to_phantom_datetime_ce(&self) -> ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW> {
-        ContractEvent {
-            _marker_t1: PhantomData,
-            _marker_t2: PhantomData,
-            epoch_offset: self.epoch_offset.clone(),
-            fstate: self.fstate.clone(),
-            fpayoff: self.fpayoff.clone(),
-            event_time: self.event_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap() ),
-            schedule_time: self.schedule_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap()),
-            event_type: self.event_type.clone(),
-            currency: self.currency.clone(),
-            payoff: self.payoff,
 
-            contract_id: self.contract_id.clone(),
-        }
-    }
+    // pub fn to_phantom_datetime_ce(&self) -> ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW> {
+    //     ContractEvent {
+    //         _marker_t1: PhantomData,
+    //         _marker_t2: PhantomData,
+    //         epoch_offset: self.epoch_offset.clone(),
+    //         fstate: self.fstate.clone(),
+    //         fpayoff: self.fpayoff.clone(),
+    //         event_time: self.event_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap() ),
+    //         schedule_time: self.schedule_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap()),
+    //         event_type: self.event_type.clone(),
+    //         currency: self.currency.clone(),
+    //         payoff: self.payoff,
+    //
+    //         contract_id: self.contract_id.clone(),
+    //     }
+    // }
 
     pub fn get_contract_id(&self) -> ContractID {
         self.contract_id.clone().unwrap()
@@ -124,7 +128,7 @@ where
     pub fn set_f_state_trans(&mut self, function: Option<Rc<dyn TraitStateTransitionFunction>>) {
         self.fstate = function;
     }
-    pub fn compare_to(&self, other: &ContractEvent<T1, T2>) -> i64 {
+    pub fn compare_to(&self, other: &ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>) -> i64 {
         (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum()
     }
   
@@ -160,10 +164,12 @@ where
 }
 
 // Implémentation manuelle de Debug pour ContractEvent
-impl<T1, T2> Debug for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> Debug for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
@@ -178,20 +184,24 @@ where
 }
 
 
-impl<T1, T2> PartialOrd for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialOrd for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<T1, T2> Ord for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> Ord for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     fn cmp(&self, other: &Self) -> Ordering {
         self.epoch_offset.cmp(&other.epoch_offset)
@@ -199,10 +209,12 @@ where
 }
 
 
-impl<T1, T2> PartialEq for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialEq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     fn eq(&self, other: &Self) -> bool {
         // Comparaison des champs standards
@@ -229,17 +241,21 @@ where
     }
 }
 
-impl<T1, T2> Eq for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> Eq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {}
 
 
-impl<T1, T2> Hash for ContractEvent<T1, T2>
+impl<TfState, TfPayoff, Tdtime1, Tdtime2> Hash for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash
+    TfState: TraitStateTransitionFunction,
+    TfPayoff: TraitPayOffFunction,
+    Tdtime1: TraitMarkerIsoDatetime,
+    Tdtime2: TraitMarkerIsoDatetime,
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
         // Hachage des champs standards
