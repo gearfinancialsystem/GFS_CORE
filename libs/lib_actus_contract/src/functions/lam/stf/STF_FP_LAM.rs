@@ -13,7 +13,7 @@ use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_FP_LAM;

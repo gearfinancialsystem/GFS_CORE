@@ -4,7 +4,8 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-
+use lib_actus_terms::non_terms::EventTime::EventTime;
+use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
 use lib_actus_terms::phantom_terms::PhantomF64::PhantomF64W;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::EventSequence::EventSequence;
@@ -19,15 +20,13 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 pub trait TraitContractEvent {}
 
 #[derive(Clone)]
-pub struct ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime> {
-    pub _marker_t1: PhantomData<TscheduleTime>,
-    pub _marker_t2: PhantomData<TeventTime>,
-
+pub struct ContractEvent {
+    
     pub epoch_offset: Option<PhantomF64W>,
-    pub fstate: Option<TfState>,
-    pub fpayoff: Option<TfPayoff>,
-    pub event_time: Option<TeventTime>,
-    pub schedule_time: Option<TscheduleTime>,
+    pub fstate: Option<StateTransitionFunction>,
+    pub fpayoff: Option<PayOffFunction>,
+    pub event_time: Option<EventTime>,
+    pub schedule_time: Option<ScheduleTime>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
@@ -35,22 +34,16 @@ pub struct ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime> {
 }
 
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> TraitContractEvent for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime> {}
+impl TraitContractEvent for ContractEvent {}
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
-{
+impl ContractEvent {
     pub fn new (
-        schedule_time: &Option<TscheduleTime>,
-        event_time: &Option<TeventTime>,
+        schedule_time: &Option<ScheduleTime>,
+        event_time: &Option<EventTime>,
         event_type: &EventType,
         currency: &Option<Currency>,
-        fpayoff: Option<TfPayoff>,
-        fstate: Option<TfState>,
+        fpayoff: Option<PayOffFunction>,
+        fstate: Option<StateTransitionFunction>,
         contract_id: &Option<ContractID>,
     ) -> Self
     {
@@ -59,9 +52,6 @@ where
         let epoch_offset = epoch_millis + EventSequence::time_offset(event_type);
 
         Self {
-            _marker_t1: PhantomData,
-            _marker_t2: PhantomData,
-            
             epoch_offset: Some(PhantomF64W::new(epoch_offset as f64).unwrap() ),
             fstate: fstate,
             fpayoff: fpayoff,
@@ -103,21 +93,19 @@ where
         self.payoff = Some(payoff);
     }
 
-    pub fn set_f_pay_off(&mut self, function: Option<TfPayoff>) {
+    pub fn set_f_pay_off(&mut self, function: Option<PayOffFunction>) {
         self.fpayoff = function;
     }
     // Méthode pour changer fStateTrans
-    pub fn set_f_state_trans(&mut self, function: Option<TfState>) {
+    pub fn set_f_state_trans(&mut self, function: Option<StateTransitionFunction>) {
         self.fstate = function;
     }
-    pub fn compare_to(&self, other: &ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>) -> i64 {
+    pub fn compare_to(&self, other: &ContractEvent) -> i64 {
         (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64
     }
   
     pub fn copy(&self) -> Self {
         ContractEvent {
-            _marker_t1: PhantomData,
-            _marker_t2: PhantomData,
             epoch_offset: self.epoch_offset.clone(),
             fstate: self.fstate.clone(),
             fpayoff: self.fpayoff.clone(),
@@ -146,12 +134,7 @@ where
 }
 
 // Implémentation manuelle de Debug pour ContractEvent
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> Debug for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl Debug for ContractEvent
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
@@ -166,24 +149,14 @@ where
 }
 
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> PartialOrd for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl PartialOrd for ContractEvent
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> Ord for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl Ord for ContractEvent
 {
     fn cmp(&self, other: &Self) -> Ordering {
         // self.epoch_offset.unwrap().cmp(&other.epoch_offset.unwrap())
@@ -192,12 +165,7 @@ where
 }
 
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> PartialEq for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl PartialEq for ContractEvent
 {
     fn eq(&self, other: &Self) -> bool {
         // Comparaison des champs standards
@@ -239,21 +207,11 @@ where
     }
 }
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> Eq for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl Eq for ContractEvent
 {}
 
 
-impl<TfState, TfPayoff, TscheduleTime, TeventTime> Hash for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
-where
-    TfState: TraitStateTransitionFunction<Self>,
-    TfPayoff: TraitPayOffFunction<Self>,
-    TscheduleTime: TraitMarkerIsoDatetime,
-    TeventTime: TraitMarkerIsoDatetime,
+impl Hash for ContractEvent
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
         // Hachage des champs standards

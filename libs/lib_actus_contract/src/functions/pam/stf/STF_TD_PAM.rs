@@ -9,7 +9,7 @@ use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use crate::attributes::ContractReference::ContractReference;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 

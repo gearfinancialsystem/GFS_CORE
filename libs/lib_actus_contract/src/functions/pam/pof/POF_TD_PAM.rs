@@ -9,7 +9,7 @@ use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerI
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use crate::attributes::ContractReference::ContractReference;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 #[allow(non_camel_case_types)]
 pub struct POF_TD_PAM;

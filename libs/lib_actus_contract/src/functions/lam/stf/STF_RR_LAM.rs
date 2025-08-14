@@ -1,5 +1,5 @@
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 

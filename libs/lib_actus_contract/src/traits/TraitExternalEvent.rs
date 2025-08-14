@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
 
 
-pub trait TraitExternalEvent<TfState, TfPayoff, Tdtime1, Tdtime2>: Copy + Clone
+pub trait TraitExternalEvent: Copy + Clone
 {
     /// Returns the set of unique risk factor IDs
     fn keys(&self) -> Option<HashSet<String>>;

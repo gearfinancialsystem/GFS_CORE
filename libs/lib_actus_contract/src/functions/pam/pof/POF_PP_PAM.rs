@@ -1,4 +1,4 @@
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;

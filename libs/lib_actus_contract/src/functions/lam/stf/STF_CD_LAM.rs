@@ -11,7 +11,7 @@ use lib_actus_terms::terms::grp_counterparty::ContractPerformance::ContractPerfo
 
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 
 #[allow(non_camel_case_types)]
 pub struct STF_CD_LAM;

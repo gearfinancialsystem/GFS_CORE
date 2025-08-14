@@ -4,6 +4,7 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::marker::PhantomData;
+use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
@@ -35,14 +36,14 @@ where
         }
     }
     pub fn create_event(
-        schedule_time: &Option<T1>,
+        schedule_time: &Option<ScheduleTime>, // old T1
         event_type: &EventType,
         currency: &Option<Currency>,
-        pay_off: Option<Rc<dyn TraitPayOffFunction + 'static>>,
-        state_trans: Option<Rc<dyn TraitStateTransitionFunction + 'static>>,
+        pay_off: Option<PayOffFunction>,
+        state_trans: Option<StateTransitionFunction>,
         convention: &Option<BusinessDayAdjuster>,
         contract_id: &Option<ContractID>
-    ) -> ContractEvent<T1, T2>
+    ) -> ContractEvent
     {
         let mut dd : Option<T2> = None;
 
@@ -71,14 +72,14 @@ where
 
     /// Create a series of `ContractEvent`s from an unordered schedule of times
     pub fn create_events(
-        event_schedule: &HashSet<T1>,
+        event_schedule: &HashSet<ScheduleTime>,
         event_type: &EventType,
         currency: &Option<Currency>,
-        pay_off: Option<Rc<dyn TraitPayOffFunction>>,
-        state_trans: Option<Rc<dyn TraitStateTransitionFunction>>,
+        pay_off: Option<PayOffFunction>,
+        state_trans: Option<StateTransitionFunction>,
         convention: &Option<BusinessDayAdjuster>,
         contract_id: &Option<ContractID>,
-    ) -> HashSet<ContractEvent<T1, T2>> {
+    ) -> HashSet<ContractEvent> {
         
         event_schedule
             .iter()

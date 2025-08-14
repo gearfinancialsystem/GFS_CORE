@@ -6,21 +6,18 @@ use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::events::ContractEvent::TraitContractEvent;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_snake_case)]
-pub trait TraitStateTransitionFunction<CE>
-where
-    Self: Clone + Copy + Hash,
-    CE: TraitContractEvent
-{
+pub trait TraitStateTransitionFunction {
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel<CE>>, //&RiskFactorModel,
+        risk_factor_external_data: Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     );

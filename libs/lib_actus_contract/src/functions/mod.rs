@@ -14,6 +14,8 @@ pub mod lam;
 // pub mod nam;
 // pub mod optns;
 pub mod pam;
+mod PayOffFunction;
+mod StatesTransitionFunction;
 // pub mod stk;
 //pub mod swaps;
 // pub mod swppv;

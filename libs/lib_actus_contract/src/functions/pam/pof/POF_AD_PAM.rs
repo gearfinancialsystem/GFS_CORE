@@ -7,7 +7,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
 use crate::events::ContractEvent::TraitContractEvent;
 

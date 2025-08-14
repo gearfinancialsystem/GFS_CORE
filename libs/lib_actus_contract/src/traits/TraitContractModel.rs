@@ -4,7 +4,7 @@ use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
 use crate::events::ContractEvent::TraitContractEvent;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 
 pub trait TraitContractModel<CE>
 where
