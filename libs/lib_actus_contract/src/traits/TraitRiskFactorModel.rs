@@ -15,7 +15,6 @@ where
     fn keys(&self) -> Option<HashSet<String>>;
 
     /// Returns the set of event times for a particular risk factor
-    ///
     /// The default implementation returns an empty set of events.
     fn events(&self, contract_id: String) -> HashSet<CE>;
 

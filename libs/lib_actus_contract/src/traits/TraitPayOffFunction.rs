@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -11,7 +12,7 @@ use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 pub trait TraitPayOffFunction<CE>
 where
-    Self: Clone + Copy,
+    Self: Clone + Copy + Hash,
     CE: TraitContractEvent
 {
     /// Evaluate the function.

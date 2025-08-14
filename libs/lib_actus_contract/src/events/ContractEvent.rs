@@ -11,6 +11,7 @@ use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
@@ -18,15 +19,15 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 pub trait TraitContractEvent {}
 
 #[derive(Clone)]
-pub struct ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2> {
-    pub _marker_t1: PhantomData<Tdtime1>,
-    pub _marker_t2: PhantomData<Tdtime2>,
+pub struct ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime> {
+    pub _marker_t1: PhantomData<TscheduleTime>,
+    pub _marker_t2: PhantomData<TeventTime>,
 
     pub epoch_offset: Option<PhantomF64W>,
     pub fstate: Option<TfState>,
     pub fpayoff: Option<TfPayoff>,
-    pub event_time: Option<Tdtime2>,
-    pub schedule_time: Option<Tdtime1>,
+    pub event_time: Option<TeventTime>,
+    pub schedule_time: Option<TscheduleTime>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
     pub payoff: Option<f64>,
@@ -34,18 +35,18 @@ pub struct ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2> {
 }
 
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> TraitContractEvent for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2> {}
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> TraitContractEvent for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime> {}
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     pub fn new (
-        schedule_time: &Option<Tdtime1>,
-        event_time: &Option<Tdtime2>,
+        schedule_time: &Option<TscheduleTime>,
+        event_time: &Option<TeventTime>,
         event_type: &EventType,
         currency: &Option<Currency>,
         fpayoff: Option<TfPayoff>,
@@ -109,7 +110,7 @@ where
     pub fn set_f_state_trans(&mut self, function: Option<TfState>) {
         self.fstate = function;
     }
-    pub fn compare_to(&self, other: &ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>) -> i64 {
+    pub fn compare_to(&self, other: &ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>) -> i64 {
         (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64
     }
   
@@ -145,12 +146,12 @@ where
 }
 
 // Implémentation manuelle de Debug pour ContractEvent
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> Debug for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> Debug for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ContractEvent")
@@ -165,37 +166,38 @@ where
 }
 
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialOrd for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> PartialOrd for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> Ord for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> Ord for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.epoch_offset.cmp(&other.epoch_offset)
+        // self.epoch_offset.unwrap().cmp(&other.epoch_offset.unwrap())
+        self.epoch_offset.as_ref().unwrap().value().partial_cmp(&other.epoch_offset.as_ref().unwrap().value()).unwrap()
     }
 }
 
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialEq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> PartialEq for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     fn eq(&self, other: &Self) -> bool {
         // Comparaison des champs standards
@@ -205,38 +207,53 @@ where
             && self.event_type == other.event_type
             && self.schedule_time == other.schedule_time;
 
+        // // Comparaison des fonctions avec gestion des None
+        // let fpayoff_eq = match (&self.fpayoff, &other.fpayoff) {
+        //     (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+        //     (None, None) => true,
+        //     _ => false,
+        // };
+        //
+        // let fstate_eq = match (&self.fstate, &other.fstate) {
+        //     (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+        //     (None, None) => true,
+        //     _ => false,
+        // };
+
+
         // Comparaison des fonctions avec gestion des None
         let fpayoff_eq = match (&self.fpayoff, &other.fpayoff) {
-            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+            (Some(a), Some(b)) => std::ptr::eq(a, b), // ou utilisez une autre méthode de comparaison
             (None, None) => true,
             _ => false,
         };
 
         let fstate_eq = match (&self.fstate, &other.fstate) {
-            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+            (Some(a), Some(b)) => std::ptr::eq(a, b), // ou utilisez une autre méthode de comparaison
             (None, None) => true,
             _ => false,
         };
+
 
         base_eq && fpayoff_eq && fstate_eq
     }
 }
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> Eq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> Eq for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {}
 
 
-impl<TfState, TfPayoff, Tdtime1, Tdtime2> Hash for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
+impl<TfState, TfPayoff, TscheduleTime, TeventTime> Hash for ContractEvent<TfState, TfPayoff, TscheduleTime, TeventTime>
 where
     TfState: TraitStateTransitionFunction<Self>,
     TfPayoff: TraitPayOffFunction<Self>,
-    Tdtime1: TraitMarkerIsoDatetime,
-    Tdtime2: TraitMarkerIsoDatetime,
+    TscheduleTime: TraitMarkerIsoDatetime,
+    TeventTime: TraitMarkerIsoDatetime,
 {
     fn hash<H: Hasher>(&self, state: &mut H) {
         // Hachage des champs standards
@@ -248,16 +265,15 @@ where
 
         // Hachage des fonctions avec gestion des None
         if let Some(f) = &self.fpayoff {
-            Rc::as_ptr(f).hash(state);
+            f.hash(state); // Suppose que TfPayoff implémente Hash
         } else {
-            // Valeur sentinelle pour None
             0usize.hash(state);
         }
 
+        // Hachage de fstate si présent
         if let Some(f) = &self.fstate {
-            Rc::as_ptr(f).hash(state);
+            f.hash(state); // Suppose que TfState implémente Hash
         } else {
-            // Valeur sentinelle pour None
             0usize.hash(state);
         }
     }

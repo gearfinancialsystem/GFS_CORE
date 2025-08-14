@@ -7,7 +7,7 @@ use std::process::exit;
 use std::rc::Rc;
 use std::str::FromStr;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use crate::events::ContractEvent::ContractEvent;
+use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
 use crate::events::EventFactoryOld::EventFactory;
 use crate::events::EventType::EventType;
 use crate::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
@@ -118,17 +118,18 @@ use crate::traits::TraitContractModel::TraitContractModel;
 
 use crate::attributes::ResultSet::ResultSet;
 use lib_actus_types::types::IsoPeriod::IsoPeriod;
+use crate::traits::TraitExternalData::TraitExternalData;
+use crate::traits::TraitExternalEvent::TraitExternalEvent;
 
 #[derive(Clone)]
 pub struct PAM {
     pub contract_terms: ContractTerms,
-    pub contract_risk_factors: Option<RiskFactorModel>,
+    pub risk_factor_external_data: Option<Box<dyn TraitExternalData>>,
+    pub risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
     pub contract_structure: Option<Vec<ContractReference>>,
-    pub current_datetime: Option<PhantomIsoDatetimeW>,
-    pub contract_events: Vec<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
+    pub event_timeline: Vec<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
     pub states_space: StatesSpace,
-    pub result_vec_toggle: bool,
-    pub result_vec: Option<Vec<ResultSet>>,
+    pub status_date: Option<StatusDate>,
 }
 
 impl TraitContractModel for PAM { //

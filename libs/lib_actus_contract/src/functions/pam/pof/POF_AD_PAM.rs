@@ -9,6 +9,8 @@ use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention
 
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::attributes::ContractReference::ContractReference;
+use crate::events::ContractEvent::TraitContractEvent;
+
 #[allow(non_camel_case_types)]
 pub struct POF_AD_PAM;
 
@@ -20,7 +22,7 @@ impl TraitPayOffFunction for POF_AD_PAM {
         _states: &StatesSpace,
         _contract_terms: &ContractTerms,
         _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _risk_factor_model: &Option<dyn TraitRiskFactorModel>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
