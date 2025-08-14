@@ -6,8 +6,9 @@ use std::fmt;
 
 use crate::terms::grp_calendar::calendars::NoCalendar::NC;
 use crate::terms::grp_calendar::calendars::MondayToFriday::MF;
+// use crate::terms::grp_calendar::calendars::MondayToFridayWithHolidays::MFWH;
+
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 
@@ -15,6 +16,7 @@ use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 pub enum Calendar {
     NC(NC),
     MF(MF),
+    // MFWH(MFWH)
 }
 
 impl Calendar {
@@ -41,7 +43,8 @@ impl TraitBusinessDayCalendar for Calendar {
     fn is_business_day(&self, date: &PhantomIsoDatetimeW) -> bool {
         match self {
             Self::NC(NC) => NC.is_business_day(date),
-            Self::MF(MF) => MF.is_business_day(date)
+            Self::MF(MF) => MF.is_business_day(date),
+            // Self::MFWH(MFWH) => MFWH.is_business_day(date)
         }
     }
 }
@@ -53,6 +56,7 @@ impl FromStr for Calendar {
         match s.to_uppercase().as_str() {
             "NC" => Ok(Self::NC(NC::new())),
             "MF" => Ok(Self::MF(MF::new())),
+            //"MFHW" => Ok(Self::MFWH(MFWH::new())),
             _ => Err(format!("Invalid Calendar cont_type: {}", s),
             ),
         }
@@ -64,6 +68,7 @@ impl fmt::Display for Calendar {
         match self {
             Self::NC(nc) => write!(f, "{}", nc.to_string()),
             Self::MF(mf) => write!(f, "{}", mf.to_string()),
+            //Self::MFWH(mfwh) => write!(f, "{}", mfwh.to_string()),
         }
     }
 }

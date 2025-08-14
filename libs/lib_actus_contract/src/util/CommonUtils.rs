@@ -3,6 +3,7 @@ use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
+use crate::events::ContractEvent::TraitContractEvent;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
 
@@ -12,10 +13,12 @@ pub struct CommonUtils;
 impl CommonUtils {
 
 
-    pub fn settlementCurrencyFxRate(riskFactorModel: &Option<impl TraitRiskFactorModel>, 
-                                    model: &ContractTerms, 
-                                    time: &PhantomIsoDatetimeW,
-                                    state: &StatesSpace) -> f64{
+    pub fn settlementCurrencyFxRate<CE: TraitContractEvent>(
+        riskFactorModel: &Option<impl TraitRiskFactorModel<CE>>, 
+        model: &ContractTerms, 
+        time: &PhantomIsoDatetimeW,
+        state: &StatesSpace) -> f64 
+    {
         let settlement_currency = model.settlement_currency.clone();
         let currency = model.currency.clone();
         

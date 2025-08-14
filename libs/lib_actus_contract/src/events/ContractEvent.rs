@@ -4,9 +4,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
-use std::str::FromStr;
-use lib_actus_terms::non_terms::EventTime::EventTime;
-use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
+
 use lib_actus_terms::phantom_terms::PhantomF64::PhantomF64W;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::EventSequence::EventSequence;
@@ -14,7 +12,6 @@ use crate::events::EventType::EventType;
 use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
@@ -41,8 +38,8 @@ impl<TfState, TfPayoff, Tdtime1, Tdtime2> TraitContractEvent for ContractEvent<T
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {
@@ -51,8 +48,8 @@ where
         event_time: &Option<Tdtime2>,
         event_type: &EventType,
         currency: &Option<Currency>,
-        fpayoff: Option<impl TraitPayOffFunction>,
-        fstate: Option<impl TraitStateTransitionFunction>,
+        fpayoff: Option<TfPayoff>,
+        fstate: Option<TfState>,
         contract_id: &Option<ContractID>,
     ) -> Self
     {
@@ -63,6 +60,7 @@ where
         Self {
             _marker_t1: PhantomData,
             _marker_t2: PhantomData,
+            
             epoch_offset: Some(PhantomF64W::new(epoch_offset as f64).unwrap() ),
             fstate: fstate,
             fpayoff: fpayoff,
@@ -74,23 +72,6 @@ where
             contract_id: contract_id.clone(),
         }
     }
-
-    // pub fn to_phantom_datetime_ce(&self) -> ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW> {
-    //     ContractEvent {
-    //         _marker_t1: PhantomData,
-    //         _marker_t2: PhantomData,
-    //         epoch_offset: self.epoch_offset.clone(),
-    //         fstate: self.fstate.clone(),
-    //         fpayoff: self.fpayoff.clone(),
-    //         event_time: self.event_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap() ),
-    //         schedule_time: self.schedule_time.clone().map(|t| PhantomIsoDatetimeW::from_str(t.value().to_string().as_str()).unwrap()),
-    //         event_type: self.event_type.clone(),
-    //         currency: self.currency.clone(),
-    //         payoff: self.payoff,
-    //
-    //         contract_id: self.contract_id.clone(),
-    //     }
-    // }
 
     pub fn get_contract_id(&self) -> ContractID {
         self.contract_id.clone().unwrap()
@@ -121,15 +102,15 @@ where
         self.payoff = Some(payoff);
     }
 
-    pub fn set_f_pay_off(&mut self, function: Option<Rc<dyn TraitPayOffFunction>>) {
+    pub fn set_f_pay_off(&mut self, function: Option<TfPayoff>) {
         self.fpayoff = function;
     }
     // Méthode pour changer fStateTrans
-    pub fn set_f_state_trans(&mut self, function: Option<Rc<dyn TraitStateTransitionFunction>>) {
+    pub fn set_f_state_trans(&mut self, function: Option<TfState>) {
         self.fstate = function;
     }
     pub fn compare_to(&self, other: &ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>) -> i64 {
-        (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum()
+        (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64
     }
   
     pub fn copy(&self) -> Self {
@@ -166,8 +147,8 @@ where
 // Implémentation manuelle de Debug pour ContractEvent
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> Debug for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {
@@ -186,8 +167,8 @@ where
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialOrd for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {
@@ -198,8 +179,8 @@ where
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> Ord for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {
@@ -211,8 +192,8 @@ where
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> PartialEq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {
@@ -243,8 +224,8 @@ where
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> Eq for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {}
@@ -252,8 +233,8 @@ where
 
 impl<TfState, TfPayoff, Tdtime1, Tdtime2> Hash for ContractEvent<TfState, TfPayoff, Tdtime1, Tdtime2>
 where
-    TfState: TraitStateTransitionFunction,
-    TfPayoff: TraitPayOffFunction,
+    TfState: TraitStateTransitionFunction<Self>,
+    TfPayoff: TraitPayOffFunction<Self>,
     Tdtime1: TraitMarkerIsoDatetime,
     Tdtime2: TraitMarkerIsoDatetime,
 {

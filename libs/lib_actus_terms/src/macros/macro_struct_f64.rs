@@ -108,14 +108,12 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-            // Convert to String with rounding to a specific number of decimal places
             pub fn to_string_rounded(&self, decimals: usize) -> String {
                 let factor = 10f64.powi(decimals as i32);
                 let rounded = (self.0 * factor).round() / factor;
                 format!("{:.1$}", rounded, decimals)
             }
 
-            // Convert to String with truncating to a specific number of decimal places
             pub fn to_string_truncated(&self, decimals: usize) -> String {
                 let factor = 10f64.powi(decimals as i32);
                 let truncated = (self.0 * factor).trunc() / factor;
@@ -134,6 +132,9 @@ macro_rules! define_struct_f64 {
                 }
             }
 
+            pub fn signum(&self) -> f64 {
+                self.0.signum()
+            }
         }
 
         // Implémentation des opérations arithmétiques avec des types génériques
@@ -234,13 +235,21 @@ macro_rules! define_struct_f64 {
         use std::str::FromStr;
         use std::collections::HashMap;
         use lib_actus_types::types::Value::Value;
-        use std::ops::AddAssign;
-        use std::ops::SubAssign;
+        use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
+        use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::define_option_ext;
 
-        #[derive(PartialEq, Debug, Clone, PartialOrd)]
+        #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
         pub struct $struct_name(f64);
+
+        impl TraitMarkerF64 for $struct_name {
+            fn value(&self) -> f64 {
+                self.0
+            }
+
+            define_to_phantom_type_f64!($struct_name);
+        }
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
@@ -257,10 +266,6 @@ macro_rules! define_struct_f64 {
                 else {
                     Ok($struct_name($value))
                 }
-            }
-
-            pub fn value(&self) -> f64 {
-                self.0
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
@@ -280,7 +285,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-        // Convert to String with rounding to a specific number of decimal places
+            // Convert to String with rounding to a specific number of decimal places
             pub fn to_string_rounded(&self, decimals: usize) -> String {
                 let factor = 10f64.powi(decimals as i32);
                 let rounded = (self.0 * factor).round() / factor;
@@ -305,17 +310,69 @@ macro_rules! define_struct_f64 {
                     }
                 }
             }
-        }
 
-        impl AddAssign<f64> for $struct_name {
-            fn add_assign(&mut self, other: f64) {
-                self.0 += other;
+            pub fn signum(&self) -> f64 {
+                self.0.signum()
             }
         }
 
-        impl SubAssign<f64> for $struct_name {
-            fn sub_assign(&mut self, other: f64) {
-                self.0 -= other;
+        // Implémentation des opérations arithmétiques avec des types génériques
+        impl<OtherType: TraitMarkerF64> Add<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn add(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 + other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> AddAssign<OtherType> for $struct_name {
+            fn add_assign(&mut self, other: OtherType) {
+                self.0 += other.value();
+            }
+        }
+
+        // impl AddAssign<f64> for $struct_name {
+        //     fn add_assign(&mut self, other: f64) {
+        //         self.0 += other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Sub<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn sub(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 - other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> SubAssign<OtherType> for $struct_name {
+            fn sub_assign(&mut self, other: OtherType) {
+                self.0 -= other.value();
+            }
+        }
+
+        // impl SubAssign<f64> for $struct_name {
+        //     fn sub_assign(&mut self, other: f64) {
+        //         self.0 -= other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Mul<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn mul(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 * other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> Div<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn div(self, other: OtherType) -> Self::Output {
+                if other.value() == 0.0 {
+                    panic!("Division by zero!");
+                }
+                $struct_name(self.0 / other.value())
             }
         }
         
@@ -346,13 +403,22 @@ macro_rules! define_struct_f64 {
         use std::str::FromStr;
         use std::collections::HashMap;
         use lib_actus_types::types::Value::Value;
-        use std::ops::AddAssign;
-        use std::ops::SubAssign;
+        use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
+        use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::define_option_ext;
 
-        #[derive(PartialEq, Debug, Clone, PartialOrd)]
+        #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
         pub struct $struct_name(f64);
+
+
+        impl TraitMarkerF64 for $struct_name {
+            fn value(&self) -> f64 {
+                self.0
+            }
+
+            define_to_phantom_type_f64!($struct_name);
+        }
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
@@ -364,10 +430,6 @@ macro_rules! define_struct_f64 {
                 else {
                     Ok($struct_name($value))
                 }
-            }
-
-            pub fn value(&self) -> f64 {
-                self.0
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
@@ -382,7 +444,7 @@ macro_rules! define_struct_f64 {
                 }
             }
 
-        // Convert to String with rounding to a specific number of decimal places
+            // Convert to String with rounding to a specific number of decimal places
             pub fn to_string_rounded(&self, decimals: usize) -> String {
                 let factor = 10f64.powi(decimals as i32);
                 let rounded = (self.0 * factor).round() / factor;
@@ -407,6 +469,10 @@ macro_rules! define_struct_f64 {
                     }
                 }
             }
+
+            pub fn signum(&self) -> f64 {
+                self.0.signum()
+            }
         }
 
         impl Default for $struct_name {
@@ -414,16 +480,64 @@ macro_rules! define_struct_f64 {
                 $struct_name($default_value)
             }
         }
-        
-        impl AddAssign<f64> for $struct_name {
-            fn add_assign(&mut self, other: f64) {
-                self.0 += other;
+
+        // Implémentation des opérations arithmétiques avec des types génériques
+        impl<OtherType: TraitMarkerF64> Add<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn add(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 + other.value())
             }
         }
 
-        impl SubAssign<f64> for $struct_name {
-            fn sub_assign(&mut self, other: f64) {
-                self.0 -= other;
+        impl<OtherType: TraitMarkerF64> AddAssign<OtherType> for $struct_name {
+            fn add_assign(&mut self, other: OtherType) {
+                self.0 += other.value();
+            }
+        }
+
+        // impl AddAssign<f64> for $struct_name {
+        //     fn add_assign(&mut self, other: f64) {
+        //         self.0 += other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Sub<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn sub(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 - other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> SubAssign<OtherType> for $struct_name {
+            fn sub_assign(&mut self, other: OtherType) {
+                self.0 -= other.value();
+            }
+        }
+
+        // impl SubAssign<f64> for $struct_name {
+        //     fn sub_assign(&mut self, other: f64) {
+        //         self.0 -= other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Mul<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn mul(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 * other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> Div<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn div(self, other: OtherType) -> Self::Output {
+                if other.value() == 0.0 {
+                    panic!("Division by zero!");
+                }
+                $struct_name(self.0 / other.value())
             }
         }
         
@@ -455,13 +569,22 @@ macro_rules! define_struct_f64 {
         use std::str::FromStr;
         use std::collections::HashMap;
         use lib_actus_types::types::Value::Value;
-        use std::ops::AddAssign;
-        use std::ops::SubAssign;
+        use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
+        use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::define_option_ext;
 
-        #[derive(PartialEq, Debug, Clone, PartialOrd)]
+        #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
         pub struct $struct_name(f64);
+
+
+        impl TraitMarkerF64 for $struct_name {
+            fn value(&self) -> f64 {
+                self.0
+            }
+
+            define_to_phantom_type_f64!($struct_name);
+        }
 
         impl $struct_name {
             pub fn new($value: f64) -> Result<Self, String> {
@@ -473,10 +596,6 @@ macro_rules! define_struct_f64 {
                 else {
                     Ok($struct_name($value))
                 }
-            }
-
-            pub fn value(&self) -> f64 {
-                self.0
             }
 
             pub fn set_value(&mut self, $value: f64) -> Result<(), String> {
@@ -516,16 +635,69 @@ macro_rules! define_struct_f64 {
                     }
                 }
             }
-        }
 
-        impl AddAssign<f64> for $struct_name {
-            fn add_assign(&mut self, other: f64) {
-                self.0 += other;
+            pub fn signum(&self) -> f64 {
+                self.0.signum()
             }
         }
-        impl SubAssign<f64> for $struct_name {
-            fn sub_assign(&mut self, other: f64) {
-                self.0 -= other;
+
+        // Implémentation des opérations arithmétiques avec des types génériques
+        impl<OtherType: TraitMarkerF64> Add<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn add(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 + other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> AddAssign<OtherType> for $struct_name {
+            fn add_assign(&mut self, other: OtherType) {
+                self.0 += other.value();
+            }
+        }
+
+        // impl AddAssign<f64> for $struct_name {
+        //     fn add_assign(&mut self, other: f64) {
+        //         self.0 += other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Sub<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn sub(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 - other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> SubAssign<OtherType> for $struct_name {
+            fn sub_assign(&mut self, other: OtherType) {
+                self.0 -= other.value();
+            }
+        }
+
+        // impl SubAssign<f64> for $struct_name {
+        //     fn sub_assign(&mut self, other: f64) {
+        //         self.0 -= other;
+        //     }
+        // }
+
+        impl<OtherType: TraitMarkerF64> Mul<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn mul(self, other: OtherType) -> Self::Output {
+                $struct_name(self.0 * other.value())
+            }
+        }
+
+        impl<OtherType: TraitMarkerF64> Div<OtherType> for $struct_name {
+            type Output = $struct_name;
+
+            fn div(self, other: OtherType) -> Self::Output {
+                if other.value() == 0.0 {
+                    panic!("Division by zero!");
+                }
+                $struct_name(self.0 / other.value())
             }
         }
         impl FromStr for $struct_name {

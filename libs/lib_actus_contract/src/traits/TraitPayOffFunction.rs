@@ -6,10 +6,14 @@ use crate::states_space::StatesSpace::StatesSpace;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-
+use crate::events::ContractEvent::TraitContractEvent;
 use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
 
-pub trait TraitPayOffFunction {
+pub trait TraitPayOffFunction<CE>
+where
+    Self: Clone + Copy,
+    CE: TraitContractEvent
+{
     /// Evaluate the function.
     ///
     /// * `time` - The schedule time of this particular event.
@@ -26,7 +30,7 @@ pub trait TraitPayOffFunction {
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        risk_factor_model: &Option<impl TraitRiskFactorModel<CE>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64;

@@ -8,7 +8,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
+use crate::events::EventFactoryOld::EventFactory;
 use crate::events::EventType::EventType;
 use crate::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
 use crate::attributes::ContractReference::ContractReference;
