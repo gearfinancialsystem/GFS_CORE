@@ -1,8 +1,9 @@
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::attributes::ContractReference::ContractReference;
+//use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
+use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::functions::lam::PayOffFunctionLAM::PayOffFunctionLAM;
 use crate::functions::lam::StatesTransitionFunctionLAM::StatesTransitionFunctionLAM;
 use crate::functions::pam::PayOffFunctionPAM::PayOffFunctionPAM;
@@ -31,7 +32,7 @@ impl StatesTransitionFunction {
     pub fn eval(&self, time: &PhantomIsoDatetimeW,
                 states: &mut StatesSpace,
                 contract_terms: &ContractTerms,
-                contract_structure: &Option<Vec<ContractReference>>,
+                contract_structure: &Option<RelatedContracts>,
                 risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
                 day_counter: &Option<DayCountConvention>,
                 time_adjuster: &BusinessDayAdjuster,) {

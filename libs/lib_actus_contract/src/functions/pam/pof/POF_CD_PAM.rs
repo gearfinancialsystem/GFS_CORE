@@ -6,8 +6,8 @@ use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjust
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-
-use crate::attributes::ContractReference::ContractReference;
+use crate::attributes::RelatedContracts::RelatedContracts;
+// use crate::attributes::ContractReference::ContractReference;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

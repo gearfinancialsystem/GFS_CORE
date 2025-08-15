@@ -10,10 +10,11 @@ use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalP
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use crate::attributes::ContractReference::ContractReference;
+// use crate::attributes::ContractReference::ContractReference;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
