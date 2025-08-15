@@ -12,20 +12,25 @@ use crate::attributes::ContractReference::ContractReference;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_TD_PAM;
 
 impl TraitStateTransitionFunction for STF_TD_PAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        contract_terms: &ContractTerms,
-contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _contract_terms: &ContractTerms,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     )  {
 
         states.notional_principal = NotionalPrincipal::new(0.0).ok();

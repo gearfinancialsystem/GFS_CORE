@@ -2,5 +2,5 @@
 
 pub mod pof;
 pub mod stf;
-mod PayOffFunctionPAM;
-mod StatesTransitionFunctionPAM;
+pub mod PayOffFunctionPAM;
+pub mod StatesTransitionFunctionPAM;

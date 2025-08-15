@@ -10,24 +10,29 @@ use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
 use lib_actus_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
-
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_SC_LAM;
 
 impl TraitStateTransitionFunction for STF_SC_LAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -60,13 +65,10 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
 
 
         let mut cbv = None;
-        if let Some(rfm) = risk_factor_model {
+        if let Some(rfm) = risk_factor_external_data {
             cbv = rfm.state_at(
                 contract_terms.market_object_code_of_scaling_index.clone().unwrap().value(),
                 time,
-                states,
-                contract_terms,
-                true
             );
         } else {
             cbv = None

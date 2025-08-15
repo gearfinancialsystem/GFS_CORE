@@ -6,17 +6,24 @@ use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjust
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::attributes::ContractReference::ContractReference;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use crate::traits::TraitExternalData::TraitExternalData;
+
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_PP_PAM;
 
 impl TraitPayOffFunction for POF_PP_PAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -26,20 +33,17 @@ impl TraitPayOffFunction for POF_PP_PAM {
 
 
             let mut cbv = None;
-            if let Some(rfm) = risk_factor_model {
+            if let Some(rfm) = risk_factor_external_data {
                 cbv = rfm.state_at(
                     contract_terms.object_code_of_prepayment_model.clone().unwrap().value(),
                     time,
-                    states,
-                    contract_terms,
-                    true
                 );
             } else {
                 cbv = None
             }
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
-                risk_factor_model,
+                risk_factor_external_data,
                 contract_terms,
                 time,
                 states

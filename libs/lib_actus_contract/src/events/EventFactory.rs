@@ -4,6 +4,7 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::marker::PhantomData;
+use lib_actus_terms::non_terms::EventTime::EventTime;
 use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
@@ -15,24 +16,18 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
+use crate::functions::PayOffFunction::PayOffFunction;
+use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
-pub struct EventFactory<T1, T2> {
-    _marker_t1: PhantomData<T1>,
-    _marker_t2: PhantomData<T2>,
+pub struct EventFactory {
 }
 
-impl<T1, T2> EventFactory<T1, T2>
-where
-    T1: TraitMarkerIsoDatetime + From<IsoDatetime>,
-    T2: TraitMarkerIsoDatetime + From<IsoDatetime>,
-{
+impl EventFactory {
     // Créez une nouvelle instance de EventFactory
     pub fn new() -> Self {
         EventFactory {
-            _marker_t1: PhantomData,
-            _marker_t2: PhantomData,
         }
     }
     pub fn create_event(
@@ -40,23 +35,22 @@ where
         event_type: &EventType,
         currency: &Option<Currency>,
         pay_off: Option<PayOffFunction>,
-        state_trans: Option<StateTransitionFunction>,
+        state_trans: Option<StatesTransitionFunction>,
         convention: &Option<BusinessDayAdjuster>,
         contract_id: &Option<ContractID>
     ) -> ContractEvent
     {
-        let mut dd : Option<T2> = None;
+        let mut dd = None;
 
         if convention.is_none() {
-            let schedule_time_copy = schedule_time.clone().unwrap().value();
             //let schedule_time_copy2 = PhantomIsoDatetimeW::new(schedule_time_copy) ;
-            dd = Some(T2::from(schedule_time_copy));
+            dd = EventTime::new(schedule_time.unwrap().value()).ok();
         }
         else {
-            let time = schedule_time.as_ref().unwrap().as_ref().unwrap().value();
-            let adjusted_time = convention.clone().unwrap().shift_bd(&time);
-            let conventionx = Some(T2::from(adjusted_time));
-            dd = conventionx.clone()
+            let time = schedule_time.as_ref().unwrap();
+            let adjusted_time = convention.clone().unwrap().shift_bd(&time.to_phantom_type());
+            let conventionx = Some(adjusted_time);
+            dd = EventTime::new(conventionx.clone().unwrap().value()).ok()
         }
 
         ContractEvent::new(
@@ -76,7 +70,7 @@ where
         event_type: &EventType,
         currency: &Option<Currency>,
         pay_off: Option<PayOffFunction>,
-        state_trans: Option<StateTransitionFunction>,
+        state_trans: Option<StatesTransitionFunction>,
         convention: &Option<BusinessDayAdjuster>,
         contract_id: &Option<ContractID>,
     ) -> HashSet<ContractEvent> {
@@ -84,17 +78,16 @@ where
         event_schedule
             .iter()
             .map(|time| {
-                let mut dd : Option<T2> = None;
+                let mut dd = None;
                 if convention.is_none() {
-                    let schedule_time_copy = time.clone().value();
-                    dd = Some(T2::from(schedule_time_copy));
+
+                    dd = EventTime::new(time.clone().value()).ok() ;
                     
                 }
                 else {
-                    let timex = time.value();
-                    let adjusted_time = convention.clone().unwrap().shift_bd(&timex);
-                    let conventionx = Some(T2::from(adjusted_time));
-                    dd = conventionx;
+
+                    let adjusted_time = convention.clone().unwrap().shift_bd(&time.to_phantom_type());
+                    dd = EventTime::new(adjusted_time.clone().value()).ok()
                 }
 
                 ContractEvent::new(

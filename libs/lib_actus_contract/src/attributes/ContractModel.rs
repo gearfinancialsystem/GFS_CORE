@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use lib_actus_types::types::Value::Value;
 // use crate::contracts::Ann::ANN;
@@ -20,10 +22,12 @@ use crate::contracts::Pam::PAM;
 // use crate::contracts::Stk::STK;
 // use crate::contracts::Swppv::SWPPV;
 // use crate::contracts::Ump::UMP;
-use crate::external::RiskFactorModel::RiskFactorModel;
+//use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::traits::TraitContractModel::TraitContractModel;
+use crate::traits::TraitExternalData::TraitExternalData;
+use crate::traits::TraitExternalEvent::TraitExternalEvent;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum ContractModel {
     // ANN(ANN),
     // BCS(BCS),
@@ -50,7 +54,8 @@ pub enum ContractModel {
 impl ContractModel {
     
     pub fn new(sm_terms: &HashMap<String, Value>,
-               risk_factors: &Option<RiskFactorModel>, 
+               risk_factor_external_data : Option<Box<dyn TraitExternalData>>,
+               risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
                result_set_toogle: bool) -> Result<ContractModel, String> {
         let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
@@ -183,11 +188,12 @@ impl ContractModel {
             "PAM" => {
                 Ok(Self::PAM({
                     let mut c = PAM::new();
-                    c.set_contract_terms(sm_terms);
-                    c.set_result_vec(result_set_toogle);
-                    c.set_contract_risk_factors(risk_factors);
-                    c.set_contract_structure(sm_terms);
-                    c.set_init_state_space();
+                    c.init_contract_terms(sm_terms);
+                    //c.set_result_vec(result_set_toogle);
+                    c.init_risk_factor_external_data(risk_factor_external_data);
+                    c.init_risk_factor_external_event(risk_factor_external_event);
+                    c.init_related_contracts(sm_terms);
+                    c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
                     c
                 }))
             },
@@ -239,7 +245,7 @@ impl ContractModel {
         }
     }
     
-    pub fn run_schedule(&mut self, to: Option<IsoDatetime>) {
+    pub fn run_schedule(&mut self ) { // to: Option<IsoDatetime>
         match self {
             // ContractModel::ANN(c) => {c.schedule(to)},
             // ContractModel::BCS(c) => {c.schedule(to)},
@@ -255,7 +261,7 @@ impl ContractModel {
             // ContractModel::LAX(c) => {c.schedule(to)},
             // ContractModel::NAM(c) => {c.schedule(to)},
             // ContractModel::OPTNS(c) => {c.schedule(to)},
-            ContractModel::PAM(c) => {c.schedule(to)},
+            ContractModel::PAM(c) => {c.init_contract_event_timeline()},
             // ContractModel::STK(c) => {c.schedule(to)},
             // ContractModel::SWAPS(c) => {c.schedule(to)},
             // ContractModel::SWPPV(c) => {c.schedule(to)},
@@ -263,7 +269,7 @@ impl ContractModel {
         }
     }
 
-    pub fn run_apply(&mut self, stop_states_space_date: Option<IsoDatetime>) {
+    pub fn run_apply(&mut self, stop_states_space_date: Option<PhantomIsoDatetimeW>) {
         match self {
             // ContractModel::ANN(c) => {c.apply()},
             // ContractModel::BCS(c) => {c.apply()},
@@ -279,7 +285,7 @@ impl ContractModel {
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
             // ContractModel::OPTNS(c) => {c.apply()},
-            ContractModel::PAM(c) => {c.apply(stop_states_space_date)},
+            ContractModel::PAM(c) => {c.apply_until_date(stop_states_space_date)},
             // ContractModel::STK(c) => {c.apply()},
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
@@ -311,7 +317,7 @@ impl ContractModel {
         }
     }
 
-    pub fn get_current_datetime(&self) -> Option<IsoDatetime> {
+    pub fn get_current_datetime(&self) -> Option<PhantomIsoDatetimeW> {
         match self {
             // ContractModel::ANN(c) => {c.apply()},
             // ContractModel::BCS(c) => {c.apply()},
@@ -327,7 +333,7 @@ impl ContractModel {
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
             // ContractModel::OPTNS(c) => {c.apply()},
-            ContractModel::PAM(c) => {c.current_datetime},
+            ContractModel::PAM(c) => {Some(c.status_date?.to_phantom_type())},
             // ContractModel::STK(c) => {c.apply()},
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
@@ -335,8 +341,8 @@ impl ContractModel {
         }
     }
     
-    pub fn run(&mut self, to: Option<IsoDatetime>, stop_states_space_date: Option<IsoDatetime>) {
-        self.run_schedule(to);
+    pub fn run(&mut self, to: Option<PhantomIsoDatetimeW>, stop_states_space_date: Option<PhantomIsoDatetimeW>) {
+        self.run_schedule(); //to
         self.run_apply(stop_states_space_date);
     }
 

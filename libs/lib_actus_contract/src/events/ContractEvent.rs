@@ -5,15 +5,17 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use lib_actus_terms::non_terms::EventTime::EventTime;
+use lib_actus_terms::non_terms::PayOff::Payoff;
 use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
 use lib_actus_terms::phantom_terms::PhantomF64::PhantomF64W;
-use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::EventSequence::EventSequence;
 use crate::events::EventType::EventType;
 use lib_actus_terms::terms::grp_notional_principal::Currency::Currency;
 use lib_actus_terms::terms::grp_contract_identification::ContractID::ContractID;
 use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::functions::PayOffFunction::PayOffFunction;
+use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
@@ -23,13 +25,13 @@ pub trait TraitContractEvent {}
 pub struct ContractEvent {
     
     pub epoch_offset: Option<PhantomF64W>,
-    pub fstate: Option<StateTransitionFunction>,
+    pub fstate: Option<StatesTransitionFunction>,
     pub fpayoff: Option<PayOffFunction>,
     pub event_time: Option<EventTime>,
     pub schedule_time: Option<ScheduleTime>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
-    pub payoff: Option<f64>,
+    pub payoff: Option<Payoff>,
     pub contract_id: Option<ContractID>,
 }
 
@@ -43,7 +45,7 @@ impl ContractEvent {
         event_type: &EventType,
         currency: &Option<Currency>,
         fpayoff: Option<PayOffFunction>,
-        fstate: Option<StateTransitionFunction>,
+        fstate: Option<StatesTransitionFunction>,
         contract_id: &Option<ContractID>,
     ) -> Self
     {
@@ -59,7 +61,7 @@ impl ContractEvent {
             schedule_time: schedule_time.clone(),
             event_type: event_type.clone(),
             currency: currency.clone(),
-            payoff: Some(0.0),
+            payoff: Some(Payoff::new(0.0).expect("ok")),
             contract_id: contract_id.clone(),
         }
     }
@@ -67,11 +69,11 @@ impl ContractEvent {
     pub fn get_contract_id(&self) -> ContractID {
         self.contract_id.clone().unwrap()
     }
-    pub fn get_event_time(&self) -> PhantomIsoDatetimeW {
-        PhantomIsoDatetimeW::new(self.event_time.clone().unwrap().value()).expect("Failed to get event time")
+    pub fn get_event_time(&self) -> EventTime {
+        self.event_time.clone().unwrap()
     }
-    pub fn get_schedule_time(&self) -> PhantomIsoDatetimeW {
-        PhantomIsoDatetimeW::new(self.schedule_time.clone().unwrap().value()).expect("Failed to get event time")
+    pub fn get_schedule_time(&self) -> ScheduleTime {
+        self.schedule_time.clone().unwrap()
     }
     pub fn get_event_type(&self) -> EventType {
         self.event_type
@@ -85,19 +87,19 @@ impl ContractEvent {
     pub fn currency(&self) -> Currency {
         self.currency.clone().unwrap()
     }
-    pub fn payoff(&self) -> f64 {
+    pub fn payoff(&self) -> Payoff {
         self.payoff.clone().unwrap()
     }
 
     pub fn set_payoff(&mut self, payoff: f64) {
-        self.payoff = Some(payoff);
+        self.payoff = Some( Payoff::new(payoff).expect("ok")  );
     }
 
     pub fn set_f_pay_off(&mut self, function: Option<PayOffFunction>) {
         self.fpayoff = function;
     }
     // Méthode pour changer fStateTrans
-    pub fn set_f_state_trans(&mut self, function: Option<StateTransitionFunction>) {
+    pub fn set_f_state_trans(&mut self, function: Option<StatesTransitionFunction>) {
         self.fstate = function;
     }
     pub fn compare_to(&self, other: &ContractEvent) -> i64 {
@@ -210,29 +212,16 @@ impl PartialEq for ContractEvent
 impl Eq for ContractEvent
 {}
 
-
-impl Hash for ContractEvent
-{
+impl Hash for ContractEvent {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        // Hachage des champs standards
-        self.contract_id.hash(state);
-        self.currency.hash(state);
+        //self.epoch_offset.hash(state);
+        //self.fstate.hash(state);
+        //self.fpayoff.hash(state);
         self.event_time.hash(state);
-        self.event_type.hash(state);
         self.schedule_time.hash(state);
-
-        // Hachage des fonctions avec gestion des None
-        if let Some(f) = &self.fpayoff {
-            f.hash(state); // Suppose que TfPayoff implémente Hash
-        } else {
-            0usize.hash(state);
-        }
-
-        // Hachage de fstate si présent
-        if let Some(f) = &self.fstate {
-            f.hash(state); // Suppose que TfState implémente Hash
-        } else {
-            0usize.hash(state);
-        }
+        self.event_type.hash(state);
+        self.currency.hash(state);
+        //self.payoff.hash(state);
+        self.contract_id.hash(state);
     }
 }

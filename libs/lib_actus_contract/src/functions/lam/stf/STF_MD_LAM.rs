@@ -14,18 +14,23 @@ use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerI
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_MD_LAM;
 
 impl TraitStateTransitionFunction for STF_MD_LAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

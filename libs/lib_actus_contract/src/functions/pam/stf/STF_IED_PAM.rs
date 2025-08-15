@@ -1,3 +1,4 @@
+use lib_actus_terms::phantom_terms::PhantomF64::PhantomF64W;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -12,17 +13,24 @@ use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::attributes::ContractReference::ContractReference;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use crate::traits::TraitExternalData::TraitExternalData;
+
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_IED_PAM;
 
 impl TraitStateTransitionFunction for STF_IED_PAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -44,11 +52,11 @@ contract_structure: &Option<Vec<ContractReference>>,
         ) {
             if cycle_anchor_date.value() < initial_exchange_date.value() {
                 states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
-                    accrued_interest += notional_principal_s.value() * nominal_interest_rate_s.value() *
-                        day_counter.day_count_fraction(
+                    accrued_interest += notional_principal_s * nominal_interest_rate_s *
+                        PhantomF64W::new(day_counter.day_count_fraction(
                             time_adjuster.shift_sc(&cycle_anchor_date.to_phantom_type()),
                             time_adjuster.shift_sc(time)
-                        );
+                        )).expect("Should be Some");
                     accrued_interest
                 });
             }

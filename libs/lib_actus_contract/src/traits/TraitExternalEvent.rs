@@ -1,8 +1,9 @@
 use std::collections::HashSet;
+use std::fmt::Debug;
 use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
 
 
-pub trait TraitExternalEvent: Copy + Clone
+pub trait TraitExternalEvent
 {
     /// Returns the set of unique risk factor IDs
     fn keys(&self) -> Option<HashSet<String>>;

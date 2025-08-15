@@ -5,7 +5,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::events::ContractEvent::TraitContractEvent;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
-
+use crate::traits::TraitExternalData::TraitExternalData;
 
 pub struct CommonUtils;
 
@@ -13,8 +13,8 @@ pub struct CommonUtils;
 impl CommonUtils {
 
 
-    pub fn settlementCurrencyFxRate<CE: TraitContractEvent>(
-        riskFactorModel: &Option<impl TraitRiskFactorModel<CE>>, 
+    pub fn settlementCurrencyFxRate(
+        riskFactorModel: &Option<Box<dyn TraitExternalData>>, 
         model: &ContractTerms, 
         time: &PhantomIsoDatetimeW,
         state: &StatesSpace) -> f64 
@@ -32,7 +32,8 @@ impl CommonUtils {
             let joined = str_slices.join(" ");
             
             if riskFactorModel.is_none() {
-                riskFactorModel.unwrap().state_at(joined, time, state, model,true).expect("expect curr value")
+                1.0
+                //riskFactorModel.clone().unwrap().state_at(joined, time).expect("expect curr value")
             } else { 
                 1.0 // a verifier
             }

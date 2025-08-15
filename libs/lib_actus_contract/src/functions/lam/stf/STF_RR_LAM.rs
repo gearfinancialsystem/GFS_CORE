@@ -13,19 +13,25 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use lib_actus_terms::traits::TraitOptionExt::TraitOptionExt;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_RR_LAM;
 
 impl TraitStateTransitionFunction for STF_RR_LAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -52,13 +58,10 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         );
 
         let mut cbv = None;
-        if let Some(rfm) = risk_factor_model {
+        if let Some(rfm) = risk_factor_external_data {
             cbv = rfm.state_at(
                 contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                 time,
-                states,
-                contract_terms,
-                true
             );
         } else {
             cbv = None

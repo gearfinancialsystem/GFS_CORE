@@ -11,17 +11,24 @@ use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerI
 use crate::attributes::ContractReference::ContractReference;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use crate::traits::TraitExternalData::TraitExternalData;
+
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_FP_PAM;
 
 impl TraitPayOffFunction for POF_FP_PAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -31,7 +38,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
         let fee_rate = contract_terms.fee_rate.as_ref().expect("fee rate should always be some");
         
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
-            risk_factor_model,
+            risk_factor_external_data,
             contract_terms,
             time,
             states

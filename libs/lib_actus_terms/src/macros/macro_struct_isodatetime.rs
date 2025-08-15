@@ -25,6 +25,32 @@ macro_rules! define_to_phantom_type_isodatetime {
 }
 
 #[macro_export]
+macro_rules! define_scheduletime_imports_isodatetime {
+    (ScheduleTime) => {
+
+    };
+    ($struct_name:ident) => {
+        use crate::non_terms::ScheduleTime::ScheduleTime;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_scheduletime {
+    (ScheduleTime) => {
+        // Implémentation spécifique pour PhantomIsoDatetimeW
+        fn to_schedule_time(&self) -> Option<Self> {
+            Some(*self)
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_schedule_time(&self) -> Option<ScheduleTime> {
+            Some(ScheduleTime::new(self.value()).expect("Conversion to ScheduleTime doesn't work"))
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! define_struct_isodatetime {
     ($struct_name:ident) => {
         use chrono::NaiveDateTime;
@@ -43,6 +69,7 @@ macro_rules! define_struct_isodatetime {
         use lib_actus_types::types::Value::Value;
         use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
         define_phantom_imports_isodatetime!($struct_name);
+        define_scheduletime_imports_isodatetime!($struct_name);
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
         pub struct $struct_name(IsoDatetime);
@@ -64,7 +91,7 @@ macro_rules! define_struct_isodatetime {
             }
 
             define_to_phantom_type_isodatetime!($struct_name);
-
+            define_to_scheduletime!($struct_name);
         }
 
         impl $struct_name {

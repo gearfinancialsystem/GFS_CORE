@@ -10,23 +10,28 @@ use lib_actus_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use lib_actus_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
 use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
 
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_RRF_LAM;
 
 impl TraitStateTransitionFunction for STF_RRF_LAM {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {

@@ -13,5 +13,5 @@ pub mod POF_IPCI_LAM;
 pub mod POF_RR_LAM;
 pub mod POF_RRF_LAM;
 pub mod POF_SC_LAM;
-mod POF_CE_LAM;
+pub mod POF_CE_LAM;
 

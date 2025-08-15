@@ -4,6 +4,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
