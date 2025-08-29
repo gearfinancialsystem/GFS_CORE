@@ -2,7 +2,6 @@ use std::fmt;
 use crate::types::IsoDatetime::IsoDatetime;
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::traits::TraitCycleAdjuster::TraitCycleAdjuster;
-use crate::types::cycle_adjuster::WeekdayCycleAdjuster::WeekdayCycleAdjuster;
 use crate::types::IsoCycle::{LONG_STUB, SHORT_STUB};
 
 

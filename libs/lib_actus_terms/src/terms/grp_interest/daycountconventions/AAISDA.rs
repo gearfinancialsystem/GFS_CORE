@@ -1,6 +1,6 @@
 use std::fmt;
 use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use chrono::{Datelike, NaiveDate};
+use chrono::NaiveDate;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 

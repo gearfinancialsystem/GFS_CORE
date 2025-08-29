@@ -5,9 +5,10 @@ use crate::attributes::ContractTerms::ContractTerms;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use lib_actus_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use lib_actus_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+
 
 pub struct RedemptionUtils;
 
@@ -31,9 +32,9 @@ impl RedemptionUtils {
 
         // determine remaining PR schedule
         let mut event_times: HashSet<PhantomIsoDatetimeW> = ScheduleFactory::create_schedule(
-            &model.cycle_anchor_date_of_principal_redemption,
-            &Some(maturity),
-            &model.cycle_of_principal_redemption.clone(),
+            &model.cycle_anchor_date_of_principal_redemption.unwrap().to_start_time(),
+            &Some(maturity.to_end_time().unwrap()),
+            &Some(model.cycle_of_principal_redemption.clone().unwrap().to_phantom_type()),
             &model.end_of_month_convention,
             Some(true)
         );

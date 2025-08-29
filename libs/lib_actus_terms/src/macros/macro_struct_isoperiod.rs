@@ -29,7 +29,7 @@ macro_rules! define_struct_isoperiod {
     ($struct_name:ident) => {
 
         use lib_actus_types::types::IsoPeriod::IsoPeriod;
-        use lib_actus_types::types::IsoDatetime::IsoDatetime;
+
         use lib_actus_types::types::Value::Value;
         use crate::traits::types_markers::TraitMarkerIsoPeriod::TraitMarkerIsoPeriod;
         use std::collections::HashMap;
@@ -38,7 +38,6 @@ macro_rules! define_struct_isoperiod {
         use std::ops::Deref;
         use std::convert::AsRef;
         use std::borrow::Borrow;
-        use std::ops::{Add, Sub};
 
         define_phantom_imports_isoperiod!($struct_name);
 

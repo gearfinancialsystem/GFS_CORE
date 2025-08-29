@@ -4,7 +4,7 @@ use crate::attributes::ContractRules::ContractRules;
 
 #[derive(Debug, Clone)]
 pub struct RelatedContracts {
-    pub ContractSet: HashSet<ContractElem>,
-    pub ContractStructure : Option<ContractRules>
+    pub contract_set: HashSet<ContractElem>,
+    pub contract_structure : Option<ContractRules>
 }
 

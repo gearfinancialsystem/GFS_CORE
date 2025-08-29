@@ -1,8 +1,8 @@
-use std::str::FromStr;
+#![allow(non_camel_case_types)]
+
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::functions::pam::pof::POF_AD_PAM::POF_AD_PAM;
@@ -24,6 +24,7 @@ use crate::functions::pam::pof::POF_TD_PAM::POF_TD_PAM;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
+
 
 #[derive(Clone)]
 pub enum PayOffFunctionPAM {

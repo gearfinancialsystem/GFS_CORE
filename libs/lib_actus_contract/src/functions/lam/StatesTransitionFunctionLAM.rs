@@ -1,7 +1,8 @@
+#![allow(non_camel_case_types)]
+
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::functions::lam::stf::STF_AD_LAM::STF_AD_LAM;
@@ -23,7 +24,6 @@ use crate::functions::lam::stf::STF_RR_LAM::STF_RR_LAM;
 use crate::functions::lam::stf::STF_RRF_LAM::STF_RRF_LAM;
 use crate::functions::lam::stf::STF_SC_LAM::STF_SC_LAM;
 use crate::functions::lam::stf::STF_TD_LAM::STF_TD_LAM;
-use crate::functions::pam::StatesTransitionFunctionPAM::StatesTransitionFunctionPAM;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;

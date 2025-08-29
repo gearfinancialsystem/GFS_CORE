@@ -1,10 +1,10 @@
+#![allow(non_camel_case_types)]
+
 use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use lib_actus_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::functions::pam::PayOffFunctionPAM::PayOffFunctionPAM;
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 use crate::functions::pam::stf::STF_CD_PAM::STF_CD_PAM;
 use crate::functions::pam::stf::STF_CE_PAM::STF_CE_PAM;
@@ -25,7 +25,8 @@ use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 #[derive(Clone)]
-pub enum StatesTransitionFunctionPAM  {
+pub enum StatesTransitionFunctionPAM {
+
     STF_AD_PAM(STF_AD_PAM),
     STF_CD_PAM(STF_CD_PAM),
     STF_CE_PAM(STF_CE_PAM),

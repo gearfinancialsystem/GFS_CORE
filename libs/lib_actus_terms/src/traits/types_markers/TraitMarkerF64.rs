@@ -1,5 +1,4 @@
 use std::fmt::{Debug, Display};
-use std::hash::Hash;
 use std::str::FromStr;
 use crate::phantom_terms::PhantomF64::PhantomF64W;
 

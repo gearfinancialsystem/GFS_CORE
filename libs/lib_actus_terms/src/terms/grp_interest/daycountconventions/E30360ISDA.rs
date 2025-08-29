@@ -1,8 +1,6 @@
 use std::fmt;
 use std::rc::Rc;
 
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-use chrono::Datelike;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;

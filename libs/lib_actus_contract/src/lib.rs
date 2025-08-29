@@ -8,7 +8,6 @@ pub mod attributes;
  
 pub mod functions;
 
-pub mod util_tests;
 pub mod contracts;
 pub mod external;
 pub mod events;

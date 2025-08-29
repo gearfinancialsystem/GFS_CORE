@@ -1,3 +1,5 @@
+
+#![allow(non_camel_case_types)]
 use crate::functions::pam::stf::STF_AD_PAM::STF_AD_PAM;
 
 pub type STF_AD_LAM = STF_AD_PAM;

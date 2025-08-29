@@ -4,7 +4,6 @@ use std::str::FromStr;
 // use lib_actus_contract::external::JsonLoader::load_test_case_terms;
 // use lib_actus_contract::external::risk_factors::risk_factor_model_1::RiskFactorModel1::RiskFactorModel1;
 // use lib_actus_contract::external::RiskFactorModel::RiskFactorModel;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
 //use lib_actus_contract::util_tests::xTestsUtils::test_read_and_parse_json;
 
 fn main() {
@@ -213,8 +212,8 @@ fn main() {
 
 
     // test loading avec functions
-    let pathx = "libs/lib_actus_contract/test_sets/actus-tests-pam.json";
-    let test_id = "pam01";
+    //let pathx = "libs/lib_actus_contract/test_sets/actus-tests-pam.json";
+    //let test_id = "pam01";
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     // let mut dico = load_test_case_terms(pathx,test_id).unwrap();

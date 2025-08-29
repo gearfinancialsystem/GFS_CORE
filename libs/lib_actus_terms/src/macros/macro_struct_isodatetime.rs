@@ -51,6 +51,58 @@ macro_rules! define_to_scheduletime {
 }
 
 #[macro_export]
+macro_rules! define_starttime_imports_isodatetime {
+    (StartTime) => {
+
+    };
+    ($struct_name:ident) => {
+        use crate::non_terms::StartTime::StartTime;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_starttime {
+    (StartTime) => {
+        // Implémentation spécifique pour PhantomIsoDatetimeW
+        fn to_start_time(&self) -> Option<Self> {
+            Some(*self)
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_start_time(&self) -> Option<StartTime> {
+            Some(StartTime::new(self.value()).expect("Conversion to StartTime doesn't work"))
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! define_endtime_imports_isodatetime {
+    (EndTime) => {
+
+    };
+    ($struct_name:ident) => {
+        use crate::non_terms::EndTime::EndTime;
+    };
+}
+
+#[macro_export]
+macro_rules! define_to_endtime {
+    (EndTime) => {
+        // Implémentation spécifique pour PhantomIsoDatetimeW
+        fn to_end_time(&self) -> Option<Self> {
+            Some(*self)
+        }
+    };
+    ($struct_name:ident) => {
+        // Implémentation par défaut pour les autres structures
+        fn to_end_time(&self) -> Option<EndTime> {
+            Some(EndTime::new(self.value()).expect("Conversion to EndTime doesn't work"))
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! define_struct_isodatetime {
     ($struct_name:ident) => {
         use chrono::NaiveDateTime;
@@ -70,6 +122,8 @@ macro_rules! define_struct_isodatetime {
         use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
         define_phantom_imports_isodatetime!($struct_name);
         define_scheduletime_imports_isodatetime!($struct_name);
+        define_starttime_imports_isodatetime!($struct_name);
+        define_endtime_imports_isodatetime!($struct_name);
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
         pub struct $struct_name(IsoDatetime);
@@ -92,6 +146,8 @@ macro_rules! define_struct_isodatetime {
 
             define_to_phantom_type_isodatetime!($struct_name);
             define_to_scheduletime!($struct_name);
+            define_to_starttime!($struct_name);
+            define_to_endtime!($struct_name);
         }
 
         impl $struct_name {

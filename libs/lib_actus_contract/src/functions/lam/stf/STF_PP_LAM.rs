@@ -11,7 +11,7 @@ use lib_actus_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use lib_actus_terms::terms::grp_interest::interest_calculation_base::Ntl::NTL;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+
 use lib_actus_terms::terms::grp_interest::InterestCalculationBase::InterestCalculationBase;
 use lib_actus_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use lib_actus_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;

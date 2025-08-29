@@ -2,48 +2,49 @@
 use std::collections::HashSet;
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::marker::PhantomData;
+
+use lib_actus_terms::non_terms::EndTime::EndTime;
+use lib_actus_terms::non_terms::ScheduleTime::ScheduleTime;
+use lib_actus_terms::non_terms::StartTime::StartTime;
+
+use lib_actus_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
+use lib_actus_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use lib_actus_terms::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
+
 use lib_actus_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use lib_actus_types::types::IsoCycle::{IsoCycle, LONG_STUB};
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
-
-pub struct ScheduleFactory<T1, T2,U, TO, > {
-    marker: PhantomData<(T1, T2,U, TO)>,
-}
+use lib_actus_types::types::IsoCycle::LONG_STUB;
 
 
-impl<T1, T2, U, TO> ScheduleFactory<T1, T2,U, TO>
-where
-    T1: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    T2: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime>,
-    U: TraitMarkerIsoCycle + Clone + PartialEq + Debug + Hash + From<IsoCycle>,
-    TO: TraitMarkerIsoDatetime + Clone + PartialEq + Debug + Hash + From<IsoDatetime> + Eq,
+pub struct ScheduleFactory;
+
+
+impl ScheduleFactory
 {
 
     pub fn create_schedule(
-        start_time: &Option<T1>,
-        end_time: &Option<T2>,
-        cycle: &Option<U>,
+        start_time: &Option<StartTime>, // old T1
+        end_time: &Option<EndTime>, // old T2
+        cycle: &Option<PhantomIsoCycleW>, // old U
         end_of_month_convention: &EndOfMonthConvention,
         add_end_time: Option<bool>,
-    ) -> HashSet<TO> {
-        let mut times_set: HashSet<TO> = HashSet::new();
+    ) -> HashSet<PhantomIsoDatetimeW> { // old T0
+        let mut times_set: HashSet<PhantomIsoDatetimeW> = HashSet::new();
         
         if cycle.is_none() {
             if start_time.is_some() {
-                let to_ins = TO::from(start_time.clone().unwrap().value());
+                let to_ins = start_time.clone().unwrap().to_phantom_type();
                 times_set.insert(to_ins);
             }
             if add_end_time == Some(true) {
-                let to_ins = TO::from(end_time.clone().unwrap().value());
+                let to_ins = end_time.clone().unwrap().to_phantom_type();
                 times_set.insert(to_ins);
             }
             else {
                 if start_time.is_some() && end_time.is_some() {
                     if start_time.clone().unwrap().value() == end_time.clone().unwrap().value() {
-                        let to_sup = TO::from(start_time.clone().unwrap().value());
+                        let to_sup = start_time.clone().unwrap().to_phantom_type();
                         times_set.remove(&to_sup);
                         times_set.remove(&to_sup);
                     }
@@ -60,37 +61,40 @@ where
             end_of_month_convention.clone(),
             start_time.clone().unwrap().value(), 
             ccycle.clone().value().clone()).expect("sd"); // attention vérifier
-        // CHANGER EoM new (prendre cycle as ref, pas en valeur
-        // Parsez le cycle pour obtenir une durée
-        //let period = CycleUtils::parse_period(&ccycle).expect("et");
-        let period = ccycle.value().extract_period().unwrap();
 
+        let periodx = ccycle.value().extract_period().unwrap();
+        let temp_year = periodx.years; 
+        let temp_month = periodx.months; 
+        let temp_day = periodx.days;
+        
+        let period = PhantomIsoPeriodW::new(temp_year, temp_month, temp_day);
+        
         // Créez le calendrier en fonction de la convention de fin de mois
-        let mut new_time = start_time.clone().unwrap().value();
+        let mut new_time = start_time.clone().unwrap();
         let mut counter = 1;
-        while new_time < end_time.clone().unwrap().value() {
-            let to_ins = TO::from(new_time.clone().value());
+        while new_time.to_phantom_type() < end_time.unwrap().to_phantom_type() {
+            let to_ins = new_time.clone().to_phantom_type();
             times_set.insert(to_ins);
             let increment = period.multiplied_by(counter);
-            new_time = shifter.shift(start_time.clone().unwrap().value() + increment);
+            new_time = StartTime::new(shifter.shift(start_time.clone().unwrap().value() + increment)).expect("");
             
             counter += 1;
         }
 
         // Ajoutez (ou non) end_time au calendrier
         if add_end_time == Some(true) {
-            let to_ins = TO::from(end_time.clone().unwrap().value());
+            let to_ins = end_time.clone().unwrap().to_phantom_type();
             times_set.insert(to_ins);
         } else {
             if end_time.clone().unwrap().value() == start_time.clone().unwrap().value() {
-                let to_sup = TO::from(start_time.clone().unwrap().value());
+                let to_sup = start_time.clone().unwrap().to_phantom_type();
                 times_set.remove(&to_sup);
             }
         }
         // Ajustez le dernier stub si nécessaire
-        if stub.unwrap() == LONG_STUB && times_set.len() > 2 && new_time != end_time.clone().unwrap().value() {
+        if stub.unwrap() == LONG_STUB && times_set.len() > 2 && new_time.to_phantom_type() != end_time.clone().unwrap().to_phantom_type() {
             let last_stub_time = shifter.shift(start_time.clone().unwrap().value() + period.multiplied_by (counter - 2));
-            let to_sup = TO::from(last_stub_time);
+            let to_sup = PhantomIsoDatetimeW::new(last_stub_time).expect(""); // should be schedule time
             times_set.remove(&to_sup);
         }
 
@@ -99,17 +103,17 @@ where
 
     /// Crée un calendrier composé de sous-calendriers pour chaque paire start_time/cycle.
     pub fn create_array_schedule(
-        start_times: &Vec<T1>,
-        end_time: &Option<T2>,
-        cycles: &Vec<U>,
+        start_times: &Vec<StartTime>, // old T1
+        end_time: &Option<EndTime>, // old T2
+        cycles: &Vec<PhantomIsoCycleW>, // old U
         end_of_month_convention: &EndOfMonthConvention,
-    ) -> HashSet<TO> {
-        let mut times_set = HashSet::new();
+    ) -> HashSet<PhantomIsoDatetimeW> { // old T0 // a modifier avec EventTime ou ScheduleTime
+        let mut times_set: HashSet<PhantomIsoDatetimeW> = HashSet::new();
 
         // Ajoutez les sous-calendriers 1 à N-1
         for i in 0..start_times.len() - 1 {
             let sub_schedule = {
-                let second_time = T2::from(start_times[i + 1].clone().value());
+                let second_time = start_times[i + 1].clone().to_end_time().expect("");
                 Self::create_schedule(
                     &Some(start_times[i].clone()),
                     &Some(second_time),
@@ -123,7 +127,7 @@ where
 
         // Ajoutez le dernier sous-calendrier
         let last_schedule = {
-            let second_time = T2::from(end_time.clone().unwrap().value());
+            let second_time = end_time.clone().unwrap();
                 Self::create_schedule(
                     &Some(start_times[start_times.len() - 1].clone()),
                     &Some(second_time), 

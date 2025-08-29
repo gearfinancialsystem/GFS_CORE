@@ -21,7 +21,7 @@ use lib_actus_terms::terms::grp_interest::DayCountConvention::DayCountConvention
 
 
 use lib_actus_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
+
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 

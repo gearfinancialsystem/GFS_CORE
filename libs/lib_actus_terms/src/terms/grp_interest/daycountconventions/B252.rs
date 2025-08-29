@@ -1,9 +1,7 @@
 use std::{fmt, ptr};
 use std::rc::Rc;
 
-use lib_actus_types::types::IsoDatetime::IsoDatetime;
 use crate::traits::TraitBusinessDayCalendar::TraitBusinessDayCalendar;
-use chrono::Duration;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 use crate::terms::grp_calendar::Calendar::Calendar;
