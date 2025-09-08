@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>App-applicability</h1>
+<p>The goal of this app is to generate applicability configuration files for each existing contract.</p>
+<button class="button">Generate!</button>
+<h4>Contract Types list</h4>
+<div class="container">
+    <div class="container-level-1 clearfix">
+        <p class="category-title-1">Financial Contracts</p>
+        <div class="container-level-2 clearfix">
+            <p class="category-title-2">Basic</p>
+            <div class="container-level-3 clearfix">
+                <p class="category-title-3">Fixed Income</p>
+                <div class="container-level-4 clearfix">
+                    <p class="category-title-4">Maturities</p>
+                    <div class="button-grid-1 clearfix">
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="PAM">
+                            <button type="submit" class="button">PAM</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="ANN">
+                            <button type="submit" class="button">ANN</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="NAM">
+                            <button type="submit" class="button">NAM</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="LAM">
+                            <button type="submit" class="button">LAM</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="ANX">
+                            <button type="submit" class="button">ANX</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="NAX">
+                            <button type="submit" class="button">NAX</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="LAX">
+                            <button type="submit" class="button">LAX</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="CLM">
+                            <button type="submit" class="button">CLM</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="PNB">
+                            <button type="submit" class="button">PNB</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="container-level-4 clearfix">
+                    <p class="category-title-4">Non-Maturities</p>
+                    <div class="button-grid-2 clearfix">
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="CSH">
+                            <button type="submit" class="button">CSH</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="UMP">
+                            <button type="submit" class="button">UMP</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="container-level-3 clearfix">
+                <p class="category-title-3">Index Based</p>
+                <div class="button-grid-2 clearfix">
+                    <form action="{{ url_for('contract_type') }}" method="get">
+                        <input type="hidden" name="type" value="STK">
+                        <button type="submit" class="button">STK</button>
+                    </form>
+                    <form action="{{ url_for('contract_type') }}" method="get">
+                        <input type="hidden" name="type" value="COM">
+                        <button type="submit" class="button">COM</button>
+                    </form>
+                </div>
+            </div>
+            <div class="container-level-2 clearfix">
+                <p class="category-title-2">Combined / Derivatives</p>
+                <div class="container-level-3 clearfix">
+                    <p class="category-title-3">Symmetric</p>
+                    <div class="button-grid-2 clearfix">
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="SWAPS">
+                            <button type="submit" class="button">SWAPS</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="SWPPV">
+                            <button type="submit" class="button">SWPPV</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="FXOUT">
+                            <button type="submit" class="button">FXOUT</button>
+                        </form>
+                        <form action="{{ url_for('contract_type') }}" method="get">
+                            <input type="hidden" name="type" value="FUTUR">
+                            <button type="submit" class="button">FUTUR</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="container-level-3 clearfix">
+                    <p class="category-title-3">Options</p>
+                    <div class="container-level-4 clearfix">
+                        <p class="category-title-4">Plain Vanilla</p>
+                        <div class="button-grid-2 clearfix">
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="OPTNS">
+                                <button type="submit" class="button">OPTNS</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="CAPFL">
+                                <button type="submit" class="button">CAPFL</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="BNDCP">
+                                <button type="submit" class="button">BNDCP</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="BNDWR">
+                                <button type="submit" class="button">BNDWR</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="container-level-4 clearfix">
+                        <p class="category-title-4">Exotic</p>
+                        <div class="button-grid-2 clearfix">
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="EXOTI">
+                                <button type="submit" class="button">EXOTI</button>
+                            </form>
+                        </div>
+                </div>
+                <div class="container-level-3 clearfix">
+                    <p class="category-title-3">Securitization</p>
+                    <div class="container-level-4 clearfix">
+                        <p class="category-title-4">Credit</p>
+                        <div class="button-grid-2 clearfix">
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="CDSWP">
+                                <button type="submit" class="button">CDSWP</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="TRSWP">
+                                <button type="submit" class="button">TRSWP</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="CLNTE">
+                                <button type="submit" class="button">CLNTE</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="container-level-4 clearfix">
+                        <p class="category-title-4">Market</p>
+                        <div class="button-grid-2 clearfix">
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="SCRMR">
+                                <button type="submit" class="button">SCRMR</button>
+                            </form>
+                            <form action="{{ url_for('contract_type') }}" method="get">
+                                <input type="hidden" name="type" value="SCRCR">
+                                <button type="submit" class="button">SCRCR</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="container-level-1 clearfix">
+            <p class="category-title-1">Credit Enhancement</p>
+            <div class="button-grid-2 clearfix">
+                <form action="{{ url_for('contract_type') }}" method="get">
+                    <input type="hidden" name="type" value="CEG">
+                    <button type="submit" class="button">CEG</button>
+                </form>
+                <form action="{{ url_for('contract_type') }}" method="get">
+                    <input type="hidden" name="type" value="CEC">
+                    <button type="submit" class="button">CEC</button>
+                </form>
+                <form action="{{ url_for('contract_type') }}" method="get">
+                    <input type="hidden" name="type" value="MAR">
+                    <button type="submit" class="button">MAR</button>
+                </form>
+                <form action="{{ url_for('contract_type') }}" method="get">
+                    <input type="hidden" name="type" value="REP">
+                    <button type="submit" class="button">REP</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

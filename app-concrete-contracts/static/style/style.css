@@ -1,0 +1,180 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Centre horizontalement le contenu */
+    background-color: #f9f9f9; /* Optionnel : fond clair pour mieux voir */
+}
+
+.container {
+    width: 650px; /* Taille fixe */
+    margin: 0 ; /* Centré horizontalement : ajouter auto*/
+    padding: 0;
+}
+
+.container-level-1 {
+    width: auto;
+    padding: 15px;
+    border: 4px solid rgb(46, 41, 41);
+    border-radius: 8px;
+    background-color: #fff0f0;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.category-title-1 {
+    float: left;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: rgb(46, 41, 41);
+}
+
+.container-level-2 {
+    width: auto;
+    padding: 15px;
+    border: 4px solid blue;
+    border-radius: 8px;
+    background-color: #f0f0ff;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.category-title-2 {
+    float: left;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: blue;
+}
+
+.container-level-3 {
+    width: auto;
+    padding: 15px;
+    border: 4px solid rgb(126, 218, 89);
+    border-radius: 8px;
+    background-color: #f0fff0;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.category-title-3 {
+    float: left;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: rgb(126, 218, 89);
+}
+
+.container-level-4 {
+    width: auto;
+    padding: 15px;
+    border: 4px solid rgb(209, 46, 40);
+    border-radius: 8px;
+    background-color: #fff0ff;
+    margin: 25px 0 0 0;
+    text-align: left;
+}
+
+.category-title-4 {
+    float: left;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: rgb(209, 46, 40);
+}
+
+.button-grid-1 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 35px 0 0 0;
+}
+
+.button-grid-1 button {
+    padding: 10px;
+    width: 100%;
+}
+
+.button-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 35px 0 0 0;
+}
+
+.button-grid-2 button {
+    padding: 10px;
+    width: 100%;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Espace entre le texte et la div imbriquée */
+.container-level-3 > .container-level-4,
+.container-level-2 > .container-level-3,
+.container-level-1 > .container-level-2  {
+    margin-top: 35px;
+}
+
+/* New styles from contract_interface.html */
+.contract-details {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+.contract-details p {
+    margin: 10px 0;
+}
+.toggle-arrow {
+    cursor: pointer;
+    margin-left: 5px;
+}
+.details-hidden {
+    display: none;
+    margin-left: 70px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+}
+
+/* Style for checkbox alignment */
+.contract-details label p {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+.contract-details label input[type="checkbox"] {
+    margin-left: 10px;
+}
+
+.contract-details {
+    margin-left: 80px;
+}
+.test0 {
+    display: flex;
+    width: 500px;
+    margin-left: 50px;
+
+}
+.test1 {
+    display: flex;
+    width: 400px;
+    margin-left: 50px;
+}
+.contract-details .checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+
+.contract-details .checkbox-container label {
+    margin-right: 20px;
+}
+
+.contract-details .super-checkbox-container {
+    width: 1000px;
+    border-bottom: 1px solid #7e6545;
+    border-bottom-style:dotted;
+
+}
