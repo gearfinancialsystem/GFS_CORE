@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ contract.name }} ({{ contract.acronym }})</h1>
+
+<div class="contract-details">
+    <p><strong>Family:</strong> {{ contract.family }}</p>
+    <p><strong>Class:</strong> {{ contract.class }}</p>
+    <p><strong>Description:</strong> {{ contract.description }}</p>
+    <p><strong>Coverage:</strong> {{ contract.coverage }}</p>
+    <p><strong>Status:</strong> {{ contract.get('status', 'Not specified') }}</p>
+    <p><strong>Identifier:</strong> {{ contract.identifier }}</p>
+</div>
+
+<div class="contract-details">
+      {% for group, terms in contract_terms_sent.items() %}
+            <div class="group-class">
+                <h3>{{ group }}</h3>
+                {% for key, value in terms %}
+                    <div class="super-checkbox-container">
+                        <div class="checkbox-container">
+                            <div class="test0">
+                                <span class="toggle-arrow" onclick="toggleDetails('{{ key }}')">▼</span>
+                                <strong>{{ value.get('name', 'N/A') }}:</strong>
+                            </div>
+                            <div class="test1">
+                                <label for="included-{{ key }}">
+                                    <p> Included ? <input type="checkbox" id="included-{{ key }}" name="included-{{ key }}" onclick="toggleIncluded('{{ key }}')"></p>
+                                </label>
+                                <label for="mandatory-{{ key }}">
+                                    <p> Mandatory ? <input type="checkbox" id="mandatory-{{ key }}" name="mandatory-{{ key }}" disabled onclick="toggleMandatoryOptional('{{ key }}')"></p>
+                                </label>
+                                <label for="optional-{{ key }}">
+                                    <p> Optional ? <input type="checkbox" id="optional-{{ key }}" name="optional-{{ key }}" disabled onclick="toggleMandatoryOptional('{{ key }}')"></p>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="details-{{ key }}" class="details-hidden">
+                            <div><strong><i>Identifier</i></strong> : {{ value.get('identifier', 'N/A') }}</div>
+                            <div><strong><i>Description</i></strong> : {{ value.get('description', 'N/A') }}</div>
+                        </div>
+                        
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+</div>
+<script>
+    function toggleDetails(key) {
+        var details = document.getElementById('details-' + key);
+        if (details.style.display === 'none' || details.style.display === '') {
+            details.style.display = 'block';
+        } else {
+            details.style.display = 'none';
+        }
+    }
+
+    function toggleIncluded(key) {
+        var included = document.getElementById('included-' + key);
+        var mandatory = document.getElementById('mandatory-' + key);
+        var optional = document.getElementById('optional-' + key);
+
+        if (included.checked) {
+            mandatory.disabled = false;
+            optional.disabled = false;
+            mandatory.checked = false;
+            optional.checked = false;
+        } else {
+            mandatory.disabled = true;
+            optional.disabled = true;
+            mandatory.checked = false;
+            optional.checked = false;
+        }
+    }
+
+    function toggleMandatoryOptional(key) {
+        var mandatory = document.getElementById('mandatory-' + key);
+        var optional = document.getElementById('optional-' + key);
+
+        if (mandatory.checked && optional.checked) {
+            // If both are checked, uncheck the one that was just clicked
+            if (event.target.id === 'mandatory-' + key) {
+                optional.checked = false;
+            } else {
+                mandatory.checked = false;
+            }
+        }
+    }
+</script>
+
+<a href="{{ url_for('index') }}" class="button">Back to list</a>
+{% endblock %}
