@@ -157,6 +157,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "lib_actus_terms_proc_macro"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "lib_actus_types"
 version = "0.1.0"
 dependencies = [
