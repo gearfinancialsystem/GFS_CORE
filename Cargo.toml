@@ -8,5 +8,5 @@ members = [
     "libs-rust/lib_actus_types",
     "main-rust",
     "playground-rust"]
+exclude = ["app-tauri-main/src-tauri"]
 resolver = "2"
-
