@@ -1,8 +1,7 @@
 /target
-/playground
-/playground-python
 /.idea
 /.vscode
 /private
 /app-applicability-generator/.venv
 /app-interface-commerciale/.venv
+/css_ressource_net

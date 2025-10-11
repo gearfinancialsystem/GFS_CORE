@@ -1,12 +1,13 @@
 [workspace]
 members = [
     "libs-rust/lib_actus_contract",
-    "libs-rust/lib_actus_simulation",
     "libs-rust/lib_actus_portfolio",
+    "libs-rust/lib_actus_simulation",
     "libs-rust/lib_actus_terms",
     "libs-rust/lib_actus_terms_proc_macro",
     "libs-rust/lib_actus_types",
-    "main-rust",
-    "playground-rust"]
-exclude = ["app-tauri-main/src-tauri"]
+]
+exclude = []
+
 resolver = "2"
+
