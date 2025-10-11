@@ -1,13 +1,13 @@
 [package]
-name = "lib_actus_portfolio"
+name = "lib_actus_simulation"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "lib_actus_portfolio"
+name = "lib_actus_simulation"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-lib_actus_contract = { path = "../../libs-rust/lib_actus_contract" }
+lib_actus_contract = { path = "../lib_contract" }
 chrono = "0.4.41"
 regex = "1.11.1"

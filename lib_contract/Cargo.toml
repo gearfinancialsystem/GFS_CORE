@@ -9,8 +9,8 @@ path = "src/lib.rs"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-lib_actus_types = { path = "../../libs-rust/lib_actus_types" }
-lib_actus_terms = { path = "../../libs-rust/lib_actus_terms" }
+lib_actus_types = { path = "../lib_types" }
+lib_actus_terms = { path = "../lib_terms" }
 chrono = "0.4.41"
 regex = "1.11.1"
 log = "0.4.27"

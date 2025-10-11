@@ -119,7 +119,7 @@ impl fmt::Display for BusinessDayAdjuster {
 
 // #[cfg(test)]
 // mod tests_period_cycle_adjuster {
-//     use lib_actus_types::types::IsoDatetime::IsoDatetime;
+//     use lib_types::types::IsoDatetime::IsoDatetime;
 //     use super::*;
 //     use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 //     use std::rc::Rc;

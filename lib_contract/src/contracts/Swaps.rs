@@ -711,7 +711,7 @@ impl fmt::Display for SWAPS {
 //
 //
 //     fn load_dico_tests() -> Vec<Value> {
-//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_actus_contract/tests_sets/actus-tests-swaps.json";
+//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_contract/tests_sets/actus-tests-swaps.json";
 //         let json_value = test_read_and_parse_json(pathx).unwrap();
 //         let dico_from_json = json_to_dico(json_value);
 //         dico_from_json

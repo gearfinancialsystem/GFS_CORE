@@ -832,7 +832,7 @@ impl Clone for PAM {
 //     use crate::util_tests::TestsUtils::json_to_dico;
 
 //     fn load_dico_tests() -> Vec<Value> {
-//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_actus_contract/tests_sets/actus-tests-pam.json";
+//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/lib_contract/tests_sets/actus-tests-pam.json";
 //         let json_value = test_read_and_parse_json(pathx).unwrap();
 //         let dico_from_json = json_to_dico(json_value);
 //         dico_from_json

@@ -1,11 +1,11 @@
 [workspace]
 members = [
-    "libs-rust/lib_actus_contract",
-    "libs-rust/lib_actus_portfolio",
-    "libs-rust/lib_actus_simulation",
-    "libs-rust/lib_actus_terms",
-    "libs-rust/lib_actus_terms_proc_macro",
-    "libs-rust/lib_actus_types",
+    "lib_contract",
+    "lib_portfolio",
+    "lib_simulation",
+    "lib_terms",
+    "lib_terms_proc_macro",
+    "lib_types",
 ]
 exclude = []
 
