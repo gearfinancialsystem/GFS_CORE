@@ -52,27 +52,19 @@ jobs:
       - name: Check if version exists on crates.io
         id: check_version
         run: |
+          # Function to check version using cargo search (more reliable)
           check_version_exists() {
             local package=$1
-            # Extract the version from Cargo.toml. This assumes the package version in the manifest is the one you want to publish.
             local version=$(cargo metadata --format-version=1 --no-deps | jq -r ".packages[] | select(.name == \"$package\") | .version")
             echo "Checking for $package version $version on crates.io..."
 
-            # Make the API request and check the HTTP status code
-            if http_status=$(curl -s -o /dev/null -w "%{http_code}" "https://crates.io/api/v1/crates/$package/$version"); then
-              if [[ "$http_status" == "200" ]]; then
-                echo "Version $version of $package exists on crates.io."
-                return 0
-              elif [[ "$http_status" == "404" ]]; then
-                echo "Version $version of $package does not exist on crates.io."
-                return 1
-              else
-                echo "Unexpected HTTP status from crates.io: $http_status"
-                return 2
-              fi
+            # Use cargo search to find the package and version
+            if cargo search "$package" --limit 1 | grep -q "$package = \"$version\""; then
+              echo "Version $version of $package exists on crates.io."
+              return 0
             else
-              echo "Error: curl command failed."
-              return 3
+              echo "Version $version of $package does not exist on crates.io."
+              return 1
             fi
           }
 
