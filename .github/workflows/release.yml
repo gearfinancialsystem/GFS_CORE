@@ -7,53 +7,39 @@ on:
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  create-release:
+  release-crates:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Nécessaire pour créer une release
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Extract tag name
-        id: extract_tag
-        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1  # Action plus moderne et fiable
-        with:
-          tag_name: ${{ steps.extract_tag.outputs.TAG_NAME }}
-          release_name: Release ${{ steps.extract_tag.outputs.TAG_NAME }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  release-crates-io-rust-libs:
-    needs: create-release
-    runs-on: ubuntu-latest
+      contents: write  # Required to create a release and push tags
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-
-      - name: Build
-        run: cargo build --workspace --release
-
+      - name: Install cargo-release
+        run: cargo install cargo-release
+      - name: Bump versions and create Git tag
+        run: cargo release --workspace patch --execute --no-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push Git tag
+        run: git push --tags
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.extract_tag.outputs.TAG_NAME || github.ref_name }}
+          release_name: Release ${{ steps.extract_tag.outputs.TAG_NAME || github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Login to crates.io
         run: cargo login $CRATE_IO_TOKEN
         env:
           CRATE_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
-
-          # Publier chaque crate avec dry-run d'abord, puis publication réelle si dry-run réussit
-      - name: Publish gfs_lib_terms_proc_macro to crates.io
-        run: cargo release --workspace patch --execute
-
-
+      - name: Publish to crates.io
+        run: cargo release --workspace publish --execute
       - name: Wait for index update
         run: sleep 15
-
