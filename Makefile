@@ -25,6 +25,8 @@ release-major:
 
 .PHONY: release
 release:
+	@echo "Configuration de l'URL Git avec le token..."
+	git remote set-url origin https://$$LOCAL_PAT_TOKEN_GFS_GITHUB@github.com/gearfinancialsystem/GFS_CORE.git
 	@echo "Bump version et création du tag (type: $(RELEASE_TYPE))..."
 	cargo release --workspace $(RELEASE_TYPE) --execute --no-publish
 	@echo "Push du tag sur GitHub..."
