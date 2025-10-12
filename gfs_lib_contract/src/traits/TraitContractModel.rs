@@ -5,8 +5,6 @@ use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 
 use gfs_lib_types::types::Value::Value;
-use crate::events::ContractEvent::TraitContractEvent;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitExternalEvent::TraitExternalEvent;
 

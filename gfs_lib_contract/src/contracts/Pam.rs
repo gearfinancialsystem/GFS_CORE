@@ -704,10 +704,10 @@ impl TraitContractModel for PAM { //
         self.eval_pof_contract_event(id_ce);
     }
 
-
     fn add_event_to_contract_event_timeline(&mut self) {
         todo!()
     }
+
     fn reset(&mut self) {
         // reflechir a quoi pourrait bien servir reset
         self.contract_terms = ContractTerms::default();
@@ -718,7 +718,6 @@ impl TraitContractModel for PAM { //
         self.states_space = StatesSpace::default();
         self.status_date = None;
     }
-
 
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
@@ -740,7 +739,7 @@ impl TraitContractModel for PAM { //
             }
             self.eval_pof_contract_event(i);
             self.eval_stf_contract_event(i);
-
+            println!("{:?}", self.states_space.notional_principal);
             i += 1;
         }
 
@@ -768,7 +767,6 @@ impl TraitContractModel for PAM { //
         //Ok(events)
         self.event_timeline = events.clone();
     }
-
 
     fn sort_events_timeline(&mut self) {
         self.event_timeline.sort_by(|a, b| {
