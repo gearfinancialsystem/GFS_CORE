@@ -1,5 +1,4 @@
 # Makefile
-
 # Charger les variables d'environnement depuis .env
 include .env
 export LOCAL_PAT_TOKEN_GFS_GITHUB
@@ -27,12 +26,23 @@ release-major:
 release:
 	@echo "Configuration de l'URL Git avec le token..."
 	git remote set-url origin https://$$LOCAL_PAT_TOKEN_GFS_GITHUB@github.com/gearfinancialsystem/GFS_CORE.git
+
+	@echo "Vérification des changements non commités..."
+	@if [ -n "$(shell git status --porcelain)" ]; then \
+		echo "Des changements non commités ont été détectés. Commit automatique..."; \
+		git add .; \
+		git commit -m "Pre-release commit: $(shell date +'%Y-%m-%d %H:%M:%S')"; \
+	fi
+
 	@echo "Bump version et création du tag (type: $(RELEASE_TYPE))..."
 	cargo release --workspace $(RELEASE_TYPE) --execute --no-publish
-	@echo "Push du tag sur GitHub..."
+
+	@echo "Push des commits et du tag sur GitHub..."
 	git push origin main --tags
+
 	@echo "Création de la release GitHub..."
 	GITHUB_TOKEN=$$LOCAL_PAT_TOKEN_GFS_GITHUB gh release create $(shell git describe --tags --abbrev=0) --notes "Release $(shell git describe --tags --abbrev=0)"
+
 	@echo "Publication sur crates.io..."
 	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace publish --execute
 
