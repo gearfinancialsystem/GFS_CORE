@@ -1,0 +1,16 @@
+
+use gfs_lib_types::types::IsoDatetime::IsoDatetime;
+
+pub trait TraitEndOfMonthConvention {
+ /// Décale une date vers la fin du mois selon une convention spécifique.
+ ///
+ /// # Arguments
+ ///
+ /// * `date` - La date à décaler.
+ ///
+ /// # Retourne
+ ///
+ /// Une nouvelle date décalée.
+ fn shift(&self, date: &IsoDatetime) -> IsoDatetime;
+}
+ 

@@ -74,6 +74,80 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "52051878f80a721bb68ebfbc930e07b65ba72f2da88968ea5c06fd6ca3d3a127"
 
 [[package]]
+name = "gfs_lib_contract"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "gfs_lib_terms",
+ "gfs_lib_types",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "gfs_lib_core"
+version = "0.1.0"
+dependencies = [
+ "gfs_lib_contract",
+ "gfs_lib_portfolio",
+ "gfs_lib_simulation",
+ "gfs_lib_terms",
+ "gfs_lib_terms_proc_macro",
+ "gfs_lib_types",
+]
+
+[[package]]
+name = "gfs_lib_portfolio"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "gfs_lib_contract",
+ "regex",
+]
+
+[[package]]
+name = "gfs_lib_simulation"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "gfs_lib_contract",
+ "regex",
+]
+
+[[package]]
+name = "gfs_lib_terms"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "gfs_lib_types",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "gfs_lib_terms_proc_macro"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "gfs_lib_types"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "iana-time-zone"
 version = "0.1.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -111,68 +185,6 @@ checksum = "ec48937a97411dcb524a265206ccd4c90bb711fca92b2792c407f268825b9305"
 dependencies = [
  "once_cell",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "lib_actus_contract"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "lib_actus_terms",
- "lib_actus_types",
- "log",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lib_actus_portfolio"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "lib_actus_contract",
- "regex",
-]
-
-[[package]]
-name = "lib_actus_simulation"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "lib_actus_contract",
- "regex",
-]
-
-[[package]]
-name = "lib_actus_terms"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "lib_actus_types",
- "log",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "lib_actus_terms_proc_macro"
-version = "0.1.0"
-dependencies = [
- "quote",
- "syn",
-]
-
-[[package]]
-name = "lib_actus_types"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "log",
- "regex",
- "serde",
- "serde_json",
 ]
 
 [[package]]

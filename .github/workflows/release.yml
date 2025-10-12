@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  release-crates-io-rust-libs:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup update stable && rustup default stable
+      - name: Build
+        run: cargo build --workspace --release
+      - name: Login to crates.io
+        run: cargo login ${CRATE_IO_GSF_CORE}
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_GSF_CORE }}
+      - name: Publish GSF_LIB_CORE to crates.io
+        run: cargo publish -p GSF_LIB_CORE --token ${CRATE_IO_GSF_CORE}
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_GSF_CORE }}
+
+
+

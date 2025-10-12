@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup update stable && rustup default stable
+
+  check-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  check-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust and clippy
+        run: |
+          rustup update stable && rustup default stable
+          rustup component add clippy  # <-- Add this line
+      - name: Run clippy
+        run: cargo clippy --workspace -- -D warnings

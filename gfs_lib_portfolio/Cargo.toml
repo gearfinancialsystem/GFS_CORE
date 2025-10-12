@@ -1,0 +1,13 @@
+[package]
+name = "gfs_lib_portfolio"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "gfs_lib_portfolio"
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+gfs_lib_contract = { path = "../gfs_lib_contract" }
+chrono = "0.4.41"
+regex = "1.11.1"

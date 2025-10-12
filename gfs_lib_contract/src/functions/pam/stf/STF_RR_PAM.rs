@@ -1,0 +1,74 @@
+use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+use crate::attributes::ContractTerms::ContractTerms;
+
+use crate::states_space::StatesSpace::StatesSpace;
+use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use gfs_lib_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
+use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
+// use crate::attributes::ContractReference::ContractReference;
+use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::traits::TraitExternalData::TraitExternalData;
+
+#[allow(non_camel_case_types)]
+#[derive(Clone)]
+pub struct STF_RR_PAM;
+
+impl TraitStateTransitionFunction for STF_RR_PAM {
+    fn new() -> Self {
+        Self {}
+    }
+    fn eval(
+        &self,
+        time: &PhantomIsoDatetimeW,
+        states: &mut StatesSpace,
+        contract_terms: &ContractTerms,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
+    ) {
+        let day_counter = day_counter.clone().expect("sould have day counter");
+        let rate_multiplier = contract_terms.rate_multiplier.as_ref().expect("rate_multiplier should be some");
+        let rate_spread = contract_terms.rate_spread.as_ref().expect("rate_spread should be some");
+        let status_date = states.status_date.as_ref().expect("status date should be some");
+        let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should be some");
+        let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be some");
+        let period_floor = contract_terms.period_floor.as_ref().expect("period floor should be some");
+        let period_cap = contract_terms.period_cap.as_ref().expect("period cap should be some");
+        let life_floor = contract_terms.life_floor.as_ref().expect("lifeFloor should be some");
+        let life_cap = contract_terms.life_cap.as_ref().expect("lifeCap should be some");
+
+        let mut cbv = None;
+        if let Some(rfm) = risk_factor_external_data {
+            cbv = rfm.state_at(
+                contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
+                time,
+            );
+        } else {
+            cbv = None
+        }
+
+        let mut rate = cbv.unwrap() * rate_multiplier.value() + rate_spread.value();
+        let mut delta_rate = rate - nominal_interest_rate.value();
+
+        delta_rate = delta_rate.max(period_floor.value()).min(period_cap.value());
+        rate = nominal_interest_rate.value() + delta_rate;
+        rate = rate.max(life_floor.value()).min(life_cap.value());
+
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()),
+                                                                  time_adjuster.shift_sc(time));
+        
+        states.accrued_interest.add_assign(nominal_interest_rate.value() * notional_principal.value() * time_from_last_event);
+        states.nominal_interest_rate = NominalInterestRate::new(rate).ok(); //Some(rate);
+
+        states.status_date = StatusDate::new(time.value()).ok();
+
+
+    }
+}

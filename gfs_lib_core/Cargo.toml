@@ -1,0 +1,13 @@
+[package]
+name = "gfs_lib_core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+gfs_lib_types = { path = "../gfs_lib_types" }
+gfs_lib_terms = { path = "../gfs_lib_terms" }
+gfs_lib_contract = { path = "../gfs_lib_contract" }
+gfs_lib_portfolio = { path = "../gfs_lib_portfolio" }
+gfs_lib_simulation = { path = "../gfs_lib_simulation" }
+gfs_lib_terms_proc_macro = { path = "../gfs_lib_terms_proc_macro" }
+
