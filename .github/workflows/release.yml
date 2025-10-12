@@ -48,5 +48,25 @@ jobs:
         env:
           CRATE_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
 
-      - name: Publish gfs_lib_core to crates.io
-        run: cargo publish -p gfs_lib_core
+      - name: Publish gfs_lib_terms_proc_macro to crates.io
+        run: cargo publish -p gfs_lib_terms_proc_macro
+      - name: Wait for index update
+        run: sleep 15
+      - name: Publish gfs_lib_types to crates.io
+        run: cargo publish -p gfs_lib_types
+      - name: Wait for index update
+        run: sleep 15
+      - name: Publish gfs_lib_terms to crates.io
+        run: cargo publish -p gfs_lib_terms
+      - name: Wait for index update
+        run: sleep 15
+      - name: Publish gfs_lib_contract to crates.io
+        run: cargo publish -p gfs_lib_contract
+      - name: Wait for index update
+        run: sleep 15
+      - name: Publish gfs_lib_portfolio to crates.io
+        run: cargo publish -p gfs_lib_portfolio
+      - name: Wait for index update
+        run: sleep 15
+      - name: Publish gfs_lib_simulation to crates.io
+        run: cargo publish -p gfs_lib_simulation

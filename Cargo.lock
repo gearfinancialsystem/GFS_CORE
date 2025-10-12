@@ -87,18 +87,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gfs_lib_core"
-version = "0.0.1"
-dependencies = [
- "gfs_lib_contract",
- "gfs_lib_portfolio",
- "gfs_lib_simulation",
- "gfs_lib_terms",
- "gfs_lib_terms_proc_macro",
- "gfs_lib_types",
-]
-
-[[package]]
 name = "gfs_lib_portfolio"
 version = "0.0.1"
 dependencies = [

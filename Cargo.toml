@@ -1,5 +1,5 @@
 [workspace]
-members = [ "gfs_lib_core",
+members = [
             "gfs_lib_contract",
             "gfs_lib_portfolio",
             "gfs_lib_simulation",
@@ -18,5 +18,4 @@ authors = ["Charles-Emmanuel Teuf <charles-emmanuel.teuf@protonmail.com>"]
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/gearfinancialsystem/GFS_CORE"
-description = "Part of the GFS project. This crate is not meant to be used independently."
 keywords = ["gfs", "internal"]
