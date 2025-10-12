@@ -5,3 +5,4 @@
 /app-applicability-generator/.venv
 /app-interface-commerciale/.venv
 /css_ressource_net
+.env

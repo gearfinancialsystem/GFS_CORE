@@ -1,32 +1,41 @@
-build: $(if $(filter rustlibs,$(MAKECMDGOALS)),build_rustlibs,build_main)
+# Makefile
 
-build_main:
-	cargo build
+# Charger les variables d'environnement depuis .env
+include .env
+export LOCAL_PAT_TOKEN_GFS_GITHUB
+export CRATES_IO_TOKEN_GFS_UPDATE_ONLY
 
-build_rustlibs:
-	@for lib in libs-rust/*/Cargo.toml; do \
-		cd $$(dirname $$lib) && cargo build; \
-	done
+# Variable pour le type de release (patch, minor, major)
+RELEASE_TYPE ?= patch
 
-build_python:
-	# need to activate py venv first !
-	cd libs/actus-core && maturin develop
-	cd libs/lib2 && maturin develop
+.PHONY: release-patch
+release-patch:
+	@echo "Release de type PATCH..."
+	$(MAKE) release RELEASE_TYPE=patch
 
-run:
-	cargo run
+.PHONY: release-minor
+release-minor:
+	@echo "Release de type MINOR..."
+	$(MAKE) release RELEASE_TYPE=minor
 
-run-applicability-generator:
-	cd app-applicability-generator && . .venv/bin/activate && python app.py
+.PHONY: release-major
+release-major:
+	@echo "Release de type MAJOR..."
+	$(MAKE) release RELEASE_TYPE=major
 
-run-concrete-contracts:
-	cd app-concrete-contracts && . .venv/bin/activate && python app.py
+.PHONY: release
+release:
+	@echo "Bump version et création du tag (type: $(RELEASE_TYPE))..."
+	cargo release --workspace $(RELEASE_TYPE) --execute --no-publish
+	@echo "Push du tag sur GitHub..."
+	git push origin main --tags
+	@echo "Création de la release GitHub..."
+	GITHUB_TOKEN=$$LOCAL_PAT_TOKEN_GFS_GITHUB gh release create $(shell git describe --tags --abbrev=0) --notes "Release $(shell git describe --tags --abbrev=0)"
+	@echo "Publication sur crates.io..."
+	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace publish --execute
 
-run-interface-commerciale-app:
-	cd app-interface-commerciale && . .venv/bin/activate && python app.py
-
-run-tauri-dev:
-	cd app-tauri-main && cargo tauri dev
-
-clean:
-	rm -rf target/
+.PHONY: install
+install:
+	@echo "Installation des outils nécessaires..."
+	cargo install cargo-release
+	cargo install gh
