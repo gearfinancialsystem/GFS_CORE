@@ -1,4 +1,3 @@
-[workspace]
 # Utiliser un tag unique pour tout le workspace
 tag-name = "v{{version}}"
 # Activer la création de GitHub Releases
