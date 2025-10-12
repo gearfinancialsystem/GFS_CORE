@@ -40,6 +40,6 @@ jobs:
         env:
           CRATE_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
       - name: Publish to crates.io
-        run: cargo release --workspace publish --execute
+        run: cargo release --workspace patch --execute
       - name: Wait for index update
         run: sleep 15
