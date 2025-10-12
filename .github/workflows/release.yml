@@ -11,6 +11,8 @@ env:
 jobs:
   create-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -35,13 +37,13 @@ jobs:
       - name: Build
         run: cargo build --workspace --release
       - name: Login to crates.io
-        run: cargo login ${CRATE_IO_GSF_CORE}
+        run: cargo login ${CRATE_IO_TOKEN}
         env:
-          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_GSF_CORE }}
+          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
       - name: Publish GSF_LIB_CORE to crates.io
-        run: cargo publish -p GSF_LIB_CORE --token ${CRATE_IO_GSF_CORE}
+        run: cargo publish -p GSF_LIB_CORE --token ${CRATE_IO_TOKEN}
         env:
-          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_GSF_CORE }}
+          CRATES_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
 
 
 
