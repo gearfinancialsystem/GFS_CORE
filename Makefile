@@ -1,10 +1,8 @@
 # Makefile
-# Charger les variables d'environnement depuis .env
 include .env
 export LOCAL_PAT_TOKEN_GFS_GITHUB
 export CRATES_IO_TOKEN_GFS_UPDATE_ONLY
 
-# Variable pour le type de release (patch, minor, major)
 RELEASE_TYPE ?= patch
 
 .PHONY: release-patch
@@ -34,16 +32,7 @@ release:
 		git commit -m "Pre-release commit: $(shell date +'%Y-%m-%d %H:%M:%S')"; \
 	fi
 
-	@echo "Bump version et création du tag (type: $(RELEASE_TYPE))..."
-	cargo release --workspace $(RELEASE_TYPE) --execute --no-publish
-
-	@echo "Push des commits et du tag sur GitHub..."
-	git push origin main --tags
-
-	@echo "Création de la release GitHub..."
-	GITHUB_TOKEN=$$LOCAL_PAT_TOKEN_GFS_GITHUB gh release create $(shell git describe --tags --abbrev=0) --notes "Release $(shell git describe --tags --abbrev=0)"
-
-	@echo "Publication sur crates.io..."
+	@echo "Bump version, création du tag global, push et GitHub Release..."
 	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace $(RELEASE_TYPE) --execute
 
 .PHONY: install
