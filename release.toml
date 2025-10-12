@@ -3,6 +3,4 @@ tag-name = "v{{version}}"
 # Désactiver les tags par crate
 shared-version = true
 
-[github]
 release = true
-token = "$LOCAL_PAT_TOKEN_GFS_GITHUB"
