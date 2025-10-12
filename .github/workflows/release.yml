@@ -52,86 +52,79 @@ jobs:
       - name: Check if version exists on crates.io
         id: check_version
         run: |
-          # Fonction pour vérifier si une version existe déjà
           check_version_exists() {
             local package=$1
-            local version=$(cargo pkgid -p $package | cut -d# -f2)
-            local response=$(curl -s "https://crates.io/api/v1/crates/$package/$version")
-            if [[ "$response" == *"\"errors\":"* ]]; then
-              echo "Version $version de $package n'existe pas encore sur crates.io."
-              return 1
+            # Extract the version from Cargo.toml. This assumes the package version in the manifest is the one you want to publish.
+            local version=$(cargo metadata --format-version=1 --no-deps | jq -r ".packages[] | select(.name == \"$package\") | .version")
+            echo "Checking for $package version $version on crates.io..."
+
+            # Make the API request and check the HTTP status code
+            if http_status=$(curl -s -o /dev/null -w "%{http_code}" "https://crates.io/api/v1/crates/$package/$version"); then
+              if [[ "$http_status" == "200" ]]; then
+                echo "Version $version of $package exists on crates.io."
+                return 0
+              elif [[ "$http_status" == "404" ]]; then
+                echo "Version $version of $package does not exist on crates.io."
+                return 1
+              else
+                echo "Unexpected HTTP status from crates.io: $http_status"
+                return 2
+              fi
             else
-              echo "Version $version de $package existe déjà sur crates.io."
-              return 0
+              echo "Error: curl command failed."
+              return 3
             fi
           }
-          
-          # Exporter la fonction pour les étapes suivantes
-          echo "check_version_exists=$check_version_exists" >> $GITHUB_ENV
+
+          # Check each package and set an output for it
+          packages=("gfs_lib_terms_proc_macro" "gfs_lib_types" "gfs_lib_terms" "gfs_lib_contract" "gfs_lib_portfolio" "gfs_lib_simulation")
+
+          for package in "${packages[@]}"; do
+            if check_version_exists "$package"; then
+              echo "$package=exists" >> $GITHUB_OUTPUT
+            else
+              echo "$package=not_exists" >> $GITHUB_OUTPUT
+            fi
+          done
 
       # Publier chaque crate uniquement si la version n'existe pas
       - name: Publish gfs_lib_terms_proc_macro to crates.io
-        if: steps.check_version.outputs.gfs_lib_terms_proc_macro != 'exists'
-        run: |
-          if ! check_version_exists gfs_lib_terms_proc_macro; then
-            cargo publish -p gfs_lib_terms_proc_macro
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_version.outputs.gfs_lib_terms_proc_macro == 'not_exists'
+        run: cargo publish -p gfs_lib_terms_proc_macro
 
       - name: Wait for index update
         run: sleep 15
 
       - name: Publish gfs_lib_types to crates.io
-        run: |
-          if ! check_version_exists gfs_lib_types; then
-            cargo publish -p gfs_lib_types
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_version.outputs.gfs_lib_terms_types== 'not_exists'
+        run: cargo publish -p gfs_lib_terms_types
 
       - name: Wait for index update
         run: sleep 15
 
       - name: Publish gfs_lib_terms to crates.io
-        run: |
-          if ! check_version_exists gfs_lib_terms; then
-            cargo publish -p gfs_lib_terms
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_version.outputs.gfs_lib_terms== 'not_exists'
+        run: cargo publish -p gfs_lib_terms
 
       - name: Wait for index update
         run: sleep 15
 
       - name: Publish gfs_lib_contract to crates.io
-        run: |
-          if ! check_version_exists gfs_lib_contract; then
-            cargo publish -p gfs_lib_contract
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_contract.outputs.gfs_lib_contract== 'not_exists'
+        run: cargo publish -p gfs_lib_contract
 
       - name: Wait for index update
         run: sleep 15
 
       - name: Publish gfs_lib_portfolio to crates.io
-        run: |
-          if ! check_version_exists gfs_lib_portfolio; then
-            cargo publish -p gfs_lib_portfolio
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_portfolio.outputs.gfs_lib_portfolio== 'not_exists'
+        run: cargo publish -p gfs_lib_portfolio
 
       - name: Wait for index update
         run: sleep 15
 
       - name: Publish gfs_lib_simulation to crates.io
-        run: |
-          if ! check_version_exists gfs_lib_simulation; then
-            cargo publish -p gfs_lib_simulation
-          else
-            echo "Version déjà existante, publication ignorée."
-          fi
+        if: steps.check_simulation.outputs.gfs_lib_simulation== 'not_exists'
+        run: cargo publish -p gfs_lib_simulation
 
 
