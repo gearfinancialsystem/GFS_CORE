@@ -1,10 +1,9 @@
 pub mod common_test_funcs;
 
-
-use std::collections::HashMap;
+use std::str::FromStr;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
-use gfs_lib_contract::contracts::Pam::PAM;
 use gfs_lib_contract::traits::TraitContractModel::TraitContractModel;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::test_json_loader::load_test_case_terms;
 
 #[test]
@@ -17,7 +16,7 @@ fn test_pam_contract_creation() {
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let contract_terms_dict = load_test_case_terms(pathx,test_id).unwrap();
     
-    let pam = ContractModel::new(
+    let mut pam = ContractModel::new(
         &contract_terms_dict, 
         None,
         None,
@@ -25,7 +24,8 @@ fn test_pam_contract_creation() {
     ).expect("Error creating pam contract");
     
     // Initialisez les termes du contrat avec des données de test
-
+    let a = PhantomIsoDatetimeW::from_str("2014-06-14T00:00:00").ok();
+    pam.run_apply(a);
     // Vérifiez que l'initialisation s'est bien passée
     println!("ok")
     //assert_eq!(pam.contract_id.to_string(), "init");

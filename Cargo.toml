@@ -1,6 +1,6 @@
 [workspace]
 members = [
-            "gfs_lib_contract",
+            "gfs_lib_contract", "gfs_lib_measure",
             "gfs_lib_portfolio",
             "gfs_lib_simulation",
             "gfs_lib_terms",

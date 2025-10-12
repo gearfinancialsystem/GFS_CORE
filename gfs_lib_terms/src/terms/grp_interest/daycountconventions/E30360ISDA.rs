@@ -8,7 +8,6 @@ use crate::traits::TraitCountConvention::TraitDayCountConvention;
 use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 
-
 #[derive(Clone, PartialEq, Debug)]
 pub struct E30360ISDA {
     pub maturity_date: Option<Rc<MaturityDate>>,

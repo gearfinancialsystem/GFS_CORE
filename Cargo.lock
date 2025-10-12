@@ -87,6 +87,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "gfs_lib_measure"
+version = "0.0.15"
+dependencies = [
+ "chrono",
+ "gfs_lib_contract",
+ "gfs_lib_portfolio",
+ "regex",
+]
+
+[[package]]
 name = "gfs_lib_portfolio"
 version = "0.0.15"
 dependencies = [
