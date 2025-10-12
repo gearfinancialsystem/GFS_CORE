@@ -44,7 +44,7 @@ release:
 	GITHUB_TOKEN=$$LOCAL_PAT_TOKEN_GFS_GITHUB gh release create $(shell git describe --tags --abbrev=0) --notes "Release $(shell git describe --tags --abbrev=0)"
 
 	@echo "Publication sur crates.io..."
-	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace publish --execute
+	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace $(RELEASE_TYPE) --execute
 
 .PHONY: install
 install:
