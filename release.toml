@@ -1,8 +1,4 @@
 # Utiliser un tag unique pour tout le workspace
 tag-name = "v{{version}}"
-# Activer la création de GitHub Releases
-github-release = true
-# Définir le token GitHub
-token = "$LOCAL_PAT_TOKEN_GFS_GITHUB"
 # Désactiver les tags par crate
 shared-version = true
