@@ -75,7 +75,7 @@ checksum = "52051878f80a721bb68ebfbc930e07b65ba72f2da88968ea5c06fd6ca3d3a127"
 
 [[package]]
 name = "gfs_lib_contract"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "gfs_lib_terms",
@@ -88,7 +88,7 @@ dependencies = [
 
 [[package]]
 name = "gfs_lib_portfolio"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "gfs_lib_contract",
@@ -97,7 +97,7 @@ dependencies = [
 
 [[package]]
 name = "gfs_lib_simulation"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "gfs_lib_contract",
@@ -106,7 +106,7 @@ dependencies = [
 
 [[package]]
 name = "gfs_lib_terms"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "gfs_lib_types",
@@ -118,7 +118,7 @@ dependencies = [
 
 [[package]]
 name = "gfs_lib_terms_proc_macro"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "quote",
  "syn",
@@ -126,7 +126,7 @@ dependencies = [
 
 [[package]]
 name = "gfs_lib_types"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "log",
