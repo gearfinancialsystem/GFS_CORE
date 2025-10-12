@@ -13,6 +13,6 @@ name = "gfs_lib_simulation"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-gfs_lib_contract = { version = "0.0.3", path = "../gfs_lib_contract", package = "gfs_lib_contract" }
+gfs_lib_contract = { version = "0.0.4", path = "../gfs_lib_contract", package = "gfs_lib_contract" }
 chrono = "0.4.41"
 regex = "1.11.1"

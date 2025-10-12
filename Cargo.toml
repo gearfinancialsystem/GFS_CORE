@@ -13,7 +13,7 @@ resolver = "2"
 
 # Métadonnées communes à toutes les crates du workspace
 [workspace.package]
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Charles-Emmanuel Teuf <charles-emmanuel.teuf@protonmail.com>"]
 edition = "2024"
 license = "MIT OR Apache-2.0"
