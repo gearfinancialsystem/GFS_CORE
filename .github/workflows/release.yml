@@ -47,7 +47,6 @@ jobs:
         run: cargo login $CRATE_IO_TOKEN
         env:
           CRATE_IO_TOKEN: ${{ secrets.CRATE_IO_TOKEN }}
-
       - name: Publish gfs_lib_terms_proc_macro to crates.io
         run: cargo publish -p gfs_lib_terms_proc_macro
       - name: Wait for index update
@@ -70,3 +69,5 @@ jobs:
         run: sleep 15
       - name: Publish gfs_lib_simulation to crates.io
         run: cargo publish -p gfs_lib_simulation
+
+
