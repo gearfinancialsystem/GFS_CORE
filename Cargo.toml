@@ -11,3 +11,12 @@ exclude = []
 
 resolver = "2"
 
+# Métadonnées communes à toutes les crates du workspace
+[workspace.package]
+version = "0.0.1"  # Version partagée
+authors = ["Charles-Emmanuel Teuf <charles-emmanuel.teuf@protonmail.com>"]
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/gearfinancialsystem/GFS_CORE"
+description = "Part of the GFS project. This crate is not meant to be used independently."
+keywords = ["gfs", "internal"]
