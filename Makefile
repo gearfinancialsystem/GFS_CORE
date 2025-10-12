@@ -33,7 +33,7 @@ release:
 	fi
 
 	@echo "Bump version, création du tag global, push et GitHub Release..."
-	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace $(RELEASE_TYPE) --execute
+	CARGO_REGISTRY_TOKEN=$$CRATES_IO_TOKEN_GFS_UPDATE_ONLY cargo release --workspace $(RELEASE_TYPE) --execute --quiet
 
 .PHONY: install
 install:
