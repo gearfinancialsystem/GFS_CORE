@@ -14,7 +14,7 @@ path = "src/lib.rs"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-gfs_lib_types = { version = "0.0.2", path = "../gfs_lib_types", package = "gfs_lib_types" }
+gfs_lib_types = { version = "0.0.3", path = "../gfs_lib_types", package = "gfs_lib_types" }
 chrono = "0.4.41"
 regex = "1.11.1"
 log = "0.4.27"
