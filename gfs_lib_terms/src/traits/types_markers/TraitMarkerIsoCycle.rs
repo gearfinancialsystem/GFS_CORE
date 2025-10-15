@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display};
 use std::hash::Hash;
 use std::str::FromStr;
 use gfs_lib_types::types::IsoCycle::IsoCycle;
-use crate::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
+
 
 pub trait TraitMarkerIsoCycle
 where

@@ -1,23 +1,16 @@
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-
 use gfs_lib_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

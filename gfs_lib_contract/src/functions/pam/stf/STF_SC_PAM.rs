@@ -9,11 +9,6 @@ use gfs_lib_terms::terms::grp_notional_principal::InterestScalingMultiplier::Int
 use gfs_lib_terms::terms::grp_notional_principal::NotionalScalingMultiplier::NotionalScalingMultiplier;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
-
-
-
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
@@ -57,15 +52,14 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
         states.accrued_interest.add_assign(nominal_interest_rate.value() * notional_principal.value() * time_from_last_event);
         states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_scaling_index.clone().unwrap().value(),
                 time
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         if scaling_effect.to_string().contains("I") {
             states.interest_scaling_multiplier = InterestScalingMultiplier::new(cbv.unwrap()).ok();//

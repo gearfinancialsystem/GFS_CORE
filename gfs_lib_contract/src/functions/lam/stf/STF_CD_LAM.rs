@@ -13,7 +13,6 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

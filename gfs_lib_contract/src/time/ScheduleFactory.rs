@@ -65,14 +65,12 @@ impl ScheduleFactory {
         let period = PhantomIsoPeriodW::new(temp_year, temp_month, temp_day);
         
         // Créez le calendrier en fonction de la convention de fin de mois
-        let mut new_time = start_time.clone().unwrap();
+        let new_time = start_time.clone().unwrap();
         let mut counter = 1;
         let mut tmp1 = new_time.convert::<PhantomIsoDatetimeW>();
         let tmp2 = end_time.convert_option::<PhantomIsoDatetimeW>().unwrap();
         while tmp1 < tmp2 {
             let to_ins = tmp1.clone();
-            let xx = to_ins.to_string();
-            println!("to_ins: {:?}", to_ins);
             times_set.insert(to_ins);
             let increment = period.multiplied_by(counter);
             tmp1 = PhantomIsoDatetimeW::new(shifter.shift(start_time.clone().unwrap().value() + increment)).expect("");

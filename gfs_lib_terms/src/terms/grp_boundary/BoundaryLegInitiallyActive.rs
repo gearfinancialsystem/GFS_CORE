@@ -35,7 +35,6 @@ impl BoundaryLegInitiallyActive {
         match self {
             Self::FIL(FIL) => Ok("FIL".to_string()),
             Self::SEL(SEL) => Ok("SEL".to_string()),
-            Self::SEL(SEL) => Ok("SEL".to_string()),
             _ => Err(format!("Invalid TOSTRING ContractPerformance "))
         }
 

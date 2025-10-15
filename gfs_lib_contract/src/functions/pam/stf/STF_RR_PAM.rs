@@ -8,8 +8,6 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
@@ -45,15 +43,14 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         let life_floor = contract_terms.life_floor.as_ref().expect("lifeFloor should be some");
         let life_cap = contract_terms.life_cap.as_ref().expect("lifeCap should be some");
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         let mut rate = cbv.unwrap() * rate_multiplier.value() + rate_spread.value();
         let mut delta_rate = rate - nominal_interest_rate.value();

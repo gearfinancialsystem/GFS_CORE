@@ -14,7 +14,6 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

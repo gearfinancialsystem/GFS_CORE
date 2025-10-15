@@ -57,7 +57,7 @@ impl ContractModel {
     pub fn new(sm_terms: &HashMap<String, Value>,
                risk_factor_external_data : Option<Box<dyn TraitExternalData>>,
                risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
-               result_set_toogle: bool) -> Result<ContractModel, String> {
+               ) -> Result<ContractModel, String> { // result_set_toogle: bool
         let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
             // "ANN" => {

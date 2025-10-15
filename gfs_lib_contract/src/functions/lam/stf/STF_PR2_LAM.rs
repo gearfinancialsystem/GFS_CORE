@@ -1,7 +1,5 @@
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -12,12 +10,9 @@ use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestC
 use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -44,7 +39,7 @@ impl TraitStateTransitionFunction for STF_PR2_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always be Some");
-        let contract_role = contract_terms.contract_role.clone().expect("contract role should always be Some");
+        // let contract_role = contract_terms.contract_role.clone().expect("contract role should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
             {

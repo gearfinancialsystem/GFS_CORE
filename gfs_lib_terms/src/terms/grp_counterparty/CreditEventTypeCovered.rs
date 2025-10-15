@@ -26,7 +26,7 @@ impl CreditEventTypeCoveredElement {
             CreditEventTypeCoveredElement::DL(DL) => "DL".to_string(),
             CreditEventTypeCoveredElement::DQ(DQ) => "DQ".to_string(),
             CreditEventTypeCoveredElement::DF(DF) => "DF".to_string(),
-            _ => "".to_string(),
+            // _ => "".to_string(),
         }
     }
 

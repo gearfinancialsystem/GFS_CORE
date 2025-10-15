@@ -1,6 +1,4 @@
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::states_space::StatesSpace::StatesSpace;
@@ -73,18 +71,15 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         }).ok();
 
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.object_code_of_prepayment_model.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
-
-
-
+            None
+        };
+        
         states.notional_principal = NotionalPrincipal::new({
             notional_principal.value() - cbv.unwrap() * notional_principal.value()
         }).ok();

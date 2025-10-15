@@ -63,23 +63,16 @@ impl TraitStateTransitionFunction for STF_SC_LAM {
         states.fee_accrued = FeeAccrued::new({
             states.fee_accrued.clone().unwrap().value() + fee_rate_m.value() * notional_principal.value() * time_from_last_event
         }).ok();
-        
 
-        // let market_object_code_of_scaling_index = contract_terms.marketObjectCodeOfScalingIndex.as_ref().expect("marketObjectCodeOfScalingIndex should always be Some");
-
-
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let  cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_scaling_index.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
-
-
-
+            None
+        };
+        
         if scaling_effect_m.to_string().contains("I") {
             states.interest_scaling_multiplier = InterestScalingMultiplier::new(cbv.unwrap()).ok();
         }

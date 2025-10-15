@@ -75,10 +75,8 @@ use gfs_lib_terms::terms::grp_reset_rate::PeriodFloor::PeriodFloor;
 use gfs_lib_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use gfs_lib_terms::terms::grp_reset_rate::RateSpread::RateSpread;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use gfs_lib_types::traits::TraitConvert::{IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
-use gfs_lib_types::traits::TraitConvert::{IsoCycleConvertTo, IsoCycleConvertToOption};
-use gfs_lib_types::types::IsoCycle::IsoCycle;
+use gfs_lib_types::traits::TraitConvert::IsoCycleConvertToOption;
 use gfs_lib_types::types::IsoDatetime::IsoDatetime;
 use gfs_lib_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -193,6 +191,28 @@ impl TraitContractModel for PAM { //
             interest_scaling_multiplier = InterestScalingMultiplier::new(1.0).ok();
         }
 
+        // Life cap
+        let mut life_cap = LifeCap::provide_from_input_dict(sm, "lifeCap");
+        if life_cap.is_none() {
+            life_cap = LifeCap::new(f64::INFINITY).ok();
+        }
+        // Life floor
+        let mut life_floor = LifeFloor::provide_from_input_dict(sm, "lifeFloor");
+        if life_floor.is_none() {
+            life_floor = LifeFloor::new(f64::NEG_INFINITY).ok();
+        }
+        // PeriodCap
+        let mut period_cap = PeriodCap::provide_from_input_dict(sm, "periodCap");
+        if period_cap.is_none() {
+            period_cap = PeriodCap::new(f64::INFINITY).ok();
+        }
+        // PeriodFloor
+        let mut period_floor = PeriodFloor::provide_from_input_dict(sm, "periodFloor");
+        if period_floor.is_none() {
+            period_floor = PeriodFloor::new(f64::NEG_INFINITY).ok();
+        }
+
+
         let contract_id = ContractID::provide_from_input_dict(sm, "contractID");
         self.contract_id =  contract_id.clone().expect("contract ID not provided");
 
@@ -227,8 +247,8 @@ impl TraitContractModel for PAM { //
             fixing_period: FixingPeriod::provide_from_input_dict(sm, "fixingPeriod"),
             initial_exchange_date: InitialExchangeDate::provide_from_input_dict(sm, "initialExchangeDate"),
             interest_scaling_multiplier: interest_scaling_multiplier,
-            life_cap: LifeCap::provide_from_input_dict(sm, "lifeCap"),
-            life_floor: LifeFloor::provide_from_input_dict(sm, "lifeFloor"),
+            life_cap: life_cap,
+            life_floor: life_floor,
             market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
             market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(sm, "marketObjectCodeOfRateReset"),
             market_object_code_of_scaling_index: MarketObjectCodeOfScalingIndex::provide_from_input_dict(sm, "marketObjectCodeOfScalingIndex"),
@@ -240,8 +260,8 @@ impl TraitContractModel for PAM { //
             object_code_of_prepayment_model: ObjectCodeOfPrepaymentModel::provide_from_input_dict(sm, "objectCodeOfPrepaymentModel"),
             penalty_rate: PenaltyRate::provide_from_input_dict(sm, "penaltyRate"),
             penalty_type: PenaltyType::provide_from_input_dict(sm, "penaltyType"),
-            period_cap: PeriodCap::provide_from_input_dict(sm, "periodCap"),
-            period_floor: PeriodFloor::provide_from_input_dict(sm, "periodFloor"),
+            period_cap: period_cap,
+            period_floor: period_floor,
             premium_discount_at_ied: PremiumDiscountAtIED::provide_from_input_dict(sm, "premiumDiscountAtIED"),
             price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
             price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
@@ -453,9 +473,9 @@ impl TraitContractModel for PAM { //
                 //     )
                 // }); // A REVOIR
                 interest_events.retain(|e| {
-                    e.event_type != EventType::IP || e.compare_to(&capitalization_end) != 0
+                    !(e.event_type == EventType::IP) || e.compare_to(&capitalization_end) != 0
                 });
-
+                
                 // Add capitalization end event
                 interest_events.insert(capitalization_end.clone());
                 vec = interest_events.clone().into_iter().collect();
@@ -481,8 +501,7 @@ impl TraitContractModel for PAM { //
             else {
                 events.extend(interest_events);
             }
-
-            println!("ok");
+            
             //events.extend(w);
         }
         else if model.capitalization_end_date.is_some() {
@@ -502,10 +521,10 @@ impl TraitContractModel for PAM { //
         ////////////////////////////
         // Rate reset events (RR) //
         ////////////////////////////
-        //println!("ok");
+
         let start_time: Option<StartTime> = model.cycle_anchor_date_of_rate_reset.convert_option();
         let end_time: Option<EndTime> = Some(maturity_date.convert());
-        let cycle = model.cycle_of_rate_reset.convert_option::<PhantomIsoCycleW>();
+        // let cycle = model.cycle_of_rate_reset.convert_option::<PhantomIsoCycleW>();
         let a = &ScheduleFactory::create_schedule(
             &start_time,
             &end_time,
@@ -634,7 +653,7 @@ impl TraitContractModel for PAM { //
         // Remove all pre-status date events //
         ///////////////////////////////////////
         let status_date = model.status_date.clone().unwrap();
-        let w = status_date.to_string();
+        // let w = status_date.to_string();
         let status_event: ContractEvent = EventFactory::create_event(
             &Some(status_date.convert::<ScheduleTime>()),
             &EventType::AD,
@@ -649,7 +668,7 @@ impl TraitContractModel for PAM { //
         // Remove all events after the `to` date //
         ///////////////////////////////////////////
         let to = &model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<EndTime>().convert_option::<ScheduleTime>();
-        let a = to.unwrap().to_string();
+        //let a = to.unwrap().to_string();
         let to_event: ContractEvent = EventFactory::create_event(
             &to,
             &EventType::AD,
@@ -665,7 +684,10 @@ impl TraitContractModel for PAM { //
         // Sort events according to their time of occurrence //
         ///////////////////////////////////////////////////////
         events.sort();
-
+        // let fxx1 = events.get(1).unwrap().event_time.unwrap().to_string();
+        // let fxx2 = events.get(2).unwrap().event_time.unwrap().to_string();
+        // let fxx3 = events.get(3).unwrap().event_time.unwrap().to_string();
+        // let fxx4 = events.get(4).unwrap().event_time.unwrap().to_string();
         self.event_timeline = events.clone();
     }
 
@@ -695,7 +717,7 @@ impl TraitContractModel for PAM { //
     }
 
     fn eval_stf_contract_event(&mut self, id_ce: usize) {
-        let mut curr_ce = self.event_timeline.get(id_ce).expect("ca marche forcement");
+        let curr_ce = self.event_timeline.get(id_ce).expect("ca marche forcement");
 
         if curr_ce.fstate.is_some() {
             curr_ce.fstate.clone().unwrap().eval(
@@ -761,7 +783,7 @@ impl TraitContractModel for PAM { //
         for event in events.iter_mut() {
             // let a = event.event_time.expect("fd");
             // let b = EventTime::new(date.expect("fo").value()).expect("ok");
-            //println!("ok");
+
             if date.is_some() {
                 if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
                     break
@@ -771,7 +793,7 @@ impl TraitContractModel for PAM { //
             //println!("nominalprincipal{:?}", self.states_space.notional_principal);
             //println!("payoff{:?}", self.event_timeline[i].payoff);
             self.eval_stf_contract_event(i);
-            let a = self.event_timeline[i].payoff.clone().expect("ok").to_string();
+            // let a = self.event_timeline[i].payoff.clone().expect("ok").to_string();
             if extract_results == true {
                 let curr_testresult = TestResult {
                     eventDate: event.event_time.expect("fe").to_string(),
@@ -806,9 +828,6 @@ impl TraitContractModel for PAM { //
             events.retain(|e| {
                 e.get_event_type() == EventType::AD || e >= &purchase_event
             });
-            println!("ok");
-
-
         }
         /////////////////////////////
         // Return evaluated events //
@@ -816,7 +835,7 @@ impl TraitContractModel for PAM { //
         //Ok(events)
         self.event_timeline = events.clone();
 
-        /// recup des resultats
+        // recup des resultats
         if extract_results == false {
 
             return None;

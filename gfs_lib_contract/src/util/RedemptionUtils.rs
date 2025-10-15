@@ -8,7 +8,6 @@ use crate::attributes::ContractTerms::ContractTerms;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::{IsoCycleConvertToOption, IsoDateTimeConvertTo, IsoDateTimeConvertToOption};

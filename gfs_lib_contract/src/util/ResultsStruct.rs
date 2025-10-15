@@ -10,3 +10,4 @@ pub struct TestResult {
     pub nominalInterestRate: String,
     pub accruedInterest: String,
 }
+

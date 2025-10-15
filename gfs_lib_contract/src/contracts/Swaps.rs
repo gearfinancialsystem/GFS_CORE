@@ -213,7 +213,6 @@ impl TraitContractModel for SWAPS {
                 &model.contract_id) ) != 1);
 
         self.contract_events = events.clone();
-        println!("ok");
     }
 
     /// Apply a set of events to the current state of a contract and return the post-event states
@@ -334,7 +333,6 @@ impl TraitContractModel for SWAPS {
             if let Some(rv) = &mut self.result_vec {
                 rv.extend(leg1.clone());
                 rv.extend(leg2.clone());
-                println!("ok");
             }
         }
         

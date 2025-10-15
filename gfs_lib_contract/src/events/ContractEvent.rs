@@ -1,9 +1,7 @@
 use std::fmt;
-use std::rc::Rc;
 use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 use std::fmt::Debug;
-use std::marker::PhantomData;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::PayOff::Payoff;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
@@ -16,8 +14,6 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 pub trait TraitContractEvent {}
 
@@ -81,8 +77,8 @@ impl ContractEvent {
     pub fn chg_event_type(&mut self, event_type: EventType) {
         self.event_type = event_type;
         // this.epoch_offset = event_time.toEpochSecond(ZoneOffset.UTC) + EventSequence.timeOffset(event_type);
-        let z = self.event_time.unwrap().to_string();
-        let w = (self.get_event_time().timestamp_millis() as f64) ; // a verifier  / 1000.0
+        // let z = self.event_time.unwrap().to_string();
+        let w = self.get_event_time().timestamp_millis() as f64 ; // a verifier  / 1000.0
         let a = w + EventSequence::time_offset(&event_type) as f64;
         self.epoch_offset = Some(PhantomF64W::new(a).unwrap() );
     }
@@ -105,10 +101,13 @@ impl ContractEvent {
         self.fstate = function;
     }
     pub fn compare_to(&self, other: &ContractEvent) -> i64 {
-        let z1 = self.epoch_offset.clone().unwrap();
-        let z2 = other.epoch_offset.clone().unwrap();
-        let a = (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum();
-        (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64
+        // let z1 = self.epoch_offset.clone().unwrap().to_string();
+        // let z2 = other.epoch_offset.clone().unwrap().to_string();
+        // let aa = self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap();
+        // let a = (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64;
+        let lhs = self.epoch_offset.clone().unwrap().value() as i64;
+        let rhs = other.epoch_offset.clone().unwrap().value() as i64;
+        (lhs - rhs).signum() // as i64
     }
   
     pub fn copy(&self) -> Self {

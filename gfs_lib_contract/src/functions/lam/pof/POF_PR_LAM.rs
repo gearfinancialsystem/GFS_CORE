@@ -9,7 +9,6 @@ use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

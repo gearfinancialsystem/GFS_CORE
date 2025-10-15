@@ -13,12 +13,9 @@ use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestC
 use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]

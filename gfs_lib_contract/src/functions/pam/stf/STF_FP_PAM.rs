@@ -10,9 +10,6 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 
-
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;

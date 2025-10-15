@@ -1,25 +1,18 @@
 
 use std::collections::HashSet;
-use std::fmt::Debug;
-use std::hash::Hash;
-use std::rc::Rc;
-use std::marker::PhantomData;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::ContractID::ContractID;
 use gfs_lib_terms::terms::grp_notional_principal::Currency::Currency;
-//use crate::events::AnyContractEvent::AnyContractEvent;
-
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
-use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
+
 
 pub struct EventFactory {
 }
@@ -40,20 +33,16 @@ impl EventFactory {
         contract_id: &Option<ContractID>
     ) -> ContractEvent
     {
-        let mut dd = None;
-
-        if convention.is_none() {
-            //let schedule_time_copy2 = PhantomIsoDatetimeW::new(schedule_time_copy) ;
-            dd = EventTime::new(schedule_time.unwrap().value()).ok();
-            println!("ok");
+        let dd = if convention.is_none() {
+            EventTime::new(schedule_time.unwrap().value()).ok()
         }
         else {
             let time = schedule_time.as_ref().unwrap();
             let tmp_time: PhantomIsoDatetimeW = time.convert();
             let adjusted_time = convention.clone().unwrap().shift_bd(&tmp_time);
             let conventionx = Some(adjusted_time);
-            dd = EventTime::new(conventionx.clone().unwrap().value()).ok()
-        }
+            EventTime::new(conventionx.clone().unwrap().value()).ok()
+        };
 
         ContractEvent::new(
             schedule_time,

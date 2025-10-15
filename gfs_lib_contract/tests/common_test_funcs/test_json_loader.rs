@@ -1,9 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::BufReader;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, Value as JsonValue};
+use gfs_lib_contract::traits::TraitExternalData::TraitExternalData;
 use gfs_lib_contract::util::ResultsStruct::TestResult;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_types::types::Value::Value;
 
 // Fonction de conversion
@@ -24,7 +26,7 @@ fn convert_json_value(value: &JsonValue) -> Value {
     }
 }
 
-// Fonction publique pour charger les termes
+//Fonction publique pour charger les termes
 pub fn load_test_case_terms(
     file_path: &str,
     test_case_id: &str,
@@ -74,47 +76,82 @@ pub struct DataStruct {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DataObserved(HashMap<String, DataStruct>);
+
+impl TraitExternalData for DataObserved {
+    /// Returns the set of unique risk factor IDs
+    fn keys(&self) -> Option<HashSet<String>> {
+        let a: HashSet<String> = self.0.keys().cloned().collect();
+        Some(a)
+    }
+
+    /// Returns the state of a particular risk factor at a future time
+    fn state_at(
+        &self,
+        id: String,
+        time: &PhantomIsoDatetimeW
+    ) -> Option<f64> {
+        let a = self.0.get(&id)?;
+        let mut b: Option<f64> = None;
+        for d in a.data.iter() {
+            if d.timestamp == time.to_string() {
+                b = d.value.clone().parse::<f64>().ok()
+            }
+        };
+        b
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TestCase {
     pub identifier: String,
     pub terms: HashMap<String, String>,
     pub to: String,
-    pub dataObserved: HashMap<String, DataStruct>, // Pas une HashMap imbriquée, mais une HashMap<String, DataStruct>
+    pub dataObserved: DataObserved, // Pas une HashMap imbriquée, mais une HashMap<String, DataStruct>
     pub eventsObserved: Vec<HashMap<String, String>>,
     pub results: Vec<TestResult>,
 }
 pub fn load_test_case_results(
-    file_path: &str,
-    test_case_id: &str,
+    test_case: &TestCase,
 ) -> Result<Vec<TestResult>, Box<dyn std::error::Error>> {
-    // Ouvre le fichier
-    let file = File::open(file_path)?;
-    let reader = BufReader::new(file);
 
-    // Parse le JSON en HashMap<String, TestCase>
-    let json: HashMap<String, TestCase> = serde_json::from_reader(reader)?;
-    // println!("{:?}", json);
-    // Récupère le test case spécifique
-    let test_case = json.get(test_case_id)
-        .ok_or_else(|| format!("Test case {} not found", test_case_id))?;
-
-    // Retourne les résultats
     Ok(test_case.results.clone())
 }
 
+pub fn load_test_case_dataobserved(
+    test_case: &TestCase,
+) -> Result<DataObserved, Box<dyn std::error::Error>> {
+
+    Ok(test_case.dataObserved.clone())
+}
+
+// pub fn load_test_case_terms(
+//     test_case: &TestCase,
+// ) -> Result<HashMap<String, Value>, Box<dyn std::error::Error>> {
+//     Ok(test_case.terms.clone())
+// }
+
 // Version alternative si vous voulez aussi les termes
 pub fn load_test_case(
-    file_path: &str,
     test_case_id: &str,
+    tests: &HashMap<String, TestCase>,
 ) -> Result<TestCase, Box<dyn std::error::Error>> {
-    let file = File::open(file_path)?;
-    let reader = BufReader::new(file);
 
-    let json: HashMap<String, TestCase> = serde_json::from_reader(reader)?;
-
-    let test_case = json.get(test_case_id)
+    let test_case = tests.get(test_case_id)
         .ok_or_else(|| format!("Test case {} not found", test_case_id))?;
 
     let r = test_case.clone().clone();
     // Clone le test case complet
     Ok(r)
+}
+
+
+pub fn load_tests(file_path: &str) -> HashMap<String, TestCase> {
+    let file = File::open(file_path);
+    let reader = BufReader::new(file.expect("Unable to open file"));
+
+    // Parse le JSON en HashMap<String, TestCase>
+    let json: Result<HashMap<String, TestCase>, _> = serde_json::from_reader(reader);
+    json.expect("Unable to parse JSON")
 }

@@ -1,12 +1,10 @@
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_optionality::PenaltyType::PenaltyType;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-// use crate::attributes::ContractReference::ContractReference;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
@@ -68,15 +66,14 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should always exist");
                 let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should be Some");
                 //let market_object_code_of_rate_reset = contract_terms.marketObjectCodeOfRateReset.as_ref().expect("marketObjectCodeOfRateReset should be Some");
-                let mut cbv = None;
-                if let Some(rfm) = risk_factor_external_data {
-                    cbv = rfm.state_at(
+                let cbv = if let Some(rfm) = risk_factor_external_data {
+                    rfm.state_at(
                         contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                         time,
-                    );
+                    )
                 } else {
-                    cbv = None
-                }
+                    None
+                };
                 settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(
                     &{

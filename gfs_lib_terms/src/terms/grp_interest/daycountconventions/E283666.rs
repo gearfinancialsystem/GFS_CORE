@@ -5,7 +5,6 @@ use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct E283666 {
