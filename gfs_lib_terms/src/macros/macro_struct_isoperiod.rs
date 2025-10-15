@@ -1,28 +1,28 @@
-
-#[macro_export]
-macro_rules! define_phantom_imports_isoperiod {
-    (PhantomIsoPeriodW) => {
-
-    };
-    ($struct_name:ident) => {
-        use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
-    };
-}
-
-#[macro_export]
-macro_rules! define_to_phantom_type_isoperiod {
-    (PhantomIsoPeriodW) => {
-        fn to_phantom_type(&self) -> Self {
-            self.clone()
-        }
-    };
-    ($struct_name:ident) => {
-        // Implémentation par défaut pour les autres structures
-        fn to_phantom_type(&self) -> PhantomIsoPeriodW {
-            PhantomIsoPeriodW::new(self.years, self.months, self.days)
-        }
-    };
-}
+// 
+// #[macro_export]
+// macro_rules! define_phantom_imports_isoperiod {
+//     (PhantomIsoPeriodW) => {
+// 
+//     };
+//     ($struct_name:ident) => {
+//         use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
+//     };
+// }
+// 
+// #[macro_export]
+// macro_rules! define_to_phantom_type_isoperiod {
+//     (PhantomIsoPeriodW) => {
+//         fn to_phantom_type(&self) -> Self {
+//             self.clone()
+//         }
+//     };
+//     ($struct_name:ident) => {
+//         // Implémentation par défaut pour les autres structures
+//         fn to_phantom_type(&self) -> PhantomIsoPeriodW {
+//             PhantomIsoPeriodW::new(self.years, self.months, self.days)
+//         }
+//     };
+// }
 
 #[macro_export]
 macro_rules! define_struct_isoperiod {
@@ -39,7 +39,7 @@ macro_rules! define_struct_isoperiod {
         use std::convert::AsRef;
         use std::borrow::Borrow;
 
-        define_phantom_imports_isoperiod!($struct_name);
+        //define_phantom_imports_isoperiod!($struct_name);
 
         #[derive(PartialEq, Debug, Clone, Copy, Hash)]
         pub struct $struct_name(IsoPeriod);
@@ -76,7 +76,7 @@ macro_rules! define_struct_isoperiod {
                 IsoPeriod::parsex(s).ok_or_else(|| "parsing err".to_string())
             }
 
-            define_to_phantom_type_isoperiod!($struct_name);
+            //define_to_phantom_type_isoperiod!($struct_name);
         }
 
         impl FromStr for $struct_name {

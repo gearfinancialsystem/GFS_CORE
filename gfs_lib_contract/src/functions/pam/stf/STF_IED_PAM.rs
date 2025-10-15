@@ -14,6 +14,7 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -55,7 +56,12 @@ impl TraitStateTransitionFunction for STF_IED_PAM {
                 states.accrued_interest = states.accrued_interest.clone().map(|mut accrued_interest| {
                     accrued_interest += notional_principal_s * nominal_interest_rate_s *
                         PhantomF64W::new(day_counter.day_count_fraction(
-                            time_adjuster.shift_sc(&cycle_anchor_date.to_phantom_type()),
+                            time_adjuster.shift_sc(
+                                &{
+                                    let tmp: PhantomIsoDatetimeW = cycle_anchor_date.convert();
+                                    tmp
+                                },
+                            ),
                             time_adjuster.shift_sc(time)
                         )).expect("Should be Some");
                     accrued_interest

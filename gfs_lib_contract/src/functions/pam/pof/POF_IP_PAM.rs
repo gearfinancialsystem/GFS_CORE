@@ -12,6 +12,7 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -40,7 +41,11 @@ impl TraitPayOffFunction for POF_IP_PAM {
         let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should always be some");
         let status_date = states.status_date.as_ref().expect("status date should always be some");
         let a = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.to_phantom_type()),
+            {
+                let tmp: PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
+
             time_adjuster.shift_sc(&time)
         );
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
@@ -51,6 +56,8 @@ impl TraitPayOffFunction for POF_IP_PAM {
         );
         let res = settlement_currency_fx_rate * interest_scaling_multiplier.value() * (accrued_interest.value() + a) * nominal_interest_rate.value() * notional_principal.value();
 
+        //println!("payofffunc: {}", res);
         res
+
     }
 }

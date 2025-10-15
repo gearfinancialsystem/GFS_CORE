@@ -4,10 +4,12 @@ use std::fmt;
 use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
+use gfs_lib_terms::non_terms::EndTime::EndTime;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::PayOff::Payoff;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
-use gfs_lib_terms::non_terms::StartTime::StartTime;
+use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
+use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
@@ -74,14 +76,20 @@ use gfs_lib_terms::terms::grp_reset_rate::RateMultiplier::RateMultiplier;
 use gfs_lib_terms::terms::grp_reset_rate::RateSpread::RateSpread;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
+use gfs_lib_types::traits::TraitConvert::{IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
+use gfs_lib_types::traits::TraitConvert::{IsoCycleConvertTo, IsoCycleConvertToOption};
+use gfs_lib_types::types::IsoCycle::IsoCycle;
+use gfs_lib_types::types::IsoDatetime::IsoDatetime;
 use gfs_lib_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::events::EventFactory::EventFactory;
+use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitExternalEvent::TraitExternalEvent;
+use crate::util::ResultsStruct::TestResult;
 
 pub struct PAM {
     pub contract_id: ContractID,
@@ -123,7 +131,7 @@ impl TraitContractModel for PAM { //
             let calendar_clone = Some(Rc::clone(&calendar));
             BusinessDayAdjuster::provide(
                 sm,
-                "BusinessDayAdjuster",
+                "businessDayConvention",
                 calendar_clone.expect("te")
             )
         };
@@ -278,7 +286,7 @@ impl TraitContractModel for PAM { //
         states.status_date = model.status_date.clone();
 
         let initial_exchange_date = model.initial_exchange_date.clone().unwrap();
-        if initial_exchange_date.to_phantom_type() > states.status_date.clone().unwrap().to_phantom_type() {
+        if initial_exchange_date.value() > states.status_date.clone().unwrap().value() {
             states.notional_principal = NotionalPrincipal::new(0.0).ok();
             states.nominal_interest_rate = NominalInterestRate::new(0.0).ok()
         } else {
@@ -297,11 +305,12 @@ impl TraitContractModel for PAM { //
             let day_counter = model.day_count_convention.as_ref().unwrap();
             let time_adjuster = model.business_day_adjuster.as_ref().unwrap();
 
-
+            let start_time = model.cycle_anchor_date_of_interest_payment.convert_option::<StartTime>();
+            let end_time = model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<EndTime>();
             let mut ip_schedule: Vec<PhantomIsoDatetimeW> = ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_interest_payment.unwrap().to_start_time(),
-                &model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().to_end_time(),
-                &Some(model.cycle_of_interest_payment.clone().unwrap().to_phantom_type()),
+                &start_time, // unwrap().to_start_time(),
+                &end_time,
+                &model.cycle_of_interest_payment.clone().convert_option::<PhantomIsoCycleW>(),
                 &model.end_of_month_convention,
                 Some(true),
             ).into_iter().collect();
@@ -319,7 +328,7 @@ impl TraitContractModel for PAM { //
             states.accrued_interest = AccruedInterest::new(
                 day_counter.day_count_fraction(
                     time_adjuster.shift_bd(t_minus.unwrap()),
-                    time_adjuster.shift_bd(&states.status_date.clone().unwrap().to_phantom_type()))
+                    time_adjuster.shift_bd(&states.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>()))
                     * states.notional_principal.clone().unwrap().value()
                     * states.nominal_interest_rate.clone().unwrap().value()
             ).ok()
@@ -347,7 +356,7 @@ impl TraitContractModel for PAM { //
         // Initial exchange (IED) //
         ////////////////////////////
         let e = EventFactory::create_event(
-            &model.initial_exchange_date.unwrap().to_schedule_time(),
+            &model.initial_exchange_date.convert_option::<ScheduleTime>(),
             &EventType::IED,
             &model.currency,
             Some(PayOffFunction::from_str("POF_IED_PAM")),
@@ -361,7 +370,7 @@ impl TraitContractModel for PAM { //
         // Principal redemption (MD) //
         ///////////////////////////////
         let e = EventFactory::create_event(
-            &Some(maturity_date.clone().to_schedule_time().unwrap()),
+            &Some(maturity_date.clone().convert::<ScheduleTime>()),
             &EventType::MD,
             &model.currency,
             Some(PayOffFunction::from_str("POF_MD_PAM")),
@@ -377,7 +386,10 @@ impl TraitContractModel for PAM { //
         if model.purchase_date.is_some() {
             //let a = false;
             let e: ContractEvent = EventFactory::create_event(
-                &model.purchase_date.unwrap().to_schedule_time(),
+                & {
+                    let tmp: ScheduleTime = model.purchase_date.unwrap().convert();
+                    Some(tmp)
+                },
                 &EventType::PRD,
                 &model.currency,
                 Some(PayOffFunction::from_str("POF_PRD_PAM")),
@@ -395,15 +407,17 @@ impl TraitContractModel for PAM { //
                 model.cycle_anchor_date_of_interest_payment.is_some()) {
 
             // Generate raw interest payment events (IP)
+            let sd = model.cycle_anchor_date_of_interest_payment.convert_option::<StartTime>();
+            let ed = Some(maturity_date.clone().convert::<EndTime>());
+            let cy = model.cycle_of_interest_payment.convert_option::<PhantomIsoCycleW>();
             let z = ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_interest_payment.unwrap().to_start_time(),
-                &Some(maturity_date.clone().to_end_time().unwrap()),
-                &Some(model.cycle_of_interest_payment.unwrap().to_phantom_type()),
+                &sd,
+                &ed,
+                &cy,
                 &model.end_of_month_convention,
                 Some(true));
 
-
-            let x: HashSet<ScheduleTime> = z.iter().map(|e| e.to_schedule_time().expect("")).collect();
+            let x: HashSet<ScheduleTime> = z.iter().map(|e| e.convert::<ScheduleTime>()).collect();
 
             let mut interest_events = EventFactory::create_events(
                 &x,
@@ -418,11 +432,11 @@ impl TraitContractModel for PAM { //
             if model.capitalization_end_date.is_some() {
                 // Remove IP events at IPCED and add IPCI event instead
                 let a = model.capitalization_end_date.clone().unwrap();
-                let b = a.to_phantom_type();
+                let b = a.convert::<PhantomIsoDatetimeW>();
                 let c: PhantomIsoDatetimeW = PhantomIsoDatetimeW::from_str(b.to_string().as_str()).ok().unwrap();
 
                 let capitalization_end = EventFactory::create_event(
-                    &Some(c.to_schedule_time().unwrap()),
+                    &Some(c.convert::<ScheduleTime>()),
                     &EventType::IPCI,
                     &model.currency,
                     Some(PayOffFunction::from_str("POF_IPCI_PAM")),
@@ -460,12 +474,13 @@ impl TraitContractModel for PAM { //
             for el in w.into_iter() {
                 events.push(el);
             }
-
+            // println!("ok");
             //events.extend(w);
-        } else if model.capitalization_end_date.is_some() {
+        }
+        else if model.capitalization_end_date.is_some() {
             // If no interest schedule set but capitalization end date, add single IPCI event
             let a: ContractEvent = EventFactory::create_event( // lannotation est peut etre fausse a verifier
-                       &model.capitalization_end_date.unwrap().to_schedule_time(),
+                       &model.capitalization_end_date.convert_option::<ScheduleTime>(),
                        &EventType::IPCI,
                        &model.currency,
                        Some(PayOffFunction::from_str("POF_IPCI_PAM")),
@@ -474,19 +489,45 @@ impl TraitContractModel for PAM { //
                        &model.contract_id);
             events.push(a);
         }
+        else if model.cycle_of_interest_payment.is_none() && model.cycle_anchor_date_of_interest_payment.is_none() {
+            // Generate raw interest payment events (IP)
+            let z = ScheduleFactory::create_schedule(
+                &model.initial_exchange_date.convert_option::<StartTime>(),
+                &Some(maturity_date.clone().convert::<EndTime>()),
+                &None,
+                &model.end_of_month_convention,
+                Some(true));
+
+
+            let x: HashSet<ScheduleTime> = z.iter().map(|e| e.convert::<ScheduleTime>()).collect();
+
+            let mut interest_events = EventFactory::create_events(
+                &x,
+                &EventType::IP,
+                &model.currency,
+                Some(PayOffFunction::from_str("POF_IP_PAM")),
+                Some(StatesTransitionFunction::from_str("STF_IP_PAM")),
+                &model.business_day_adjuster,
+                &model.contract_id);
+            events.extend(interest_events);
+        }
 
         ////////////////////////////
         // Rate reset events (RR) //
         ////////////////////////////
+        //println!("ok");
+        let start_time: Option<StartTime> = model.cycle_anchor_date_of_rate_reset.convert_option();
+        let end_time: Option<EndTime> = Some(maturity_date.convert());
+        let cycle = model.cycle_of_rate_reset.convert_option::<PhantomIsoCycleW>();
         let a = &ScheduleFactory::create_schedule(
-            &model.cycle_anchor_date_of_rate_reset.unwrap().to_start_time(),
-            &Some(maturity_date.to_end_time().unwrap()),
-            &Some(model.cycle_of_rate_reset.unwrap().to_phantom_type()),
+            &start_time,
+            &end_time,
+            &model.cycle_of_rate_reset.convert_option::<PhantomIsoCycleW>(),
             &model.end_of_month_convention,
             Some(false),
         );
 
-        let x: HashSet<ScheduleTime> = a.iter().map(|e| e.to_schedule_time().expect("")).collect();
+        let x: HashSet<ScheduleTime> = a.iter().map(|e| e.convert::<ScheduleTime>()).collect();
 
         let mut rate_reset_events = EventFactory::create_events(
             &x,
@@ -501,7 +542,7 @@ impl TraitContractModel for PAM { //
         // Adapt fixed rate reset event
         if model.next_reset_rate.is_some() {
             let status_event = EventFactory::create_event(
-                &model.status_date.unwrap().to_schedule_time(),
+                &model.status_date.convert_option::<ScheduleTime>(),
                 &EventType::AD,
                 &model.currency,
                 None,
@@ -535,14 +576,14 @@ impl TraitContractModel for PAM { //
 
         if model.cycle_of_fee.is_some() {
             let q = &ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_fee.unwrap().to_start_time(),
-                &model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().to_end_time(),
-                &Some(model.cycle_of_fee.clone().unwrap().to_phantom_type()),
+                &model.cycle_anchor_date_of_fee.convert_option::<StartTime>(),
+                &model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<EndTime>(),
+                &model.cycle_of_fee.clone().convert_option::<PhantomIsoCycleW>(),
                 &model.end_of_month_convention,
                 Some(true),
             );
 
-            let x: HashSet<ScheduleTime> = q.iter().map(|e| e.to_schedule_time().expect("")).collect();
+            let x: HashSet<ScheduleTime> = q.iter().map(|e| e.convert::<ScheduleTime>()).collect();
             let fee_events = EventFactory::create_events(
                 &x,
                 &EventType::FP,
@@ -563,13 +604,13 @@ impl TraitContractModel for PAM { //
                 model.scaling_effect.clone().unwrap().to_string().contains('N'))
         {
             let q = ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_scaling_index.unwrap().to_start_time(),
-                &model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().to_end_time(),
-                &Some(model.cycle_of_scaling_index.clone().unwrap().to_phantom_type()),
+                &model.cycle_anchor_date_of_scaling_index.convert_option::<StartTime>(),
+                &model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<EndTime>(),
+                &model.cycle_of_scaling_index.clone().convert_option::<PhantomIsoCycleW>(),
                 &model.end_of_month_convention,
                 Some(false),
             );
-            let x: HashSet<ScheduleTime> = q.iter().map(|e| e.to_schedule_time().expect("")).collect();
+            let x: HashSet<ScheduleTime> = q.iter().map(|e| e.convert::<ScheduleTime>()).collect();
             let scaling_events = EventFactory::create_events(
                 &x,
                 &EventType::SC,
@@ -587,7 +628,7 @@ impl TraitContractModel for PAM { //
         ////////////////////////////
         if model.termination_date.is_some() {
             let termination: ContractEvent = EventFactory::create_event(
-                &model.termination_date.unwrap().to_schedule_time(),
+                &model.termination_date.convert_option::<ScheduleTime>(),
                 &EventType::TD,
                 &model.currency,
                 Some(PayOffFunction::from_str("POF_TD_PAM")),
@@ -607,7 +648,7 @@ impl TraitContractModel for PAM { //
         ///////////////////////////////////////
         let status_date = model.status_date.clone().unwrap();
         let status_event: ContractEvent = EventFactory::create_event(
-            &Some(status_date.to_schedule_time().unwrap()),
+            &Some(status_date.convert::<ScheduleTime>()),
             &EventType::AD,
             &model.currency,
             None,
@@ -648,7 +689,7 @@ impl TraitContractModel for PAM { //
 
         if curr_ce.fpayoff.is_some() {
             let a = curr_ce.fpayoff.clone().unwrap().eval(
-                &curr_ce.get_schedule_time().to_phantom_type(),
+                &curr_ce.get_schedule_time().convert::<PhantomIsoDatetimeW>(),
                 &self.states_space,
                 &self.contract_terms,
                 &self.related_contracts,
@@ -656,18 +697,9 @@ impl TraitContractModel for PAM { //
                 &self.contract_terms.day_count_convention,
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
-            println!("{:?}\n", a);
+            //println!("{:?}\n", a);
             self.event_timeline[id_ce].payoff = Some(Payoff::new(a).expect("ok"));
-            // let curr_ce_clone = &curr_ce.clone();
-            // if self.result_vec_toggle == true {
-            //     if let Some(rv) = &mut self.result_vec {
-            //         let mut a = ResultSet::new();
-            //         a.set_result_set(&self.states_space,
-            //                          &self.contract_events[id_ce]);
-            // 
-            //         rv.push(a)
-            //     }
-            // }
+            //println!("payoff0{:?}\n", self.event_timeline[id_ce].payoff);
         }
 
         // on peut la retravailler pour etre plus direct et efficace
@@ -678,7 +710,7 @@ impl TraitContractModel for PAM { //
 
         if curr_ce.fstate.is_some() {
             curr_ce.fstate.clone().unwrap().eval(
-                &curr_ce.get_schedule_time().to_phantom_type(),
+                &curr_ce.get_schedule_time().convert::<PhantomIsoDatetimeW>(),
                 &mut self.states_space,
                 &self.contract_terms,
                 &self.related_contracts,
@@ -719,7 +751,7 @@ impl TraitContractModel for PAM { //
         self.status_date = None;
     }
 
-    fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>) { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+    fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
         let events = &mut self.event_timeline.clone();
         // let mut events = events.clone();
@@ -732,40 +764,88 @@ impl TraitContractModel for PAM { //
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //
         ////////////////////////////////////////////////////////////////////
+        let mut result_vec: Vec<TestResult> = Vec::new();
+
+        //println!("ZORG ZORG");
+
         let mut i: usize = 0;
         for event in events.iter_mut() {
-            if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
-                break
+            // let a = event.event_time.expect("fd");
+            // let b = EventTime::new(date.expect("fo").value()).expect("ok");
+            //println!("ok");
+            if date.is_some() {
+                if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
+                    break
+                }
             }
             self.eval_pof_contract_event(i);
+            //println!("nominalprincipal{:?}", self.states_space.notional_principal);
+            //println!("payoff{:?}", self.event_timeline[i].payoff);
             self.eval_stf_contract_event(i);
-            println!("{:?}", self.states_space.notional_principal);
+
+            if extract_results == true {
+                let curr_testresult = TestResult {
+                    eventDate: event.event_time.expect("fe").to_string(),
+                    eventType: event.event_type.to_string(),
+                    payoff: self.event_timeline[i].payoff.clone().expect("ok").to_string(),
+                    currency: event.currency.clone().expect("ef").0,
+                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
+                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
+                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
+                };
+                result_vec.push(curr_testresult)
+            }
+
             i += 1;
         }
 
         ////////////////////////////////////////////////////////
         // Remove pre-purchase events if purchase date is set //
         ////////////////////////////////////////////////////////
+        let purchase_event: ContractEvent = EventFactory::create_event(
+            &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
+            &EventType::PRD,
+            &self.contract_terms.currency,
+            None,
+            None,
+            &None,
+            &self.contract_terms.contract_id,
+        );
         if self.contract_terms.purchase_date.is_some() {
             // let purchase_date = model.purchase_date;
-            let purchase_event: ContractEvent = EventFactory::create_event(
-                &self.contract_terms.purchase_date.unwrap().to_schedule_time(),
-                &EventType::PRD,
-                &self.contract_terms.currency,
-                None,
-                None,
-                &None,
-                &self.contract_terms.contract_id,
-            );
+
             events.retain(|e| {
                 e.get_event_type() == EventType::AD || e >= &purchase_event
             });
+            println!("ok");
+
+
         }
         /////////////////////////////
         // Return evaluated events //
         /////////////////////////////
         //Ok(events)
         self.event_timeline = events.clone();
+
+        /// recup des resultats
+        if extract_results == false {
+
+            return None;
+        }
+        else {
+            ////////////////////////////////////////////////////////
+            // Remove pre-purchase events if purchase date is set //
+            ////////////////////////////////////////////////////////
+            result_vec.retain(|e| {
+                let epoch_millis = IsoDatetime::from_str(e.eventDate.as_str()).clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
+                let epoch_offset = epoch_millis + EventSequence::time_offset(&EventType::from_str(e.eventType.as_str()).expect("exist"));
+                EventType::from_str(e.eventType.as_str()).expect("exist") == EventType::AD || epoch_offset as f64 >= purchase_event.epoch_offset.unwrap().value()
+            });
+            return Some(Ok(result_vec));
+        }
+
+
+
     }
 
     fn sort_events_timeline(&mut self) {

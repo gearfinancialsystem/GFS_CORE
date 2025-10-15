@@ -13,6 +13,7 @@ use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -44,7 +45,12 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.to_phantom_type()),
+            time_adjuster.shift_sc(
+                &{
+                    let tmp: PhantomIsoDatetimeW = status_date.convert();
+                    tmp
+                },
+            ),
             time_adjuster.shift_sc(&time),
         );
 

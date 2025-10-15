@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
+use serde::{Deserialize, Serialize};
 use serde_json::{self, Value as JsonValue};
+use gfs_lib_contract::util::ResultsStruct::TestResult;
 use gfs_lib_types::types::Value::Value;
 
 // Fonction de conversion
@@ -48,4 +50,71 @@ pub fn load_test_case_terms(
     }
 }
 
+// #[derive(Debug, Serialize, Deserialize, Clone)]
+// pub struct TestResult {
+//     pub eventDate: String,
+//     pub eventType: String,
+//     pub payoff: String,
+//     pub currency: String,
+//     pub notionalPrincipal: String,
+//     pub nominalInterestRate: String,
+//     pub accruedInterest: String,
+// }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DataPoint {
+    pub timestamp: String,
+    pub value: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DataStruct {
+    pub identifier: String,
+    pub data: Vec<DataPoint>, // C'est un Vec<DataPoint>, pas un DataPoint
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TestCase {
+    pub identifier: String,
+    pub terms: HashMap<String, String>,
+    pub to: String,
+    pub dataObserved: HashMap<String, DataStruct>, // Pas une HashMap imbriquée, mais une HashMap<String, DataStruct>
+    pub eventsObserved: Vec<HashMap<String, String>>,
+    pub results: Vec<TestResult>,
+}
+pub fn load_test_case_results(
+    file_path: &str,
+    test_case_id: &str,
+) -> Result<Vec<TestResult>, Box<dyn std::error::Error>> {
+    // Ouvre le fichier
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+
+    // Parse le JSON en HashMap<String, TestCase>
+    let json: HashMap<String, TestCase> = serde_json::from_reader(reader)?;
+    // println!("{:?}", json);
+    // Récupère le test case spécifique
+    let test_case = json.get(test_case_id)
+        .ok_or_else(|| format!("Test case {} not found", test_case_id))?;
+
+    // Retourne les résultats
+    Ok(test_case.results.clone())
+}
+
+// Version alternative si vous voulez aussi les termes
+pub fn load_test_case(
+    file_path: &str,
+    test_case_id: &str,
+) -> Result<TestCase, Box<dyn std::error::Error>> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+
+    let json: HashMap<String, TestCase> = serde_json::from_reader(reader)?;
+
+    let test_case = json.get(test_case_id)
+        .ok_or_else(|| format!("Test case {} not found", test_case_id))?;
+
+    let r = test_case.clone().clone();
+    // Clone le test case complet
+    Ok(r)
+}

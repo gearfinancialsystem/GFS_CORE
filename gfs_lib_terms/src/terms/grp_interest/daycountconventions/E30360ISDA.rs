@@ -1,6 +1,6 @@
 use std::fmt;
 use std::rc::Rc;
-
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
@@ -36,7 +36,8 @@ impl TraitDayCountConvention for E30360ISDA {
             let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
             let maturity =  {
                 // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
-                if end_time == a.to_phantom_type() && is_february {
+                let tmp_a: PhantomIsoDatetimeW = a.convert();
+                if end_time == tmp_a && is_february {
                     // pas d'ajustement, on laisse d2
                 }
                 else if end_time.is_last_day_of_month() {

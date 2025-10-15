@@ -15,5 +15,5 @@ where
 
     fn parse_from_string(s: &str) -> Result<IsoPeriod, String>;
 
-    fn to_phantom_type(&self) -> PhantomIsoPeriodW;
+    //fn to_phantom_type(&self) -> PhantomIsoPeriodW;
 }

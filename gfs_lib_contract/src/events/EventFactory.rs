@@ -15,7 +15,7 @@ use gfs_lib_terms::terms::grp_notional_principal::Currency::Currency;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
@@ -48,7 +48,8 @@ impl EventFactory {
         }
         else {
             let time = schedule_time.as_ref().unwrap();
-            let adjusted_time = convention.clone().unwrap().shift_bd(&time.to_phantom_type());
+            let tmp_time: PhantomIsoDatetimeW = time.convert();
+            let adjusted_time = convention.clone().unwrap().shift_bd(&tmp_time);
             let conventionx = Some(adjusted_time);
             dd = EventTime::new(conventionx.clone().unwrap().value()).ok()
         }
@@ -85,8 +86,8 @@ impl EventFactory {
                     
                 }
                 else {
-
-                    let adjusted_time = convention.clone().unwrap().shift_bd(&time.to_phantom_type());
+                    let tmp_time: PhantomIsoDatetimeW = time.convert();
+                    let adjusted_time = convention.clone().unwrap().shift_bd(&tmp_time);
                     dd = EventTime::new(adjusted_time.clone().value()).ok()
                 }
 

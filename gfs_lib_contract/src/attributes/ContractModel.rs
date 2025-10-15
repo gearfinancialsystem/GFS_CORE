@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use gfs_lib_types::types::Value::Value;
 // use crate::contracts::Ann::ANN;
 // use crate::contracts::Bcs::BCS;
@@ -26,6 +26,7 @@ use crate::contracts::Pam::PAM;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitExternalEvent::TraitExternalEvent;
+use crate::util::ResultsStruct::TestResult;
 
 #[derive(Debug, Clone)]
 pub enum ContractModel {
@@ -269,7 +270,7 @@ impl ContractModel {
         }
     }
 
-    pub fn run_apply(&mut self, stop_states_space_date: Option<PhantomIsoDatetimeW>) {
+    pub fn run_apply(&mut self, stop_states_space_date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
         match self {
             // ContractModel::ANN(c) => {c.apply()},
             // ContractModel::BCS(c) => {c.apply()},
@@ -285,7 +286,11 @@ impl ContractModel {
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
             // ContractModel::OPTNS(c) => {c.apply()},
-            ContractModel::PAM(c) => {c.apply_until_date(stop_states_space_date)},
+            ContractModel::PAM(c) => {
+                let it = c.apply_until_date(stop_states_space_date, extract_results);
+                it
+
+            },
             // ContractModel::STK(c) => {c.apply()},
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
@@ -333,7 +338,10 @@ impl ContractModel {
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
             // ContractModel::OPTNS(c) => {c.apply()},
-            ContractModel::PAM(c) => {Some(c.status_date?.to_phantom_type())},
+            ContractModel::PAM(c) => {
+                let c: PhantomIsoDatetimeW = c.status_date?.convert();
+                Some(c)
+            },
             // ContractModel::STK(c) => {c.apply()},
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
@@ -341,9 +349,9 @@ impl ContractModel {
         }
     }
     
-    pub fn run(&mut self, to: Option<PhantomIsoDatetimeW>, stop_states_space_date: Option<PhantomIsoDatetimeW>) {
+    pub fn run(&mut self, to: Option<PhantomIsoDatetimeW>, stop_states_space_date: Option<PhantomIsoDatetimeW>, extract_results: bool) {
         self.run_schedule(); //to
-        self.run_apply(stop_states_space_date);
+        self.run_apply(stop_states_space_date, extract_results);
     }
 
 }

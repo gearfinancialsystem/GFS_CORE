@@ -9,6 +9,7 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -47,7 +48,12 @@ impl TraitPayOffFunction for POF_PRD_PAM {
             settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (
                     price_at_purchase_date.value() + 
                     accrued_interest.value() + day_counter.day_count_fraction(
-                    time_adjuster.shift_sc(&status_date.to_phantom_type()),
+                    time_adjuster.shift_sc(
+                        &{
+                            let tmp: PhantomIsoDatetimeW = status_date.convert();
+                            tmp
+                        },
+                    ),
                     time_adjuster.shift_sc(&time)
                 ) * notional_principal.value() * nominal_interest_rate.value())
     }

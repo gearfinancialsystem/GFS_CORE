@@ -14,6 +14,6 @@ where
 
     fn set_value(&mut self, value: &IsoCycle);
     
-    fn to_phantom_type(&self) -> PhantomIsoCycleW;
+    //fn to_phantom_type(&self) -> PhantomIsoCycleW;
     
 }

@@ -290,8 +290,6 @@
       "contractRole": "SEL",
       "contractStructure": [
         {
-
-
           "object": {
             "contractType": "PAM",
             "contractID": "capfl-underlying",

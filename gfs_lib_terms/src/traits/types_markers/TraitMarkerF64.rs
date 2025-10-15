@@ -9,5 +9,5 @@ where
 
     fn value(&self) -> f64;
     
-    fn to_phantom_type(&self) -> PhantomF64W;
+    //fn to_phantom_type(&self) -> PhantomF64W;
 }

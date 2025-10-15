@@ -5,6 +5,8 @@ use std::ops::Sub;
 use std::rc::Rc;
 use std::str::FromStr;
 use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, NaiveTime};
+use crate::traits::TraitConvert::{IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
+use crate::types::IsoCycle::IsoCycle;
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::types::Value::Value;
 
@@ -156,3 +158,27 @@ impl Deref for IsoDatetime {
 }
 
 
+impl<T> IsoDateTimeConvertTo<T> for T
+where
+    T: Into<IsoDatetime>,
+{
+    fn convert<U>(self) -> U
+    where
+        U: From<IsoDatetime>,
+    {
+        U::from(self.into())
+    }
+}
+
+
+impl<T> IsoDateTimeConvertToOption<T> for Option<T>
+where
+    T: Into<IsoDatetime>,
+{
+    fn convert_option<U>(self) -> Option<U>
+    where
+        U: From<IsoDatetime>,
+    {
+        self.map(|t| U::from(t.into()))
+    }
+}

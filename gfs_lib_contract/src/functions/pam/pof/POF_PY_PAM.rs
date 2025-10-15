@@ -9,6 +9,7 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 // use crate::attributes::ContractReference::ContractReference;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -54,7 +55,12 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be Some");
 
                 settlement_currency_fx_rate * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()), time_adjuster.shift_sc(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(
+                    &{
+                        let tmp: PhantomIsoDatetimeW = status_date.convert();
+                        tmp
+                    },
+                ), time_adjuster.shift_sc(&time))
                 * penalty_rate.value() * notional_principal.value()
             }
             _ => {
@@ -72,7 +78,12 @@ impl TraitPayOffFunction for POF_PY_PAM {
                     cbv = None
                 }
                 settlement_currency_fx_rate * contract_role.role_sign()
-                    * day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()), time_adjuster.shift_sc(&time))
+                    * day_counter.day_count_fraction(time_adjuster.shift_sc(
+                    &{
+                        let tmp: PhantomIsoDatetimeW = status_date.convert();
+                        tmp
+                    },
+                ), time_adjuster.shift_sc(&time))
                     * notional_principal.value()
                     * 0.0f64.max(nominal_interest_rate.value() - cbv.unwrap())
             }

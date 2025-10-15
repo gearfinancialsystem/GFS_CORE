@@ -32,7 +32,6 @@ impl CreditEventTypeCoveredElement {
 
 }
 
-
 impl FromStr for CreditEventTypeCoveredElement {
     type Err = String;
 
