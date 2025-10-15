@@ -43,11 +43,11 @@ impl TraitDayCountConvention for AAISDA {
         let days_in_second_year = Self::day_count(
             &self,
             PhantomIsoDatetimeW::new(
-            IsoDatetime(NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap())
+            IsoDatetime(NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(0,0,0).unwrap())
             ).expect("should be correct phantom dtime"),
             end_time
         );
-
+        let a = (days_in_first_year as f64 / first_basis) + (days_in_second_year as f64 / second_basis) + (y2 - y1 - 1) as f64;
         (days_in_first_year as f64 / first_basis)
             + (days_in_second_year as f64 / second_basis)
             + (y2 - y1 - 1) as f64

@@ -45,6 +45,7 @@ impl EventFactory {
         if convention.is_none() {
             //let schedule_time_copy2 = PhantomIsoDatetimeW::new(schedule_time_copy) ;
             dd = EventTime::new(schedule_time.unwrap().value()).ok();
+            println!("ok");
         }
         else {
             let time = schedule_time.as_ref().unwrap();

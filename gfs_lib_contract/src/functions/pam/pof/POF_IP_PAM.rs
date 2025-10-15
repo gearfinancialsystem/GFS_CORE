@@ -45,18 +45,23 @@ impl TraitPayOffFunction for POF_IP_PAM {
                 let tmp: PhantomIsoDatetimeW = status_date.convert();
                 time_adjuster.shift_sc(&tmp)
             },
-
             time_adjuster.shift_sc(&time)
         );
+        let z =  status_date.to_string();
+        let zz = time.to_string();
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
             _contract_terms,
             time,
             states
         );
-        let res = settlement_currency_fx_rate * interest_scaling_multiplier.value() * (accrued_interest.value() + a) * nominal_interest_rate.value() * notional_principal.value();
+        let res = settlement_currency_fx_rate *
+            interest_scaling_multiplier.value() *
+            (accrued_interest.value() + a *
+            nominal_interest_rate.value() *
+            notional_principal.value());
 
-        //println!("payofffunc: {}", res);
+        println!("payofffunc: {}", res);
         res
 
     }

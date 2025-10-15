@@ -428,15 +428,17 @@ impl TraitContractModel for PAM { //
                 &model.business_day_adjuster,
                 &model.contract_id);
 
+
+            let mut vec: Vec<ContractEvent> = vec![];
             // Adapt if interest capitalization is set
             if model.capitalization_end_date.is_some() {
                 // Remove IP events at IPCED and add IPCI event instead
                 let a = model.capitalization_end_date.clone().unwrap();
-                let b = a.convert::<PhantomIsoDatetimeW>();
-                let c: PhantomIsoDatetimeW = PhantomIsoDatetimeW::from_str(b.to_string().as_str()).ok().unwrap();
+                let b = a.convert::<ScheduleTime>();
+                // let c: PhantomIsoDatetimeW = PhantomIsoDatetimeW::from_str(b.to_string().as_str()).ok().unwrap();
 
                 let capitalization_end = EventFactory::create_event(
-                    &Some(c.convert::<ScheduleTime>()),
+                    &Some(b),
                     &EventType::IPCI,
                     &model.currency,
                     Some(PayOffFunction::from_str("POF_IPCI_PAM")),
@@ -445,36 +447,42 @@ impl TraitContractModel for PAM { //
                     &model.contract_id);
 
                 // Remove IP events that occur at capitalization end date
+                // interest_events.retain(|e| {
+                //     e.event_type != EventType::IP || e.event_time != Some(
+                //         capitalization_end.get_event_time()
+                //     )
+                // }); // A REVOIR
                 interest_events.retain(|e| {
-                    !(e.event_type != EventType::IP || e.event_time != Some(
-                        capitalization_end.get_event_time()
-                    ))
-                }); // A REVOIR
+                    e.event_type != EventType::IP || e.compare_to(&capitalization_end) != 0
+                });
 
                 // Add capitalization end event
                 interest_events.insert(capitalization_end.clone());
-                let mut vec: Vec<_> = interest_events.clone().into_iter().collect();
+                vec = interest_events.clone().into_iter().collect();
                 // Change events with time <= IPCED and cont_type IP to IPCI
 
 
-                vec.iter_mut()
-                    .filter(|e| e.event_type == EventType::IP &&
-                        e.get_event_time() <= capitalization_end.get_event_time())
-                    .for_each(|e| {
+                vec.iter_mut().for_each(|e| {
+                    if e.event_type == EventType::IP &&
+                        e.compare_to(&capitalization_end) != 1 {
                         e.chg_event_type(EventType::IPCI);
                         e.set_f_pay_off(Some(PayOffFunction::from_str("POF_IPCI_PAM")));
                         e.set_f_state_trans(Some(StatesTransitionFunction::from_str("STF_IPCI_PAM")));
-                    });
-
-                // interest_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = vec.into_iter().collect();
-
+                    }
+                });
             }
-            let w: Vec<ContractEvent> =
-                interest_events.into_iter().map(|ce| ce).collect();
-            for el in w.into_iter() {
-                events.push(el);
+            //let w: Vec<ContractEvent> = interest_events.into_iter().map(|ce| ce).collect();
+            // ATTENTION ICI A REVOIR
+            if !vec.is_empty() {
+                for el in vec.into_iter() {
+                    events.push(el);
+                }
             }
-            // println!("ok");
+            else {
+                events.extend(interest_events);
+            }
+
+            println!("ok");
             //events.extend(w);
         }
         else if model.capitalization_end_date.is_some() {
@@ -489,28 +497,7 @@ impl TraitContractModel for PAM { //
                        &model.contract_id);
             events.push(a);
         }
-        else if model.cycle_of_interest_payment.is_none() && model.cycle_anchor_date_of_interest_payment.is_none() {
-            // Generate raw interest payment events (IP)
-            let z = ScheduleFactory::create_schedule(
-                &model.initial_exchange_date.convert_option::<StartTime>(),
-                &Some(maturity_date.clone().convert::<EndTime>()),
-                &None,
-                &model.end_of_month_convention,
-                Some(true));
 
-
-            let x: HashSet<ScheduleTime> = z.iter().map(|e| e.convert::<ScheduleTime>()).collect();
-
-            let mut interest_events = EventFactory::create_events(
-                &x,
-                &EventType::IP,
-                &model.currency,
-                Some(PayOffFunction::from_str("POF_IP_PAM")),
-                Some(StatesTransitionFunction::from_str("STF_IP_PAM")),
-                &model.business_day_adjuster,
-                &model.contract_id);
-            events.extend(interest_events);
-        }
 
         ////////////////////////////
         // Rate reset events (RR) //
@@ -638,15 +625,16 @@ impl TraitContractModel for PAM { //
             );
 
             // Remove all events occurring after termination date
-            events.retain(|e| e <= &termination);
+            events.retain(|e| e.compare_to(&termination) != 1);
             events.push(termination);
         }
 
-
+        events.sort();
         ///////////////////////////////////////
         // Remove all pre-status date events //
         ///////////////////////////////////////
         let status_date = model.status_date.clone().unwrap();
+        let w = status_date.to_string();
         let status_event: ContractEvent = EventFactory::create_event(
             &Some(status_date.convert::<ScheduleTime>()),
             &EventType::AD,
@@ -655,22 +643,23 @@ impl TraitContractModel for PAM { //
             None,
             &None,
             &model.contract_id);
-        events.retain(|e| e >= &status_event);
+        events.retain(|e| e.compare_to(&status_event) != -1);
 
         ///////////////////////////////////////////
         // Remove all events after the `to` date //
         ///////////////////////////////////////////
-        // let to_event: ContractEvent = EventFactory
-        // ::create_event(
-        //     &PhantomIsoDatetimeW::new(to.clone().expect("to")).ok(),
-        //     &EventType::AD,
-        //     &model.currency,
-        //     None,
-        //     None,
-        //     &None,
-        //     &model.contract_id,
-        // );
-        // events.retain(|e| e <= &to_event);
+        let to = &model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<EndTime>().convert_option::<ScheduleTime>();
+        let a = to.unwrap().to_string();
+        let to_event: ContractEvent = EventFactory::create_event(
+            &to,
+            &EventType::AD,
+            &model.currency,
+            None,
+            None,
+            &None,
+            &model.contract_id,
+        );
+        events.retain(|e| e.compare_to(&to_event) != 1);
 
         ///////////////////////////////////////////////////////
         // Sort events according to their time of occurrence //
@@ -782,7 +771,7 @@ impl TraitContractModel for PAM { //
             //println!("nominalprincipal{:?}", self.states_space.notional_principal);
             //println!("payoff{:?}", self.event_timeline[i].payoff);
             self.eval_stf_contract_event(i);
-
+            let a = self.event_timeline[i].payoff.clone().expect("ok").to_string();
             if extract_results == true {
                 let curr_testresult = TestResult {
                     eventDate: event.event_time.expect("fe").to_string(),
@@ -802,18 +791,18 @@ impl TraitContractModel for PAM { //
         ////////////////////////////////////////////////////////
         // Remove pre-purchase events if purchase date is set //
         ////////////////////////////////////////////////////////
-        let purchase_event: ContractEvent = EventFactory::create_event(
-            &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
-            &EventType::PRD,
-            &self.contract_terms.currency,
-            None,
-            None,
-            &None,
-            &self.contract_terms.contract_id,
-        );
+
         if self.contract_terms.purchase_date.is_some() {
             // let purchase_date = model.purchase_date;
-
+            let purchase_event: ContractEvent = EventFactory::create_event(
+                &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
+                &EventType::PRD,
+                &self.contract_terms.currency,
+                None,
+                None,
+                &None,
+                &self.contract_terms.contract_id,
+            );
             events.retain(|e| {
                 e.get_event_type() == EventType::AD || e >= &purchase_event
             });
@@ -837,9 +826,20 @@ impl TraitContractModel for PAM { //
             // Remove pre-purchase events if purchase date is set //
             ////////////////////////////////////////////////////////
             result_vec.retain(|e| {
-                let epoch_millis = IsoDatetime::from_str(e.eventDate.as_str()).clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
-                let epoch_offset = epoch_millis + EventSequence::time_offset(&EventType::from_str(e.eventType.as_str()).expect("exist"));
-                EventType::from_str(e.eventType.as_str()).expect("exist") == EventType::AD || epoch_offset as f64 >= purchase_event.epoch_offset.unwrap().value()
+                if self.contract_terms.purchase_date.is_some() {
+                    let purchase_event: ContractEvent = EventFactory::create_event(
+                        &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
+                        &EventType::PRD,
+                        &self.contract_terms.currency,
+                        None,
+                        None,
+                        &None,
+                        &self.contract_terms.contract_id,
+                    );
+                    let epoch_millis = IsoDatetime::from_str(e.eventDate.as_str()).clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
+                    let epoch_offset = epoch_millis + EventSequence::time_offset(&EventType::from_str(e.eventType.as_str()).expect("exist"));
+                    EventType::from_str(e.eventType.as_str()).expect("exist") == EventType::AD || epoch_offset as f64 >= purchase_event.epoch_offset.unwrap().value()
+                } else { true }
             });
             return Some(Ok(result_vec));
         }

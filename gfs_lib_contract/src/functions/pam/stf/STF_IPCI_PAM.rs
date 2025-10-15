@@ -12,6 +12,7 @@ use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 // use crate::attributes::ContractReference::ContractReference;
 use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
@@ -59,6 +60,6 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         states.accrued_interest = AccruedInterest::new(0.0).ok();
         states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
 
-        
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

@@ -12,7 +12,7 @@ fn test_pam_contract_creation() {
     // Créez une instance de PAM avec des paramètres de test
 
     let pathx = "tests/test_sets/actus-tests-pam-converted.json";
-    let test_id = "pam12"; //12
+    let test_id = "pam22"; //12, 19
 
     //let json_value = test_read_and_parse_json(pathx).unwrap();
     let contract_terms_dict = load_test_case_terms(pathx,test_id).unwrap();

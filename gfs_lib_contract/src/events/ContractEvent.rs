@@ -81,7 +81,9 @@ impl ContractEvent {
     pub fn chg_event_type(&mut self, event_type: EventType) {
         self.event_type = event_type;
         // this.epoch_offset = event_time.toEpochSecond(ZoneOffset.UTC) + EventSequence.timeOffset(event_type);
-        let a = self.get_event_time().timestamp_millis() as f64 + EventSequence::time_offset(&event_type) as f64;
+        let z = self.event_time.unwrap().to_string();
+        let w = (self.get_event_time().timestamp_millis() as f64) ; // a verifier  / 1000.0
+        let a = w + EventSequence::time_offset(&event_type) as f64;
         self.epoch_offset = Some(PhantomF64W::new(a).unwrap() );
     }
     pub fn currency(&self) -> Currency {
@@ -103,6 +105,9 @@ impl ContractEvent {
         self.fstate = function;
     }
     pub fn compare_to(&self, other: &ContractEvent) -> i64 {
+        let z1 = self.epoch_offset.clone().unwrap();
+        let z2 = other.epoch_offset.clone().unwrap();
+        let a = (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum();
         (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64
     }
   
