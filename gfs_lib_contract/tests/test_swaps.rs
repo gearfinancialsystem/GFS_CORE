@@ -28,7 +28,7 @@ fn test_swaps_contract_creation() {
     for (test_id, _) in test_vec {
         let curr_test = load_test_case(test_id, &d_dict).unwrap();
         //let json_value = test_read_and_parse_json(pathx).unwrap();
-        let contract_terms_dict = load_test_case_terms(&curr_test).unwrap();
+        let contract_terms_dict = load_test_case_terms(&pathx, test_id).unwrap();
         let contract_results_dict = load_test_case_results(&curr_test).unwrap();
         let contract_data_observed = load_test_case_dataobserved(&curr_test).unwrap();
 

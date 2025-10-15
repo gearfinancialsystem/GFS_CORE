@@ -104,9 +104,24 @@ impl TraitExternalData for DataObserved {
 
 #[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ContractStructure {
+    object: HashMap<String, String>,
+    referenceType: String,
+    referenceRole: String
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum TermsValue {
+    String(String),
+    ContractStructure(Vec<ContractStructure>),
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TestCase {
     pub identifier: String,
-    pub terms: HashMap<String, String>,
+    pub terms: HashMap<String, TermsValue>,
     pub to: String,
     pub dataObserved: DataObserved, // Pas une HashMap imbriquée, mais une HashMap<String, DataStruct>
     pub eventsObserved: Vec<HashMap<String, String>>,
