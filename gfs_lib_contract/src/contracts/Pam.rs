@@ -364,7 +364,7 @@ impl TraitContractModel for PAM { //
         self.states_space = states
     }
 
-    fn init_contract_event_timeline(&mut self) { // to: Option<IsoDatetime> // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+    fn init_contract_event_timeline(&mut self, to : Option<PhantomIsoDatetimeW>) { // to: Option<IsoDatetime> // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
         let model = &self.contract_terms;
         let events = &mut self.event_timeline;
@@ -475,7 +475,7 @@ impl TraitContractModel for PAM { //
                 interest_events.retain(|e| {
                     !(e.event_type == EventType::IP) || e.compare_to(&capitalization_end) != 0
                 });
-                
+
                 // Add capitalization end event
                 interest_events.insert(capitalization_end.clone());
                 vec = interest_events.clone().into_iter().collect();
@@ -501,7 +501,7 @@ impl TraitContractModel for PAM { //
             else {
                 events.extend(interest_events);
             }
-            
+
             //events.extend(w);
         }
         else if model.capitalization_end_date.is_some() {
@@ -763,15 +763,10 @@ impl TraitContractModel for PAM { //
     }
 
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
-
-        let events = &mut self.event_timeline.clone();
-        // let mut events = events.clone();
-
-        //////////////////////////////////////////////////
         // Sort events according to their time sequence //
-        //////////////////////////////////////////////////
         self.sort_events_timeline();
-
+        let events = &mut self.event_timeline.clone();
+        
         ////////////////////////////////////////////////////////////////////
         // Apply events according to their time sequence to current state //
         ////////////////////////////////////////////////////////////////////
@@ -868,12 +863,7 @@ impl TraitContractModel for PAM { //
     }
 
     fn sort_events_timeline(&mut self) {
-        self.event_timeline.sort_by(|a, b| {
-            match a.partial_cmp(&b) {
-                Some(ordering) => ordering,
-                None => Ordering::Equal, // Traite les incomparables comme égaux, c'est moche
-            }
-        });
+        self.event_timeline.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
     }
 
 }
@@ -909,69 +899,7 @@ impl Clone for PAM {
             event_timeline: self.event_timeline.clone(),
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
-            
-            
         }
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use serde_json::{Value as ValueS, Map};
-//     use std::fs::File;
-//     use std::io::Read;
-//     use std::error::Error;
-//     use std::collections::HashMap;
-//     use crate::exceptions::ContractTypeUnknownException::ContractError;
-//     use c>rate::utils::Value::Value;
-//     use crate::util_tests::TestsUtils::test_read_and_parse_json;
-//     use crate::util_tests::TestsUtils::json_to_dico;
-
-//     fn load_dico_tests() -> Vec<Value> {
-//         let pathx = "/home/cet/Projects/ACTUS-CORE/actus-core-master-rust-project-v2/libs/gfs_lib_contract/tests_sets/actus-tests-pam.json";
-//         let json_value = test_read_and_parse_json(pathx).unwrap();
-//         let dico_from_json = json_to_dico(json_value);
-//         dico_from_json
-//     }
-
-//     #[test]
-//     fn test_pam_contracts(){
-//         let dico_tests = load_dico_tests();
-
-//         //let dico_tests: Vec<HashMap<String, Value>> = vec![load_dico_tests()];
-//         for el in dico_tests.iter() {
-
-//             let curr_test = el.as_hashmap().unwrap();
-
-//             let curr_identifier = curr_test.get("identifier").unwrap().as_string();
-//             let curr_terms = curr_test.get("terms").unwrap().as_hashmap();
-//             let curr_to = curr_test.get("to").unwrap().as_string();
-//             let curr_data_observed = curr_test.get("dataObserved").unwrap().as_hashmap(); // verifier si cest None
-//             let curr_events_observed = curr_test.get("eventsObserved").unwrap().as_vec();
-//             let curr_results = curr_test.get("results").unwrap().as_vec().unwrap();
-//             //let a = curr_results.get(0).unwrap().get("notionalPrincipal").unwrap().as_string().unwrap();
-//             let to_date = if let Some(curr_to) = curr_to {
-//                 IsoDatetime::parse_from_str(&curr_to, "%Y-%m-%dT%H:%M:%S").ok()
-//             } else {
-//                 None
-//             };
-
-//             let mut contract_model: Box<Result<ContractModel, ContractError>> = if let Some(ref curr_terms) = curr_terms {
-//                 // Supposons que ContractModel::new retourne Result<ContractModel, String>
-//                 match ContractModel::new(&curr_terms) {
-//                     Ok(model) => Box::new(Ok(model)),
-//                     Err(e) => Box::new(Err(ContractError::from(e))),
-//                 }
-//             } else {
-//                 Box::new(Err(ContractError::MissingTerms))
-//             };
-
-//             let risk_factor_model = RiskFactorModel;
-
-
-//             let mut vec_results: Vec<HashMap<String, Value>> = vec![];
-//         }
-//         true
-//     }
-// }

@@ -6,20 +6,23 @@ use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIso
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::attributes::ContractReference::ContractReference;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_SWAPS;
 
 impl TraitStateTransitionFunction for STF_PRD_SWAPS {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        _contract_terms: &ContractTerms,
-contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

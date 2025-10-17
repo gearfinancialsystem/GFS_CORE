@@ -1,28 +1,4 @@
-// #[macro_export]
-// macro_rules! define_phantom_imports_f64 {
-//     (PhantomF64W) => {
-//
-//     };
-//     ($struct_name:ident) => {
-//         use crate::phantom_terms::PhantomF64::PhantomF64W;
-//     };
-// }
-//
-// #[macro_export]
-// macro_rules! define_to_phantom_type_f64 {
-//     (PhantomF64W) => {
-//         // Implémentation spécifique pour PhantomF64W
-//         fn to_phantom_type(&self) -> Self {
-//             *self
-//         }
-//     };
-//     ($struct_name:ident) => {
-//         // Implémentation par défaut pour les autres structures
-//         fn to_phantom_type(&self) -> PhantomF64W {
-//             PhantomF64W::new(self.value()).expect("Conversion to PhantomF64W doesn't work")
-//         }
-//     };
-// }
+
 
 #[macro_export]
 macro_rules! define_option_ext {

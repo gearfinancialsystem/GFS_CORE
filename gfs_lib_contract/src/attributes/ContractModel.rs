@@ -14,12 +14,12 @@ use gfs_lib_types::types::Value::Value;
 // use crate::contracts::Futur::FUTUR;
 use crate::contracts::Pam::PAM;
 // use crate::contracts::Swaps::SWAPS;
-// use crate::contracts::Fxout::FXOUT;
+use crate::contracts::Fxout::FXOUT;
 // use crate::contracts::Lam::LAM;
 // use crate::contracts::Lax::LAX;
 // use crate::contracts::Nam::NAM;
 // use crate::contracts::Optns::OPTNS;
-// use crate::contracts::Stk::STK;
+use crate::contracts::Stk::STK;
 // use crate::contracts::Swppv::SWPPV;
 // use crate::contracts::Ump::UMP;
 //use crate::external::RiskFactorModel::RiskFactorModel;
@@ -39,13 +39,13 @@ pub enum ContractModel {
     // COM(COM),
     // CSH(CSH),
     // FUTUR(FUTUR),
-    // FXOUT(FXOUT),
+    FXOUT(FXOUT),
     // LAM(LAM),
     // LAX(LAX),
     // NAM(NAM),
     // OPTNS(OPTNS),
     PAM(PAM),
-    // STK(STK),
+    STK(STK),
     // SWAPS(SWAPS),
     // SWPPV(SWPPV),
     // UMP(UMP),
@@ -141,15 +141,17 @@ impl ContractModel {
             //         c
             //     }))
             // },
-            // "FXOUT" => {
-            //     Ok(Self::FXOUT({
-            //         let mut c = FXOUT::new();
-            //         c.set_contract_terms(sm_terms);
-            //         c.set_contract_risk_factors(risk_factors);
-            //         c.set_contract_structure(sm_terms);
-            // 
-            //         c
-            //     })) },
+            "FXOUT" => {
+                Ok(Self::FXOUT({
+                    let mut c = FXOUT::new();
+                    c.init_contract_terms(sm_terms);
+                    //c.set_result_vec(result_set_toogle);
+                    c.init_risk_factor_external_data(risk_factor_external_data);
+                    c.init_risk_factor_external_event(risk_factor_external_event);
+                    c.init_related_contracts(sm_terms);
+                    c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
+                    c
+                })) },
             // "LAM" => {
             //     Ok(Self::LAM({
             //         let mut c = LAM::new();
@@ -198,15 +200,17 @@ impl ContractModel {
                     c
                 }))
             },
-            // "STK" => {
-            //     Ok(Self::STK({
-            //         let mut c = STK::new();
-            //         c.set_contract_terms(sm_terms);
-            //         c.set_contract_risk_factors(risk_factors);
-            //         c.set_contract_structure(sm_terms);
-            //         c
-            //     }))
-            // },
+            "STK" => {
+                Ok(Self::STK({
+                    let mut c = STK::new();
+                    c.init_contract_terms(sm_terms);
+                    c.init_risk_factor_external_data(risk_factor_external_data);
+                    c.init_risk_factor_external_event(risk_factor_external_event);
+                    c.init_related_contracts(sm_terms);
+                    c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
+                    c
+                }))
+            },
             // "SWAPS" => {
             //     Ok(Self::SWAPS({
             //         let mut c = SWAPS::new();
@@ -246,7 +250,7 @@ impl ContractModel {
         }
     }
     
-    pub fn run_schedule(&mut self ) { // to: Option<IsoDatetime>
+    pub fn run_schedule(&mut self, to: Option<PhantomIsoDatetimeW> ) { // to: Option<IsoDatetime>
         match self {
             // ContractModel::ANN(c) => {c.schedule(to)},
             // ContractModel::BCS(c) => {c.schedule(to)},
@@ -257,13 +261,13 @@ impl ContractModel {
             // ContractModel::COM(c) => {c.schedule(to)},
             // ContractModel::CSH(c) => {c.schedule(to)},
             // ContractModel::FUTUR(c) => {c.schedule(to)},
-            // ContractModel::FXOUT(c) => {c.schedule(to)},
+            ContractModel::FXOUT(c) => {c.init_contract_event_timeline(to)},
             // ContractModel::LAM(c) => {c.schedule(to)},
             // ContractModel::LAX(c) => {c.schedule(to)},
             // ContractModel::NAM(c) => {c.schedule(to)},
             // ContractModel::OPTNS(c) => {c.schedule(to)},
-            ContractModel::PAM(c) => {c.init_contract_event_timeline()},
-            // ContractModel::STK(c) => {c.schedule(to)},
+            ContractModel::PAM(c) => {c.init_contract_event_timeline(to)},
+            ContractModel::STK(c) => {c.init_contract_event_timeline(to)},
             // ContractModel::SWAPS(c) => {c.schedule(to)},
             // ContractModel::SWPPV(c) => {c.schedule(to)},
             // ContractModel::UMP(c) => {c.schedule(to)},
@@ -281,7 +285,10 @@ impl ContractModel {
             // ContractModel::COM(c) => {c.apply()},
             // ContractModel::CSH(c) => {c.apply()},
             // ContractModel::FUTUR(c) => {c.apply()},
-            // ContractModel::FXOUT(c) => {c.apply()},
+            ContractModel::FXOUT(c) => {
+                let it = c.apply_until_date(stop_states_space_date, extract_results);
+                it
+            },
             // ContractModel::LAM(c) => {c.apply()},
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
@@ -291,7 +298,10 @@ impl ContractModel {
                 it
 
             },
-            // ContractModel::STK(c) => {c.apply()},
+            ContractModel::STK(c) => {
+                let it = c.apply_until_date(stop_states_space_date, extract_results);
+                it
+            },
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
@@ -309,13 +319,13 @@ impl ContractModel {
             // ContractModel::COM(c) => {c.apply()},
             // ContractModel::CSH(c) => {c.apply()},
             // ContractModel::FUTUR(c) => {c.apply()},
-            // ContractModel::FXOUT(c) => {c.apply()},
+            ContractModel::FXOUT(c) => {c.next()},
             // ContractModel::LAM(c) => {c.apply()},
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
             // ContractModel::OPTNS(c) => {c.apply()},
             ContractModel::PAM(c) => {c.next()},
-            // ContractModel::STK(c) => {c.apply()},
+            ContractModel::STK(c) => {c.next()},
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
@@ -333,7 +343,10 @@ impl ContractModel {
             // ContractModel::COM(c) => {c.apply()},
             // ContractModel::CSH(c) => {c.apply()},
             // ContractModel::FUTUR(c) => {c.apply()},
-            // ContractModel::FXOUT(c) => {c.apply()},
+            ContractModel::FXOUT(c) => {
+                let c: PhantomIsoDatetimeW = c.status_date?.convert();
+                Some(c)
+            },
             // ContractModel::LAM(c) => {c.apply()},
             // ContractModel::LAX(c) => {c.apply()},
             // ContractModel::NAM(c) => {c.apply()},
@@ -342,7 +355,10 @@ impl ContractModel {
                 let c: PhantomIsoDatetimeW = c.status_date?.convert();
                 Some(c)
             },
-            // ContractModel::STK(c) => {c.apply()},
+            ContractModel::STK(c) => {
+                let c: PhantomIsoDatetimeW = c.status_date?.convert();
+                Some(c)
+            },
             // ContractModel::SWAPS(c) => {c.apply()},
             // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
@@ -350,7 +366,7 @@ impl ContractModel {
     }
     
     pub fn run(&mut self, to: Option<PhantomIsoDatetimeW>, stop_states_space_date: Option<PhantomIsoDatetimeW>, extract_results: bool) {
-        self.run_schedule(); //to
+        self.run_schedule(to);
         self.run_apply(stop_states_space_date, extract_results);
     }
 

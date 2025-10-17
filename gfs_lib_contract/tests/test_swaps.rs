@@ -41,8 +41,8 @@ fn test_swaps_contract_creation() {
         ).expect("Error creating pam contract");
 
         // Initialisez les termes du contrat avec des données de test
-        // let a = PhantomIsoDatetimeW::from_str("2013-06-14T00:00:00").ok();
-        pam.run_schedule();
+
+        //pam.run_schedule();
         let res = pam.run_apply(None, true); // a
         let res_dispo = res.expect("ok").expect("ok");
 

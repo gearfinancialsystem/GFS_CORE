@@ -22,7 +22,7 @@ pub trait TraitContractModel {
     fn init_state_space(&mut self, maturity: &Option<Rc<MaturityDate>>);
 
 
-    fn init_contract_event_timeline(&mut self); // , to: Option<IsoDatetime>// -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
+    fn init_contract_event_timeline(&mut self, to: Option<PhantomIsoDatetimeW>); // , to: Option<IsoDatetime>// -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>;
 
 
     fn set_status_date(&mut self, status_date: Option<StatusDate>);
