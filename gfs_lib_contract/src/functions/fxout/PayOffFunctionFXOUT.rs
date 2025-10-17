@@ -1,5 +1,6 @@
 #![allow(non_camel_case_types)]
 
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -51,7 +52,7 @@ impl PayOffFunctionFXOUT {
             states: &StatesSpace,
             contract_terms: &ContractTerms,
             contract_structure: &Option<RelatedContracts>,
-            risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+            risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
             day_counter: &Option<DayCountConvention>,
             time_adjuster: &BusinessDayAdjuster,
         ) -> f64 {

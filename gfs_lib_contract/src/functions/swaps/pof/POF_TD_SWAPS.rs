@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -23,9 +24,9 @@ impl TraitPayOffFunction for POF_TD_SWAPS {
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        _day_counter: &Option<DayCountConvention>,
-        _time_adjuster: &BusinessDayAdjuster,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,

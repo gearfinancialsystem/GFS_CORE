@@ -1,8 +1,10 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 use std::str::FromStr;
+use std::sync::Arc;
 use gfs_lib_terms::non_terms::EndTime::EndTime;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::PayOff::Payoff;
@@ -43,6 +45,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::contracts::Fxout::FXOUT;
 use crate::contracts::Pam::PAM;
 use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;
@@ -55,8 +58,8 @@ use crate::util::ResultsStruct::TestResult;
 pub struct STK {
     pub contract_id: ContractID,
     pub contract_terms: ContractTerms,
-    pub risk_factor_external_data: Option<Box<dyn TraitExternalData>>,
-    pub risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
+    pub risk_factor_external_data: Option<Arc<dyn TraitExternalData>>,
+    pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
     pub related_contracts: Option<RelatedContracts>,
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
     pub states_space: StatesSpace,
@@ -78,47 +81,47 @@ impl TraitContractModel for STK {
         }
     }
 
-    fn init_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+    fn init_contract_terms(&mut self, sm: HashMap<String, Value>) {
         //let purchase_date = IsoDatetime::provide(sm, "purchaseDate");
-        let mut quantity = Quantity::provide_from_input_dict(sm, "quantity");
+        let mut quantity = Quantity::provide_from_input_dict(&sm, "quantity");
         if quantity.is_none() {
             quantity = Some(Quantity::new(1.0).expect("ok"));
         }
         // purchase date
-        let purchase_date = PurchaseDate::provide_from_input_dict(sm, "purchaseDate");
+        let purchase_date = PurchaseDate::provide_from_input_dict(&sm, "purchaseDate");
 
         // calendar
-        let calendar = Calendar::provide_rc(sm, "calendar");
+        let calendar = Calendar::provide_rc(&sm, "calendar");
 
         let business_day_adjuster = {
             let calendar_clone = Some(Rc::clone(&calendar));
             BusinessDayAdjuster::provide(
-                sm,
+                &sm,
                 "businessDayConvention",
                 calendar_clone.expect("df")
             )
         };
 
         // price at purchase date
-        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate");
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(&sm, "priceAtPurchaseDate");
         if price_at_purchase_date.is_none() {
             price_at_purchase_date = Some(PriceAtPurchaseDate::new(0.0).expect("ok"));
         }
 
         // price at termination date
-        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate");
+        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(&sm, "priceAtTerminationDate");
         if price_at_termination_date.is_none() {
             price_at_termination_date = Some(PriceAtTerminationDate::new(0.0).expect("ok"));
         }
 
         // market value observec
-        let mut market_value_observed = MarketValueObserved::provide_from_input_dict(sm, "marketValueObserved");
+        let mut market_value_observed = MarketValueObserved::provide_from_input_dict(&sm, "marketValueObserved");
         if market_value_observed.is_none() {
             market_value_observed = Some(MarketValueObserved::new(0.0).expect("ok"));
         }
 
-        let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(sm, "cycleOfDividendPayment");
-        let mut cycle_anchor_date_of_dividend_payment = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "cycleAnchorDateOfDividendPayment");
+        let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(&sm, "cycleOfDividendPayment");
+        let mut cycle_anchor_date_of_dividend_payment = CycleAnchorDateOfDividendPayment::provide_from_input_dict(&sm, "cycleAnchorDateOfDividendPayment");
 
         if cycle_anchor_date_of_dividend_payment.is_none() {
             if cycle_of_dividend_payment.is_none() {
@@ -142,46 +145,46 @@ impl TraitContractModel for STK {
         //     if b.is_none() { a } else { b }
         // };
 
-        let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+        let eomc = EndOfMonthConvention::provide_from_input_dict(&sm, "endOfMonthConvention");
         let end_of_month_convention = if eomc.is_none() {
             EndOfMonthConvention::default()
         } else {eomc.unwrap()};
 
         let ct = ContractTerms {
-            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
-            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
-            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
-            contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
-            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
-            currency: Currency::provide_from_input_dict(sm, "currency"),
-            quantity: Quantity::provide_from_input_dict(sm, "quantity"),
+            contract_type: ContractType::provide_from_input_dict(&sm, "contractType"),
+            contract_id: ContractID::provide_from_input_dict(&sm, "contractID"),
+            status_date: StatusDate::provide_from_input_dict(&sm, "statusDate"),
+            contract_role: ContractRole::provide_from_input_dict(&sm, "contractRole"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(&sm, "CounterpartyID"),
+            currency: Currency::provide_from_input_dict(&sm, "currency"),
+            quantity: Quantity::provide_from_input_dict(&sm, "quantity"),
             purchase_date: purchase_date,
             price_at_purchase_date: price_at_purchase_date,
-            termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
+            termination_date: TerminationDate::provide_from_input_dict(&sm, "terminationDate"),
             price_at_termination_date: price_at_termination_date,
-            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(&sm, "marketObjectCode"),
             market_value_observed: market_value_observed,
             calendar: calendar,
             business_day_adjuster: business_day_adjuster,
             end_of_month_convention: end_of_month_convention,
             cycle_of_dividend_payment: cycle_of_dividend_payment,
             cycle_anchor_date_of_dividend_payment: cycle_anchor_date_of_dividend_payment,
-            market_object_code_of_dividends: MarketObjectCodeOfDividends::provide_from_input_dict(sm, "marketObjectCodeOfDividends"),
+            market_object_code_of_dividends: MarketObjectCodeOfDividends::provide_from_input_dict(&sm, "marketObjectCodeOfDividends"),
             ..Default::default()
         };
 
         self.contract_terms = ct;
     }
 
-    fn init_risk_factor_external_data(&mut self, risk_factor_external_data: Option<Box<dyn TraitExternalData>>) {
+    fn init_risk_factor_external_data(&mut self, risk_factor_external_data: Option<Arc<dyn TraitExternalData>>) {
         self.risk_factor_external_data = risk_factor_external_data;
     }
 
-    fn init_risk_factor_external_event(&mut self, risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>) {
+    fn init_risk_factor_external_event(&mut self, risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>) {
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: &HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 
@@ -484,5 +487,22 @@ impl Clone for STK {
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
         }
+    }
+}
+
+// Implémentation manuelle de PartialEq
+impl PartialEq for STK {
+    fn eq(&self, other: &Self) -> bool {
+        self.contract_id == other.contract_id &&
+            self.contract_terms == other.contract_terms
+    }
+}
+
+impl Eq for STK {}
+
+impl Hash for STK {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // ça veut dire que le contract ID doit etre absolument unique
+        self.contract_id.hash(state);
     }
 }

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -24,8 +25,8 @@ impl TraitPayOffFunction for POF_TD_LAM {
         time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
         contract_terms: &ContractTerms,
-        contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

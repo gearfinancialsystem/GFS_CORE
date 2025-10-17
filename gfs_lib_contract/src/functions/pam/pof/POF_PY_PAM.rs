@@ -1,4 +1,4 @@
-
+use std::sync::Arc;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -25,7 +25,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {

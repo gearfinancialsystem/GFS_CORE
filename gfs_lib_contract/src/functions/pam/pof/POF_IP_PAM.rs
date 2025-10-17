@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -22,9 +23,9 @@ impl TraitPayOffFunction for POF_IP_PAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
-        _contract_terms: &ContractTerms,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -46,7 +47,7 @@ impl TraitPayOffFunction for POF_IP_PAM {
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
-            _contract_terms,
+            contract_terms,
             time,
             states
         );

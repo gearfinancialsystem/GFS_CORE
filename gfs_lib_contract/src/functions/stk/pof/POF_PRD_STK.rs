@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -21,9 +22,9 @@ impl TraitPayOffFunction for POF_PRD_STK {
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        _day_counter: &Option<DayCountConvention>,
-        _time_adjuster: &BusinessDayAdjuster,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be some");
         let quantity = contract_terms.quantity.clone().expect("quantity should always be some");

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -28,9 +29,9 @@ impl TraitStateTransitionFunction for STF_FP_PAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        _contract_terms: &ContractTerms,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {

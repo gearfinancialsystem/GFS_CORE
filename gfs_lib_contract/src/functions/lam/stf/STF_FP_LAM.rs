@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -25,9 +26,9 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        _contract_terms: &ContractTerms,
-        contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        contract_terms: &ContractTerms,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {

@@ -1,4 +1,4 @@
-
+use std::sync::Arc;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
@@ -28,7 +28,7 @@ impl TraitStateTransitionFunction for STF_AD_PAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {

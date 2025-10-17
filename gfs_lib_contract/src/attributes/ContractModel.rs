@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
@@ -20,6 +21,7 @@ use crate::contracts::Fxout::FXOUT;
 // use crate::contracts::Nam::NAM;
 // use crate::contracts::Optns::OPTNS;
 use crate::contracts::Stk::STK;
+use crate::events::ContractEvent::ContractEvent;
 // use crate::contracts::Swppv::SWPPV;
 // use crate::contracts::Ump::UMP;
 //use crate::external::RiskFactorModel::RiskFactorModel;
@@ -28,7 +30,7 @@ use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitExternalEvent::TraitExternalEvent;
 use crate::util::ResultsStruct::TestResult;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ContractModel {
     // ANN(ANN),
     // BCS(BCS),
@@ -54,9 +56,9 @@ pub enum ContractModel {
 
 impl ContractModel {
     
-    pub fn new(sm_terms: &HashMap<String, Value>,
-               risk_factor_external_data : Option<Box<dyn TraitExternalData>>,
-               risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
+    pub fn new(sm_terms: HashMap<String, Value>,
+               risk_factor_external_data : Option<Arc<dyn TraitExternalData>>,
+               risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
                ) -> Result<ContractModel, String> { // result_set_toogle: bool
         let ct = sm_terms.get("contractType").unwrap().as_string().unwrap().as_str();
         match ct {
@@ -144,11 +146,11 @@ impl ContractModel {
             "FXOUT" => {
                 Ok(Self::FXOUT({
                     let mut c = FXOUT::new();
-                    c.init_contract_terms(sm_terms);
+                    c.init_contract_terms(sm_terms.clone());
                     //c.set_result_vec(result_set_toogle);
                     c.init_risk_factor_external_data(risk_factor_external_data);
                     c.init_risk_factor_external_event(risk_factor_external_event);
-                    c.init_related_contracts(sm_terms);
+                    c.init_related_contracts(sm_terms.clone());
                     c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
                     c
                 })) },
@@ -191,11 +193,11 @@ impl ContractModel {
             "PAM" => {
                 Ok(Self::PAM({
                     let mut c = PAM::new();
-                    c.init_contract_terms(sm_terms);
+                    c.init_contract_terms(sm_terms.clone());
                     //c.set_result_vec(result_set_toogle);
                     c.init_risk_factor_external_data(risk_factor_external_data);
                     c.init_risk_factor_external_event(risk_factor_external_event);
-                    c.init_related_contracts(sm_terms);
+                    c.init_related_contracts(sm_terms.clone());
                     c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
                     c
                 }))
@@ -203,10 +205,10 @@ impl ContractModel {
             "STK" => {
                 Ok(Self::STK({
                     let mut c = STK::new();
-                    c.init_contract_terms(sm_terms);
+                    c.init_contract_terms(sm_terms.clone());
                     c.init_risk_factor_external_data(risk_factor_external_data);
                     c.init_risk_factor_external_event(risk_factor_external_event);
-                    c.init_related_contracts(sm_terms);
+                    c.init_related_contracts(sm_terms.clone());
                     c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
                     c
                 }))
@@ -214,10 +216,10 @@ impl ContractModel {
             "SWAPS" => {
                 Ok(Self::SWAPS({
                     let mut c = SWAPS::new();
-                    c.init_contract_terms(sm_terms);
+                    c.init_contract_terms(sm_terms.clone());
                     c.init_risk_factor_external_data(risk_factor_external_data);
                     c.init_risk_factor_external_event(risk_factor_external_event);
-                    c.init_related_contracts(sm_terms);
+                    c.init_related_contracts(sm_terms.clone());
                     c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
                     c
                 }))
@@ -367,6 +369,54 @@ impl ContractModel {
                 let c: PhantomIsoDatetimeW = c.status_date?.convert();
                 Some(c)
             },
+            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::UMP(c) => {c.apply()},
+        }
+    }
+    
+    pub fn get_current_timeline(&self) -> Vec<ContractEvent> {
+        match self {
+            // ContractModel::ANN(c) => {c.apply()},
+            // ContractModel::BCS(c) => {c.apply()},
+            // ContractModel::CAPFL(c) => {c.apply()},
+            // ContractModel::CEC(c) => {c.apply()},
+            // ContractModel::CEG(c) => {c.apply()},
+            // ContractModel::CLM(c) => {c.apply()},
+            // ContractModel::COM(c) => {c.apply()},
+            // ContractModel::CSH(c) => {c.apply()},
+            // ContractModel::FUTUR(c) => {c.apply()},
+            ContractModel::FXOUT(c) => { c.event_timeline.clone() },
+            // ContractModel::LAM(c) => {c.apply()},
+            // ContractModel::LAX(c) => {c.apply()},
+            // ContractModel::NAM(c) => {c.apply()},
+            // ContractModel::OPTNS(c) => {c.apply()},
+            ContractModel::PAM(c) => { c.event_timeline.clone() },
+            ContractModel::STK(c) => { c.event_timeline.clone() },
+            ContractModel::SWAPS(c) => { c.event_timeline.clone() },
+            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::UMP(c) => {c.apply()},
+        }
+    }
+
+    pub fn sort_current_timeline(&mut self) {
+        match self {
+            // ContractModel::ANN(c) => {c.apply()},
+            // ContractModel::BCS(c) => {c.apply()},
+            // ContractModel::CAPFL(c) => {c.apply()},
+            // ContractModel::CEC(c) => {c.apply()},
+            // ContractModel::CEG(c) => {c.apply()},
+            // ContractModel::CLM(c) => {c.apply()},
+            // ContractModel::COM(c) => {c.apply()},
+            // ContractModel::CSH(c) => {c.apply()},
+            // ContractModel::FUTUR(c) => {c.apply()},
+            ContractModel::FXOUT(c) => { c.sort_events_timeline() },
+            // ContractModel::LAM(c) => {c.apply()},
+            // ContractModel::LAX(c) => {c.apply()},
+            // ContractModel::NAM(c) => {c.apply()},
+            // ContractModel::OPTNS(c) => {c.apply()},
+            ContractModel::PAM(c) => { c.sort_events_timeline()},
+            ContractModel::STK(c) => { c.sort_events_timeline() },
+            ContractModel::SWAPS(c) => { c.sort_events_timeline() },
             // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
         }

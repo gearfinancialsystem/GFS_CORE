@@ -11,7 +11,7 @@ use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
+use std::sync::Arc;
 
 #[derive(Clone)]
 #[allow(non_camel_case_types)]
@@ -39,11 +39,11 @@ impl TraitStateTransitionFunction for STF_NET_SWAPS {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        let e1_states = contract_structure.unwrap().contract_structure
+        let e1_states = contract_structure.unwrap().states();
         let e2_states = self.e2.clone().unwrap().states();
 
         let notional_principal_e1 = e1_states.notional_principal.expect("should be some");

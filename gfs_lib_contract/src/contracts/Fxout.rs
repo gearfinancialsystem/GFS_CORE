@@ -2,8 +2,10 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 use std::str::FromStr;
+use std::sync::Arc;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::PayOff::Payoff;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
@@ -54,8 +56,8 @@ use crate::util::ResultsStruct::TestResult;
 pub struct FXOUT {
     pub contract_id: ContractID,
     pub contract_terms: ContractTerms,
-    pub risk_factor_external_data: Option<Box<dyn TraitExternalData>>,
-    pub risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>,
+    pub risk_factor_external_data: Option<Arc<dyn TraitExternalData>>,
+    pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
     pub related_contracts: Option<RelatedContracts>,
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
     pub states_space: StatesSpace,
@@ -77,11 +79,11 @@ impl TraitContractModel for FXOUT {
         }
     }
 
-    fn init_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+    fn init_contract_terms(&mut self, sm: HashMap<String, Value>) {
 
-        let calendar = Calendar::provide_rc(sm, "calendar");
+        let calendar = Calendar::provide_rc(&sm, "calendar");
 
-        let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
+        let maturity_date_tmp = MaturityDate::provide_from_input_dict(&sm, "maturityDate");
         let maturity_date = if let Some(a) = maturity_date_tmp {
             Some(Rc::new(a))
         } else {
@@ -92,37 +94,37 @@ impl TraitContractModel for FXOUT {
         let business_day_adjuster = {
             let calendar_clone = Some(Rc::clone(&calendar));
             BusinessDayAdjuster::provide(
-                sm,
+                &sm,
             "businessDayAdjuster",
             calendar_clone.unwrap()
         )
         };
-        let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
+        let eomc = EndOfMonthConvention::provide_from_input_dict(&sm, "endOfMonthConvention");
         let end_of_month_convention = if eomc.is_none() {
             EndOfMonthConvention::default()
         } else {eomc.unwrap()};
 
         // purchase date
-        let purchase_date = PurchaseDate::provide_from_input_dict(sm, "purchaseDate");
+        let purchase_date = PurchaseDate::provide_from_input_dict(&sm, "purchaseDate");
 
         // priceatpurchasedate
-        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate");
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(&sm, "priceAtPurchaseDate");
         if price_at_purchase_date.is_none() {
             price_at_purchase_date = PriceAtPurchaseDate::new(0.0).ok();
         }
         // termination date
-        let termination_date = TerminationDate::provide_from_input_dict(sm, "terminationDate");
+        let termination_date = TerminationDate::provide_from_input_dict(&sm, "terminationDate");
 
         // price at termination date
-        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate");
+        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(&sm, "priceAtTerminationDate");
         if price_at_termination_date.is_none() {
             price_at_termination_date = PriceAtTerminationDate::new(0.0).ok();
         }
         // delivery settlement
-        let delivery_settlement = DeliverySettlement::provide_from_input_dict(sm, "deliverySettlement");
+        let delivery_settlement = DeliverySettlement::provide_from_input_dict(&sm, "deliverySettlement");
 
         // settlement period
-        let mut settlement_period = SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod");
+        let mut settlement_period = SettlementPeriod::provide_from_input_dict(&sm, "settlementPeriod");
         if settlement_period.is_none() {
             settlement_period = SettlementPeriod::from_str("P0D").ok();
         }
@@ -131,17 +133,17 @@ impl TraitContractModel for FXOUT {
             calendar: calendar,
             business_day_adjuster: business_day_adjuster,
             end_of_month_convention: end_of_month_convention,
-            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
-            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
-            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
-            contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
-            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
-            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
-            currency: Currency::provide_from_input_dict(sm, "currency"),
-            currency2: Currency2::provide_from_input_dict(sm, "currency2"),
+            contract_type: ContractType::provide_from_input_dict(&sm, "contractType"),
+            contract_id: ContractID::provide_from_input_dict(&sm, "contractID"),
+            status_date: StatusDate::provide_from_input_dict(&sm, "statusDate"),
+            contract_role: ContractRole::provide_from_input_dict(&sm, "contractRole"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(&sm, "CounterpartyID"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(&sm, "marketObjectCode"),
+            currency: Currency::provide_from_input_dict(&sm, "currency"),
+            currency2: Currency2::provide_from_input_dict(&sm, "currency2"),
             maturity_date: maturity_date,
-            notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
-            notional_principal2: NotionalPrincipal2::provide_from_input_dict(sm, "notionalPrincipal2"),
+            notional_principal: NotionalPrincipal::provide_from_input_dict(&sm, "notionalPrincipal"),
+            notional_principal2: NotionalPrincipal2::provide_from_input_dict(&sm, "notionalPrincipal2"),
             purchase_date: purchase_date,
             price_at_purchase_date: price_at_purchase_date,
             termination_date: termination_date,
@@ -155,15 +157,15 @@ impl TraitContractModel for FXOUT {
         self.contract_terms = ct
     }
 
-    fn init_risk_factor_external_data(&mut self, risk_factor_external_data: Option<Box<dyn TraitExternalData>>) {
+    fn init_risk_factor_external_data(&mut self, risk_factor_external_data: Option<Arc<dyn TraitExternalData>>) {
         self.risk_factor_external_data = risk_factor_external_data;
     }
 
-    fn init_risk_factor_external_event(&mut self, risk_factor_external_event: Option<Box<dyn TraitExternalEvent>>) {
+    fn init_risk_factor_external_event(&mut self, risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>) {
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: &HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 
@@ -500,5 +502,22 @@ impl Clone for FXOUT {
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
         }
+    }
+}
+
+// Implémentation manuelle de PartialEq
+impl PartialEq for FXOUT {
+    fn eq(&self, other: &Self) -> bool {
+        self.contract_id == other.contract_id &&
+            self.contract_terms == other.contract_terms
+    }
+}
+
+impl Eq for FXOUT {}
+
+impl Hash for FXOUT {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // ça veut dire que le contract ID doit etre absolument unique
+        self.contract_id.hash(state);
     }
 }

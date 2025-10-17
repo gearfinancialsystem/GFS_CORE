@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::events::ContractEvent::ContractEvent;
 use crate::attributes::ContractTerms::{ContractTerms};
 use crate::states_space::StatesSpace::StatesSpace;
@@ -31,13 +32,13 @@ impl TraitPayOffFunction for POF_NET_SWAPS {
     }
     fn eval(
         &self,
-        _time: &PhantomIsoDatetimeW,
-        _states: &StatesSpace,
-        _contract_terms: &ContractTerms,
+        time: &PhantomIsoDatetimeW,
+        states: &StatesSpace,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        _day_counter: &Option<DayCountConvention>,
-        _time_adjuster: &BusinessDayAdjuster,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
 
         self.e1.clone().unwrap().payoff.unwrap().value() +

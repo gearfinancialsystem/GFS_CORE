@@ -1,4 +1,4 @@
-
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -12,7 +12,7 @@ impl CommonUtils {
 
 
     pub fn settlementCurrencyFxRate(
-        risk_factor_model: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_model: &Option<Arc<dyn TraitExternalData>>,
         model: &ContractTerms, 
         time: &PhantomIsoDatetimeW,
         _state: &StatesSpace) -> f64 

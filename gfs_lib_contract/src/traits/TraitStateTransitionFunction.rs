@@ -1,4 +1,5 @@
 use std::hash::Hash;
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -17,7 +18,7 @@ pub trait TraitStateTransitionFunction {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         related_contracts: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     );

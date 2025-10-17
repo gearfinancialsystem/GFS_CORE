@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -18,13 +19,13 @@ impl TraitPayOffFunction for POF_CD_PAM {
     }
     fn eval(
         &self,
-        _time: &PhantomIsoDatetimeW,
-        _states: &StatesSpace,
-        _contract_terms: &ContractTerms,
+        time: &PhantomIsoDatetimeW,
+        states: &StatesSpace,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        _day_counter: &Option<DayCountConvention>,
-        _time_adjuster: &BusinessDayAdjuster,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         0.0
     }

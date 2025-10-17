@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -25,11 +26,11 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        _contract_terms: &ContractTerms,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        _day_counter: &Option<DayCountConvention>,
-        _time_adjuster: &BusinessDayAdjuster,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>,
+        time_adjuster: &BusinessDayAdjuster,
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 
         // Set state values to zero at maturity

@@ -115,8 +115,7 @@ use gfs_lib_terms::terms::grp_settlement::SettlementCurrency::SettlementCurrency
 use gfs_lib_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
 
 
-#[derive(PartialEq, Debug, Clone)]
-#[derive(Default)] // Toutes les options sont None
+#[derive(PartialEq, Debug, Clone, Default)]  // Toutes les options sont None
 pub struct ContractTerms {
     pub accrued_interest: Option<AccruedInterest>,
     pub accrued_interest2: Option<AccruedInterest2>,

@@ -1,6 +1,7 @@
 pub mod common_test_funcs;
 
 use std::str::FromStr;
+use std::sync::Arc;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
@@ -36,8 +37,8 @@ fn test_fxout_contract_creation() {
         // let testaa = contract_data_observed.clone().state_at("USD_SWP".to_string(), &PhantomIsoDatetimeW::from_str("2013-02-01T00:00:00").unwrap() );
 
         let mut fxout = ContractModel::new(
-            &contract_terms_dict,
-            Some(Box::new(contract_data_observed)),
+            contract_terms_dict.clone(),
+            Some(Arc::new(contract_data_observed)),
             None,
         ).expect("Error creating fxout contract");
 

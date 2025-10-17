@@ -1,5 +1,6 @@
 pub mod common_test_funcs;
 
+use std::sync::Arc;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
 use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_tests};
@@ -35,8 +36,8 @@ fn test_pam_contract_creation() {
         // let testaa = contract_data_observed.clone().state_at("USD_SWP".to_string(), &PhantomIsoDatetimeW::from_str("2013-02-01T00:00:00").unwrap() );
 
         let mut pam = ContractModel::new(
-            &contract_terms_dict,
-            Some(Box::new(contract_data_observed)),
+            contract_terms_dict.clone(),
+            Some(Arc::new(contract_data_observed)),
             None,
         ).expect("Error creating pam contract");
 
