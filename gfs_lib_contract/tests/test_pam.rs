@@ -31,7 +31,7 @@ fn test_pam_contract_creation() {
         let contract_terms_dict = load_test_case_terms(&pathx, test_id).unwrap();
         let contract_results_dict = load_test_case_results(&curr_test).unwrap();
         let contract_data_observed = load_test_case_dataobserved(&curr_test).unwrap();
-
+        
         // let testaa = contract_data_observed.clone().state_at("USD_SWP".to_string(), &PhantomIsoDatetimeW::from_str("2013-02-01T00:00:00").unwrap() );
 
         let mut pam = ContractModel::new(

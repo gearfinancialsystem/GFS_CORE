@@ -1,3 +1,4 @@
+use std::cmp::PartialEq;
 use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::BufReader;
@@ -6,7 +7,7 @@ use serde_json::{self, Value as JsonValue};
 use gfs_lib_contract::traits::TraitExternalData::TraitExternalData;
 use gfs_lib_contract::util::ResultsStruct::TestResult;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use gfs_lib_types::types::Value::Value;
+use gfs_lib_types::types::Value::{ContractStructure, Value};
 
 // Fonction de conversion
 fn convert_json_value(value: &JsonValue) -> Value {
@@ -50,6 +51,57 @@ pub fn load_test_case_terms(
     } else {
         Err("Invalid 'terms' format".into())
     }
+}
+
+pub fn load_test_case_terms2(
+    test_case: &TestCase,
+) -> Result<HashMap<String, Value>, Box<dyn std::error::Error>> {
+
+    let terms = test_case.clone().terms.0;
+
+    let mut result_map = HashMap::new();
+    for (key, value) in terms {
+        let val_to_ins = match value {
+            TermsValue::String(v) => {
+                Value::Vstring(v.clone())
+            },
+            TermsValue::ContractStructure(v) => {
+                Value::VvecCs(v)
+            },
+        };
+
+        result_map.insert(key.clone(), val_to_ins);
+    }
+    Ok(result_map)
+
+}
+
+
+pub fn load_test_case_contract_structure(
+    test_case: &TestCase,
+) -> Option<Vec<ContractStructure>> {
+
+    let a = test_case.clone().terms.clone().0;
+    let b = a.get("contractStructure");
+
+    if let Some(c) = b.cloned() {
+        let cs: Result<Vec<ContractStructure>, String> = match c {
+            TermsValue::ContractStructure(v) => Ok(v),
+            _ => Err("Invalid 'contractStructure' format".into())
+        };
+        match cs {
+            Ok(v) => {
+                Some(v)
+            },
+            Err(e) => {
+                println!("Erreur : {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    }
+
 }
 
 // #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -103,31 +155,28 @@ impl TraitExternalData for DataObserved {
     }
 }
 
-#[allow(non_snake_case)]
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ContractStructure {
-    object: HashMap<String, String>,
-    referenceType: String,
-    referenceRole: String
-}
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(untagged)]
 pub enum TermsValue {
     String(String),
     ContractStructure(Vec<ContractStructure>),
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Terms(HashMap<String, TermsValue>);
+
 #[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TestCase {
     pub identifier: String,
-    pub terms: HashMap<String, TermsValue>,
+    pub terms: Terms,
     pub to: String,
     pub dataObserved: DataObserved, // Pas une HashMap imbriquée, mais une HashMap<String, DataStruct>
     pub eventsObserved: Vec<HashMap<String, String>>,
     pub results: Vec<TestResult>,
 }
+
 pub fn load_test_case_results(
     test_case: &TestCase,
 ) -> Result<Vec<TestResult>, Box<dyn std::error::Error>> {

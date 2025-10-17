@@ -9,4 +9,6 @@ pub mod ContractTerms;
 pub mod RelatedContracts;
 pub mod ContractElem;
 pub mod Dependence;
-mod ContractRules;
+pub mod ContractRules;
+
+

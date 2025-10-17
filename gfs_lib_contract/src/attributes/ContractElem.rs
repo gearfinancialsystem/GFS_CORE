@@ -3,6 +3,6 @@ use crate::attributes::Dependence::Dependence;
 
 #[derive(Debug, Clone)]
 pub struct ContractElem {
-    contract_elem: ContractModel,
-    dependence: Dependence
+    pub contract_elem: ContractModel,
+    pub dependence: Dependence
 }

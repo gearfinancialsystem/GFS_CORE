@@ -1,13 +1,23 @@
 use std::collections::HashMap;
 use std::fmt;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Debug, Clone)]
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct ContractStructure {
+    pub object: HashMap<String, String>, // <String, String>
+    pub referenceType: String,
+    pub referenceRole: String
+}
+
+#[derive(PartialEq, Serialize, Deserialize, Debug, Clone)]
 pub enum Value {
     Vstring(String),
     VhashMap(HashMap<String, Value>),
     VvecVal(Vec<Value>),
     Vf64(f64),
     Vbool(bool),
+    VvecCs(Vec<ContractStructure>),
     None,
 }
 
@@ -40,7 +50,8 @@ impl fmt::Display for Value {
                     write!(f, "{}: {}", key, value)?;
                 }
                 write!(f, "}}")
-            }
+            },
+            Value::VvecCs(v) => {write!(f, "ok")}
         }
     }
 }
@@ -176,6 +187,14 @@ impl Value {
     /// Consomme la valeur et retourne la Vec si c'en est une
     pub fn into_vec(self) -> Option<Vec<Value>> {
         if let Value::VvecVal(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+    /// Consomme la valeur et retourne la Vec si c'en est une
+    pub fn into_cs(self) -> Option<Vec<ContractStructure>> {
+        if let Value::VvecCs(v) = self {
             Some(v)
         } else {
             None
@@ -335,6 +354,7 @@ impl Value {
             },
             Value::Vbool(m) => m.to_string(),
             Value::None => "null".to_string(),
+            Value::VvecCs(v) => "ok".to_string(),
         }
     }
 
@@ -353,6 +373,13 @@ impl Value {
             },
             Value::Vbool(m) => Value::Vbool(*m),
             Value::None => Value::None,
+            Value::VvecCs(v) => Value::VvecCs(
+                v.iter().map(|x| ContractStructure {
+                    object: x.object.clone(),
+                    referenceType: x.referenceType.clone(),
+                    referenceRole: x.referenceRole.clone(),
+                }).collect()
+            )
         }
     }
     // =========================
