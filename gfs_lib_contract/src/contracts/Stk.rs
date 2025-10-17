@@ -80,32 +80,67 @@ impl TraitContractModel for STK {
 
     fn init_contract_terms(&mut self, sm: &HashMap<String, Value>) {
         //let purchase_date = IsoDatetime::provide(sm, "purchaseDate");
+        let mut quantity = Quantity::provide_from_input_dict(sm, "quantity");
+        if quantity.is_none() {
+            quantity = Some(Quantity::new(1.0).expect("ok"));
+        }
+        // purchase date
         let purchase_date = PurchaseDate::provide_from_input_dict(sm, "purchaseDate");
 
+        // calendar
         let calendar = Calendar::provide_rc(sm, "calendar");
-
-        //VERIFIER PAS PRESENT DANS LA LISTE DES TERMES
-        let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(sm, "cycleOfDividendPayment");
 
         let business_day_adjuster = {
             let calendar_clone = Some(Rc::clone(&calendar));
             BusinessDayAdjuster::provide(
                 sm,
-                "BusinessDayAdjuster",
+                "businessDayConvention",
                 calendar_clone.expect("df")
             )
         };
 
-        let cycle_anchor_date_of_dividend_payment = {
-            let a = if cycle_of_dividend_payment.is_none() {
-                None
-            } else {
+        // price at purchase date
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate");
+        if price_at_purchase_date.is_none() {
+            price_at_purchase_date = Some(PriceAtPurchaseDate::new(0.0).expect("ok"));
+        }
+
+        // price at termination date
+        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate");
+        if price_at_termination_date.is_none() {
+            price_at_termination_date = Some(PriceAtTerminationDate::new(0.0).expect("ok"));
+        }
+
+        // market value observec
+        let mut market_value_observed = MarketValueObserved::provide_from_input_dict(sm, "marketValueObserved");
+        if market_value_observed.is_none() {
+            market_value_observed = Some(MarketValueObserved::new(0.0).expect("ok"));
+        }
+
+        let cycle_of_dividend_payment = CycleOfDividendPayment::provide_from_input_dict(sm, "cycleOfDividendPayment");
+        let mut cycle_anchor_date_of_dividend_payment = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "cycleAnchorDateOfDividendPayment");
+
+        if cycle_anchor_date_of_dividend_payment.is_none() {
+            if cycle_of_dividend_payment.is_none() {
+                cycle_anchor_date_of_dividend_payment = None;
+            }
+            else {
                 let purchase_date_str = purchase_date.clone().unwrap().value().to_string();
-                CycleAnchorDateOfDividendPayment::from_str(purchase_date_str.as_str()).ok()
-            };
-            let b = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "CycleAnchorDateOfDividendPayment");
-            if b.is_none() { a } else { b }
-        };
+                cycle_anchor_date_of_dividend_payment = Some(CycleAnchorDateOfDividendPayment::from_str(purchase_date_str.as_str()).expect("ok"));
+
+            }
+        }
+
+        // let cycle_anchor_date_of_dividend_payment = {
+        //     let a = if cycle_of_dividend_payment.is_none() {
+        //         None
+        //     } else {
+        //         let purchase_date_str = purchase_date.clone().unwrap().value().to_string();
+        //         CycleAnchorDateOfDividendPayment::from_str(purchase_date_str.as_str()).ok()
+        //     };
+        //     let b = CycleAnchorDateOfDividendPayment::provide_from_input_dict(sm, "CycleAnchorDateOfDividendPayment");
+        //     if b.is_none() { a } else { b }
+        // };
 
         let eomc = EndOfMonthConvention::provide_from_input_dict(sm, "endOfMonthConvention");
         let end_of_month_convention = if eomc.is_none() {
@@ -121,11 +156,11 @@ impl TraitContractModel for STK {
             currency: Currency::provide_from_input_dict(sm, "currency"),
             quantity: Quantity::provide_from_input_dict(sm, "quantity"),
             purchase_date: purchase_date,
-            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
+            price_at_purchase_date: price_at_purchase_date,
             termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
-            price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
+            price_at_termination_date: price_at_termination_date,
             market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
-            market_value_observed: MarketValueObserved::provide_from_input_dict(sm, "marketValueObserved"),
+            market_value_observed: market_value_observed,
             calendar: calendar,
             business_day_adjuster: business_day_adjuster,
             end_of_month_convention: end_of_month_convention,
@@ -216,6 +251,7 @@ impl TraitContractModel for STK {
                 )
             }
         }
+
         if model.termination_date.is_some(){
             let termination: ContractEvent = EventFactory::create_event(
                 &model.termination_date.convert_option::<ScheduleTime>(),
@@ -227,24 +263,13 @@ impl TraitContractModel for STK {
                 &model.contract_id,
             );
             events.retain(|e| {
-                e.compare_to(&termination) != 1
+                !(e.compare_to(&termination) == 1)
             });
             events.push(termination);
         }
+        // remove all pre-status date events
         let tmpe = EventFactory::create_event(
             &Some(model.status_date.clone().unwrap().value().convert::<ScheduleTime>()),
-            &EventType::TD,
-            &model.currency,
-            None,
-            None,
-            &None,
-            &model.contract_id
-        );
-        events.retain(|e| {
-            e.compare_to({ &tmpe }) != -1
-        });
-        let tmpe = EventFactory::create_event(
-            &Some(to.clone().clone().unwrap().convert::<ScheduleTime>()),
             &EventType::AD,
             &model.currency,
             None,
@@ -253,11 +278,33 @@ impl TraitContractModel for STK {
             &model.contract_id
         );
         events.retain(|e| {
-            e.compare_to({ &tmpe }) != 1
+            !(e.compare_to(&tmpe) == -1)
         });
 
-        events.sort();
+        // remove all post to-date events
+        if to.is_some() {
+            let tmpe = EventFactory::create_event(
+                &Some(to.clone().clone().unwrap().convert::<ScheduleTime>()),
+                &EventType::AD,
+                &model.currency,
+                None,
+                None,
+                &None,
+                &model.contract_id
+            );
+            events.retain(|e| {
+                !(e.compare_to({ &tmpe }) == 1)
+            });
+        }
+
+
+
         self.event_timeline = events.clone();
+        self.sort_events_timeline();
+        // for e in self.event_timeline.iter() {
+        //     let aa = e.event_time.unwrap().to_string();
+        //     println!("{:?}", aa);
+        // }
     }
 
     fn set_status_date(&mut self, status_date: Option<StatusDate>) {
@@ -369,6 +416,7 @@ impl TraitContractModel for STK {
         }
         // Return evaluated events
         self.event_timeline = events.clone();
+        self.sort_events_timeline();
 
         // recup des resultats
         if extract_results == false {
@@ -397,6 +445,7 @@ impl TraitContractModel for STK {
             });
             return Some(Ok(result_vec));
         }
+
     }
 
     fn sort_events_timeline(&mut self) {

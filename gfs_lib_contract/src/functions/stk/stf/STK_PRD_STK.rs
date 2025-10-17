@@ -10,6 +10,7 @@ use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_PRD_STK;
 
 impl TraitStateTransitionFunction for STF_PRD_STK {

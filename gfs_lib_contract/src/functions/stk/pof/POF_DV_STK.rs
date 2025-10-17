@@ -11,6 +11,7 @@ use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_DV_STK;
 
 
@@ -37,17 +38,25 @@ impl TraitPayOffFunction for POF_DV_STK {
             states
         );
 
-        let mut cbv = None;
+        // let mut cbv = None;
         if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+            let cbv = rfm.state_at(
                 contract_terms.market_object_code_of_dividends.clone().unwrap().value(),
                 time,
             );
-        } else {
-            cbv = None
+            // println!("cbv: {:?}", cbv);
+            if cbv.is_some() {
+                return settlement_currency_fx_rate * contract_role.role_sign() * quantity.value() * cbv.unwrap()
+            } else {
+                return settlement_currency_fx_rate * contract_role.role_sign() * quantity.value()
+            }
+        }
+        else {
+            return settlement_currency_fx_rate * contract_role.role_sign() * quantity.value()
         }
 
-        settlement_currency_fx_rate * contract_role.role_sign() * quantity.value() * cbv.unwrap()
+
+        // settlement_currency_fx_rate * contract_role.role_sign() * quantity.value() * cbv.unwrap()
         
     }
 }

@@ -11,6 +11,7 @@ use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_CD_FXOUT;
 
 impl TraitStateTransitionFunction for STF_CD_FXOUT {

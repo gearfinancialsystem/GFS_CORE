@@ -4,6 +4,17 @@ use gfs_lib_contract::attributes::ContractModel::ContractModel;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
 use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_tests};
 
+fn extract_numbers_with_original(strings: Vec<&String>) -> Vec<(&str, i32)> {
+    strings
+        .iter()
+        .map(|s| {
+            let num_str: String = s.chars().filter(|c| c.is_ascii_digit()).collect();
+            let num = num_str.parse::<i32>().unwrap();
+            (s.as_str(), num)
+        })
+        .collect()
+}
+
 
 #[test]
 fn test_pam_contract_creation() {
@@ -11,9 +22,10 @@ fn test_pam_contract_creation() {
 
     let pathx = "tests/test_sets/actus-tests-pam-converted.json";
     let d_dict = load_tests(pathx);
-    let test_vec= d_dict.keys().collect::<Vec<&String>>();
-    // let test_vec = vec!["pam01", "pam02"]; // a remplacer avec les cles du dico
-    for test_id in test_vec {
+    let mut test_vec = extract_numbers_with_original(d_dict.keys().collect::<Vec<&String>>());
+    test_vec.sort_by(|a, b| a.1.cmp(&b.1));
+
+    for (test_id, _) in test_vec {
         let curr_test = load_test_case(test_id, &d_dict).unwrap();
         //let json_value = test_read_and_parse_json(pathx).unwrap();
         let contract_terms_dict = load_test_case_terms(&pathx, test_id).unwrap();

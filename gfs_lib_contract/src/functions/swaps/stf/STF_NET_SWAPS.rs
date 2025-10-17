@@ -13,6 +13,7 @@ use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 
+#[derive(Clone)]
 #[allow(non_camel_case_types)]
 pub struct STF_NET_SWAPS {
     pub e1: Option<ContractEvent>,

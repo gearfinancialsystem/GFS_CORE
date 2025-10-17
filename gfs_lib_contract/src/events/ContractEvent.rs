@@ -107,7 +107,9 @@ impl ContractEvent {
         // let a = (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64;
         let lhs = self.epoch_offset.clone().unwrap().value() as i64;
         let rhs = other.epoch_offset.clone().unwrap().value() as i64;
-        (lhs - rhs).signum() // as i64
+        let a = (lhs - rhs).signum(); // as i64
+        // println!("ok");
+        (lhs - rhs).signum()
     }
   
     pub fn copy(&self) -> Self {

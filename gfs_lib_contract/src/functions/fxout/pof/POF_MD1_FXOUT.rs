@@ -9,6 +9,7 @@ use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_MD1_FXOUT;
 
 impl TraitPayOffFunction for POF_MD1_FXOUT {

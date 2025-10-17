@@ -94,6 +94,7 @@ impl TraitExternalData for DataObserved {
         let a = self.0.get(&id)?;
         let mut b: Option<f64> = None;
         for d in a.data.iter() {
+            let fdfgds = time.to_string();
             if d.timestamp == time.to_string() {
                 b = d.value.clone().parse::<f64>().ok()
             }
@@ -140,6 +141,7 @@ pub fn load_test_case_dataobserved(
 
     Ok(test_case.dataObserved.clone())
 }
+
 
 // pub fn load_test_case_terms(
 //     test_case: &TestCase,

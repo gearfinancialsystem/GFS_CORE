@@ -9,6 +9,7 @@ use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_PRD_SWAPS;
 
 impl TraitPayOffFunction for POF_PRD_SWAPS {

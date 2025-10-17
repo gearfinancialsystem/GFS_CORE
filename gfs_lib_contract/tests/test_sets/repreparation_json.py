@@ -26,7 +26,7 @@ def convertir_floats_en_str(obj):
         # Sinon, on retourne la valeur inchangée
         return obj
 
-d = parse_json('actus-tests-pam.json')
+d = parse_json('actus-tests-stk.json')
 d2 = convertir_floats_en_str(d)
 
-json.dump(d2, open('actus-tests-pam-converted.json', 'w'), indent=4)
+json.dump(d2, open('actus-tests-stk-converted.json', 'w'), indent=4)

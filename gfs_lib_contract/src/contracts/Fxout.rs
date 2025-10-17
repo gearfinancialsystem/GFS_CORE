@@ -79,8 +79,8 @@ impl TraitContractModel for FXOUT {
 
     fn init_contract_terms(&mut self, sm: &HashMap<String, Value>) {
 
-
         let calendar = Calendar::provide_rc(sm, "calendar");
+
         let maturity_date_tmp = MaturityDate::provide_from_input_dict(sm, "maturityDate");
         let maturity_date = if let Some(a) = maturity_date_tmp {
             Some(Rc::new(a))
@@ -102,6 +102,31 @@ impl TraitContractModel for FXOUT {
             EndOfMonthConvention::default()
         } else {eomc.unwrap()};
 
+        // purchase date
+        let purchase_date = PurchaseDate::provide_from_input_dict(sm, "purchaseDate");
+
+        // priceatpurchasedate
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate");
+        if price_at_purchase_date.is_none() {
+            price_at_purchase_date = PriceAtPurchaseDate::new(0.0).ok();
+        }
+        // termination date
+        let termination_date = TerminationDate::provide_from_input_dict(sm, "terminationDate");
+
+        // price at termination date
+        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate");
+        if price_at_termination_date.is_none() {
+            price_at_termination_date = PriceAtTerminationDate::new(0.0).ok();
+        }
+        // delivery settlement
+        let delivery_settlement = DeliverySettlement::provide_from_input_dict(sm, "deliverySettlement");
+
+        // settlement period
+        let mut settlement_period = SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod");
+        if settlement_period.is_none() {
+            settlement_period = SettlementPeriod::from_str("P0D").ok();
+        }
+
         let ct = ContractTerms {
             calendar: calendar,
             business_day_adjuster: business_day_adjuster,
@@ -117,12 +142,12 @@ impl TraitContractModel for FXOUT {
             maturity_date: maturity_date,
             notional_principal: NotionalPrincipal::provide_from_input_dict(sm, "notionalPrincipal"),
             notional_principal2: NotionalPrincipal2::provide_from_input_dict(sm, "notionalPrincipal2"),
-            purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
-            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
-            termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
-            price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
-            delivery_settlement: DeliverySettlement::provide_from_input_dict(sm, "deliverySettlement"),
-            settlement_period: SettlementPeriod::provide_from_input_dict(sm, "settlementPeriod"),
+            purchase_date: purchase_date,
+            price_at_purchase_date: price_at_purchase_date,
+            termination_date: termination_date,
+            price_at_termination_date: price_at_termination_date,
+            delivery_settlement: delivery_settlement,
+            settlement_period: settlement_period,
             ..Default::default()
         };
 
@@ -157,8 +182,8 @@ impl TraitContractModel for FXOUT {
     fn init_contract_event_timeline(&mut self, to: Option<PhantomIsoDatetimeW> ) {
         let mut events: Vec<ContractEvent> = Vec::new();
         let model = &self.contract_terms;
+
         // Purchase event
-        
         if let Some(purchase_date) = &model.purchase_date {
             let e: ContractEvent = EventFactory::create_event(
                 &Some(purchase_date.clone().convert::<ScheduleTime>()),
@@ -184,9 +209,10 @@ impl TraitContractModel for FXOUT {
                 &model.contract_id,
             );
             events.push(e);
-        } else {
+        }
+        else {
             // Settlement events
-            if model.delivery_settlement == Some(DeliverySettlement::D(D)) || model.delivery_settlement.is_none() {
+            if (model.delivery_settlement.is_none()) || (model.delivery_settlement == Some(DeliverySettlement::D(D))) {
                 let e: ContractEvent = EventFactory::create_event(
                     &model.maturity_date.clone().map(|rc| (*rc).clone()).convert_option::<ScheduleTime>(),
                     &EventType::MD,
@@ -241,22 +267,23 @@ impl TraitContractModel for FXOUT {
             &None,
             &model.contract_id,
         );
-
+        // println!("ok");
         events.retain(|e| e.compare_to(&status_event) != -1);
 
-        // Remove all post to-date events
-        let to_event = EventFactory::create_event(
-            &Some(to.clone().unwrap().convert::<ScheduleTime>()),
-            &EventType::AD,
-            &model.currency,
-            None,
-            None,
-            &None,
-            &model.contract_id,
-        );
-
-        events.retain(|e| e.compare_to(&to_event) != 1);
-
+        if to.is_some() {
+            // Remove all post to-date events
+            let to_event = EventFactory::create_event(
+                &Some(to.clone().unwrap().convert::<ScheduleTime>()),
+                &EventType::AD,
+                &model.currency,
+                None,
+                None,
+                &None,
+                &model.contract_id,
+            );
+            events.retain(|e| e.compare_to(&to_event) != 1);
+        }
+        
         // Sort events according to their time of occurrence
         events.sort();
 

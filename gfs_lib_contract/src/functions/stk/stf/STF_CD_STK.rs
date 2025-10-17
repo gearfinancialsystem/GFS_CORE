@@ -11,6 +11,7 @@ use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_CD_STK;
 
 impl TraitStateTransitionFunction for STF_CD_STK {

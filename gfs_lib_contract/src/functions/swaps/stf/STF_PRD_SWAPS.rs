@@ -9,6 +9,7 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
+#[derive(Clone)]
 #[allow(non_camel_case_types)]
 pub struct STF_PRD_SWAPS;
 

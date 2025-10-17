@@ -6,13 +6,17 @@ use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::functions::lam::StatesTransitionFunctionLAM::StatesTransitionFunctionLAM;
 use crate::functions::pam::StatesTransitionFunctionPAM::StatesTransitionFunctionPAM;
+use crate::functions::fxout::StatesTransitionFunctionFXOUT::StatesTransitionFunctionFXOUT;
+use crate::functions::stk::StatesTransitionFunctionSTK::StatesTransitionFunctionSTK;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[derive(Clone)]
 pub enum StatesTransitionFunction {
     StatesTransitionFunctionPAM(StatesTransitionFunctionPAM),
-    StatesTransitionFunctionLAM(StatesTransitionFunctionLAM)
+    StatesTransitionFunctionLAM(StatesTransitionFunctionLAM),
+    StatesTransitionFunctionFXOUT(StatesTransitionFunctionFXOUT),
+    StatesTransitionFunctionSTK(StatesTransitionFunctionSTK),
 }
 
 impl StatesTransitionFunction {
@@ -22,6 +26,8 @@ impl StatesTransitionFunction {
         match sub_str {
             "PAM" => Self::StatesTransitionFunctionPAM(StatesTransitionFunctionPAM::from_str(func)),
             "LAM" => Self::StatesTransitionFunctionLAM(StatesTransitionFunctionLAM::from_str(func)),
+            "FXOUT" => Self::StatesTransitionFunctionFXOUT(StatesTransitionFunctionFXOUT::from_str(func)),
+            "STK" => Self::StatesTransitionFunctionSTK(StatesTransitionFunctionSTK::from_str(func)),
             _ => panic!("foirade")
         }
     }
@@ -45,7 +51,19 @@ impl StatesTransitionFunction {
                                                  contract_structure,
                                                  risk_factor_external_data,
                                                  day_counter,
-                                                 time_adjuster)
+                                                 time_adjuster),
+            Self::StatesTransitionFunctionFXOUT(v) => v.eval(time, states,
+                                                           contract_terms,
+                                                           contract_structure,
+                                                           risk_factor_external_data,
+                                                           day_counter,
+                                                           time_adjuster),
+            Self::StatesTransitionFunctionSTK(v) => v.eval(time, states,
+                                                           contract_terms,
+                                                           contract_structure,
+                                                           risk_factor_external_data,
+                                                           day_counter,
+                                                           time_adjuster)
         }
     }
 }

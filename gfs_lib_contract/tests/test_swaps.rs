@@ -1,6 +1,8 @@
 pub mod common_test_funcs;
 
+use std::str::FromStr;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
 use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_tests};
 
@@ -31,19 +33,19 @@ fn test_swaps_contract_creation() {
         let contract_terms_dict = load_test_case_terms(&pathx, test_id).unwrap();
         let contract_results_dict = load_test_case_results(&curr_test).unwrap();
         let contract_data_observed = load_test_case_dataobserved(&curr_test).unwrap();
+        let to_date = PhantomIsoDatetimeW::from_str(curr_test.to.as_str()).unwrap();
 
         // let testaa = contract_data_observed.clone().state_at("USD_SWP".to_string(), &PhantomIsoDatetimeW::from_str("2013-02-01T00:00:00").unwrap() );
 
-        let mut pam = ContractModel::new(
+        let mut swaps = ContractModel::new(
             &contract_terms_dict,
             Some(Box::new(contract_data_observed)),
             None,
-        ).expect("Error creating pam contract");
+        ).expect("Error creating swaps contract");
 
         // Initialisez les termes du contrat avec des données de test
-
-        //pam.run_schedule();
-        let res = pam.run_apply(None, true); // a
+        swaps.run_schedule(Some(to_date));
+        let res = swaps.run_apply(None, true); // a
         let res_dispo = res.expect("ok").expect("ok");
 
         //println!("{:?}", res_dispo);

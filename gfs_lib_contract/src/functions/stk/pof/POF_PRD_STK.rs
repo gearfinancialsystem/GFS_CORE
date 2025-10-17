@@ -8,6 +8,7 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct POF_PRD_STK;
 
 impl TraitPayOffFunction for POF_PRD_STK {
