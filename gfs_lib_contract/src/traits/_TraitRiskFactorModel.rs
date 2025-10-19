@@ -4,7 +4,7 @@ use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::states_space::StatesSpace::StatesSpace;
-use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
+use crate::events::ContractEvent::TraitContractEvent;
 
 
 pub trait TraitRiskFactorModel<CE>: Copy + Clone

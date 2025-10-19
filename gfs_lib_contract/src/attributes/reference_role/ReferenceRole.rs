@@ -3,13 +3,13 @@ use crate::exceptions::ParseError::ParseError;
 
 
 #[derive(Clone, Debug, PartialEq)]
+#[allow(non_camel_case_types)]
 pub enum ReferenceRole {
     UDL,
     FIL,
     SEL,
     COVE,
     COVI,
-    #[allow(non_camel_case_types)]
     externalReferenceIndex
 }
 

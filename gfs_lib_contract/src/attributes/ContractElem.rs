@@ -1,8 +1,9 @@
 use crate::attributes::ContractModel::ContractModel;
 use crate::attributes::Dependence::Dependence;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ContractElem {
-    contract_elem: ContractModel,
-    dependence: Dependence
+    pub contract_elem: ContractModel,
+    pub dependence: Dependence
 }
+

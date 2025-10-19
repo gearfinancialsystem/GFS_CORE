@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -11,8 +12,8 @@ use gfs_lib_terms::terms::grp_counterparty::ContractPerformance::ContractPerform
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -28,9 +29,9 @@ impl TraitStateTransitionFunction for STF_CD_LAM {
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-        contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        day_counter: &Option<DayCountConvention>, 
         time_adjuster: &BusinessDayAdjuster,
     )  {
         let day_counter = day_counter.clone().expect("sould have day counter");
@@ -43,7 +44,11 @@ impl TraitStateTransitionFunction for STF_CD_LAM {
         
         // Update state space
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
+
             time_adjuster.shift_sc(time),
         );
 

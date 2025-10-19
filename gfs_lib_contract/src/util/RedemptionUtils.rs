@@ -1,14 +1,16 @@
 use std::collections::HashSet;
+use gfs_lib_terms::non_terms::EndTime::EndTime;
+use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
+use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
+use gfs_lib_types::traits::TraitConvert::{IsoCycleConvertToOption, IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
 
 pub struct RedemptionUtils;
 
@@ -32,14 +34,14 @@ impl RedemptionUtils {
 
         // determine remaining PR schedule
         let mut event_times: HashSet<PhantomIsoDatetimeW> = ScheduleFactory::create_schedule(
-            &model.cycle_anchor_date_of_principal_redemption.unwrap().to_start_time(),
-            &Some(maturity.to_end_time().unwrap()),
-            &Some(model.cycle_of_principal_redemption.clone().unwrap().to_phantom_type()),
+            &model.cycle_anchor_date_of_principal_redemption.convert_option::<StartTime>(),
+            &Some(maturity.convert::<EndTime>()),
+            &model.cycle_of_principal_redemption.clone().convert_option::<PhantomIsoCycleW>(),
             &model.end_of_month_convention,
             Some(true)
         );
-        event_times.retain(|e| e >= &status_date.to_phantom_type());
-        event_times.remove(&status_date.to_phantom_type());
+        event_times.retain(|e| e >= &status_date.convert::<PhantomIsoDatetimeW>());
+        event_times.remove(&status_date.convert::<PhantomIsoDatetimeW>());
 
         redemption_amount = match model.contract_type.clone().unwrap().to_string().as_str() {
             "LAM" => {
@@ -56,8 +58,8 @@ impl RedemptionUtils {
                 let ub = event_times_sorted.len();
                 let scale = outstanding_notional.value() + 
                     accrued_interest.value() + 
-                    day_counter.day_count(state.status_date.clone().unwrap().to_phantom_type(),
-                                          event_times_sorted.get(0).unwrap().to_phantom_type()) 
+                    day_counter.day_count(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
+                                          event_times_sorted.get(0).unwrap().clone())
                         * interest_rate.value() * outstanding_notional.value();
                 let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone());
                 let frac = RedemptionUtils::product(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone()) / (1.0 + sum);

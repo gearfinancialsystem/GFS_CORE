@@ -87,7 +87,7 @@ where
         Some(s) => {
             match T::from_str(s.as_string().unwrap().as_str()) {
                 Ok(value) => Some(value), // Valeur valide
-                Err(err) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?} : {:?}", key, s, "test".to_string()),
+                Err(_) => panic!("Erreur de parsing pour la clé {:?} avec la valeur {:?} : {:?}", key, s, "test".to_string()),
             }
         }
     }

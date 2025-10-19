@@ -1,17 +1,13 @@
+use std::sync::Arc;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
-
-
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -27,9 +23,9 @@ impl TraitPayOffFunction for POF_IP_PAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &StatesSpace,
-        _contract_terms: &ContractTerms,
+        contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -39,18 +35,29 @@ impl TraitPayOffFunction for POF_IP_PAM {
         let nominal_interest_rate = states.nominal_interest_rate.as_ref().expect("nominalInterestRate should always be some");
         let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should always be some");
         let status_date = states.status_date.as_ref().expect("status date should always be some");
+        // let fgfg = status_date.to_string();
+        // let fgfgx = time.clone().to_string();
         let a = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.to_phantom_type()),
-            time_adjuster.shift_sc(&time)
+            {
+                let tmp: PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
+            time_adjuster.shift_sc(&time.clone())
         );
+
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
-            _contract_terms,
+            contract_terms,
             time,
             states
         );
-        let res = settlement_currency_fx_rate * interest_scaling_multiplier.value() * (accrued_interest.value() + a) * nominal_interest_rate.value() * notional_principal.value();
-
+        
+        let res = settlement_currency_fx_rate *
+            interest_scaling_multiplier.value() *
+            (accrued_interest.value() + a *
+            nominal_interest_rate.value() *
+            notional_principal.value());
         res
+
     }
 }

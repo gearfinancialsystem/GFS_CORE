@@ -1,20 +1,16 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
-
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -32,12 +28,12 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
         let day_counter = day_counter.clone().expect("sould have day counter");
-        let accruedInterest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
+        // let accruedInterest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
         let status_date = states.status_date.clone().expect("statusDate should always be Some");
         let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
@@ -49,24 +45,26 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         let period_cap_m = contract_terms.period_cap.clone().expect("periodCap should always be Some");
         let life_floor_m = contract_terms.life_floor.clone().expect("lifeFloor should always be Some");
         let life_cap_m = contract_terms.life_cap.clone().expect("lifeCap should always be Some");
-        let market_object_code_of_rate_reset_m = contract_terms.market_object_code_of_rate_reset.clone().expect("contract_terms.market_object_code_of_rate_reset should be some");
+        // let market_object_code_of_rate_reset_m = contract_terms.market_object_code_of_rate_reset.clone().expect("contract_terms.market_object_code_of_rate_reset should be some");
         let fee_rate_m = contract_terms.fee_rate.clone().expect("feeRate should always be Some");
 
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
             time_adjuster.shift_sc(time)
         );
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         let mut rate = ( cbv.unwrap() * rate_multiplier_m.value())
             + rate_spread_m.clone().value() - nominal_interest_rate.clone().value();

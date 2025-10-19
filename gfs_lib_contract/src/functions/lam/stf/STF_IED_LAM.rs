@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 //// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -13,11 +14,9 @@ use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestC
 use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -34,7 +33,7 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -59,9 +58,15 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         if let Some(accrued_interest) = contract_terms.accrued_interest.clone() {
             states.accrued_interest = AccruedInterest::new(contract_role.role_sign() * accrued_interest.value()).ok();
         } else if let Some(cycle_anchor_date_of_interest_payment) = contract_terms.cycle_anchor_date_of_interest_payment.clone() {
-            if cycle_anchor_date_of_interest_payment.to_phantom_type() < *time {
+            if {
+                let tmp : PhantomIsoDatetimeW = cycle_anchor_date_of_interest_payment.convert();
+                tmp
+            } < *time {
                 let time_from_last_event = day_counter.day_count_fraction(
-                    time_adjuster.shift_sc(&cycle_anchor_date_of_interest_payment.to_phantom_type()),
+                    {
+                        let tmp : PhantomIsoDatetimeW = cycle_anchor_date_of_interest_payment.convert();
+                        time_adjuster.shift_sc(&tmp)
+                    },
                     time_adjuster.shift_sc(time)
                 );
 

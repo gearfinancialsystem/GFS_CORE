@@ -3,6 +3,7 @@ use gfs_lib_types::types::IsoDatetime::IsoDatetime;
 use chrono::NaiveDate;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
+use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AAISDA;
@@ -15,7 +16,9 @@ impl AAISDA {
 impl TraitDayCountConvention for AAISDA {
     /// Calculates the number of days between two dates
     fn day_count(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
-        end_time.numdays_between_dates(&start_time)
+        let et = end_time.value().to_full_hours(); // to full hour ajouter apres ETRE PRUDENT PEUT ETRE A AJOUTER A DAY C FRAC
+        let st = start_time.value().to_full_hours();
+        et.numdays_between_dates(&st)
     }
 
     /// Calculates the day count fraction between two dates using the ISDA A/A convention
@@ -43,11 +46,11 @@ impl TraitDayCountConvention for AAISDA {
         let days_in_second_year = Self::day_count(
             &self,
             PhantomIsoDatetimeW::new(
-            IsoDatetime(NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(1,1,1).unwrap())
+            IsoDatetime(NaiveDate::from_ymd_opt(y2, 1, 1).unwrap().and_hms_opt(0,0,0).unwrap())
             ).expect("should be correct phantom dtime"),
             end_time
         );
-
+        //let a = (days_in_first_year as f64 / first_basis) + (days_in_second_year as f64 / second_basis) + (y2 - y1 - 1) as f64;
         (days_in_first_year as f64 / first_basis)
             + (days_in_second_year as f64 / second_basis)
             + (y2 - y1 - 1) as f64

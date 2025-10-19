@@ -1,10 +1,9 @@
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
+use std::sync::Arc;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
-// use crate::attributes::ContractReference::ContractReference;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::attributes::RelatedContracts::RelatedContracts;
@@ -24,7 +23,7 @@ impl TraitPayOffFunction for POF_PP_PAM {
         states: &StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
@@ -33,15 +32,14 @@ impl TraitPayOffFunction for POF_PP_PAM {
             let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be some");
 
 
-            let mut cbv = None;
-            if let Some(rfm) = risk_factor_external_data {
-                cbv = rfm.state_at(
+            let cbv = if let Some(rfm) = risk_factor_external_data {
+                rfm.state_at(
                     contract_terms.object_code_of_prepayment_model.clone().unwrap().value(),
                     time,
-                );
+                )
             } else {
-                cbv = None
-            }
+                None
+            };
 
             let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
                 risk_factor_external_data,

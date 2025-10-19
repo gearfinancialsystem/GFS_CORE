@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -8,11 +9,10 @@ use gfs_lib_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
-
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -30,7 +30,7 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -44,7 +44,12 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         
         // Calculate time from the last event
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.to_phantom_type()),
+            time_adjuster.shift_sc(
+                &{
+                    let tmp: PhantomIsoDatetimeW = status_date.convert();
+                    tmp
+                },
+            ),
             time_adjuster.shift_sc(&time),
         );
 
@@ -53,6 +58,6 @@ impl TraitStateTransitionFunction for STF_IPCI_PAM {
         states.accrued_interest = AccruedInterest::new(0.0).ok();
         states.fee_accrued.add_assign(fee_rate.value() * notional_principal.value() * time_from_last_event);
 
-        
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

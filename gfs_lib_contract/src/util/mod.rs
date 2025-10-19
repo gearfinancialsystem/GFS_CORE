@@ -6,4 +6,5 @@
 pub mod CommonUtils;
 //pub mod CycleUtils;
 pub mod RedemptionUtils;
+pub mod ResultsStruct;
 //pub mod Value;

@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display};
 use std::hash::Hash;
 use std::str::FromStr;
 use gfs_lib_types::types::IsoPeriod::IsoPeriod;
-use crate::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
+
 
 pub trait TraitMarkerIsoPeriod
 where
@@ -15,5 +15,5 @@ where
 
     fn parse_from_string(s: &str) -> Result<IsoPeriod, String>;
 
-    fn to_phantom_type(&self) -> PhantomIsoPeriodW;
+    //fn to_phantom_type(&self) -> PhantomIsoPeriodW;
 }

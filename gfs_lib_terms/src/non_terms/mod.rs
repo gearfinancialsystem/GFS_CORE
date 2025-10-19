@@ -5,7 +5,7 @@ pub mod PayOff;
 
 pub mod EventTime;
 pub mod ScheduleTime;
-pub mod StartTime;
+pub mod ScheduleFactoryStartTime;
 pub mod EndTime;
 
 

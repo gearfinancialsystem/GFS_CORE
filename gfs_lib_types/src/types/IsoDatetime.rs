@@ -4,7 +4,8 @@ use std::ops::{Add, Deref};
 use std::ops::Sub;
 use std::rc::Rc;
 use std::str::FromStr;
-use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, NaiveTime};
+use chrono::{Days, Months, NaiveDateTime, NaiveDate, Datelike, Timelike, NaiveTime, Duration};
+use crate::traits::TraitConvert::{IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
 use crate::types::IsoPeriod::IsoPeriod;
 use crate::types::Value::Value;
 
@@ -106,6 +107,17 @@ impl IsoDatetime {
             Err(e) => Err(format!("{}", e)),
         }
     }
+
+    pub fn to_full_hours(&self) -> Self {
+        let minutes = self.0.minute();
+        let hours_to_add = (minutes as i32) / 30; // Équivalent à Math.floorDiv(minutes, 30)
+        let a = self.0.with_nanosecond(0).unwrap()
+            .with_second(0).unwrap()
+            .with_minute(0).unwrap()
+            .checked_add_signed(Duration::hours(hours_to_add as i64))
+            .unwrap();
+        Self::new(a.date(), a.time())
+    }
 }
 
 impl FromStr for IsoDatetime {
@@ -156,3 +168,27 @@ impl Deref for IsoDatetime {
 }
 
 
+impl<T> IsoDateTimeConvertTo<T> for T
+where
+    T: Into<IsoDatetime>,
+{
+    fn convert<U>(self) -> U
+    where
+        U: From<IsoDatetime>,
+    {
+        U::from(self.into())
+    }
+}
+
+
+impl<T> IsoDateTimeConvertToOption<T> for Option<T>
+where
+    T: Into<IsoDatetime>,
+{
+    fn convert_option<U>(self) -> Option<U>
+    where
+        U: From<IsoDatetime>,
+    {
+        self.map(|t| U::from(t.into()))
+    }
+}

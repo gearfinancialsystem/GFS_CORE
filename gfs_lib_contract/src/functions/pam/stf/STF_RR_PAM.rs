@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -8,10 +9,9 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
-// use crate::attributes::ContractReference::ContractReference;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -29,7 +29,7 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -44,15 +44,14 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         let life_floor = contract_terms.life_floor.as_ref().expect("lifeFloor should be some");
         let life_cap = contract_terms.life_cap.as_ref().expect("lifeCap should be some");
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         let mut rate = cbv.unwrap() * rate_multiplier.value() + rate_spread.value();
         let mut delta_rate = rate - nominal_interest_rate.value();
@@ -61,7 +60,12 @@ impl TraitStateTransitionFunction for STF_RR_PAM {
         rate = nominal_interest_rate.value() + delta_rate;
         rate = rate.max(life_floor.value()).min(life_cap.value());
 
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.to_phantom_type()),
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(
+            &{
+                let tmp: PhantomIsoDatetimeW = status_date.convert();
+                tmp
+            },
+        ),
                                                                   time_adjuster.shift_sc(time));
         
         states.accrued_interest.add_assign(nominal_interest_rate.value() * notional_principal.value() * time_from_last_event);

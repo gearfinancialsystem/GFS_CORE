@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
-
+use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct A360;
@@ -14,7 +14,9 @@ impl A360 {
 impl TraitDayCountConvention for A360 {
     /// Calculates the number of days between two dates
     fn day_count(&self, start_time: PhantomIsoDatetimeW, end_time: PhantomIsoDatetimeW) -> f64 {
-        end_time.numdays_between_dates(&start_time)
+        let et = end_time.value().to_full_hours(); // to full hour ajouter apres ETRE PRUDENT
+        let st = start_time.value().to_full_hours();
+        et.numdays_between_dates(&st)
     }
 
     /// Calculates the day count fraction between two dates using the ISDA A/360 convention

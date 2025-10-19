@@ -86,7 +86,9 @@ impl BusinessDayAdjuster {
     
     pub fn provide(string_map: &HashMap<String, Value>, key: &str, calendar: Rc<Calendar> ) -> Option<Self> {
         match string_map.get(key) {
-            None => Some(Self::default_with_calendar(calendar)),
+            None => {
+                Some(Self::default_with_calendar(calendar))
+            },
             Some(s) => {
                 match Self::parse(s.as_string().unwrap().as_str(), calendar) {
 
