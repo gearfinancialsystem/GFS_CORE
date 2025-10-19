@@ -80,7 +80,6 @@ use gfs_lib_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceA
 use gfs_lib_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
 use gfs_lib_terms::terms::grp_notional_principal::Quantity::Quantity;
 use gfs_lib_terms::terms::grp_notional_principal::ScalingEffect::ScalingEffect;
-//use crate::terms::grp_notional_principal::ScalingEffect::ScalingEffect::OOO;
 use gfs_lib_terms::terms::grp_notional_principal::ScalingIndexAtContractDealDate::ScalingIndexAtContractDealDate;
 use gfs_lib_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
 use gfs_lib_terms::terms::grp_notional_principal::XDayNotice::XDayNotice;
@@ -114,16 +113,9 @@ use gfs_lib_terms::terms::grp_settlement::ExerciseDate::ExerciseDate;
 use gfs_lib_terms::terms::grp_settlement::FuturesPrice::FuturesPrice;
 use gfs_lib_terms::terms::grp_settlement::SettlementCurrency::SettlementCurrency;
 use gfs_lib_terms::terms::grp_settlement::SettlementPeriod::SettlementPeriod;
-use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-
-//use crate::types::IsoDatetime::{TraitNaiveDateTimeExtension};
-
-use gfs_lib_types::types::Value::Value;
 
 
-
-#[derive(PartialEq, Debug, Clone)]
-#[derive(Default)] // Toutes les options sont None
+#[derive(PartialEq, Debug, Clone, Default)]  // Toutes les options sont None
 pub struct ContractTerms {
     pub accrued_interest: Option<AccruedInterest>,
     pub accrued_interest2: Option<AccruedInterest2>,

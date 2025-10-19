@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 // use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -14,8 +15,8 @@ use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 
 
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -32,7 +33,7 @@ impl TraitStateTransitionFunction for STF_PR_LAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -42,10 +43,13 @@ impl TraitStateTransitionFunction for STF_PR_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always be Some");
-        let contract_role = contract_terms.contract_role.clone().expect("contractRole should always be Some");
+        // let contract_role = contract_terms.contract_role.clone().expect("contractRole should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
             time_adjuster.shift_sc(time)
         );
 

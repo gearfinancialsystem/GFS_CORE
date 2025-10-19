@@ -1,87 +1,111 @@
-use std::collections::HashMap;
+use std::cmp::Ordering;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 use std::str::FromStr;
+use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::Payoff;
+use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::terms::grp_contract_identification::ContractID::ContractID;
+use gfs_lib_terms::terms::grp_contract_identification::ContractRole::ContractRole;
+use gfs_lib_terms::terms::grp_contract_identification::ContractType::ContractType;
+use gfs_lib_terms::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
+use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use gfs_lib_terms::terms::grp_counterparty::CounterpartyID::CounterpartyID;
+use gfs_lib_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
+use gfs_lib_terms::terms::grp_notional_principal::Currency::Currency;
+use gfs_lib_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
+use gfs_lib_terms::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
+use gfs_lib_terms::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
+use gfs_lib_terms::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use gfs_lib_terms::terms::grp_notional_principal::TerminationDate::TerminationDate;
+use gfs_lib_terms::terms::grp_settlement::delivery_settlement::S::S;
+use gfs_lib_terms::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
+use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::{IsoDateTimeConvertTo, IsoDateTimeConvertToOption};
+use gfs_lib_types::types::IsoDatetime::IsoDatetime;
+use gfs_lib_types::types::Value::Value;
+use crate::attributes::ContractElem::ContractElem;
 use crate::events::ContractEvent::ContractEvent;
-use crate::events::EventFactory::EventFactory;
-use crate::events::EventType::EventType;
 use crate::attributes::ContractModel::ContractModel;
-use crate::attributes::ContractReference::{ContractReference, Object};
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
-use crate::attributes::ResultSet::ResultSet;
-use crate::functions::swaps::pof::POF_NET_SWAPS::POF_NET_SWAPS;
-use crate::functions::swaps::pof::POF_PRD_SWAPS::POF_PRD_SWAPS;
-use crate::functions::swaps::pof::POF_TD_SWAPS::POF_TD_SWAPS;
-use crate::functions::swaps::stf::STF_NET_SWAPS::STF_NET_SWAPS;
-use crate::functions::swaps::stf::STF_PRD_SWAPS::STF_PRD_SWAPS;
-use crate::functions::stk::stf::STF_TD_STK::STF_TD_STK;
-use crate::functions::stk::stf::STK_PRD_STK::STF_PRD_STK;
+use crate::attributes::Dependence::Dependence;
+use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::states_space::StatesSpace::StatesSpace;
-use crate::terms::grp_interest::AccruedInterest::AccruedInterest;
-use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
-use crate::terms::grp_settlement::DeliverySettlement::DeliverySettlement;
-use crate::terms::grp_settlement::delivery_settlement::S::S;
 use crate::traits::TraitContractModel::TraitContractModel;
-use crate::traits::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
-use crate::types::Value::Value;
-use crate::external::RiskFactorModel::RiskFactorModel;
-use crate::terms::grp_contract_identification::ContractID::ContractID;
-use crate::terms::grp_contract_identification::ContractRole::ContractRole;
-use crate::terms::grp_contract_identification::MarketObjectCode::MarketObjectCode;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_counterparty::CounterpartyID::CounterpartyID;
-use crate::terms::grp_notional_principal::Currency::Currency;
-use crate::terms::grp_notional_principal::PriceAtPurchaseDate::PriceAtPurchaseDate;
-use crate::terms::grp_notional_principal::PriceAtTerminationDate::PriceAtTerminationDate;
-use crate::terms::grp_notional_principal::TerminationDate::TerminationDate;
-use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
-use crate::terms::grp_contract_identification::ContractType::ContractType;
-use crate::terms::grp_notional_principal::PurchaseDate::PurchaseDate;
+use crate::traits::TraitExternalData::TraitExternalData;
+use crate::traits::TraitExternalEvent::TraitExternalEvent;
+use crate::util::ResultsStruct::TestResult;
+use crate::attributes::ContractRules::ContractRules;
+use crate::attributes::ContractRules::ContractRules::SwapsRulesE;
+use crate::attributes::ContractRules::SwapsRules;
 
+use crate::attributes::reference_role::ReferenceRole::ReferenceRole;
+use crate::attributes::reference_type::ReferenceType::ReferenceType;
+use crate::events::EventFactory::EventFactory;
+use crate::events::EventSequence::EventSequence;
+use crate::events::EventType::EventType;
+use crate::functions::PayOffFunction::PayOffFunction;
+use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
+use crate::functions::stk::StatesTransitionFunctionSTK::StatesTransitionFunctionSTK::STF_PRD_STK;
+use crate::functions::swaps::PayOffFunctionSWAPS::PayOffFunctionSWAPS::POF_PRD_SWAPS;
 
-
-#[derive(Debug, Clone, PartialEq)]
 pub struct SWAPS {
+    pub contract_id: ContractID,
     pub contract_terms: ContractTerms,
-    pub contract_risk_factors: Option<RiskFactorModel>,
-    pub contract_structure: Option<Vec<ContractReference>>,
-    pub contract_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+    pub risk_factor_external_data: Option<Arc<dyn TraitExternalData>>,
+    pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
+    pub related_contracts: Option<RelatedContracts>,
+    pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
     pub states_space: StatesSpace,
-    pub result_vec_toggle: bool,
-    pub result_vec: Option<Vec<ResultSet>>,
+    pub status_date: Option<StatusDate>,
 }
 
 impl TraitContractModel for SWAPS {
 
     fn new() -> Self {
         Self {
+            contract_id: ContractID::new("init".to_string()).expect("init contract ID"),
             contract_terms: ContractTerms::default(),
-            contract_events: Vec::<ContractEvent<IsoDatetime, IsoDatetime>>::new(),
-            contract_risk_factors: None,
-            contract_structure: None,
+            risk_factor_external_data: None,
+            risk_factor_external_event: None,
+            related_contracts: None,
+            event_timeline: Vec::new(),
             states_space: StatesSpace::default(),
-            result_vec_toggle: false,
-            result_vec: None,
+            status_date: None,
         }
     }
 
-    fn set_contract_terms(&mut self, sm: &HashMap<String, Value>) {
+    fn init_contract_terms(&mut self, sm: HashMap<String, Value>) {
+
+        // price at purchase date
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(&sm, "priceAtPurchaseDate");
+        if price_at_purchase_date.is_none() {
+            price_at_purchase_date = Some(PriceAtPurchaseDate::new(0.0).unwrap());
+        }
+
+        // price at termination date
+        let mut price_at_termination_date = PriceAtTerminationDate::provide_from_input_dict(&sm, "priceAtTerminationDate");
+        if price_at_termination_date.is_none() {
+            price_at_termination_date = Some(PriceAtTerminationDate::new(0.0).unwrap());
+        }
 
         let ct = ContractTerms {
-            contract_id: ContractID::provide_from_input_dict(sm, "contractID"),
-            status_date: StatusDate::provide_from_input_dict(sm, "statusDate"),
-            contract_role: ContractRole::provide_from_input_dict(sm, "contractRole"),
-            counterparty_id: CounterpartyID::provide_from_input_dict(sm, "CounterpartyID"),
-            market_object_code: MarketObjectCode::provide_from_input_dict(sm, "marketObjectCode"),
-            currency: Currency::provide_from_input_dict(sm, "currency"),
-            purchase_date: PurchaseDate::provide_from_input_dict(sm, "purchaseDate"),
-            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(sm, "priceAtPurchaseDate"),
-            termination_date: TerminationDate::provide_from_input_dict(sm, "terminationDate"),
-            price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(sm, "priceAtTerminationDate"),
-            delivery_settlement: DeliverySettlement::provide_from_input_dict(sm, "deliverySettlement"),
-            contract_type: ContractType::provide_from_input_dict(sm, "contractType"),
+            contract_id: ContractID::provide_from_input_dict(&sm, "contractID"),
+            status_date: StatusDate::provide_from_input_dict(&sm, "statusDate"),
+            contract_role: ContractRole::provide_from_input_dict(&sm, "contractRole"),
+            counterparty_id: CounterpartyID::provide_from_input_dict(&sm, "CounterpartyID"),
+            market_object_code: MarketObjectCode::provide_from_input_dict(&sm, "marketObjectCode"),
+            currency: Currency::provide_from_input_dict(&sm, "currency"),
+            purchase_date: PurchaseDate::provide_from_input_dict(&sm, "purchaseDate"),
+            price_at_purchase_date: price_at_purchase_date,
+            termination_date: TerminationDate::provide_from_input_dict(&sm, "terminationDate"),
+            price_at_termination_date: price_at_termination_date,
+            delivery_settlement: DeliverySettlement::provide_from_input_dict(&sm, "deliverySettlement"),
+            contract_type: ContractType::provide_from_input_dict(&sm, "contractType"),
             //contract_structure: contract_structure,
             ..Default::default()
         };
@@ -89,270 +113,93 @@ impl TraitContractModel for SWAPS {
         self.contract_terms = ct;
     }
 
-    fn set_contract_risk_factors(&mut self, risk_factors: &Option<RiskFactorModel>) {
-        self.contract_risk_factors = None;// RiskFactorModel::new();
+    fn init_risk_factor_external_data(&mut self, risk_factor_external_data: Option<Arc<dyn TraitExternalData>>) {
+        self.risk_factor_external_data = risk_factor_external_data;
     }
 
-    fn set_contract_structure(&mut self, sm: &HashMap<String, Value>) {
-        let contract_role = ContractRole::provide(sm, "contractRole");
-        let contract_structure = if let Some(contract_structure) = sm.get("contractStructure") {
-            if let Some(structure_vec) = contract_structure.as_vec() {
-                let contract_structure: Vec<ContractReference> = structure_vec.iter()
-                    .map(|d| ContractReference::new(d.as_hashmap().unwrap(), &contract_role.clone().unwrap(),  &self.contract_risk_factors))
-                    .collect();
-                Some(contract_structure)
-            } else {
-                None
-            }
-        }
-        else {
-            None
-        };
-        self.contract_structure = contract_structure;
+    fn init_risk_factor_external_event(&mut self, risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>) {
+        self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn set_result_vec(&mut self) {
-        self.result_vec = Some(Vec::<ResultSet>::new()) //ResultSet::new()
-    }
+    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
+        // self.related_contracts = None;
+        let csvec = sm.get("contractStructure").clone().unwrap().clone().into_cs().unwrap();
 
-    fn schedule(&mut self, to: Option<IsoDatetime>) {
+        let mut sr = SwapsRules::default();
 
-        self.set_legs_contract_models();
+        let mut hs: HashMap<ContractID, ContractElem> = HashMap::new();
+        for (i, cs) in csvec.iter().enumerate() {
+            let ci = ContractID::new(cs.object.get(&"contractID".to_string()).expect("ok").clone()).expect("ok");
+            hs.insert(ci ,{
+                ContractElem {
+                    contract_elem: ContractModel::new(
+                        // a ameliorer
+                {
+                            let mut hmtmp: HashMap<String, Value> = HashMap::new();
+                            for (k, v) in &cs.object {
+                                hmtmp.insert(k.clone(), Value::from_string(v.clone()));
+                            }
+                            hmtmp
 
-        let model = &self.contract_terms;
-        let mut events: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = Vec::new();
-
-
-        //let (mut first_leg_model, mut second_leg_model) = Self::get_legs_contract_models(&self).expect("two legs");
-
-
-        // on run schedule plus apply des contracts sous-jacents, peut etre le mettre dans une autre fonction ?
-        // first_leg_model.run(mat1, true);
-        // second_leg_model.run(mat2, true);
-
-
-        //let mat1 = first_leg_model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value();
-        //let mat2 = second_leg_model.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value();
-
-        //let first_leg_schedule: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = ContractType::schedule(Some(mat1), &first_leg_model).unwrap();
-        //let second_leg_schedule: Vec<ContractEvent<IsoDatetime, IsoDatetime>> = ContractType::schedule(Some(mat2), &second_leg_model).unwrap();
-
-        // match (&first_leg_model, &second_leg_model) {
-        //     (ContractModel::PAM(first_leg_model), ContractModel::PAM(second_leg_model)) => {
-        //         events.extend(first_leg_model.contract_events.clone()); // verifier le clone()
-        //         events.extend(second_leg_model.contract_events.clone()); // verifier le clone()
-        //
-        //     }
-        //     _ => {}
-        // }
-
-        // events.extend(first_leg_schedule);
-        //events.extend(second_leg_schedule);
-
-        if let Some(cs) = &mut self.contract_structure {
-            for cr in cs.iter_mut() {
-                let mut m = cr.object.clone().as_cm().unwrap();
-                match m {
-                    ContractModel::PAM(v) => {
-                        events.extend(v.contract_events)
-                    }
-                    ContractModel::SWAPS(v) => {
-                        events.extend(v.contract_events)
-                    } // a restraindre/virer, un swap ne dois pas avoir un swap comme ss jacent
-                    ContractModel::FXOUT(v) => {
-                        events.extend(v.contract_events)
-                    } // a restraindre/virer, un swap ne dois pas avoir un fxout comme ss jacent
+                        },
+                        self.risk_factor_external_data.clone(),
+                        self.risk_factor_external_event.clone()
+                    ).expect("ok"),
+                    dependence: Dependence::Owned
                 }
-            }
-        }
-
-
-        if model.purchase_date.is_some() {
-            let e: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(&model.purchase_date, // voir si le typage fort est correct
-                                               &EventType::PRD,
-                                               &model.currency,
-                                               Some(Rc::new(POF_PRD_SWAPS)),
-                                               Some(Rc::new(STF_PRD_SWAPS)),
-                                               &None,
-                                               &model.contract_id);
-            events.push(e.to_iso_datetime_event());
-        }
-
-        if model.termination_date.is_some() {
-            let termination: ContractEvent<TerminationDate, TerminationDate> = EventFactory::create_event(
-                &model.termination_date,
-                &EventType::TD,
-                &model.currency,
-                Some(Rc::new(POF_TD_SWAPS)),
-                Some(Rc::new(STF_TD_STK)),
-                &None,
-                &model.contract_id
-            );
-            events.retain(|e| e.compare_to(&termination.to_iso_datetime_event()) == 1);
-            events.push(termination.to_iso_datetime_event());
-        }
-        //let a = &model.status_date;
-        let ee: ContractEvent<IsoDatetime, IsoDatetime> = EventFactory::<StatusDate, StatusDate>::create_event(
-            &model.status_date,
-            &EventType::AD,
-            &model.currency,
-            None,
-            None,
-            &None,
-            &model.contract_id).to_iso_datetime_event();
-        events.retain(|e| e.compare_to(&ee) != -1);
-
-        events.retain(|e| e.compare_to(
-            &EventFactory::create_event(
-                &Some(to.clone().unwrap()),
-                &EventType::AD,
-                &model.currency,
-                None,
-                None,
-                &None,
-                &model.contract_id) ) != 1);
-
-        self.contract_events = events.clone();
-        println!("ok");
-    }
-
-    /// Apply a set of events to the current state of a contract and return the post-event states
-    fn apply(&mut self, result_set_toogle: bool) {
-
-        if result_set_toogle == true {
-            self.result_vec_toggle = true;
-            self.set_result_vec();
-        }
-
-        // self.contract_events;
-        // let mut events = events;
-        self.contract_events.sort_by(|a, b|
-            a.epoch_offset.cmp(&b.epoch_offset));
-
-        // Remove the filtered events from the main events list
-        // A VOIR
-        // events.retain(|e| {
-        //     !first_leg_schedule.iter().any(|first_leg_event| first_leg_event.contract_id == e.contract_id) &&
-        //         !second_leg_schedule.iter().any(|second_leg_event| second_leg_event.contract_id == e.contract_id)
-        // });
-
-        // // ICI
-        if self.contract_terms.delivery_settlement.clone().unwrap() == DeliverySettlement::S(S) {
-            let mut a = self.filter_and_nett_congruent_events(
-                &self.contract_terms.contract_id.clone()
-            );
-            self.contract_events = a.clone();
-        }
-
-        self.contract_events.sort_by(|a, b|
-            a.epoch_offset.cmp(&b.epoch_offset));
-
-        // ici en gros itere sur les ce genere au niveau parent du swap, cest ce que verifie le if
-        self.contract_events.iter().for_each(|event| {
-            if event.get_contract_id() == self.contract_terms.contract_id.clone().unwrap() {
-                if event.event_type == EventType::PRD || event.event_type == EventType::TD {
-                    let mut parent_state = StatesSpace::default();
-
-                    let first_leg_events = self.get_legs_events_by_refrole(ReferenceRole::FIL);
-                    let second_leg_events = self.get_legs_events_by_refrole(ReferenceRole::SEL);
-
-                    let f_l_events_at_timepoint = first_leg_events.clone().iter().filter(|e| {
-                        e.event_time == event.event_time
-                    }).map(|e| e.clone()).collect::<Vec<_>>();
-
-                    let s_l_events_at_timepoint = second_leg_events.clone().iter().filter(|e| {
-                        e.event_time == event.event_time
-                    }).map(|e| e.clone()).collect::<Vec<_>>();
-
-                    let fl_ipac: f64;
-                    let sl_ipac: f64;
-                    if f_l_events_at_timepoint.is_empty() {
-                        fl_ipac = 0.0;
-                    }
-                    else {
-                        fl_ipac = if f_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
-                            0.0
-                        } else {
-                            f_l_events_at_timepoint.iter()
-                                .find(|e| e.event_type == EventType::PR)
-                                .map(|e| e.states().accrued_interest.clone().unwrap().value())
-                                .unwrap_or(0.0)
-                        };
-                    }
-                    sl_ipac = if s_l_events_at_timepoint.is_empty() {
-                        0.0
-                    }
-                    else {
-                        if s_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
-                            0.0
-                        } else {
-                            s_l_events_at_timepoint.iter()
-                                .find(|e| e.event_type == EventType::PR)
-                                .map(|e| e.states().accrued_interest.clone().unwrap().value())
-                                .unwrap_or(0.0)
-                        }
-                    };
-
-                    parent_state.accrued_interest = AccruedInterest::new(fl_ipac + sl_ipac).ok();
-
-                }
-                else {
-                    //event.clone().eval(None, None, None, None, None);
-                    //A REFLECHIR
-                }
-
-            }
-        });
-
-        if self.contract_terms.purchase_date.is_some(){
-            let purchase: ContractEvent<PurchaseDate, PurchaseDate> = EventFactory::create_event(
-                &self.contract_terms.purchase_date,
-                &EventType::PRD,
-                &self.contract_terms.currency,
-                Some(Rc::new(POF_PRD_SWAPS)),
-                Some(Rc::new(STF_PRD_STK)), // WHY ?
-                &None,
-                &self.contract_terms.contract_id
-            );
-            // Remove the filtered events from the main events list
-            self.contract_events.retain(|e| {
-                e.compare_to(&purchase.to_iso_datetime_event()) == -1
             });
-
-        }
-        self.contract_events.sort_by(|a, b|
-            a.epoch_offset.cmp(&b.epoch_offset));
-
-        // self.contract_events = self.contract_events.clone();
-        //Ok(events)
-        
-        // extract results des contrats sous_jacents
-        if self.result_vec_toggle == true {
-            let leg1 = self.get_legs_result_by_refrole(ReferenceRole::FIL);
-            let leg2 = self.get_legs_result_by_refrole(ReferenceRole::SEL);
-
-            if let Some(rv) = &mut self.result_vec {
-                rv.extend(leg1.clone());
-                rv.extend(leg2.clone());
-                println!("ok");
+            if cs.referenceRole.clone() == "FIL" {
+                sr.identifier_leg1 = ContractID::new(cs.object.get(&"contractID".to_string()).expect("ok").clone()).expect("ok");
+                sr.reference_type_leg1 = ReferenceType::from_str(cs.referenceType.clone().as_str()).expect("ok");
+                sr.reference_role_leg1 = ReferenceRole::from_str(cs.referenceRole.clone().as_str()).expect("ok");
             }
+            else { // SEL
+                sr.identifier_leg2 = ContractID::new(cs.object.get(&"contractID".to_string()).expect("ok").clone()).expect("ok");
+                sr.reference_type_leg2 = ReferenceType::from_str(cs.referenceType.clone().as_str()).expect("ok");
+                sr.reference_role_leg2 = ReferenceRole::from_str(cs.referenceRole.clone().as_str()).expect("ok");
+            }
+
         }
-        
+
+        self.related_contracts = Some(RelatedContracts {
+            contract_set: hs,
+            contract_structure: Some(ContractRules::SwapsRulesE(sr)),
+        });
+        // self.related_contracts = None;
     }
 
-    /// Initialize the StatesSpace according to the model attributes
+    fn init_status_date(&mut self) {
+
+        self.status_date = self.contract_terms.status_date;
+    }
+
     fn init_state_space(&mut self, _maturity: &Option<Rc<MaturityDate>>) { // event_at_t0: ContractEvent<IsoDatetime, IsoDatetime>,
         let model = &self.contract_terms;
-        let cs = &self.contract_structure.clone().expect("On attend un contract structure ici");
+        // let cs = &self.contract_structure.clone().expect("On attend un contract structure ici");
+        let rc = self.related_contracts.clone().expect("On attend un related contracts ici");
+        let cst = rc.contract_structure.clone().expect("On attend un contract structure ici");
+        let cse = rc.contract_set.clone();
 
-        //let cs = model.clone().contract_structure.unwrap();
-        let first_leg_model = cs.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
-        let second_leg_model = cs.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
+        //let first_leg_model = cs.iter().filter(|cr| cr.reference_role == ReferenceRole::FIL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
+        //let second_leg_model = cs.iter().filter(|cr| cr.reference_role == ReferenceRole::SEL).map(|cr| cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
 
-        //let event_t0_status_date = event_at_t0.states().status_date;
-        //let mut states = if event_t0_status_date.is_some() {
-        //    StatesSpace::default()
-        //} else { event_at_t0.states() };
+        let (id_first_leg, type_first_leg, role_first_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg1.clone(),
+                v.reference_type_leg1.clone(),
+                v.reference_role_leg1.clone()),
+        };
+
+        let (id_sec_leg, type_sec_leg, role_sec_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg2.clone(),
+                v.reference_type_leg2.clone(),
+                v.reference_role_leg2.clone()),
+        };
+
+        let ct_first_leg = cse.get(&id_first_leg).expect("ok");
+        let ct_second_leg = cse.get(&id_sec_leg).expect("ok");
+
         let mut states = StatesSpace::default();
 
         states.status_date = model.status_date.clone();
@@ -360,135 +207,400 @@ impl TraitContractModel for SWAPS {
             model.contract_performance
         } else { None };
 
-        let mat1: Option<IsoDatetime> = None;
-        let mat2: Option<IsoDatetime> = None;
-        match (&first_leg_model, &second_leg_model) {
-            (ContractModel::PAM(first_leg_model), ContractModel::PAM(second_leg_model)) => {
-                let mat1 = first_leg_model.contract_terms.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value();
-                let mat2 = second_leg_model.contract_terms.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value();
-
+        // recuperer la maturité, en fonction du types de contrat enfants autorisés
+        // les deux contrats enfants doivent etres du meme ct (?)
+        // cest ici quon defini ce quil est possible de faire comme sous jacent de swaps
+        let mat = match (ct_first_leg.contract_elem.clone(), ct_second_leg.contract_elem.clone()) {
+            (ContractModel::PAM(v1), ContractModel::PAM(v2)) => {
+                let mat1 = v1.contract_terms.maturity_date.clone().unwrap();
+                let mat2 = v2.contract_terms.maturity_date.clone().unwrap();
+                if mat1 > mat2 {
+                    mat1
+                }
+                else {
+                    mat2
+                }
+            },
+            (ContractModel::FXOUT(v1), ContractModel::FXOUT(v2)) => {
+                let mat1 = v1.contract_terms.maturity_date.clone().unwrap();
+                let mat2 = v2.contract_terms.maturity_date.clone().unwrap();
+                if mat1 > mat2 {
+                    mat1
+                }
+                else {
+                    mat2
+                }
+            },
+            (_, _) => {
+                panic!("On ne peut pas avoir deux contrats enfants de type differents");
             }
-            _ => {}
-        }
-
-        //let mat1 = first_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
-        //let mat2 = second_leg_model.maturity_date.clone().map(|rc| (*rc).clone());
-        states.maturity_date = if mat1.clone().unwrap().value() > mat2.clone().unwrap().value() {
-            MaturityDate::new(mat1.clone().unwrap().value()) .ok()
-        }
-        else {
-            MaturityDate::new(mat2.clone().unwrap().value()) .ok()
         };
+        states.maturity_date = MaturityDate::new(mat.clone().value()).ok();
+
         //states.accrued_interest = event_at_t0.states().accrued_interest;
         states.accrued_interest = AccruedInterest::new(0.0).ok();
         self.states_space = states;
+
+    }
+
+    fn init_contract_event_timeline(&mut self, to : Option<PhantomIsoDatetimeW>) {
+
+        // self.set_legs_contract_models();
+
+        let model = &self.contract_terms;
+        let mut events: Vec<ContractEvent> = Vec::new();
+
+        let mut rc = self.related_contracts.clone().expect("On attend un related contracts ici");
+        let mut cst = rc.contract_structure.clone().expect("On attend un contract structure ici");
+
+
+        let (id_first_leg, type_first_leg, role_first_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg1.clone(),
+                v.reference_type_leg1.clone(),
+                v.reference_role_leg1.clone()),
+        };
+
+        let (id_sec_leg, type_sec_leg, role_sec_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg2.clone(),
+                v.reference_type_leg2.clone(),
+                v.reference_role_leg2.clone()),
+        };
+
+        let mut cse = rc.contract_set.clone();
+        {
+            let mut ct_first_leg = cse.get_mut(&id_first_leg).expect("ok");
+            ct_first_leg.contract_elem.run_schedule(to);
+            events.extend(ct_first_leg.contract_elem.get_current_timeline());
+        }
+        {
+            let mut ct_second_leg = cse.get_mut(&id_sec_leg).expect("ok");
+            ct_second_leg.contract_elem.run_schedule(to);
+            events.extend(ct_second_leg.contract_elem.get_current_timeline());
+        }
+
+        // purchase event
+        if model.purchase_date.is_some() {
+            let e: ContractEvent = EventFactory::create_event(
+                &model.purchase_date.convert_option::<ScheduleTime>(), // voir si le typage fort est correct
+                &EventType::PRD,
+                &model.currency,
+                Some(PayOffFunction::from_str("POF_PRD_SWAPS")),
+                Some(StatesTransitionFunction::from_str("STF_PRD_SWAPS")),
+                &None,
+                &model.contract_id);
+            events.push(e);
+        }
+
+        // termination date
+        if model.termination_date.is_some() {
+            let termination: ContractEvent = EventFactory::create_event(
+                &model.termination_date.convert_option::<ScheduleTime>(),
+                &EventType::TD,
+                &model.currency,
+                Some(PayOffFunction::from_str("POF_TD_SWAPS")),
+                Some(StatesTransitionFunction::from_str("STF_TD_STK")),
+                &None,
+                &model.contract_id
+            );
+            events.retain(|e| !(e.compare_to(&termination) == 1));
+            events.push(termination);
+        }
+
+        //let a = &model.status_date;
+        let ee: ContractEvent = EventFactory::create_event(
+            &model.status_date.convert_option::<ScheduleTime>(),
+            &EventType::AD,
+            &model.currency,
+            None,
+            None,
+            &None,
+            &model.contract_id);
+        events.retain(|e| e.compare_to(&ee) != -1);
+
+        events.retain(|e| e.compare_to(
+            &EventFactory::create_event(
+                &Some(to.clone().unwrap().convert::<ScheduleTime>()),
+                &EventType::AD,
+                &model.currency,
+                None,
+                None,
+                &None,
+                &model.contract_id) ) != 1);
+
+        self.event_timeline = events.clone();
+
+    }
+
+    fn set_status_date(&mut self, status_date: Option<StatusDate>) {
+        self.status_date = status_date;
     }
 
     fn eval_pof_contract_event(&mut self, id_ce: usize) {
-        todo!()
+        let curr_ce = self.event_timeline.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fpayoff.is_some() {
+            let a = curr_ce.fpayoff.clone().unwrap().eval(
+                &curr_ce.get_schedule_time().convert::<PhantomIsoDatetimeW>(),
+                &self.states_space,
+                &self.contract_terms,
+                &self.related_contracts,
+                &self.risk_factor_external_data,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            );
+            //println!("{:?}\n", a);
+            self.event_timeline[id_ce].payoff = Some(Payoff::new(a).expect("ok"));
+            //println!("payoff0{:?}\n", self.event_timeline[id_ce].payoff);
+        }
+
+        // on peut la retravailler pour etre plus direct et efficace
     }
 
     fn eval_stf_contract_event(&mut self, id_ce: usize) {
+        let curr_ce = self.event_timeline.get(id_ce).expect("ca marche forcement");
+
+        if curr_ce.fstate.is_some() {
+            curr_ce.fstate.clone().unwrap().eval(
+                &curr_ce.get_schedule_time().convert::<PhantomIsoDatetimeW>(),
+                &mut self.states_space,
+                &self.contract_terms,
+                &self.related_contracts,
+                &self.risk_factor_external_data,
+                &self.contract_terms.day_count_convention,
+                &self.contract_terms.business_day_adjuster.clone().unwrap(),
+            )
+            //self.contract_events[id_ce].payoff = Some(a);
+            //let b = curr_ce.set_payoff(a);
+            // self.contract_events[id_ce] = a;
+
+        }
+        // on peut la retravailler pour etre plus direct et efficace
+    }
+
+    fn compute_payoff(&mut self) {
+        let id_ce: usize = 0;
+        self.eval_pof_contract_event(id_ce);
+    }
+
+    fn next(&mut self) {
+        let id_ce: usize = 0;
+        self.eval_pof_contract_event(id_ce);
+    }
+
+    fn add_event_to_contract_event_timeline(&mut self) {
         todo!()
     }
+
+    fn reset(&mut self) {
+        // reflechir a quoi pourrait bien servir reset
+        self.contract_terms = ContractTerms::default();
+        self.risk_factor_external_data = None;
+        self.risk_factor_external_event = None;
+        self.related_contracts = None;
+        self.event_timeline = Vec::new();
+        self.states_space = StatesSpace::default();
+        self.status_date = None;
+    }
+
+    fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
+        //
+        // let mut result_vec: Vec<TestResult> = Vec::new();
+        //
+        // let mut rc = self.related_contracts.clone().expect("On attend un related contracts ici");
+        // let mut cst = rc.contract_structure.clone().expect("On attend un contract structure ici");
+        //
+        //
+        // let (id_first_leg, type_first_leg, role_first_leg) = match cst.clone() {
+        //     SwapsRulesE(v) => (
+        //         v.identifier_leg1.clone(),
+        //         v.reference_type_leg1.clone(),
+        //         v.reference_role_leg1.clone()),
+        // };
+        //
+        // let (id_sec_leg, type_sec_leg, role_sec_leg) = match cst.clone() {
+        //     SwapsRulesE(v) => (
+        //         v.identifier_leg2.clone(),
+        //         v.reference_type_leg2.clone(),
+        //         v.reference_role_leg2.clone()),
+        // };
+        //
+        // let mut cse = rc.contract_set.clone();
+        //
+        // let mut ct_first_leg = cse.get_mut(&id_first_leg).expect("ok");
+        // ct_first_leg.contract_elem.get_current_timeline();
+        // let first_leg_events = ct_first_leg.contract_elem.get_current_timeline();
+        //
+        // let mut ct_second_leg = cse.get_mut(&id_sec_leg).expect("ok");
+        // ct_second_leg.contract_elem.get_current_timeline();
+        // let second_leg_events = ct_second_leg.contract_elem.get_current_timeline();
+        //
+        // self.sort_events_timeline();
+        //
+        // if self.contract_terms.delivery_settlement.clone().unwrap() == DeliverySettlement::S(S) {
+        //     let mut a = self.filter_and_nett_congruent_events(
+        //         &self.contract_terms.contract_id.clone()
+        //     );
+        //     self.event_timeline = a.clone();
+        // }
+        //
+        // self.sort_events_timeline();
+        //
+        // // ici en gros itere sur les ce genere au niveau parent du swap, cest ce que verifie le if
+        // self.event_timeline.iter().for_each(|event| {
+        //     if event.get_contract_id() == self.contract_terms.contract_id.clone().unwrap() {
+        //         if event.event_type == EventType::PRD || event.event_type == EventType::TD {
+        //             let mut parent_state = StatesSpace::default();
+        //
+        //             //let first_leg_events = self.get_legs_events_by_refrole(ReferenceRole::FIL);
+        //             //let second_leg_events = self.get_legs_events_by_refrole(ReferenceRole::SEL);
+        //
+        //             let f_l_events_at_timepoint = first_leg_events.clone().iter().filter(|e| {
+        //                 e.event_time == event.event_time
+        //             }).map(|e| e.clone()).collect::<Vec<_>>();
+        //
+        //             let s_l_events_at_timepoint = second_leg_events.clone().iter().filter(|e| {
+        //                 e.event_time == event.event_time
+        //             }).map(|e| e.clone()).collect::<Vec<_>>();
+        //
+        //             let fl_ipac: f64;
+        //             let sl_ipac: f64;
+        //             if f_l_events_at_timepoint.is_empty() {
+        //                 fl_ipac = 0.0;
+        //             }
+        //             else {
+        //                 fl_ipac = if f_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
+        //                     0.0
+        //                 } else {
+        //                     f_l_events_at_timepoint.iter()
+        //                         .find(|e| e.event_type == EventType::PR)
+        //                         .map(|e| e.states().accrued_interest.clone().unwrap().value())
+        //                         .unwrap_or(0.0)
+        //                 };
+        //             }
+        //             sl_ipac = if s_l_events_at_timepoint.is_empty() {
+        //                 0.0
+        //             }
+        //             else {
+        //                 if s_l_events_at_timepoint.iter().any(|e| e.event_type == EventType::IP) {
+        //                     0.0
+        //                 } else {
+        //                     s_l_events_at_timepoint.iter()
+        //                         .find(|e| e.event_type == EventType::PR)
+        //                         .map(|e| e.states().accrued_interest.clone().unwrap().value())
+        //                         .unwrap_or(0.0)
+        //                 }
+        //             };
+        //
+        //             parent_state.accrued_interest = AccruedInterest::new(fl_ipac + sl_ipac).ok();
+        //
+        //         }
+        //         else {
+        //             //event.clone().eval(None, None, None, None, None);
+        //             //A REFLECHIR
+        //         }
+        //
+        //     }
+        // });
+        //
+        // if self.contract_terms.purchase_date.is_some(){
+        //     let purchase: ContractEvent = EventFactory::create_event(
+        //         &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
+        //         &EventType::PRD,
+        //         &self.contract_terms.currency,
+        //         Some(PayOffFunction::from_str("POF_PRD_SWAPS")),
+        //         Some(StatesTransitionFunction::from_str("STF_PRD_STK")),
+        //         &None,
+        //         &self.contract_terms.contract_id
+        //     );
+        //     // Remove the filtered events from the main events list
+        //     self.event_timeline.retain(|e| {
+        //         e.compare_to(&purchase) != -1
+        //     });
+        //
+        // }
+        // self.sort_events_timeline();
+        //
+        // // self.contract_events = self.contract_events.clone();
+        // //Ok(events)
+        //
+        //
+        // // recup des resultats
+        // if extract_results == false {
+        //
+        //     return None;
+        // }
+        // else {
+        //     ////////////////////////////////////////////////////////
+        //     // Remove pre-purchase events if purchase date is set //
+        //     ////////////////////////////////////////////////////////
+        //     result_vec.retain(|e| {
+        //         if self.contract_terms.purchase_date.is_some() {
+        //             let purchase_event: ContractEvent = EventFactory::create_event(
+        //                 &self.contract_terms.purchase_date.convert_option::<ScheduleTime>(),
+        //                 &EventType::PRD,
+        //                 &self.contract_terms.currency,
+        //                 None,
+        //                 None,
+        //                 &None,
+        //                 &self.contract_terms.contract_id,
+        //             );
+        //             let epoch_millis = IsoDatetime::from_str(e.eventDate.as_str()).clone().unwrap().value().and_utc().timestamp_millis(); //.and_utc().timestamp_millis();
+        //             let epoch_offset = epoch_millis + EventSequence::time_offset(&EventType::from_str(e.eventType.as_str()).expect("exist"));
+        //             EventType::from_str(e.eventType.as_str()).expect("exist") == EventType::AD || epoch_offset as f64 >= purchase_event.epoch_offset.unwrap().value()
+        //         } else { true }
+        //     });
+        //     return Some(Ok(result_vec));
+        // }
+        todo!()
+    }
+
+    fn sort_events_timeline(&mut self) {
+        self.event_timeline.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
+    }
+
 }
 
 impl SWAPS {
 
-
-    pub fn get_legs_result_by_refrole(&self, reference_role: ReferenceRole)
-        -> Vec<ResultSet> {
-        let leg_m = &self.contract_structure.clone().unwrap().iter()
-            .filter(|c|
-                c.reference_role == reference_role)
-            .map(|c| c.object.as_cm().unwrap().clone()).collect::<Vec<_>>()
-            .get(0).unwrap().clone();
-        let leg_res = match leg_m {
-            ContractModel::PAM(v) => {v.result_vec.clone().unwrap()},
-            ContractModel::SWAPS(v) => {v.result_vec.clone().unwrap()},
-            ContractModel::FXOUT(v) => {v.result_vec.clone().unwrap()},
-        };
-        leg_res
-    }
-    pub fn get_legs_events_by_refrole(&self, reference_role: ReferenceRole) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
-        let leg_m = &self.contract_structure.clone().unwrap().iter()
-            .filter(|c|
-                c.reference_role == reference_role)
-            .map(|c| c.object.as_cm().unwrap().clone()).collect::<Vec<_>>()
-            .get(0).unwrap().clone();
-        let leg_events = match leg_m {
-            ContractModel::PAM(v) => {v.contract_events.clone()},
-            ContractModel::SWAPS(v) => {v.contract_events.clone()},
-            ContractModel::FXOUT(v) => {v.contract_events.clone()}
-        };
-        leg_events
-    }
-
-    pub fn set_legs_contract_models(&mut self) { // -> Option<(ContractModel, ContractModel)>
-        //let cs = model.clone().contract_structure.unwrap();
-        if let Some(cs) = &mut self.contract_structure {
-
-            for cr in cs.iter_mut() {
-
-                let mut m = cr.object.clone().as_cm().unwrap();
-                let mat = match m {
-                    ContractModel::PAM(m) =>
-                        m.contract_terms.maturity_date.map(|rc| (*rc).clone()).unwrap().value(),
-                    _ => IsoDatetime::from_str("2013-01-01 00:00:00").expect("Invalid datetime")
-                };
-
-                if cr.reference_role == ReferenceRole::FIL {
-                    let mut test = cr.object.as_cm().unwrap();
-                    test.run(Some(mat), true);
-                    cr.object = Object::ContractModel(test);
-                }
-                if cr.reference_role == ReferenceRole::SEL {
-                    let mut test = cr.object.as_cm().unwrap();
-                    test.run(Some(mat), true);
-                    cr.object = Object::ContractModel(test);
-                }
-            }
-            // let mut second_leg_model = cs.iter().filter(|cr|
-            //     cr.reference_role == ReferenceRole::SEL)
-            //     .map(|cr|
-            //         cr.clone().object).collect::<Vec<_>>().get(0).unwrap().clone().as_cm().unwrap();
-            //
-            // let mut mat1: Option<IsoDatetime> = None;
-            // let mut mat2: Option<IsoDatetime> = None;
-            //
-            // match (&first_leg_model, &second_leg_model) {
-            //     (ContractModel::PAM(first_leg_model), ContractModel::PAM(second_leg_model)) => {
-            //         mat1 = Some(first_leg_model.contract_terms.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value());
-            //         mat2 = Some(second_leg_model.contract_terms.maturity_date.clone().map(|rc| (*rc).clone()).unwrap().value());
-            //
-            //     }
-            //     _ => {}
-            // }
-            //
-            // first_leg_model.run(mat1, true);
-            // second_leg_model.run(mat2, true);
-
-            //Some((first_leg_model, second_leg_model))
-
-        }
-    }
-    /// Compute next events within the period up to `to` date based on the contract model
-
     pub fn filter_and_nett_congruent_events(&mut self,
-        parent_contract_ID: &Option<ContractID>) -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+        parent_contract_ID: &Option<ContractID>) -> Vec<ContractEvent> {
 
         // first_leg_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
         // second_leg_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+        let mut rc = self.related_contracts.clone().expect("On attend un related contracts ici");
+        let mut cst = rc.contract_structure.clone().expect("On attend un contract structure ici");
 
-        let mut first_leg_events = self.get_legs_events_by_refrole(ReferenceRole::FIL);
-        let mut second_leg_events = self.get_legs_events_by_refrole(ReferenceRole::SEL);
-        first_leg_events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
-        second_leg_events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+        let (id_first_leg, type_first_leg, role_first_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg1.clone(),
+                v.reference_type_leg1.clone(),
+                v.reference_role_leg1.clone()),
+        };
+
+        let (id_sec_leg, type_sec_leg, role_sec_leg) = match cst.clone() {
+            SwapsRulesE(v) => (
+                v.identifier_leg2.clone(),
+                v.reference_type_leg2.clone(),
+                v.reference_role_leg2.clone()),
+        };
+
+        let mut cse = rc.contract_set.clone();
+
+        let mut ct_first_leg = cse.get_mut(&id_first_leg).expect("ok");
+        ct_first_leg.contract_elem.sort_current_timeline();
+        let first_leg_events = ct_first_leg.contract_elem.get_current_timeline();
+
+        let mut ct_second_leg = cse.get_mut(&id_sec_leg).expect("ok");
+        ct_second_leg.contract_elem.sort_current_timeline();
+        let second_leg_events = ct_second_leg.contract_elem.get_current_timeline();
+
 
         let mut events = Vec::new();
 
         // Helper function to filter events by type
-        let filter_events = |events: &[ContractEvent<IsoDatetime, IsoDatetime>], event_type: EventType| -> Vec<ContractEvent<IsoDatetime, IsoDatetime>> {
+        let filter_events = |events: &[ContractEvent], event_type: EventType| -> Vec<ContractEvent> {
             events.iter()
                 .filter(|event| event.event_type == event_type)
                 .cloned()
@@ -537,9 +649,9 @@ impl SWAPS {
     }
 
     pub fn net_singular_event(parent_contract_id: Option<ContractID>,
-                              events: &mut Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-                              list_first_leg: &mut Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-                              list_second_leg: &mut Vec<ContractEvent<IsoDatetime, IsoDatetime>>,){
+                              events: &mut Vec<ContractEvent>,
+                              list_first_leg: &mut Vec<ContractEvent>,
+                              list_second_leg: &mut Vec<ContractEvent>,){
 
         if !list_first_leg.is_empty() && !list_second_leg.is_empty() {
             let first_leg_event = &list_first_leg.clone()[0];
@@ -581,9 +693,9 @@ impl SWAPS {
     }
 
     pub fn net_congruent_events(
-        first_leg_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        second_leg_events: Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
-        events: &mut Vec<ContractEvent<IsoDatetime, IsoDatetime>>,
+        first_leg_events: Vec<ContractEvent>,
+        second_leg_events: Vec<ContractEvent>,
+        events: &mut Vec<ContractEvent>,
         parent_contract_ID: Option<ContractID>) {
 
         let mut first_leg = first_leg_events;
@@ -670,16 +782,16 @@ impl SWAPS {
     }
 
     pub fn netting_event(
-        e1: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
-        e2: Option<ContractEvent<IsoDatetime, IsoDatetime>>,
+        e1: Option<ContractEvent>,
+        e2: Option<ContractEvent>,
         parent_contract_id: Option<ContractID>,
-    ) -> ContractEvent<IsoDatetime, IsoDatetime> {
+    ) -> ContractEvent{
         let netting = EventFactory::create_event(
-            &e1.clone().unwrap().event_time,
+            &e1.clone().unwrap().event_time.convert_option::<ScheduleTime>(),
             &e1.clone().unwrap().event_type,
             &e1.clone().unwrap().currency,
-            Some(Rc::new(POF_NET_SWAPS::new(e1.clone().unwrap(), e2.clone().unwrap()))),
-            Some(Rc::new(STF_NET_SWAPS::new(e1.clone().unwrap(), e2.clone().unwrap()))),
+            Some(PayOffFunction::from_str("POF_NET_SWAPS")),
+            Some(StatesTransitionFunction::from_str("TF_NET_SWAPS")),
             &None,
             &parent_contract_id.clone(),
         );
@@ -694,6 +806,49 @@ impl fmt::Display for SWAPS {
     }
 }
 
+impl fmt::Debug for SWAPS {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PAM")
+            .field("contract_id", &self.contract_id)
+            .field("contract_terms", &self.contract_terms)
+            .field("event_timeline", &self.event_timeline)
+            .field("states_space", &self.states_space)
+            .field("status_date", &self.status_date)
+            .finish()
+    }
+}
+
+impl Clone for SWAPS {
+    fn clone(&self) -> Self {
+        SWAPS {
+            contract_id: self.contract_id.clone(),
+            contract_terms: self.contract_terms.clone(),
+            risk_factor_external_data: None, // faire qqchose specifique ici ?
+            risk_factor_external_event: None, // faire qqchose specifique ici ?
+            related_contracts: None, // faire qqchose specifique ici ?
+            event_timeline: self.event_timeline.clone(),
+            states_space: self.states_space.clone(),
+            status_date: self.status_date.clone(),
+        }
+    }
+}
+
+// Implémentation manuelle de PartialEq
+impl PartialEq for SWAPS {
+    fn eq(&self, other: &Self) -> bool {
+        self.contract_id == other.contract_id &&
+            self.contract_terms == other.contract_terms
+    }
+}
+
+impl Eq for SWAPS {}
+
+impl Hash for SWAPS {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // ça veut dire que le contract ID doit etre absolument unique
+        self.contract_id.hash(state);
+    }
+}
 //
 // #[cfg(test)]
 // mod tests {

@@ -1,28 +1,4 @@
-#[macro_export]
-macro_rules! define_phantom_imports_f64 {
-    (PhantomF64W) => {
 
-    };
-    ($struct_name:ident) => {
-        use crate::phantom_terms::PhantomF64::PhantomF64W;
-    };
-}
-
-#[macro_export]
-macro_rules! define_to_phantom_type_f64 {
-    (PhantomF64W) => {
-        // Implémentation spécifique pour PhantomF64W
-        fn to_phantom_type(&self) -> Self {
-            *self
-        }
-    };
-    ($struct_name:ident) => {
-        // Implémentation par défaut pour les autres structures
-        fn to_phantom_type(&self) -> PhantomF64W {
-            PhantomF64W::new(self.value()).expect("Conversion to PhantomF64W doesn't work")
-        }
-    };
-}
 
 #[macro_export]
 macro_rules! define_option_ext {
@@ -78,7 +54,7 @@ macro_rules! define_struct_f64 {
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::define_option_ext;
-        define_phantom_imports_f64!($struct_name);
+        //define_phantom_imports_f64!($struct_name);
 
         #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
         pub struct $struct_name(f64);
@@ -88,7 +64,7 @@ macro_rules! define_struct_f64 {
                 self.0
             }
             
-            define_to_phantom_type_f64!($struct_name);
+            //define_to_phantom_type_f64!($struct_name);
         }
 
         impl $struct_name {
@@ -248,7 +224,7 @@ macro_rules! define_struct_f64 {
                 self.0
             }
 
-            define_to_phantom_type_f64!($struct_name);
+            //define_to_phantom_type_f64!($struct_name);
         }
 
         impl $struct_name {
@@ -417,7 +393,7 @@ macro_rules! define_struct_f64 {
                 self.0
             }
 
-            define_to_phantom_type_f64!($struct_name);
+            //define_to_phantom_type_f64!($struct_name);
         }
 
         impl $struct_name {
@@ -583,7 +559,7 @@ macro_rules! define_struct_f64 {
                 self.0
             }
 
-            define_to_phantom_type_f64!($struct_name);
+            //define_to_phantom_type_f64!($struct_name);
         }
 
         impl $struct_name {

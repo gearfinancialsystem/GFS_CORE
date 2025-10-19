@@ -1,21 +1,17 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-//// use crate::attributes::ContractReference::ContractReference;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
-
-
-
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -31,8 +27,8 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         _contract_terms: &ContractTerms,
-        contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -47,7 +43,10 @@ impl TraitStateTransitionFunction for STF_FP_LAM {
 
         // Update state space
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
             time_adjuster.shift_sc(time),
         );
 

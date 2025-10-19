@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 pub mod TraitOptionExt;
 pub mod TraitBusinessDayCalendar;
 pub mod TraitBusinessDayAdjuster;

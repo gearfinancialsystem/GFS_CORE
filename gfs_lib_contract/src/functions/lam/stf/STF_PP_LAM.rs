@@ -1,6 +1,5 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
 
 use crate::states_space::StatesSpace::StatesSpace;
@@ -17,6 +16,7 @@ use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestC
 use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -34,7 +34,7 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -45,7 +45,10 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
             time_adjuster.shift_sc(time)
         );
 
@@ -69,18 +72,15 @@ impl TraitStateTransitionFunction for STF_PP_LAM {
         }).ok();
 
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.object_code_of_prepayment_model.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
-
-
-
+            None
+        };
+        
         states.notional_principal = NotionalPrincipal::new({
             notional_principal.value() - cbv.unwrap() * notional_principal.value()
         }).ok();

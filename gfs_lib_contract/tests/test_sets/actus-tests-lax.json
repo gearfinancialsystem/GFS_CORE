@@ -3242,6 +3242,347 @@
                 "accruedInterest": 0
             }
         ]
-    }
+    },
+    "lax19": {
+        "identifier": "lax19",
+        "terms": {
+            "contractType": "LAX",
+            "contractID": "lax19",
+            "creatorID": "LEI01",
+            "counterpartyID": "LEI02",
+            "statusDate": "2022-12-31T00:00:00",
+            "contractRole": "RPA",
+            "calendar": "NC",
+            "businessDayConvention": "SCF",
+            "endOfMonthConvention": "SD",
+            "currency": "USD",
+            "contractDealDate": "2022-12-30T00:00:00",
+            "initialExchangeDate": "2022-12-31T00:00:00",
+            "maturityDate": "2026-12-31T00:00:00",
+            "notionalPrincipal": "100",
+            "arrayCycleAnchorDateOfInterestPayment": "2022-12-31T00:00:00",
+            "arrayCycleOfInterestPayment": "P1YL1",
+            "nominalInterestRate": "0.08",
+            "dayCountConvention": "30E360",
+            "arrayCycleAnchorDateOfPrincipalRedemption": [
+                "2023-12-31T00:00:00",
+                "2024-12-31T00:00:00",
+                "2025-12-31T00:00:00",
+                "2026-12-31T00:00:00"
+            ],
+            "arrayCycleOfPrincipalRedemption": [
+                "P1YL1",
+                "P1YL1",
+                "P1YL1",
+                "P1YL1"
+            ],
+            "arrayNextPrincipalRedemptionPayment": [
+                20,
+                40,
+                20,
+                10                
+            ],
+            "arrayIncreaseDecrease": [
+                "INC",
+                "DEC",
+                "INC",
+                "DEC"
+            ]
+        },
+        "to": "2026-12-31T00:00:00",
+        "dataObserved": {
+            "LIBORUSD3M": {
+                "identifier": "LIBORUSD3M",
+                "data": [
+                    {
+                        "timestamp": "2022-01-01T00:00:00",
+                        "value": "0.02"
+                    },
+                    {
+                        "timestamp": "2023-01-01T00:00:00",
+                        "value": "0.0"
+                    },
+                    {
+                        "timestamp": "2024-01-01T00:00:00",
+                        "value": "0.01"
+                    }
+                ]
+            }
+        },
+        "eventsObserved": [
+
+        ],
+		"results": [
+			{
+				"eventDate": "2023-12-31T00:00",
+				"eventType": "PI",
+				"payoff": -20.0,
+				"currency": "USD",
+				"notionalPrincipal": 120.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 8.0
+			},
+			{
+				"eventDate": "2023-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 8.0,
+				"currency": "USD",
+				"notionalPrincipal": 120.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2024-12-31T00:00",
+				"eventType": "PR",
+				"payoff": 40.0,
+				"currency": "USD",
+				"notionalPrincipal": 80.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 9.6
+			},
+			{
+				"eventDate": "2024-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 9.6,
+				"currency": "USD",
+				"notionalPrincipal": 80.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2025-12-31T00:00",
+				"eventType": "PI",
+				"payoff": -20.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 6.4
+			},
+			{
+				"eventDate": "2025-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 6.4,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2026-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 8.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2026-12-31T00:00",
+				"eventType": "MD",
+				"payoff": 100.0,
+				"currency": "USD",
+				"notionalPrincipal": 0.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			}
+		]
+	},
+    "lax20": {
+        "identifier": "lax20",
+        "terms": {
+            "contractType": "LAX",
+            "contractID": "lax20",
+            "creatorID": "LEI01",
+            "counterpartyID": "LEI02",
+            "statusDate": "2022-12-31T00:00:00",
+            "contractRole": "RPA",
+            "calendar": "NC",
+            "businessDayConvention": "SCF",
+            "endOfMonthConvention": "SD",
+            "currency": "USD",
+            "contractDealDate": "2022-12-30T00:00:00",
+            "initialExchangeDate": "2022-12-31T00:00:00",
+            "maturityDate": "2026-12-31T00:00:00",
+            "notionalPrincipal": "100",
+            "arrayCycleAnchorDateOfInterestPayment": "2022-12-31T00:00:00",
+            "arrayCycleOfInterestPayment": "P1YL1",
+            "nominalInterestRate": "0",
+            "dayCountConvention": "30E360",
+            "arrayCycleAnchorDateOfPrincipalRedemption": [
+                "2023-12-31T00:00:00",
+                "2024-12-31T00:00:00",
+                "2025-12-31T00:00:00",
+                "2026-12-31T00:00:00"
+            ],
+            "arrayCycleOfPrincipalRedemption": [
+                "P1YL1",
+                "P1YL1",
+                "P1YL1",
+                "P1YL1"
+            ],
+            "arrayNextPrincipalRedemptionPayment": [
+                20,
+                40,
+                20,
+                10                
+            ],
+            "arrayIncreaseDecrease": [
+                "INC",
+                "DEC",
+                "INC",
+                "DEC"
+            ],
+            "arrayCycleAnchorDateOfRateReset": [
+                "2023-12-31T00:00:00",
+                "2024-12-31T00:00:00",
+                "2025-12-31T00:00:00",
+                "2026-12-31T00:00:00"
+            ],
+            "arrayCycleOfRateReset": [
+                "P1YL1",
+                "P1YL1",
+                "P1YL1",
+                "P1YL1"
+            ],            
+            "arrayRate": [
+                0,
+                0,
+                0.08,
+                0.08
+            ],
+            "arrayFixedVariable": [
+                "FIX",
+                "FIX",
+                "FIX",
+                "FIX"
+            ],
+            "marketObjectCodeOfRateReset": "LIBORUSD3M"
+            
+        },
+        "to": "2026-12-31T00:00:00",
+        "dataObserved": {
+            "LIBORUSD3M": {
+                "identifier": "LIBORUSD3M",
+                "data": [
+                    {
+                        "timestamp": "2022-01-01T00:00:00",
+                        "value": "0.02"
+                    },
+                    {
+                        "timestamp": "2023-01-01T00:00:00",
+                        "value": "0.0"
+                    },
+                    {
+                        "timestamp": "2024-01-01T00:00:00",
+                        "value": "0.01"
+                    }
+                ]
+            }
+        },
+        "eventsObserved": [
+
+        ],
+		"results": [
+			{
+				"eventDate": "2023-12-31T00:00",
+				"eventType": "PI",
+				"payoff": -20.0,
+				"currency": "USD",
+				"notionalPrincipal": 120.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2023-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 120.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2023-12-31T00:00",
+				"eventType": "RRF",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 120.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2024-12-31T00:00",
+				"eventType": "PR",
+				"payoff": 40.0,
+				"currency": "USD",
+				"notionalPrincipal": 80.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2024-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 80.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2024-12-31T00:00",
+				"eventType": "RRF",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 80.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2025-12-31T00:00",
+				"eventType": "PI",
+				"payoff": -20.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2025-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.0,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2025-12-31T00:00",
+				"eventType": "RRF",
+				"payoff": 0.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2026-12-31T00:00",
+				"eventType": "IP",
+				"payoff": 8.0,
+				"currency": "USD",
+				"notionalPrincipal": 100.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			},
+			{
+				"eventDate": "2026-12-31T00:00",
+				"eventType": "MD",
+				"payoff": 100.0,
+				"currency": "USD",
+				"notionalPrincipal": 0.0,
+				"nominalInterestRate": 0.08,
+				"accruedInterest": 0.0
+			}
+		]
+	}
 }
 

@@ -8,7 +8,7 @@ macro_rules! define_struct_string {
         use gfs_lib_types::types::Value::Value;
         use std::fmt;
         
-        #[derive(PartialEq, Debug, Clone, Hash)]
+        #[derive(PartialEq, Debug, Clone, Hash, Eq)]
         pub struct $struct_name(String);
 
         impl $struct_name {

@@ -8,7 +8,7 @@
 // pub mod com;
 // pub mod csh;
 // pub mod futur;
-// pub mod fxout;
+pub mod fxout;
 pub mod lam;
 // pub mod lax;
 // pub mod nam;
@@ -16,8 +16,8 @@ pub mod lam;
 pub mod pam;
 pub mod PayOffFunction;
 pub mod StatesTransitionFunction;
-// pub mod stk;
-//pub mod swaps;
-// pub mod swppv;
+pub mod stk;
+// pub mod swaps;
+pub mod swppv;
 // pub mod ump;
-// 
+

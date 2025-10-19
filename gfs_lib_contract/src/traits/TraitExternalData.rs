@@ -1,8 +1,5 @@
-
 use std::collections::HashSet;
-use std::fmt::Debug;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-
 
 pub trait TraitExternalData
 {

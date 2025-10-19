@@ -40,7 +40,7 @@ impl ContractPerformance {
             Self::DF(DF) => Ok("DF".to_string()),
             Self::MA(MA) => Ok("MA".to_string()),
             Self::TE(TE) => Ok("TE".to_string()),
-            _ => Err(format!("Invalid TOSTRING ContractPerformance "))
+            // _ => Err(format!("Invalid TOSTRING ContractPerformance "))
         }
 
     }

@@ -80,7 +80,6 @@
         "identifier": "collateral02",
         "terms": {
             "contractType": "CEC",
-
             "contractID": "collateral02",
             "contractRole": "BUY",
             "contractStructure": [

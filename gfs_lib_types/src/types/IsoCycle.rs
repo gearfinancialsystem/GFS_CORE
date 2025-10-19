@@ -1,6 +1,6 @@
 use std::fmt;
 use std::str::FromStr;
-// use crate::traits::TraitMarkerIsoCycle::TraitMarkerIsoCycle;
+use crate::traits::TraitConvert::{IsoCycleConvertTo, IsoCycleConvertToOption};
 use crate::types::cycle_adjuster::PeriodCycleAdjuster::PeriodCycleAdjuster;
 use crate::types::cycle_adjuster::WeekdayCycleAdjuster::WeekdayCycleAdjuster;
 use crate::types::IsoPeriod::IsoPeriod;
@@ -79,3 +79,54 @@ impl fmt::Display for IsoCycle {
         }
     }
 }
+
+// Une seule implémentation pour tous les types
+impl<T> IsoCycleConvertTo<T> for T
+where
+    T: Into<IsoCycle>,
+{
+    fn convert<U>(self) -> U
+    where
+        U: From<IsoCycle>,
+    {
+        U::from(self.into())
+    }
+}
+
+
+// Une seule implémentation pour Option
+impl<T> IsoCycleConvertToOption<T> for Option<T>
+where
+    T: Into<IsoCycle>,
+{
+    fn convert_option<U>(self) -> Option<U>
+    where
+        U: From<IsoCycle>,
+    {
+        self.map(|t| U::from(t.into()))
+    }
+}
+
+// impl<T> IsoCycleConvertTo for T
+// where
+//     T: Into<IsoCycle>,
+// {
+//     fn convert<U>(self) -> U
+//     where
+//         U: From<IsoCycle>,
+//     {
+//         U::from(self.into())
+//     }
+// }
+//
+// impl<T> IsoCycleConvertToOption for Option<T>
+// where
+//     T: Into<IsoCycle>,
+// {
+//     fn convert_option<U>(self) -> Option<U>
+//     where
+//         U: From<IsoCycle>,
+//     {
+//         self.map(|t| U::from(t.into()))
+//     }
+// }

@@ -1,24 +1,18 @@
+use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
-// use crate::attributes::ContractReference::ContractReference;
 use crate::attributes::ContractTerms::ContractTerms;
-
 use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
-use gfs_lib_terms::terms::grp_fees::FeeAccrued::FeeAccrued;
 use gfs_lib_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
-use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPrincipal;
-
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-
-
 use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -35,7 +29,7 @@ impl TraitStateTransitionFunction for STF_IPCI2_LAM {
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        _risk_factor_external_data: &Option<Box<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) {
@@ -45,12 +39,15 @@ impl TraitStateTransitionFunction for STF_IPCI2_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notional_principal should always be Some");
         let accrued_interest = states.accrued_interest.clone().expect("accrued_interest should always be Some");
-        let fee_accrued_m = contract_terms.fee_accrued.clone().expect("fee accrued should always be Some");
+        // let fee_accrued_m = contract_terms.fee_accrued.clone().expect("fee accrued should always be Some");
         let fee_rate_m = contract_terms.fee_rate.clone().expect("fee rate should always be Some");
 
 
         let time_from_last_event = day_counter.day_count_fraction(
-            time_adjuster.shift_sc(&status_date.clone().to_phantom_type()),
+            {
+                let tmp : PhantomIsoDatetimeW = status_date.convert();
+                time_adjuster.shift_sc(&tmp)
+            },
             time_adjuster.shift_sc(time)
         );
 

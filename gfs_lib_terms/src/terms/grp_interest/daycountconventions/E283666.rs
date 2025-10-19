@@ -1,11 +1,10 @@
 use std::fmt;
 use std::rc::Rc;
-
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::terms::grp_notional_principal::MaturityDate::MaturityDate;
 use crate::traits::TraitCountConvention::TraitDayCountConvention;
 
-use crate::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct E283666 {
@@ -31,7 +30,8 @@ impl TraitDayCountConvention for E283666 {
 
         if self.maturity_date.is_some() {
             let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
-            if !(end_time == a.to_phantom_type() || end_time.month() == 2)
+            let tmp_a: PhantomIsoDatetimeW = a.convert();
+            if !(end_time == tmp_a || end_time.month() == 2)
             && end_time.is_last_day_of_month() {
                 d2 = 28;
             }

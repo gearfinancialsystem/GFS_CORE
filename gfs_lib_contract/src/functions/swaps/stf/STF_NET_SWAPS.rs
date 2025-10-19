@@ -7,35 +7,44 @@ use gfs_lib_terms::terms::grp_notional_principal::NotionalPrincipal::NotionalPri
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
 use crate::events::ContractEvent::ContractEvent;
 use crate::attributes::ContractTerms::ContractTerms;
+use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::states_space::StatesSpace::StatesSpace;
+use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
-use crate::attributes::ContractReference::ContractReference;
-use crate::traits::TraitRiskFactorModel::TraitRiskFactorModel;
+use std::sync::Arc;
 
+#[derive(Clone)]
 #[allow(non_camel_case_types)]
-pub struct STF_NET_SWAPS {
-    pub e1: Option<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
-    pub e2: Option<ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>>,
-}
+pub struct STF_NET_SWAPS;
 
-impl STF_NET_SWAPS {
-    pub fn new(e1: ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>, e2: ContractEvent<PhantomIsoDatetimeW, PhantomIsoDatetimeW>) -> Self {
-        STF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
-    }
-}
+// pub e1: Option<ContractEvent>,
+// pub e2: Option<ContractEvent>,
+//
+// impl STF_NET_SWAPS {
+//     pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
+//         STF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
+//     }
+// }
 
 impl TraitStateTransitionFunction for STF_NET_SWAPS {
+    fn new() -> Self {
+        Self { }
+        // Self {
+        //     e1: None,
+        //     e2: None,
+        // }
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        _contract_terms: &ContractTerms,
-        _contract_structure: &Option<Vec<ContractReference>>,
-        _risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        contract_terms: &ContractTerms,
+        contract_structure: &Option<RelatedContracts>,
+        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {
-        let e1_states = self.e1.clone().unwrap().states();
+        let e1_states = contract_structure.unwrap().states();
         let e2_states = self.e2.clone().unwrap().states();
 
         let notional_principal_e1 = e1_states.notional_principal.expect("should be some");
