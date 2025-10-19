@@ -8,6 +8,7 @@ use crate::functions::fxout::PayOffFunctionFXOUT::PayOffFunctionFXOUT;
 use crate::functions::lam::PayOffFunctionLAM::PayOffFunctionLAM;
 use crate::functions::pam::PayOffFunctionPAM::PayOffFunctionPAM;
 use crate::functions::stk::PayOffFunctionSTK::PayOffFunctionSTK;
+use crate::functions::swppv::PayOffFunctionSWPPV::PayOffFunctionSWPPV;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -17,6 +18,7 @@ pub enum PayOffFunction {
     PayOffFunctionLAM(PayOffFunctionLAM),
     PayOffFunctionFXOUT(PayOffFunctionFXOUT),
     PayOffFunctionSTK(PayOffFunctionSTK),
+    PayOffFunctionSWPPV(PayOffFunctionSWPPV),
     // PayOffFunctionSWAPS(PayOffFunctionSWAPS),
 }
 
@@ -30,7 +32,9 @@ impl PayOffFunction {
             "LAM" => Self::PayOffFunctionLAM(PayOffFunctionLAM::from_str(func)),
             "FXOUT" => Self::PayOffFunctionFXOUT(PayOffFunctionFXOUT::from_str(func)),
             "STK" => Self::PayOffFunctionSTK(PayOffFunctionSTK::from_str(func)),
+            "SWPPV" => Self::PayOffFunctionSWPPV(PayOffFunctionSWPPV::from_str(func)),
             //"SWAPS" => Self::PayOffFunctionSWAPS(PayOffFunctionSWAPS::from_str(func)),
+
             _ => panic!("foirade")
         }
     }
@@ -66,7 +70,19 @@ impl PayOffFunction {
                                                  contract_structure,
                                                  risk_factor_external_data,
                                                  day_counter,
-                                                 time_adjuster)
+                                                 time_adjuster),
+            // Self::PayOffFunctionSWAPS(v) => v.eval(time, states,
+            //                                      contract_terms,
+            //                                      contract_structure,
+            //                                      risk_factor_external_data,
+            //                                      day_counter,
+            //                                      time_adjuster)
+            Self::PayOffFunctionSWPPV(v) => v.eval(time, states,
+                                                 contract_terms,
+                                                 contract_structure,
+                                                 risk_factor_external_data,
+                                                 day_counter,
+                                                 time_adjuster),
         }
     }
 }

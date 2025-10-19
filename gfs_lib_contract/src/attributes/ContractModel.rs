@@ -14,7 +14,7 @@ use gfs_lib_types::types::Value::Value;
 // use crate::contracts::Csh::CSH;
 // use crate::contracts::Futur::FUTUR;
 use crate::contracts::Pam::PAM;
-use crate::contracts::Swaps::SWAPS;
+//use crate::contracts::Swaps::SWAPS;
 use crate::contracts::Fxout::FXOUT;
 // use crate::contracts::Lam::LAM;
 // use crate::contracts::Lax::LAX;
@@ -22,7 +22,7 @@ use crate::contracts::Fxout::FXOUT;
 // use crate::contracts::Optns::OPTNS;
 use crate::contracts::Stk::STK;
 use crate::events::ContractEvent::ContractEvent;
-// use crate::contracts::Swppv::SWPPV;
+use crate::contracts::Swppv::SWPPV;
 // use crate::contracts::Ump::UMP;
 //use crate::external::RiskFactorModel::RiskFactorModel;
 use crate::traits::TraitContractModel::TraitContractModel;
@@ -48,8 +48,8 @@ pub enum ContractModel {
     // OPTNS(OPTNS),
     PAM(PAM),
     STK(STK),
-    SWAPS(SWAPS),
-    // SWPPV(SWPPV),
+    // SWAPS(SWAPS),
+    SWPPV(SWPPV),
     // UMP(UMP),
 
 }
@@ -213,9 +213,21 @@ impl ContractModel {
                     c
                 }))
             },
-            "SWAPS" => {
-                Ok(Self::SWAPS({
-                    let mut c = SWAPS::new();
+            // "SWAPS" => {
+            //     Ok(Self::SWAPS({
+            //         let mut c = SWAPS::new();
+            //         c.init_contract_terms(sm_terms.clone());
+            //         c.init_risk_factor_external_data(risk_factor_external_data);
+            //         c.init_risk_factor_external_event(risk_factor_external_event);
+            //         c.init_related_contracts(sm_terms.clone());
+            //         c.init_state_space(&c.contract_terms.maturity_date.clone()); // a voir si c'est ok pour la maturité : pas très sur..
+            //         c
+            //     }))
+            //
+            // },
+            "SWPPV" => {
+                Ok(Self::SWPPV({
+                    let mut c = SWPPV::new();
                     c.init_contract_terms(sm_terms.clone());
                     c.init_risk_factor_external_data(risk_factor_external_data);
                     c.init_risk_factor_external_event(risk_factor_external_event);
@@ -225,17 +237,6 @@ impl ContractModel {
                 }))
 
             },
-            // "SWPPV" => {
-            //     Ok(Self::SWPPV({
-            //         let mut c = SWPPV::new();
-            //         c.set_contract_terms(sm_terms);
-            //         c.set_contract_risk_factors(risk_factors);
-            //         c.set_contract_structure(sm_terms);
-            // 
-            //         c
-            //     }))
-            // 
-            // },
             // "UMP" => {
             //     Ok(Self::UMP({
             //         let mut c = UMP::new();
@@ -271,8 +272,8 @@ impl ContractModel {
             // ContractModel::OPTNS(c) => {c.schedule(to)},
             ContractModel::PAM(c) => {c.init_contract_event_timeline(to)},
             ContractModel::STK(c) => {c.init_contract_event_timeline(to)},
-            ContractModel::SWAPS(c) => {c.init_contract_event_timeline(to)},
-            // ContractModel::SWPPV(c) => {c.schedule(to)},
+            // ContractModel::SWAPS(c) => {c.init_contract_event_timeline(to)},
+            ContractModel::SWPPV(c) => {c.init_contract_event_timeline(to)},
             // ContractModel::UMP(c) => {c.schedule(to)},
         }
     }
@@ -305,11 +306,14 @@ impl ContractModel {
                 let it = c.apply_until_date(stop_states_space_date, extract_results);
                 it
             },
-            ContractModel::SWAPS(c) => {
+            // ContractModel::SWAPS(c) => {
+            //     let it = c.apply_until_date(stop_states_space_date, extract_results);
+            //     it
+            // },
+            ContractModel::SWPPV(c) => {
                 let it = c.apply_until_date(stop_states_space_date, extract_results);
                 it
             },
-            // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
         }
     }
@@ -332,8 +336,8 @@ impl ContractModel {
             // ContractModel::OPTNS(c) => {c.apply()},
             ContractModel::PAM(c) => {c.next()},
             ContractModel::STK(c) => {c.next()},
-            ContractModel::SWAPS(c) => {c.next()},
-            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => {c.next()},
+            ContractModel::SWPPV(c) => {c.next()},
             // ContractModel::UMP(c) => {c.apply()},
         }
     }
@@ -365,11 +369,14 @@ impl ContractModel {
                 let c: PhantomIsoDatetimeW = c.status_date?.convert();
                 Some(c)
             },
-            ContractModel::SWAPS(c) => {
+            // ContractModel::SWAPS(c) => {
+            //     let c: PhantomIsoDatetimeW = c.status_date?.convert();
+            //     Some(c)
+            // },
+            ContractModel::SWPPV(c) => {
                 let c: PhantomIsoDatetimeW = c.status_date?.convert();
                 Some(c)
             },
-            // ContractModel::SWPPV(c) => {c.apply()},
             // ContractModel::UMP(c) => {c.apply()},
         }
     }
@@ -392,8 +399,8 @@ impl ContractModel {
             // ContractModel::OPTNS(c) => {c.apply()},
             ContractModel::PAM(c) => { c.event_timeline.clone() },
             ContractModel::STK(c) => { c.event_timeline.clone() },
-            ContractModel::SWAPS(c) => { c.event_timeline.clone() },
-            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => { c.event_timeline.clone() },
+            ContractModel::SWPPV(c) => { c.event_timeline.clone() },
             // ContractModel::UMP(c) => {c.apply()},
         }
     }
@@ -416,8 +423,8 @@ impl ContractModel {
             // ContractModel::OPTNS(c) => {c.apply()},
             ContractModel::PAM(c) => { c.sort_events_timeline()},
             ContractModel::STK(c) => { c.sort_events_timeline() },
-            ContractModel::SWAPS(c) => { c.sort_events_timeline() },
-            // ContractModel::SWPPV(c) => {c.apply()},
+            // ContractModel::SWAPS(c) => { c.sort_events_timeline() },
+            ContractModel::SWPPV(c) => {c.sort_events_timeline() },
             // ContractModel::UMP(c) => {c.apply()},
         }
     }

@@ -1,10 +1,10 @@
 pub mod POF_IED_SWPPV;
-pub mod POF_IPFIx_SWPPV;
+pub mod POF_IPFix_SWPPV;
 pub mod POF_IPFloat_SWPPV;
 pub mod POF_IP_SWPPV;
 pub mod POF_MD_SWPPV;
-mod POF_AD_SWPPV;
-mod POF_PRD_SWPPV;
-mod POF_TD_SWPPV;
-mod POF_RR_SWPPV;
-mod POF_CE_SWPPV;
+pub mod POF_AD_SWPPV;
+pub mod POF_PRD_SWPPV;
+pub mod POF_TD_SWPPV;
+pub mod POF_RR_SWPPV;
+pub mod POF_CE_SWPPV;

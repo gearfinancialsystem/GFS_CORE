@@ -8,6 +8,7 @@ use crate::functions::lam::StatesTransitionFunctionLAM::StatesTransitionFunction
 use crate::functions::pam::StatesTransitionFunctionPAM::StatesTransitionFunctionPAM;
 use crate::functions::fxout::StatesTransitionFunctionFXOUT::StatesTransitionFunctionFXOUT;
 use crate::functions::stk::StatesTransitionFunctionSTK::StatesTransitionFunctionSTK;
+use crate::functions::swppv::StatesTransitionFunctionSWPPV::StatesTransitionFunctionSWPPV;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -17,6 +18,8 @@ pub enum StatesTransitionFunction {
     StatesTransitionFunctionLAM(StatesTransitionFunctionLAM),
     StatesTransitionFunctionFXOUT(StatesTransitionFunctionFXOUT),
     StatesTransitionFunctionSTK(StatesTransitionFunctionSTK),
+    //StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS),
+    StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV),
 }
 
 impl StatesTransitionFunction {
@@ -28,6 +31,8 @@ impl StatesTransitionFunction {
             "LAM" => Self::StatesTransitionFunctionLAM(StatesTransitionFunctionLAM::from_str(func)),
             "FXOUT" => Self::StatesTransitionFunctionFXOUT(StatesTransitionFunctionFXOUT::from_str(func)),
             "STK" => Self::StatesTransitionFunctionSTK(StatesTransitionFunctionSTK::from_str(func)),
+            // "SWAPS" => Self::StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS::from_str(func)),
+            "SWPPV" => Self::StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV::from_str(func)),
             _ => panic!("foirade")
         }
     }
@@ -63,7 +68,19 @@ impl StatesTransitionFunction {
                                                            contract_structure,
                                                            risk_factor_external_data,
                                                            day_counter,
-                                                           time_adjuster)
+                                                           time_adjuster),
+            // Self::StatesTransitionFunctionSWAPS(v) => v.eval(time, states,
+            //                                                contract_terms,
+            //                                                contract_structure,
+            //                                                risk_factor_external_data,
+            //                                                day_counter,
+            //                                                time_adjuster),
+            Self::StatesTransitionFunctionSWPPV(v) => v.eval(time, states,
+                                                           contract_terms,
+                                                           contract_structure,
+                                                           risk_factor_external_data,
+                                                           day_counter,
+                                                           time_adjuster),
         }
     }
 }

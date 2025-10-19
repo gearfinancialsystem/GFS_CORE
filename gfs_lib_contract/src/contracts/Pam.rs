@@ -83,7 +83,7 @@ use gfs_lib_types::types::IsoDatetime::IsoDatetime;
 use gfs_lib_types::types::Value::Value;
 use crate::traits::TraitContractModel::TraitContractModel;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::contracts::Swaps::SWAPS;
+// use crate::contracts::Swaps::SWAPS;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;

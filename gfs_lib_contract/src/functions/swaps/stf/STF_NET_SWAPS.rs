@@ -15,23 +15,24 @@ use std::sync::Arc;
 
 #[derive(Clone)]
 #[allow(non_camel_case_types)]
-pub struct STF_NET_SWAPS {
-    pub e1: Option<ContractEvent>,
-    pub e2: Option<ContractEvent>,
-}
+pub struct STF_NET_SWAPS;
 
-impl STF_NET_SWAPS {
-    pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
-        STF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
-    }
-}
+// pub e1: Option<ContractEvent>,
+// pub e2: Option<ContractEvent>,
+//
+// impl STF_NET_SWAPS {
+//     pub fn new(e1: ContractEvent, e2: ContractEvent) -> Self {
+//         STF_NET_SWAPS { e1: Some(e1), e2: Some(e2) }
+//     }
+// }
 
 impl TraitStateTransitionFunction for STF_NET_SWAPS {
     fn new() -> Self {
-        Self {
-            e1: None,
-            e2: None,
-        }
+        Self { }
+        // Self {
+        //     e1: None,
+        //     e2: None,
+        // }
     }
     fn eval(
         &self,
