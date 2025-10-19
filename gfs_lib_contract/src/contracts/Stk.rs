@@ -45,8 +45,6 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::time::ScheduleFactory::ScheduleFactory;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::contracts::Fxout::FXOUT;
-use crate::contracts::Pam::PAM;
 use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
@@ -157,7 +155,7 @@ impl TraitContractModel for STK {
             contract_role: ContractRole::provide_from_input_dict(&sm, "contractRole"),
             counterparty_id: CounterpartyID::provide_from_input_dict(&sm, "CounterpartyID"),
             currency: Currency::provide_from_input_dict(&sm, "currency"),
-            quantity: Quantity::provide_from_input_dict(&sm, "quantity"),
+            quantity: quantity,
             purchase_date: purchase_date,
             price_at_purchase_date: price_at_purchase_date,
             termination_date: TerminationDate::provide_from_input_dict(&sm, "terminationDate"),
@@ -184,7 +182,7 @@ impl TraitContractModel for STK {
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, _sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 
@@ -296,11 +294,9 @@ impl TraitContractModel for STK {
                 &model.contract_id
             );
             events.retain(|e| {
-                !(e.compare_to({ &tmpe }) == 1)
+                !(e.compare_to(&tmpe) == 1)
             });
         }
-
-
 
         self.event_timeline = events.clone();
         self.sort_events_timeline();

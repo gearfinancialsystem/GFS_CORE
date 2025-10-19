@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::error::Error;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
@@ -41,10 +40,8 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::states_space::StatesSpace::StatesSpace;
-
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::contracts::Pam::PAM;
 use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
@@ -165,7 +162,7 @@ impl TraitContractModel for FXOUT {
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, _sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 

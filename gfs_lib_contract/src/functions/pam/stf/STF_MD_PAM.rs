@@ -26,11 +26,11 @@ impl TraitStateTransitionFunction for STF_MD_PAM {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        contract_terms: &ContractTerms,
+        _contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
         _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) {
         // let mut new_states: StateSpace = states.copy_state_space(); 
         // Set state values to zero at maturity

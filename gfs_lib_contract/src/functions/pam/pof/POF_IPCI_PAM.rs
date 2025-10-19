@@ -20,13 +20,13 @@ impl TraitPayOffFunction for POF_IPCI_PAM {
     }
     fn eval(
         &self,
-        time: &PhantomIsoDatetimeW,
-        states: &StatesSpace,
-        contract_terms: &ContractTerms,
+        _time: &PhantomIsoDatetimeW,
+        _states: &StatesSpace,
+        _contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         0.0
     }

@@ -51,7 +51,7 @@ impl fmt::Display for Value {
                 }
                 write!(f, "}}")
             },
-            Value::VvecCs(v) => {write!(f, "ok")}
+            Value::VvecCs(_) => {write!(f, "ok")} // ameliorer
         }
     }
 }
@@ -354,7 +354,7 @@ impl Value {
             },
             Value::Vbool(m) => m.to_string(),
             Value::None => "null".to_string(),
-            Value::VvecCs(v) => "ok".to_string(),
+            Value::VvecCs(_) => "ok".to_string(), // ameliorer
         }
     }
 

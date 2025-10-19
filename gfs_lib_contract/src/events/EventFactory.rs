@@ -69,18 +69,14 @@ impl EventFactory {
         event_schedule
             .iter()
             .map(|time| {
-                let mut dd = None;
-                if convention.is_none() {
-
-                    dd = EventTime::new(time.clone().value()).ok() ;
-                    
+                let dd = if convention.is_none() {
+                    EventTime::new(time.clone().value()).ok()
                 }
                 else {
                     let tmp_time: PhantomIsoDatetimeW = time.convert();
                     let adjusted_time = convention.clone().unwrap().shift_bd(&tmp_time);
-                    let aaa =adjusted_time.to_string();
-                    dd = EventTime::new(adjusted_time.clone().value()).ok()
-                }
+                    EventTime::new(adjusted_time.clone().value()).ok()
+                };
 
                 ContractEvent::new(
                     &Some(time.clone()),

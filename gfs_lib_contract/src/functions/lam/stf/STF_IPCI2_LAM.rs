@@ -39,7 +39,7 @@ impl TraitStateTransitionFunction for STF_IPCI2_LAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notional_principal should always be Some");
         let accrued_interest = states.accrued_interest.clone().expect("accrued_interest should always be Some");
-        let fee_accrued_m = contract_terms.fee_accrued.clone().expect("fee accrued should always be Some");
+        // let fee_accrued_m = contract_terms.fee_accrued.clone().expect("fee accrued should always be Some");
         let fee_rate_m = contract_terms.fee_rate.clone().expect("fee rate should always be Some");
 
 

@@ -24,8 +24,8 @@ impl TraitPayOffFunction for POF_IPFloat_SWPPV {
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,

@@ -30,8 +30,8 @@ impl TraitStateTransitionFunction for STF_IED_SWPPV {
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
         _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) {
         let contract_role = contract_terms.contract_role.as_ref().expect("contractRole should always be Some");
         let role_sign = contract_role.role_sign();

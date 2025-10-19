@@ -19,13 +19,13 @@ impl TraitPayOffFunction for POF_IED_SWPPV {
 
     fn eval(
         &self,
-        time: &PhantomIsoDatetimeW,
-        states: &StatesSpace,
-        contract_terms: &ContractTerms,
+        _time: &PhantomIsoDatetimeW,
+        _states: &StatesSpace,
+        _contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         // Remplacer les appels à settlement_currency_fx_rate ou risk_factor_model par 1.0
         //let settlement_currency_fx_rate = 1.0;

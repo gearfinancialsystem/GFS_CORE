@@ -49,7 +49,7 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         let delivery_settlement = contract_terms.delivery_settlement.clone().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
-            DeliverySettlement::D(D) => model_nominal_interest_rate,
+            DeliverySettlement::D(_) => model_nominal_interest_rate,
             _ => NominalInterestRate::new(model_nominal_interest_rate.value() - nominal_interest_rate.value()).expect(""),
         };
 
@@ -71,18 +71,17 @@ impl TraitStateTransitionFunction for STF_RR_SWPPV {
         let rate_spread = contract_terms.rate_spread.clone().itself_or(0.0);
 
         // Simplified calculation as a placeholder
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 contract_terms.market_object_code_of_rate_reset.clone().unwrap().value(),
                 time,
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         states.nominal_interest_rate = NominalInterestRate::new(cbv.unwrap() * rate_multiplier.value() + rate_spread.value()).ok();
 
-        states.status_date = StatusDate::new(time.value()).ok();;
+        states.status_date = StatusDate::new(time.value()).ok();
     }
 }

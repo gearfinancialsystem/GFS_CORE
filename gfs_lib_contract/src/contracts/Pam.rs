@@ -289,7 +289,7 @@ impl TraitContractModel for PAM { //
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, _sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 
@@ -367,7 +367,7 @@ impl TraitContractModel for PAM { //
         self.states_space = states
     }
 
-    fn init_contract_event_timeline(&mut self, to : Option<PhantomIsoDatetimeW>) { // to: Option<IsoDatetime> // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
+    fn init_contract_event_timeline(&mut self, _to : Option<PhantomIsoDatetimeW>) { // to: Option<IsoDatetime> // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
 
         let model = &self.contract_terms;
         let events = &mut self.event_timeline;

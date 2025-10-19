@@ -1,4 +1,3 @@
-use std::hash::Hash;
 use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
@@ -6,7 +5,6 @@ use crate::states_space::StatesSpace::StatesSpace;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::traits::_TraitRiskFactorModel::TraitRiskFactorModel;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_snake_case)]

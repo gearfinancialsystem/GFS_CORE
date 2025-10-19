@@ -24,7 +24,7 @@ impl TraitStateTransitionFunction for STF_IPFix_SWPPV {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        contract_terms: &ContractTerms,
+        _contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
         _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,

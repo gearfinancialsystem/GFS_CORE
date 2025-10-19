@@ -1,10 +1,6 @@
-
 use std::collections::HashSet;
-use std::fmt::Debug;
-use std::hash::Hash;
 
 use gfs_lib_terms::non_terms::EndTime::EndTime;
-use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
 
 use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;

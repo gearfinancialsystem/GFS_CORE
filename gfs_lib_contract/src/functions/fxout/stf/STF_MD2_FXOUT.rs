@@ -22,9 +22,9 @@ impl TraitStateTransitionFunction for STF_MD2_FXOUT {
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
-        contract_terms: &ContractTerms,
+        _contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
-        risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
     ) {

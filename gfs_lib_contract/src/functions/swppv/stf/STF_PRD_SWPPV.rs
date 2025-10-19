@@ -48,7 +48,7 @@ impl TraitStateTransitionFunction for STF_PRD_SWPPV {
         let delivery_settlement = contract_terms.delivery_settlement.as_ref().expect("deliverySettlement should always be Some");
 
         let interest_rate = match delivery_settlement {
-            DeliverySettlement::D(D) => model_nominal_interest_rate.value(),
+            DeliverySettlement::D(_) => model_nominal_interest_rate.value(),
             _ => model_nominal_interest_rate.value() - nominal_interest_rate.value(),
         };
 

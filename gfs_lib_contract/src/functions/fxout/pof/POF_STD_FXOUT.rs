@@ -44,15 +44,14 @@ impl TraitPayOffFunction for POF_STD_FXOUT {
         let joined = str_slices.join("/");
 
 
-        let mut cbv = None;
-        if let Some(rfm) = risk_factor_external_data {
-            cbv = rfm.state_at(
+        let cbv = if let Some(rfm) = risk_factor_external_data {
+            rfm.state_at(
                 joined,
                 &maturity_date.value().convert::<PhantomIsoDatetimeW>(),
-            );
+            )
         } else {
-            cbv = None
-        }
+            None
+        };
 
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,

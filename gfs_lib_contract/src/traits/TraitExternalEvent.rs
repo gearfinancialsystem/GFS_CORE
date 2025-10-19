@@ -1,6 +1,5 @@
 use std::collections::HashSet;
-use std::fmt::Debug;
-use crate::events::ContractEvent::{ContractEvent, TraitContractEvent};
+use crate::events::ContractEvent::ContractEvent;
 
 
 pub trait TraitExternalEvent

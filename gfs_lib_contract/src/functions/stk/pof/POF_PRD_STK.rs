@@ -23,8 +23,8 @@ impl TraitPayOffFunction for POF_PRD_STK {
         contract_terms: &ContractTerms,
         _contract_structure: &Option<RelatedContracts>,
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
-        day_counter: &Option<DayCountConvention>,
-        time_adjuster: &BusinessDayAdjuster,
+        _day_counter: &Option<DayCountConvention>,
+        _time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
         let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be some");
         let quantity = contract_terms.quantity.clone().expect("quantity should always be some");

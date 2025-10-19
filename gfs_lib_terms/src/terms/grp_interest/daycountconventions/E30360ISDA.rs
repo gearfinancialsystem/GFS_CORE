@@ -32,21 +32,10 @@ impl TraitDayCountConvention for E30360ISDA {
         // Vérification du cas : si end_time == maturity_date et c'est un mois de février => pas d'ajustement
         let is_february = end_time.month() == 2;
         if self.maturity_date.is_some() {
-            let a = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
-            let maturity =  {
-                // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
-                let tmp_a: PhantomIsoDatetimeW = a.convert();
-                if end_time == tmp_a && is_february {
-                    // pas d'ajustement, on laisse d2
-                }
-                else if end_time.is_last_day_of_month() {
-                    d2 = 30;
-                }
-            };
-        }
-        else {
-    // Pas de maturité => la règle "dernier jour du mois => d2 = 30"
-            if end_time.is_last_day_of_month() {
+            let mat = self.maturity_date.clone().map(|rc| (*rc).clone()).unwrap();
+            // Vérifier end_time == maturityDate ET mois = 2 => on n'ajuste pas d2
+            let tmp_mat: PhantomIsoDatetimeW = mat.convert();
+            if !(end_time == tmp_mat && is_february) && end_time.is_last_day_of_month() {
                 d2 = 30;
             }
         }

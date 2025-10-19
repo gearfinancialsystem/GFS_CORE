@@ -203,7 +203,7 @@ impl TraitContractModel for SWPPV {
         self.risk_factor_external_event = risk_factor_external_event;
     }
 
-    fn init_related_contracts(&mut self, sm: HashMap<String, Value>) {
+    fn init_related_contracts(&mut self, _sm: HashMap<String, Value>) {
         self.related_contracts = None;
     }
 
@@ -389,12 +389,10 @@ impl TraitContractModel for SWPPV {
 
         events.retain(|e| e.event_time <= to_event.event_time);
 
-        // Sort events according to their time of occurrence
         // events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         self.event_timeline = events.clone();
         self.sort_events_timeline();
-        println!("ok");
     }
 
     fn set_status_date(&mut self, status_date: Option<StatusDate>) {

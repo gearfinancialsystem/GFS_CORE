@@ -101,14 +101,10 @@ impl ContractEvent {
         self.fstate = function;
     }
     pub fn compare_to(&self, other: &ContractEvent) -> i64 {
-        // let z1 = self.epoch_offset.clone().unwrap().to_string();
-        // let z2 = other.epoch_offset.clone().unwrap().to_string();
-        // let aa = self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap();
-        // let a = (self.epoch_offset.clone().unwrap() - other.epoch_offset.clone().unwrap()).signum() as i64;
+
         let lhs = self.epoch_offset.clone().unwrap().value() as i64;
         let rhs = other.epoch_offset.clone().unwrap().value() as i64;
-        let a = (lhs - rhs).signum(); // as i64
-        // println!("ok");
+        
         (lhs - rhs).signum()
     }
   

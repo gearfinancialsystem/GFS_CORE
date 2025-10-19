@@ -7,7 +7,6 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
 use crate::functions::fxout::pof::POF_AD_FXOUT::POF_AD_FXOUT;
-use crate::functions::fxout::pof::POF_CD_FXOUT;
 use crate::functions::fxout::pof::POF_CE_FXOUT::POF_CE_FXOUT;
 use crate::functions::fxout::pof::POF_MD1_FXOUT::POF_MD1_FXOUT;
 use crate::functions::fxout::pof::POF_MD2_FXOUT::POF_MD2_FXOUT;
