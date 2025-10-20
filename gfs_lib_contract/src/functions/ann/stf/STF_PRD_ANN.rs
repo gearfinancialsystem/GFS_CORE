@@ -1,27 +1,35 @@
-use crate::attributes::ContractReference::ContractReference;
-use crate::external::RiskFactorModel::RiskFactorModel;
+use std::sync::Arc;
+use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
+use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
+use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
+use gfs_lib_terms::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
+use gfs_lib_terms::traits::TraitOptionExt::TraitOptionExt;
+use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
-use crate::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
-use crate::terms::grp_contract_identification::StatusDate::StatusDate;
-use crate::terms::grp_interest::DayCountConvention::DayCountConvention;
-use crate::terms::grp_notional_principal::NextPrincipalRedemptionPayment::NextPrincipalRedemptionPayment;
-use crate::traits::TraitOptionExt::TraitOptionExt;
 use gfs_lib_terms::traits::types_markers::TraitMarkerIsoDatetime::TraitMarkerIsoDatetime;
-use crate::types::IsoDatetime::IsoDatetime;
+use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
+use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::traits::TraitExternalData::TraitExternalData;
+
 
 
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub struct STF_PRD_ANN;
 impl TraitStateTransitionFunction for STF_PRD_ANN {
+    fn new() -> Self {
+        Self {}
+    }
     fn eval(
         &self,
         time: &PhantomIsoDatetimeW,
         states: &mut StatesSpace,
         contract_terms: &ContractTerms,
-        contract_structure: &Option<Vec<ContractReference>>,
-        risk_factor_model: &Option<impl TraitRiskFactorModel>,
+        _contract_structure: &Option<RelatedContracts>,
+        _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     )  {
@@ -35,7 +43,7 @@ impl TraitStateTransitionFunction for STF_PRD_ANN {
         let contract_role_m = contract_terms.clone().contract_role.clone().expect("contract role should be some");
         let day_counter = day_counter.clone().expect("sould have day counter");
         
-        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.value()),
+        let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(&status_date.convert::<PhantomIsoDatetimeW>()),
                                                                   time_adjuster.shift_sc(time));
 
         states.accrued_interest.add_assign(time_from_last_event *

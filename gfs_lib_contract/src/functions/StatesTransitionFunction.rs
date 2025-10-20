@@ -4,6 +4,7 @@ use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::functions::ann::StatesTransitionFunctionANN::StatesTransitionFunctionANN;
 use crate::functions::lam::StatesTransitionFunctionLAM::StatesTransitionFunctionLAM;
 use crate::functions::pam::StatesTransitionFunctionPAM::StatesTransitionFunctionPAM;
 use crate::functions::fxout::StatesTransitionFunctionFXOUT::StatesTransitionFunctionFXOUT;
@@ -20,6 +21,7 @@ pub enum StatesTransitionFunction {
     StatesTransitionFunctionSTK(StatesTransitionFunctionSTK),
     //StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS),
     StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV),
+    StatesTransitionFunctionANN(StatesTransitionFunctionANN),
 }
 
 impl StatesTransitionFunction {
@@ -33,6 +35,7 @@ impl StatesTransitionFunction {
             "STK" => Self::StatesTransitionFunctionSTK(StatesTransitionFunctionSTK::from_str(func)),
             // "SWAPS" => Self::StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS::from_str(func)),
             "SWPPV" => Self::StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV::from_str(func)),
+            "ANN" => Self::StatesTransitionFunctionANN(StatesTransitionFunctionANN::from_str(func)),
             _ => panic!("foirade")
         }
     }
@@ -81,6 +84,12 @@ impl StatesTransitionFunction {
                                                            risk_factor_external_data,
                                                            day_counter,
                                                            time_adjuster),
+            Self::StatesTransitionFunctionANN(v) => v.eval(time, states,
+                                                             contract_terms,
+                                                             contract_structure,
+                                                             risk_factor_external_data,
+                                                             day_counter,
+                                                             time_adjuster),
         }
     }
 }

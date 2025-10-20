@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-// pub mod Ann;
+pub mod Ann;
 // pub mod Bcs;
 // pub mod Capfl;
 // pub mod Cec;
@@ -10,9 +10,9 @@
 // pub mod Csh;
 // pub mod Futur;
 pub mod Fxout;
-// pub mod Lam;
+pub mod Lam;
 // pub mod Lax;
-// pub mod Nam;
+pub mod Nam;
 // pub mod Optns;
 pub mod Pam;
 pub mod Stk;

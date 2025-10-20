@@ -1,5 +1,5 @@
 #![allow(non_snake_case)]
-//pub mod ann;
+pub mod ann;
 // pub mod bcs;
 // pub mod capfl;
 // pub mod cec;
@@ -11,7 +11,7 @@
 pub mod fxout;
 pub mod lam;
 // pub mod lax;
-// pub mod nam;
+pub mod nam;
 // pub mod optns;
 pub mod pam;
 pub mod PayOffFunction;
