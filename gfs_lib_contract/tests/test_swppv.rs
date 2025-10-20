@@ -45,7 +45,7 @@ fn test_swppv_contract_creation() {
 
         // Initialisez les termes du contrat avec des données de test
         swppv.run_schedule(Some(to_date));
-        let res = swppv.run_apply(None, true); // a
+        let res = swppv.run_apply(Some(to_date), true); // a
         let res_dispo = res.expect("ok").expect("ok");
 
         assert_eq!(compare_test_results(&res_dispo, &contract_results_dict), true);
