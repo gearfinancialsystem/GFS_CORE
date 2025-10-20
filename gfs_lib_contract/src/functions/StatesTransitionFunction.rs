@@ -8,6 +8,7 @@ use crate::functions::ann::StatesTransitionFunctionANN::StatesTransitionFunction
 use crate::functions::lam::StatesTransitionFunctionLAM::StatesTransitionFunctionLAM;
 use crate::functions::pam::StatesTransitionFunctionPAM::StatesTransitionFunctionPAM;
 use crate::functions::fxout::StatesTransitionFunctionFXOUT::StatesTransitionFunctionFXOUT;
+use crate::functions::nam::StatesTransitionFunctionNAM::StatesTransitionFunctionNAM;
 use crate::functions::stk::StatesTransitionFunctionSTK::StatesTransitionFunctionSTK;
 use crate::functions::swppv::StatesTransitionFunctionSWPPV::StatesTransitionFunctionSWPPV;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -21,6 +22,7 @@ pub enum StatesTransitionFunction {
     StatesTransitionFunctionSTK(StatesTransitionFunctionSTK),
     //StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS),
     StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV),
+    StatesTransitionFunctionNAM(StatesTransitionFunctionNAM),
     StatesTransitionFunctionANN(StatesTransitionFunctionANN),
 }
 
@@ -35,6 +37,7 @@ impl StatesTransitionFunction {
             "STK" => Self::StatesTransitionFunctionSTK(StatesTransitionFunctionSTK::from_str(func)),
             // "SWAPS" => Self::StatesTransitionFunctionSWAPS(StatesTransitionFunctionSWAPS::from_str(func)),
             "SWPPV" => Self::StatesTransitionFunctionSWPPV(StatesTransitionFunctionSWPPV::from_str(func)),
+            "NAM" => Self::StatesTransitionFunctionNAM(StatesTransitionFunctionNAM::from_str(func)),
             "ANN" => Self::StatesTransitionFunctionANN(StatesTransitionFunctionANN::from_str(func)),
             _ => panic!("foirade")
         }
@@ -90,6 +93,12 @@ impl StatesTransitionFunction {
                                                              risk_factor_external_data,
                                                              day_counter,
                                                              time_adjuster),
+            Self::StatesTransitionFunctionNAM(v) => v.eval(time, states,
+                                                           contract_terms,
+                                                           contract_structure,
+                                                           risk_factor_external_data,
+                                                           day_counter,
+                                                           time_adjuster),
         }
     }
 }

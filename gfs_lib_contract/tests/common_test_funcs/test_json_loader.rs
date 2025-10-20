@@ -65,6 +65,9 @@ pub fn load_test_case_terms2(
             TermsValue::String(v) => {
                 Value::Vstring(v.clone())
             },
+            TermsValue::VvecStr(v) => {
+                Value::VvecVal(v.clone().iter().map(|s| Value::Vstring(s.clone())).collect() )
+            },
             TermsValue::ContractStructure(v) => {
                 Value::VvecCs(v)
             },
@@ -159,6 +162,7 @@ impl TraitExternalData for DataObserved {
 #[serde(untagged)]
 pub enum TermsValue {
     String(String),
+    VvecStr(Vec<String>),
     ContractStructure(Vec<ContractStructure>),
 }
 

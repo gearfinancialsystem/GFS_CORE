@@ -47,7 +47,7 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
                 tmp
             },
         ),
-                                                                  time_adjuster.shift_sc(time));
+        time_adjuster.shift_sc(time));
 
 
         states.accrued_interest.add_assign(nominal_interest_rate.value() * notional_principal.value() * time_from_last_event);
@@ -63,10 +63,10 @@ impl TraitStateTransitionFunction for STF_SC_PAM {
         };
 
         if scaling_effect.to_string().contains("I") {
-            states.interest_scaling_multiplier = InterestScalingMultiplier::new(cbv.unwrap()).ok();//
+            states.interest_scaling_multiplier = InterestScalingMultiplier::new(cbv.unwrap() / contract_terms.scaling_index_at_contract_deal_date.unwrap().value()).ok();//
         }
         if scaling_effect.to_string().contains("N") {
-            states.notional_scaling_multiplier = NotionalScalingMultiplier::new(cbv.unwrap()).ok();//
+            states.notional_scaling_multiplier = NotionalScalingMultiplier::new(cbv.unwrap() / contract_terms.scaling_index_at_contract_deal_date.unwrap().value()).ok();//
         }
         
         states.status_date = StatusDate::new(time.value()).ok();

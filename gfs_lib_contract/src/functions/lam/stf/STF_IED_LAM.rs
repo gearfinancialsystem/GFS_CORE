@@ -41,19 +41,20 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         let contract_role = contract_terms.contract_role.clone().expect("contractRole should always be Some");
         let notional_principal = contract_terms.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let nominal_interest_rate = contract_terms.nominal_interest_rate.clone().expect("nominalInterestRate should always be Some");
+        let interest_calculation_base = contract_terms.interest_calculation_base.clone().expect("interestCalculationBase should always be Some");
 
         states.status_date = StatusDate::new(time.value()).ok();
         states.notional_principal = NotionalPrincipal::new(contract_role.role_sign() * notional_principal.value()).ok();
         states.nominal_interest_rate = Some(nominal_interest_rate);
 
-        if let Some(interest_calculation_base) = &contract_terms.interest_calculation_base {
-            if *interest_calculation_base == InterestCalculationBase::NT(NT) {
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok() ;
-            } else {
-                let interest_calculation_base_amount = contract_terms.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
-                states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(contract_role.role_sign() * interest_calculation_base_amount.value()).ok();
-            }
+
+        if interest_calculation_base == InterestCalculationBase::NT(NT) {
+            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(states.notional_principal.clone().unwrap().value()).ok() ;
+        } else {
+            let interest_calculation_base_amount = contract_terms.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
+            states.interest_calculation_base_amount = InterestCalculationBaseAmount::new(contract_role.role_sign() * interest_calculation_base_amount.value()).ok();
         }
+
 
         if let Some(accrued_interest) = contract_terms.accrued_interest.clone() {
             states.accrued_interest = AccruedInterest::new(contract_role.role_sign() * accrued_interest.value()).ok();
@@ -88,5 +89,7 @@ impl TraitStateTransitionFunction for STF_IED_LAM {
         } else {
             states.accrued_interest = AccruedInterest::new(0.0).ok();
         }
+        println!("ok");
     }
+
 }

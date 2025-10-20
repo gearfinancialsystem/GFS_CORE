@@ -10,6 +10,7 @@ use crate::functions::pam::PayOffFunctionPAM::PayOffFunctionPAM;
 use crate::functions::stk::PayOffFunctionSTK::PayOffFunctionSTK;
 use crate::functions::swppv::PayOffFunctionSWPPV::PayOffFunctionSWPPV;
 use crate::functions::ann::PayOffFunctionANN::PayOffFunctionANN;
+use crate::functions::nam::PayOffFunctionNAM::PayOffFunctionNAM;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitExternalData::TraitExternalData;
 
@@ -21,6 +22,7 @@ pub enum PayOffFunction {
     PayOffFunctionSTK(PayOffFunctionSTK),
     PayOffFunctionSWPPV(PayOffFunctionSWPPV),
     PayOffFunctionANN(PayOffFunctionANN),
+    PayOffFunctionNAM(PayOffFunctionNAM),
     // PayOffFunctionSWAPS(PayOffFunctionSWAPS),
 }
 
@@ -36,6 +38,7 @@ impl PayOffFunction {
             "STK" => Self::PayOffFunctionSTK(PayOffFunctionSTK::from_str(func)),
             "SWPPV" => Self::PayOffFunctionSWPPV(PayOffFunctionSWPPV::from_str(func)),
             "ANN" => Self::PayOffFunctionANN(PayOffFunctionANN::from_str(func)),
+            "NAM" => Self::PayOffFunctionNAM(PayOffFunctionNAM::from_str(func)),
             //"SWAPS" => Self::PayOffFunctionSWAPS(PayOffFunctionSWAPS::from_str(func)),
 
             _ => panic!("foirade")
@@ -92,6 +95,12 @@ impl PayOffFunction {
                                                    risk_factor_external_data,
                                                    day_counter,
                                                    time_adjuster),
+            Self::PayOffFunctionNAM(v) => v.eval(time, states,
+                                                 contract_terms,
+                                                 contract_structure,
+                                                 risk_factor_external_data,
+                                                 day_counter,
+                                                 time_adjuster),
         }
     }
 }

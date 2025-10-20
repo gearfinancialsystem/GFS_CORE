@@ -26,7 +26,7 @@ def convertir_floats_en_str(obj):
         # Sinon, on retourne la valeur inchangée
         return obj
 
-ct = "ann"
+ct = "nam"
 d = parse_json('actus-tests-%s.json' % ct)
 d2 = convertir_floats_en_str(d)
 

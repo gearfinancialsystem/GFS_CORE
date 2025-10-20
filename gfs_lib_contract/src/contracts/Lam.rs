@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use std::error::Error;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
@@ -29,7 +28,9 @@ use gfs_lib_terms::terms::grp_fees::FeeBasis::FeeBasis;
 use gfs_lib_terms::terms::grp_fees::FeeRate::FeeRate;
 use gfs_lib_terms::terms::grp_interest::AccruedInterest::AccruedInterest;
 use gfs_lib_terms::terms::grp_interest::CapitalizationEndDate::CapitalizationEndDate;
+use gfs_lib_terms::terms::grp_interest::CycleAnchorDateOfInterestCalculationBase::CycleAnchorDateOfInterestCalculationBase;
 use gfs_lib_terms::terms::grp_interest::CycleAnchorDateOfInterestPayment::CycleAnchorDateOfInterestPayment;
+use gfs_lib_terms::terms::grp_interest::CycleOfInterestCalculationBase::CycleOfInterestCalculationBase;
 use gfs_lib_terms::terms::grp_interest::CycleOfInterestPayment::CycleOfInterestPayment;
 use gfs_lib_terms::terms::grp_interest::CyclePointOfInterestPayment::CyclePointOfInterestPayment;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -39,7 +40,9 @@ use gfs_lib_terms::terms::grp_interest::InterestCalculationBase::InterestCalcula
 use gfs_lib_terms::terms::grp_interest::InterestCalculationBaseAmount::InterestCalculationBaseAmount;
 use gfs_lib_terms::terms::grp_interest::NominalInterestRate::NominalInterestRate;
 use gfs_lib_terms::terms::grp_notional_principal::Currency::Currency;
+use gfs_lib_terms::terms::grp_notional_principal::CycleAnchorDateOfPrincipalRedemption::CycleAnchorDateOfPrincipalRedemption;
 use gfs_lib_terms::terms::grp_notional_principal::CycleAnchorDateOfScalingIndex::CycleAnchorDateOfScalingIndex;
+use gfs_lib_terms::terms::grp_notional_principal::CycleOfPrincipalRedemption::CycleOfPrincipalRedemption;
 use gfs_lib_terms::terms::grp_notional_principal::CycleOfScalingIndex::CycleOfScalingIndex;
 use gfs_lib_terms::terms::grp_notional_principal::InitialExchangeDate::InitialExchangeDate;
 use gfs_lib_terms::terms::grp_notional_principal::InterestScalingMultiplier::InterestScalingMultiplier;
@@ -82,36 +85,10 @@ use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
 use crate::events::EventType::EventType::RRF;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::contracts::Pam::PAM;
 use crate::events::EventSequence::EventSequence;
-use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
-use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
-use crate::functions::lam::pof::POF_PRD_LAM::POF_PRD_LAM;
-use crate::functions::lam::pof::POF_TD_LAM::POF_TD_LAM;
-use crate::functions::lam::stf::STF_FP_LAM::STF_FP_LAM;
-use crate::functions::lam::stf::STF_IED_LAM::STF_IED_LAM;
-use crate::functions::lam::stf::STF_IPBC_LAM::STF_IPCB_LAM;
-use crate::functions::lam::stf::STF_IPCI2_LAM::STF_IPCI2_LAM;
-use crate::functions::lam::stf::STF_IPCI_LAM::STF_IPCI_LAM;
-use crate::functions::lam::stf::STF_MD_LAM::STF_MD_LAM;
-use crate::functions::lam::stf::STF_PR2_LAM::STF_PR2_LAM;
-use crate::functions::lam::stf::STF_PR_LAM::STF_PR_LAM;
-use crate::functions::lam::stf::STF_PRD_LAM::STF_PRD_LAM;
-use crate::functions::lam::stf::STF_RR_LAM::STF_RR_LAM;
-use crate::functions::lam::stf::STF_RRF_LAM::STF_RRF_LAM;
-use crate::functions::lam::stf::STF_SC_LAM::STF_SC_LAM;
-use crate::functions::pam::pof::POF_FP_PAM::POF_FP_PAM;
-use crate::functions::pam::pof::POF_IED_PAM::POF_IED_PAM;
-use crate::functions::pam::pof::POF_IPCI_PAM::POF_IPCI_PAM;
-use crate::functions::pam::pof::POF_MD_PAM::POF_MD_PAM;
-use crate::functions::pam::pof::POF_RR_PAM::POF_RR_PAM;
-use crate::functions::pam::pof::POF_SC_PAM::POF_SC_PAM;
-use crate::functions::pam::stf::STF_IP_PAM::STF_IP_PAM;
-use crate::functions::pam::stf::STF_TD_PAM::STF_TD_PAM;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
 use crate::util::RedemptionUtils::RedemptionUtils;
@@ -177,9 +154,9 @@ impl TraitContractModel for LAM {
         let day_count_convention =
             if let Some(maturity_date) = &maturity_date {
             DayCountConvention::provide_from_input_dict(&sm, "dayCountConvention", Some(Rc::clone(maturity_date)), Some(Rc::clone(&calendar)))
-        } else {
-            None
-        };
+            } else {
+                DayCountConvention::provide_from_input_dict(&sm, "dayCountConvention", None, Some(Rc::clone(&calendar)))
+            };
 
         let cycle_point_of_interest_payment = CyclePointOfInterestPayment::provide_from_input_dict(&sm, "cyclePointOfInterestPayment");
         let cycle_point_of_rate_reset =
@@ -210,18 +187,22 @@ impl TraitContractModel for LAM {
         };
 
         let cycle_of_rate_reset = CycleOfRateReset::provide_from_input_dict(&sm, "cycleOfRateReset");
-        let cycle_anchor_date_of_rate_reset = if cycle_of_rate_reset.is_none() {
-            let a = InitialExchangeDate::provide_from_input_dict(&sm, "initialExchangeDate").unwrap().value().to_string();
-            CycleAnchorDateOfRateReset::from_str(&a).ok()
-        } else {
-            CycleAnchorDateOfRateReset::provide_from_input_dict(&sm, "cycleAnchorDateOfRateReset")
+        let mut cycle_anchor_date_of_rate_reset = CycleAnchorDateOfRateReset::provide_from_input_dict(&sm, "cycleAnchorDateOfRateReset");
+        if cycle_anchor_date_of_rate_reset.is_none() {
+            if cycle_of_rate_reset.is_none() {
+                cycle_anchor_date_of_rate_reset = None;
+            }
+            else {
+                let a = InitialExchangeDate::provide_from_input_dict(&sm, "initialExchangeDate").unwrap().value().to_string();
+                cycle_anchor_date_of_rate_reset = CycleAnchorDateOfRateReset::from_str(&a).ok();
+            }
         };
 
         let business_day_adjuster = {
             let calendar_clone = Some(Rc::clone(&calendar));
             BusinessDayAdjuster::provide(
                 &sm,
-                "businessDayAdjuster",
+                "businessDayConvention", // businessDayAdjuster
                 calendar_clone.expect("ere")
             )
         };
@@ -230,6 +211,93 @@ impl TraitContractModel for LAM {
         let end_of_month_convention = if eomc.is_none() {
             EndOfMonthConvention::default()
         } else {eomc.unwrap()};
+
+        let mut scaling_effect = ScalingEffect::provide_from_input_dict(&sm, "scalingEffect");
+        if scaling_effect.is_none() {
+            scaling_effect = Some(ScalingEffect::from_str("OOO").unwrap());
+        }
+
+        let mut price_at_purchase_date = PriceAtPurchaseDate::provide_from_input_dict(&sm, "priceAtPurchaseDate");
+        if price_at_purchase_date.is_none() {
+            price_at_purchase_date = PriceAtPurchaseDate::new(0.0).ok();
+        }
+
+        let mut fee_rate = FeeRate::provide_from_input_dict(&sm, "feeRate");
+        if fee_rate.is_none() {
+            fee_rate = FeeRate::new(0.0).ok();
+        }
+
+        // Life cap
+        let mut life_cap = LifeCap::provide_from_input_dict(&sm, "lifeCap");
+        if life_cap.is_none() {
+            life_cap = LifeCap::new(f64::INFINITY).ok();
+        }
+        // Life floor
+        let mut life_floor = LifeFloor::provide_from_input_dict(&sm, "lifeFloor");
+        if life_floor.is_none() {
+            life_floor = LifeFloor::new(f64::NEG_INFINITY).ok();
+        }
+        // PeriodCap
+        let mut period_cap = PeriodCap::provide_from_input_dict(&sm, "periodCap");
+        if period_cap.is_none() {
+            period_cap = PeriodCap::new(f64::INFINITY).ok();
+        }
+        // PeriodFloor
+        let mut period_floor = PeriodFloor::provide_from_input_dict(&sm, "periodFloor");
+        if period_floor.is_none() {
+            period_floor = PeriodFloor::new(f64::NEG_INFINITY).ok();
+        }
+
+
+        // Interest Calculation Base amount
+        let mut interest_calculation_base_amount = InterestCalculationBaseAmount::provide_from_input_dict(&sm, "interestCalculationBaseAmount");
+        if interest_calculation_base_amount.is_none() {
+            interest_calculation_base_amount = InterestCalculationBaseAmount::new(0.0).ok();
+        }
+
+        let mut cycle_anchor_date_of_interest_calculation_base = CycleAnchorDateOfInterestCalculationBase::provide_from_input_dict(&sm, "cycleAnchorDateOfInterestCalculationBase");
+        let cycle_of_interest_calculation_base = CycleOfInterestCalculationBase::provide_from_input_dict(&sm, "cycleOfInterestCalculationBase");
+
+        if cycle_anchor_date_of_interest_calculation_base.is_none() {
+            if cycle_of_interest_calculation_base.is_none() {
+                cycle_anchor_date_of_interest_calculation_base = None;
+            }
+            else {
+                let a = InitialExchangeDate::provide_from_input_dict(&sm, "initialExchangeDate").unwrap().value().to_string();
+                cycle_anchor_date_of_interest_calculation_base = CycleAnchorDateOfInterestCalculationBase::from_str(&a).ok();
+            }
+        };
+
+        let mut scaling_index_at_contract_deal_date = ScalingIndexAtContractDealDate::provide_from_input_dict(&sm, "scalingIndexAtContractDealDate");
+        if scaling_index_at_contract_deal_date.is_none() {
+            scaling_index_at_contract_deal_date = Some(ScalingIndexAtContractDealDate::new(0.0).unwrap());
+        }
+
+        let mut notional_scaling_multiplier = NotionalScalingMultiplier::provide_from_input_dict(&sm, "notionalScalingMultiplier");
+        if notional_scaling_multiplier.is_none() {
+            notional_scaling_multiplier = Some(NotionalScalingMultiplier::new(1.0).unwrap());
+        }
+
+        let mut interest_scaling_multiplier = InterestScalingMultiplier::provide_from_input_dict(&sm, "interestScalingMultiplier");
+        if interest_scaling_multiplier.is_none() {
+            interest_scaling_multiplier = Some(InterestScalingMultiplier::new(1.0).unwrap());
+        }
+
+        let mut rate_spread = RateSpread::provide_from_input_dict(&sm, "rateSpread");
+        if rate_spread.is_none() {
+            rate_spread = Some(RateSpread::new(0.0).unwrap());
+        }
+
+        let mut rate_multiplier = RateMultiplier::provide_from_input_dict(&sm, "rateMultiplier");
+        if rate_multiplier.is_none() {
+            rate_multiplier = Some(RateMultiplier::new(1.0).unwrap());
+        }
+
+        let mut interest_calculation_base = InterestCalculationBase::provide_from_input_dict(&sm, "interestCalculationBase");
+        if interest_calculation_base.is_none() {
+            interest_calculation_base = Some(InterestCalculationBase::NT(NT))
+        }
+        let next_reset_rate = NextResetRate::provide_from_input_dict(&sm, "nextResetRate");
 
         let ct = ContractTerms {
             calendar: calendar,
@@ -244,7 +312,7 @@ impl TraitContractModel for LAM {
             cycle_anchor_date_of_fee: cycle_anchor_date_of_fee,
             cycle_of_fee: CycleOfFee::provide_from_input_dict(&sm, "cycleOfFee"),
             fee_basis: FeeBasis::provide_from_input_dict(&sm, "feeBasis"),
-            fee_rate: FeeRate::provide_from_input_dict(&sm, "feeRate"),
+            fee_rate: fee_rate,
             fee_accrued: FeeAccrued::provide_from_input_dict(&sm, "feeAccrued"),
             cycle_anchor_date_of_interest_payment: cycle_anchor_date_of_interest_payment,
             cycle_of_interest_payment: CycleOfInterestPayment::provide_from_input_dict(&sm, "cycleOfInterestPayment"),
@@ -259,16 +327,16 @@ impl TraitContractModel for LAM {
             premium_discount_at_ied: PremiumDiscountAtIED::provide_from_input_dict(&sm, "premiumDiscountAtIED"),
             notional_principal: NotionalPrincipal::provide_from_input_dict(&sm, "notionalPrincipal"),
             purchase_date: PurchaseDate::provide_from_input_dict(&sm, "purchaseDate"),
-            price_at_purchase_date: PriceAtPurchaseDate::provide_from_input_dict(&sm, "priceAtPurchaseDate"),
+            price_at_purchase_date: price_at_purchase_date,
             termination_date: TerminationDate::provide_from_input_dict(&sm, "terminationDate"),
             price_at_termination_date: PriceAtTerminationDate::provide_from_input_dict(&sm, "priceAtTerminationDate"),
             market_object_code_of_scaling_index: MarketObjectCodeOfScalingIndex::provide_from_input_dict(&sm, "marketObjectCodeOfScalingIndex"),
-            scaling_index_at_contract_deal_date: ScalingIndexAtContractDealDate::provide_from_input_dict(&sm, "scalingIndexAtContractDealDate"),
-            notional_scaling_multiplier: NotionalScalingMultiplier::provide_from_input_dict(&sm, "notionalScalingMultiplier"),
-            interest_scaling_multiplier: InterestScalingMultiplier::provide_from_input_dict(&sm, "interestScalingMultiplier"),
+            scaling_index_at_contract_deal_date: scaling_index_at_contract_deal_date,
+            notional_scaling_multiplier: notional_scaling_multiplier,
+            interest_scaling_multiplier: interest_scaling_multiplier,
             cycle_anchor_date_of_scaling_index: cycle_anchor_date_of_scaling_index,
             cycle_of_scaling_index: CycleOfScalingIndex::provide_from_input_dict(&sm, "cycleOfScalingIndex"),
-            scaling_effect: ScalingEffect::provide_from_input_dict(&sm, "scalingEffect"),
+            scaling_effect: scaling_effect,
             cycle_anchor_date_of_optionality: cycle_anchor_date_of_optionality,
             cycle_of_optionality: CycleOfOptionality::provide_from_input_dict(&sm, "cycleOfOptionality"),
             penalty_type: PenaltyType::provide_from_input_dict(&sm, "penaltyType"),
@@ -276,16 +344,23 @@ impl TraitContractModel for LAM {
             object_code_of_prepayment_model: ObjectCodeOfPrepaymentModel::provide_from_input_dict(&sm, "objectCodeOfPrepaymentModel"),
             cycle_anchor_date_of_rate_reset: cycle_anchor_date_of_rate_reset,
             cycle_of_rate_reset: CycleOfRateReset::provide_from_input_dict(&sm, "cycleOfRateReset"),
-            rate_spread: RateSpread::provide_from_input_dict(&sm, "rateSpread"),
+            rate_spread: rate_spread,
             market_object_code_of_rate_reset: MarketObjectCodeOfRateReset::provide_from_input_dict(&sm, "marketObjectCodeOfRateReset"),
-            life_cap: LifeCap::provide_from_input_dict(&sm, "lifeCap"),
-            life_floor: LifeFloor::provide_from_input_dict(&sm, "lifeFloor"),
-            period_cap: PeriodCap::provide_from_input_dict(&sm, "periodCap"),
-            period_floor: PeriodFloor::provide_from_input_dict(&sm, "periodFloor"),
+            life_cap: life_cap,
+            life_floor: life_floor,
+            period_cap: period_cap,
+            period_floor: period_floor,
             fixing_period: FixingPeriod::provide_from_input_dict(&sm, "fixingPeriod"),
-            next_reset_rate: NextResetRate::provide_from_input_dict(&sm, "nextResetRate"),
-            rate_multiplier: RateMultiplier::provide_from_input_dict(&sm, "rateMultiplier"),
+            next_reset_rate: next_reset_rate,
+            rate_multiplier: rate_multiplier,
             maturity_date: maturity_date,
+            cycle_anchor_date_of_principal_redemption: CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(&sm, "cycleAnchorDateOfPrincipalRedemption"),
+            cycle_of_principal_redemption: CycleOfPrincipalRedemption::provide_from_input_dict(&sm, "cycleOfPrincipalRedemption"),
+            next_principal_redemption_payment: NextPrincipalRedemptionPayment::provide_from_input_dict(&sm, "nextPrincipalRedemptionPayment"),
+            interest_calculation_base_amount: interest_calculation_base_amount,
+            interest_calculation_base: interest_calculation_base,
+            cycle_anchor_date_of_interest_calculation_base: cycle_anchor_date_of_interest_calculation_base,
+            cycle_of_interest_calculation_base: cycle_of_interest_calculation_base,
             ..Default::default()
         };
 
@@ -404,7 +479,7 @@ impl TraitContractModel for LAM {
             &pr_schedule.iter().map(|x| x.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
             &EventType::PR,
             &model.currency,
-            Some(PayOffFunction::from_str("POF_PRD_LAM")),
+            Some(PayOffFunction::from_str("POF_PR_LAM")),
             Some(stf),
             &model.business_day_adjuster,
             &model.contract_id,
@@ -495,7 +570,9 @@ impl TraitContractModel for LAM {
             }
 
             events.append(&mut interest_events);
-        } else if model.capitalization_end_date.is_some() {
+            println!("ok");
+        }
+        else if model.capitalization_end_date.is_some() {
             // If no extra interest schedule set but capitalization end date, add single IPCI event
             let e: ContractEvent = EventFactory::create_event(
                 &model.capitalization_end_date.convert_option::<ScheduleTime>(),
@@ -509,7 +586,16 @@ impl TraitContractModel for LAM {
             events.push(e);
         }
 
+
         // Rate reset events
+        let s = ScheduleFactory::create_schedule(
+            &model.cycle_anchor_date_of_rate_reset.convert_option::<StartTime>(),
+            &Some(maturity.clone().convert::<EndTime>()),
+            &model.cycle_of_rate_reset.clone().convert_option::<PhantomIsoCycleW>(),
+            &model.end_of_month_convention.clone(),
+            Some(false),
+        ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>();
+
         let mut rate_reset_events = EventFactory::create_events(
             &ScheduleFactory::create_schedule(
                 &model.cycle_anchor_date_of_rate_reset.convert_option::<StartTime>(),
@@ -525,7 +611,7 @@ impl TraitContractModel for LAM {
             &model.business_day_adjuster,
             &model.contract_id,
         );
-
+        let mut rate_reset_events3: Vec<ContractEvent> = Vec::new();
         // Adapt fixed rate reset event
         if model.next_reset_rate.is_some() {
             let status_event = EventFactory::create_event(
@@ -538,21 +624,51 @@ impl TraitContractModel for LAM {
                 &model.contract_id,
             );
 
-            let mut sorted_events: Vec<_> = rate_reset_events.iter().collect();
-            sorted_events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
+            // let mut sorted_events: Vec<_> = rate_reset_events.iter().collect();
+            let mut fixed_event: Option<ContractEvent> = None;
+            let mut rate_reset_events2 = rate_reset_events.clone().iter().map(|e| e.clone()).collect::<Vec<ContractEvent>>();
 
-            if let Some(fixed_event) = sorted_events
-                .iter_mut()
-                .find(|e| e.event_time.clone().unwrap() > status_event.event_time.clone().unwrap())
-            {
-                let mut fixed_event = fixed_event.clone();
-                fixed_event.fstate = Some(StatesTransitionFunction::from_str("STF_RRF_LAM"));
-                fixed_event.event_type = RRF;
-                rate_reset_events.insert(fixed_event);
+            rate_reset_events2.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
+            rate_reset_events3 = rate_reset_events2.clone();
+            rate_reset_events3.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
+
+            for (u, e) in rate_reset_events2.iter().enumerate() {
+                if e.compare_to(&status_event) == 1 {
+                    fixed_event = Some(e.clone());
+                    rate_reset_events3.remove(u);
+                    break;
+                }
             }
+
+            if fixed_event.is_some() {
+                let mut fixed_e = fixed_event.clone().unwrap();
+
+                fixed_e.fstate = Some(StatesTransitionFunction::from_str("STF_RRF_LAM"));
+                fixed_e.event_type = RRF;
+                rate_reset_events3.push(fixed_e.clone());
+                // rate_reset_events.insert(fixed_e);
+                println!("ok");
+            }
+
+
+            // if let Some(fixed_event) = sorted_events
+            //     .iter_mut()
+            //     .filter(|e| e.event_time.clone().unwrap() > status_event.event_time.clone().unwrap())
+            // {
+            //     let mut fixed_event = fixed_event.clone();
+            //     fixed_event.fstate = Some(StatesTransitionFunction::from_str("STF_RRF_LAM"));
+            //     fixed_event.event_type = RRF;
+            //     rate_reset_events.insert(fixed_event);
+            // }
         }
 
-        events.append(&mut rate_reset_events.into_iter().collect());
+        if model.next_reset_rate.is_some() {
+            events.extend(rate_reset_events3.clone());
+        }
+        else {
+            events.extend(rate_reset_events.clone());
+        }
+
 
         // Fee events (if specified)
         if let Some(cycle_of_fee) = &model.cycle_of_fee {
@@ -576,38 +692,43 @@ impl TraitContractModel for LAM {
         }
 
         // Scaling events (if specified)
-        if let scaling_effect= &model.scaling_effect.clone().unwrap().to_string() {
-            if scaling_effect.contains('I') || scaling_effect.contains('N') {
-                let scaling_events = EventFactory::create_events(
-                    &ScheduleFactory::create_schedule(
-                        &model.cycle_anchor_date_of_scaling_index.convert_option::<StartTime>(),
-                        &Some(maturity.clone().convert::<EndTime>()),
-                        &model.cycle_of_scaling_index.convert_option::<PhantomIsoCycleW>(),
-                        &model.end_of_month_convention,
-                        Some(false),
-                    ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
-                    &EventType::SC,
-                    &model.currency,
-                    Some(PayOffFunction::from_str("POF_SC_PAM")),
-                    Some(StatesTransitionFunction::from_str("STF_SC_LAM")),
-                    &model.business_day_adjuster,
-                    &model.contract_id,
-                );
+        let scaling_effect= &model.scaling_effect.clone().unwrap().to_string();
 
-                events.extend(scaling_events);
-            }
-        }
-
-        // Interest calculation base events (if specified)
-        if model.interest_calculation_base == Some(InterestCalculationBase::NTL(NTL)) {
-            let icb_events = EventFactory::create_events(
+        if scaling_effect.contains('I') || scaling_effect.contains('N') {
+            let scaling_events = EventFactory::create_events(
                 &ScheduleFactory::create_schedule(
-                    &model.cycle_anchor_date_of_interest_calculation_base.convert_option::<StartTime>(),
+                    &model.cycle_anchor_date_of_scaling_index.convert_option::<StartTime>(),
                     &Some(maturity.clone().convert::<EndTime>()),
-                    &model.cycle_of_interest_calculation_base.clone().convert_option::<PhantomIsoCycleW>(),
-                    &model.end_of_month_convention.clone(),
+                    &model.cycle_of_scaling_index.convert_option::<PhantomIsoCycleW>(),
+                    &model.end_of_month_convention,
                     Some(false),
                 ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
+                &EventType::SC,
+                &model.currency,
+                Some(PayOffFunction::from_str("POF_SC_PAM")),
+                Some(StatesTransitionFunction::from_str("STF_SC_PAM")),
+                &model.business_day_adjuster,
+                &model.contract_id,
+            );
+
+            events.extend(scaling_events);
+        }
+
+
+        // Interest calculation base events (if specified)
+        if  model.interest_calculation_base.is_some() && model.interest_calculation_base == Some(InterestCalculationBase::NTL(NTL)) {
+            let s = ScheduleFactory::create_schedule(
+                &model.cycle_anchor_date_of_interest_calculation_base.convert_option::<StartTime>(),
+                &Some(maturity.clone().convert::<EndTime>()),
+                &model.cycle_of_interest_calculation_base.clone().convert_option::<PhantomIsoCycleW>(),
+                &model.end_of_month_convention.clone(),
+                Some(false),
+            ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>();
+            let a = &model.cycle_anchor_date_of_interest_calculation_base.clone().convert_option::<StartTime>().unwrap().to_string();
+            let b = &maturity.clone().to_string();
+            let c = &model.cycle_of_interest_calculation_base.clone().convert_option::<PhantomIsoCycleW>().unwrap().to_string();
+            let icb_events = EventFactory::create_events(
+                &s,
                 &EventType::IPCB,
                 &model.currency,
                 Some(PayOffFunction::from_str("POF_IPCB_LAM")),
@@ -651,22 +772,26 @@ impl TraitContractModel for LAM {
         // Remove all post to-date events
         // let to_date = to.unwrap_or(maturity); // A CHECKER
         let to_date = to;
-        let post_date = EventFactory::create_event(
-            &Some(to_date.clone().unwrap().convert::<ScheduleTime>()),
-            &EventType::AD,
-            &model.currency,
-            None,
-            None,
-            &None,
-            &model.contract_id,
-        );
+        if to_date.is_some() {
+            let post_date = EventFactory::create_event(
+                &Some(to_date.clone().unwrap().convert::<ScheduleTime>()),
+                &EventType::AD,
+                &model.currency,
+                None,
+                None,
+                &None,
+                &model.contract_id,
+            );
 
-        events.retain(|e| e.event_time <= post_date.event_time);
+            events.retain(|e| e.event_time <= post_date.event_time);
+
+        }
 
         // Sort events according to their time of occurrence
         events.sort_by(|a, b| a.event_time.cmp(&b.event_time));
 
         self.event_timeline = events.clone();
+        self.sort_events_timeline();
     }
 
     fn set_status_date(&mut self, status_date: Option<StatusDate>) {
@@ -741,10 +866,10 @@ impl TraitContractModel for LAM {
     }
     
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
-
+        self.sort_events_timeline();
         let _maturity = &self.contract_terms.maturity_date.clone();
         //let maturity = Self::maturity(model);
-        self.init_state_space(_maturity);
+        // self.init_state_space(_maturity);
         let events = &mut self.event_timeline.clone();
 
         events.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
@@ -840,7 +965,7 @@ impl LAM {
             return maturity.as_ref().clone().value();
         }
 
-        let mut last_event: PhantomIsoDatetimeW;
+        let last_event: PhantomIsoDatetimeW;
         let remaining_periods: i32;
         let cycle_anchor_date = &contract_terms.cycle_anchor_date_of_principal_redemption.clone().unwrap();
         let status_date = &contract_terms.status_date.clone().unwrap();
@@ -859,7 +984,7 @@ impl LAM {
             let cycle_period = cycle.value().extract_period().unwrap();
 
             previous_events.retain(|d| {
-                d >= & PhantomIsoDatetimeW::new((status_date.clone().value() + cycle_period.clone())).expect("ok")
+                d >= & PhantomIsoDatetimeW::new(status_date.clone().value() + cycle_period.clone()).expect("ok")
                     && &d.value() != &status_date.value()
             });
 

@@ -57,7 +57,7 @@ impl TraitStateTransitionFunction for STF_PR_NAM {
         let role_sign = contract_role.role_sign();
 
 
-        let redemption_amount = next_principal_redemption_payment.value() - role_sign * accrued_interest.value();
+        let redemption_amount = next_principal_redemption_payment.value() - role_sign * states.accrued_interest.clone().expect("accruedInterest should always be Some").value();
 
         let redemption = redemption_amount -
             0.0f64.max(redemption_amount - notional_principal.value().abs());

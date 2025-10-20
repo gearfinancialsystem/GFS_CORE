@@ -39,12 +39,12 @@ impl TraitPayOffFunction for POF_PR_LAM {
         );
         
         let redemption = states.next_principal_redemption_payment.clone().unwrap().value()
-            - contract_terms.contract_role.clone().unwrap().role_sign()
-            * (states.next_principal_redemption_payment.clone().unwrap().value().abs() - states.notional_principal.clone().unwrap().value().abs()).max(0.0);
+            - (contract_terms.contract_role.clone().unwrap().role_sign()
+            * (states.next_principal_redemption_payment.clone().unwrap().value().abs() - states.notional_principal.clone().unwrap().value().abs()).max(0.0));
 
         settlement_currency_fx_rate
             * contract_terms.contract_role.clone().unwrap().role_sign()
-            * states.notional_principal.clone().unwrap().value()
+            * states.notional_scaling_multiplier.clone().unwrap().value()
             * redemption
     }
 }

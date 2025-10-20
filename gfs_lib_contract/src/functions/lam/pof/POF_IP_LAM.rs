@@ -29,6 +29,8 @@ impl TraitPayOffFunction for POF_IP_LAM {
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
     ) -> f64 {
+        let b = time.clone().to_string();
+        let c = states.status_date.clone().expect("No status date").to_string();
         let day_counter = day_counter.clone().expect("sould have day counter");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
@@ -41,7 +43,7 @@ impl TraitPayOffFunction for POF_IP_LAM {
         let accrued_interest = states.accrued_interest.clone().expect("accrued_interest should exist");
         let nominal_interest_rate = states.nominal_interest_rate.clone().expect("nominal_interest_rate should exist");
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interest_calculation_base_amount should exist");
-        
+
         
         let timadj = day_counter.day_count_fraction(
             {
@@ -49,6 +51,10 @@ impl TraitPayOffFunction for POF_IP_LAM {
                 time_adjuster.shift_sc(&tmp_sd)
             },
             time_adjuster.shift_sc(time)
+        );
+        let a =  settlement_currency_fx_rate * interest_scaling_multiplier.value()
+            * (accrued_interest.value() + (timadj * nominal_interest_rate.value() *
+            interest_calculation_base_amount.value())
         );
 
         settlement_currency_fx_rate * interest_scaling_multiplier.value()

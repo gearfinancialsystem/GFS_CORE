@@ -5,7 +5,6 @@ use std::hash::{Hash, Hasher};
 use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
-use chrono::Days;
 use gfs_lib_terms::non_terms::EndTime::EndTime;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
 use gfs_lib_terms::non_terms::PayOff::Payoff;
@@ -16,27 +15,12 @@ use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
-use crate::traits::TraitStateTransitionFunction::TraitStateTransitionFunction;
 use crate::states_space::StatesSpace::StatesSpace;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::time::ScheduleFactory::ScheduleFactory;
 
 use crate::util::RedemptionUtils::RedemptionUtils;
 
-use crate::functions::{
-    ann::stf::STF_PRD_ANN::STF_PRD_ANN,
-    lam::pof::{
-        POF_IP_LAM::POF_IP_LAM, POF_IPCB_LAM::POF_IPCB_LAM, POF_PRD_LAM::POF_PRD_LAM, POF_TD_LAM::POF_TD_LAM,
-    },
-    lam::stf::{
-        STF_FP_LAM::STF_FP_LAM, STF_IED_LAM::STF_IED_LAM, STF_IPBC_LAM::STF_IPCB_LAM, STF_IPCI2_LAM::STF_IPCI2_LAM, STF_IPCI_LAM::STF_IPCI_LAM,
-        STF_MD_LAM::STF_MD_LAM, STF_PRD_LAM::STF_PRD_LAM, STF_RR_LAM::STF_RR_LAM, STF_RRF_LAM::STF_RRF_LAM, STF_SC_LAM::STF_SC_LAM
-    },
-    nam::pof::POF_PR_NAM::POF_PR_NAM,
-    nam::stf::{STF_PR2_NAM::STF_PR2_NAM, STF_PR_NAM::STF_PR_NAM},
-    pam::pof::{POF_FP_PAM::POF_FP_PAM, POF_IED_PAM::POF_IED_PAM, POF_IPCI_PAM::POF_IPCI_PAM, POF_MD_PAM::POF_MD_PAM, POF_RR_PAM::POF_RR_PAM, POF_SC_PAM::POF_SC_PAM,},
-    pam::stf::{STF_IP_PAM::STF_IP_PAM, STF_TD_PAM::STF_TD_PAM}
-};
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_calendar::Calendar::Calendar;
 use gfs_lib_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
@@ -109,7 +93,6 @@ use gfs_lib_types::types::IsoDatetime::IsoDatetime;
 use gfs_lib_types::types::IsoPeriod::IsoPeriod;
 use gfs_lib_types::types::Value::Value;
 use crate::attributes::RelatedContracts::RelatedContracts;
-use crate::contracts::Nam::NAM;
 use crate::events::EventSequence::EventSequence;
 use crate::functions::PayOffFunction::PayOffFunction;
 use crate::functions::StatesTransitionFunction::StatesTransitionFunction;
@@ -745,7 +728,7 @@ impl TraitContractModel for ANN {
             &model.contract_id,
         );
         // adapt fixed rate reset event
-        if let Some(next_reset_rate) = model.next_reset_rate.clone() {
+        if let Some(_) = model.next_reset_rate.clone() {
             let status_event: ContractEvent = EventFactory::create_event(
                 &model.status_date.clone().convert_option::<ScheduleTime>(),
                 &EventType::AD,

@@ -11,6 +11,7 @@ use crate::functions::lam::pof::POF_CE_LAM::POF_CE_LAM;
 use crate::functions::lam::pof::POF_FP_LAM::POF_FP_LAM;
 use crate::functions::lam::pof::POF_IED_LAM::POF_IED_LAM;
 use crate::functions::lam::pof::POF_IP_LAM::POF_IP_LAM;
+use crate::functions::lam::pof::POF_IPCB_LAM::POF_IPCB_LAM;
 use crate::functions::lam::pof::POF_IPCI_LAM::POF_IPCI_LAM;
 use crate::functions::lam::pof::POF_MD_LAM::POF_MD_LAM;
 use crate::functions::lam::pof::POF_PP_LAM::POF_PP_LAM;
@@ -32,6 +33,7 @@ pub enum PayOffFunctionLAM {
     POF_FP_LAM(POF_FP_LAM),
     POF_IED_LAM(POF_IED_LAM),
     POF_IP_LAM(POF_IP_LAM),
+    POF_IPCB_LAM(POF_IPCB_LAM),
     POF_IPCI_LAM(POF_IPCI_LAM),
     POF_MD_LAM(POF_MD_LAM),
     POF_PP_LAM(POF_PP_LAM),
@@ -52,6 +54,7 @@ impl PayOffFunctionLAM {
             "POF_FP_LAM" => Self::POF_FP_LAM(POF_FP_LAM::new()),
             "POF_IED_LAM" => Self::POF_IED_LAM(POF_IED_LAM::new()),
             "POF_IP_LAM" => Self::POF_IP_LAM(POF_IP_LAM::new()),
+            "POF_IPCB_LAM" => Self::POF_IPCB_LAM(POF_IPCB_LAM::new()),
             "POF_IPCI_LAM" => Self::POF_IPCI_LAM(POF_IPCI_LAM::new()),
             "POF_MD_LAM" => Self::POF_MD_LAM(POF_MD_LAM::new()),
             "POF_PP_LAM" => Self::POF_PP_LAM(POF_PP_LAM::new()),
@@ -93,6 +96,10 @@ impl PayOffFunctionLAM {
                 risk_factor_external_data, day_counter, time_adjuster
             ),
             PayOffFunctionLAM::POF_IP_LAM(v) => v.eval(
+                time, states, contract_terms, contract_structure,
+                risk_factor_external_data, day_counter, time_adjuster
+            ),
+            PayOffFunctionLAM::POF_IPCB_LAM(v) => v.eval(
                 time, states, contract_terms, contract_structure,
                 risk_factor_external_data, day_counter, time_adjuster
             ),
