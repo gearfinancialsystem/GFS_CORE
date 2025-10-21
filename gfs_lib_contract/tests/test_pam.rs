@@ -1,11 +1,8 @@
 pub mod common_test_funcs;
-
-use std::str::FromStr;
 use std::sync::Arc;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
-use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
-use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_test_case_terms2, load_tests};
+use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms2, load_tests};
 
 fn extract_numbers_with_original(strings: Vec<&String>) -> Vec<(&str, i32)> {
     strings
@@ -34,7 +31,7 @@ fn test_pam_contract_creation() {
         let contract_terms_dict2 = load_test_case_terms2(&curr_test).unwrap();
         let contract_results_dict = load_test_case_results(&curr_test).unwrap();
         let contract_data_observed = load_test_case_dataobserved(&curr_test).unwrap();
-        let to_date = PhantomIsoDatetimeW::from_str(curr_test.to.as_str()).unwrap();
+        //let to_date = PhantomIsoDatetimeW::from_str(curr_test.to.as_str()).unwrap();
 
         // let testaa = contract_data_observed.clone().state_at("USD_SWP".to_string(), &PhantomIsoDatetimeW::from_str("2013-02-01T00:00:00").unwrap() );
 

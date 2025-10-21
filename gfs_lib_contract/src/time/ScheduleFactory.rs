@@ -24,6 +24,9 @@ impl ScheduleFactory {
         end_of_month_convention: &EndOfMonthConvention,
         add_end_time: Option<bool>,
     ) -> HashSet<PhantomIsoDatetimeW> { // old T0
+        //let stx = start_time.clone().unwrap().to_string();
+        //let enx = end_time.clone().unwrap().to_string();
+
         let mut times_set: HashSet<PhantomIsoDatetimeW> = HashSet::new();
         //let ccccc = cycle.clone().unwrap().to_string();
         //let xxxx = end_of_month_convention.to_string();
@@ -77,7 +80,8 @@ impl ScheduleFactory {
         // Ajoutez (ou non) end_time au calendrier
         if add_end_time == Some(true) {
             times_set.insert(end_time.convert_option::<PhantomIsoDatetimeW>().unwrap());
-        } else {
+        }
+        else {
             if end_time.clone().unwrap().value() == start_time.clone().unwrap().value() {
                 times_set.remove(&start_time.convert_option::<PhantomIsoDatetimeW>().unwrap());
             }
@@ -88,7 +92,11 @@ impl ScheduleFactory {
             let to_sup = PhantomIsoDatetimeW::new(last_stub_time).expect(""); // should be schedule time
             times_set.remove(&to_sup);
         }
+        let mut test3: Vec<String> = vec![];
 
+        for e in times_set.iter() {
+            test3.push(e.to_string());
+        }
         times_set
     }
 

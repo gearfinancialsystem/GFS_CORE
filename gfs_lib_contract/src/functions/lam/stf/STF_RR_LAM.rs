@@ -65,18 +65,20 @@ impl TraitStateTransitionFunction for STF_RR_LAM {
         } else {
             None
         };
+        if cbv.is_some() {
+            let mut rate = ( cbv.unwrap() * rate_multiplier_m.value())
+                + rate_spread_m.clone().value() - nominal_interest_rate.clone().value();
 
-        let mut rate = ( cbv.unwrap() * rate_multiplier_m.value())
-            + rate_spread_m.clone().value() - nominal_interest_rate.clone().value();
+            let delta_rate = rate.max(period_floor_m.value()).min(period_cap_m.value());
+            rate = (nominal_interest_rate.value() + delta_rate).max(life_floor_m.value()).min(life_cap_m.value());
 
-        let delta_rate = rate.max(period_floor_m.value()).min(period_cap_m.value());
-        rate = (nominal_interest_rate.value() + delta_rate).max(life_floor_m.value()).min(life_cap_m.value());
-
-        states.accrued_interest.add_assign(nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event);
-        states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
+            states.accrued_interest.add_assign(nominal_interest_rate.value() * interest_calculation_base_amount.value() * time_from_last_event);
+            states.fee_accrued.add_assign(fee_rate_m.value() * notional_principal.value() * time_from_last_event);
 
 
-        states.nominal_interest_rate = NominalInterestRate::new(rate).ok();
-        states.status_date = StatusDate::new(time.value()).ok();
+            states.nominal_interest_rate = NominalInterestRate::new(rate).ok();
+            states.status_date = StatusDate::new(time.value()).ok();
+        }
+
     }
 }

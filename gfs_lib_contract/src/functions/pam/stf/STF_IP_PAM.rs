@@ -34,12 +34,10 @@ impl TraitStateTransitionFunction for STF_IP_PAM {
         time_adjuster: &BusinessDayAdjuster,
     ) {
 
-        let b = time.clone().to_string();
         let day_counter = day_counter.clone().expect("sould have day counter");
         let status_date = states.status_date.as_ref().expect("status date should be some");
         let fee_rate_m = contract_terms.fee_rate.clone().expect("fee rate should be some");
         let notional_principal = states.notional_principal.clone().expect("notional principal should be some");
-        let c = status_date.to_string();
 
         let time_from_last_event = day_counter.day_count_fraction(time_adjuster.shift_sc(
             &{

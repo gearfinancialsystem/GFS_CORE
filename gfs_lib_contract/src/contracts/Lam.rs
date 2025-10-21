@@ -597,13 +597,7 @@ impl TraitContractModel for LAM {
         ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>();
 
         let mut rate_reset_events = EventFactory::create_events(
-            &ScheduleFactory::create_schedule(
-                &model.cycle_anchor_date_of_rate_reset.convert_option::<StartTime>(),
-                &Some(maturity.clone().convert::<EndTime>()),
-                &model.cycle_of_rate_reset.clone().convert_option::<PhantomIsoCycleW>(),
-                &model.end_of_month_convention.clone(),
-                Some(false),
-            ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
+            &s,
             &EventType::RR,
             &model.currency,
             Some(PayOffFunction::from_str("POF_RR_PAM")),
@@ -724,9 +718,6 @@ impl TraitContractModel for LAM {
                 &model.end_of_month_convention.clone(),
                 Some(false),
             ).iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>();
-            let a = &model.cycle_anchor_date_of_interest_calculation_base.clone().convert_option::<StartTime>().unwrap().to_string();
-            let b = &maturity.clone().to_string();
-            let c = &model.cycle_of_interest_calculation_base.clone().convert_option::<PhantomIsoCycleW>().unwrap().to_string();
             let icb_events = EventFactory::create_events(
                 &s,
                 &EventType::IPCB,

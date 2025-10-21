@@ -16,7 +16,7 @@ use crate::functions::ann::stf::STF_IPCI_ANN::STF_IPCI_ANN;
 use crate::functions::ann::stf::STF_MD_ANN::STF_MD_ANN;
 use crate::functions::ann::stf::STF_PP_ANN::STF_PP_ANN;
 use crate::functions::ann::stf::STF_PR_ANN::STF_PR_ANN;
-use crate::functions::ann::stf::STF_PRD_ANN::STF_PRD_ANN;
+use crate::functions::ann::stf::STF_PRF_ANN::STF_PRF_ANN;
 use crate::functions::ann::stf::STF_PY_ANN::STF_PY_ANN;
 use crate::functions::ann::stf::STF_SC_ANN::STF_SC_ANN;
 use crate::functions::ann::stf::STF_TD_ANN::STF_TD_ANN;
@@ -38,10 +38,9 @@ pub enum StatesTransitionFunctionANN {
     STF_MD_ANN(STF_MD_ANN),
     STF_PP_ANN(STF_PP_ANN),
     STF_PR_ANN(STF_PR_ANN),
-    STF_PRD_ANN(STF_PRD_ANN),
+    STF_PRF_ANN(STF_PRF_ANN),
     STF_PY_ANN(STF_PY_ANN),
     //STF_RR_ANN(STF_RR_ANN),
-    //STF_RRF_ANN(STF_RRF_ANN),
     //STF_RRY_ANN(STF_RRY_ANN),
     STF_SC_ANN(STF_SC_ANN),
     STF_TD_ANN(STF_TD_ANN),
@@ -61,7 +60,7 @@ impl StatesTransitionFunctionANN {
             "STF_MD_ANN" => Self::STF_MD_ANN(STF_MD_ANN::new()),
             "STF_PP_ANN" => Self::STF_PP_ANN(STF_PP_ANN::new()),
             "STF_PR_ANN" => Self::STF_PR_ANN(STF_PR_ANN::new()),
-            "STF_PRD_ANN" => Self::STF_PRD_ANN(STF_PRD_ANN::new()),
+            "STF_PRF_ANN" => Self::STF_PRF_ANN(STF_PRF_ANN::new()),
             "STF_PY_ANN" => Self::STF_PY_ANN(STF_PY_ANN::new()),
             //"STF_RR_ANN" => Self::STF_RR_ANN(STF_RR_ANN::new()),
             //"STF_RRF_ANN" => Self::STF_RRF_ANN(STF_RRF_ANN::new()),
@@ -125,7 +124,7 @@ impl StatesTransitionFunctionANN {
                 time, states, contract_terms, contract_structure,
                 risk_factor_external_data, day_counter, time_adjuster
             ),
-            StatesTransitionFunctionANN::STF_PRD_ANN(v) => v.eval(
+            StatesTransitionFunctionANN::STF_PRF_ANN(v) => v.eval(
                 time, states, contract_terms, contract_structure,
                 risk_factor_external_data, day_counter, time_adjuster
             ),

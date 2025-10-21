@@ -19,7 +19,6 @@ use crate::functions::ann::pof::POF_PR_ANN::POF_PR_ANN;
 use crate::functions::ann::pof::POF_PRD_ANN::POF_PRD_ANN;
 use crate::functions::ann::pof::POF_PY_ANN::POF_PY_ANN;
 use crate::functions::ann::pof::POF_RR_ANN::POF_RR_ANN;
-use crate::functions::ann::pof::POF_RRF_ANN::POF_RRF_ANN;
 use crate::functions::ann::pof::POF_SC_ANN::POF_SC_ANN;
 use crate::functions::ann::pof::POF_TD_ANN::POF_TD_ANN;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -42,7 +41,6 @@ pub enum PayOffFunctionANN {
     POF_PRD_ANN(POF_PRD_ANN),
     POF_PY_ANN(POF_PY_ANN),
     POF_RR_ANN(POF_RR_ANN),
-    POF_RRF_ANN(POF_RRF_ANN),
     // POF_RRY_ANN(POF_RRY_ANN),
     POF_SC_ANN(POF_SC_ANN),
     POF_TD_ANN(POF_TD_ANN),
@@ -64,7 +62,6 @@ impl PayOffFunctionANN {
             "POF_PRD_ANN" => Self::POF_PRD_ANN(POF_PRD_ANN::new()),
             "POF_PY_ANN" => Self::POF_PY_ANN(POF_PY_ANN::new()),
             "POF_RR_ANN" => Self::POF_RR_ANN(POF_RR_ANN::new()),
-            "POF_RRF_ANN" => Self::POF_RRF_ANN(POF_RRF_ANN::new()),
             //"POF_RRY_ANN" => Self::POF_RRY_ANN(POF_RRY_ANN::new()),
             "POF_SC_ANN" => Self::POF_SC_ANN(POF_SC_ANN::new()),
             "POF_TD_ANN" => Self::POF_TD_ANN(POF_TD_ANN::new()),
@@ -136,10 +133,10 @@ impl PayOffFunctionANN {
                 time, states, contract_terms, contract_structure,
                 risk_factor_external_data, day_counter, time_adjuster
             ),
-            PayOffFunctionANN::POF_RRF_ANN(v) => v.eval(
-                time, states, contract_terms, contract_structure,
-                risk_factor_external_data, day_counter, time_adjuster
-            ),
+            // PayOffFunctionANN::POF_RRF_ANN(v) => v.eval(
+            //     time, states, contract_terms, contract_structure,
+            //     risk_factor_external_data, day_counter, time_adjuster
+            // ),
             // PayOffFunctionANN::POF_RRY_ANN(v) => v.eval(
             //     time, states, contract_terms, contract_structure,
             //     risk_factor_external_data, day_counter, time_adjuster

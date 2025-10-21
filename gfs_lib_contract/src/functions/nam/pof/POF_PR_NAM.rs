@@ -38,14 +38,16 @@ impl TraitPayOffFunction for POF_PR_NAM {
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always exist");
         let notional_scaling_multiplier = states.notional_scaling_multiplier.clone().expect("notionalScalingMultiplier should always exist");
 
+        let z1 = time.clone().to_string();
+        let z2 = status_date.clone().to_string();
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.convert::<PhantomIsoDatetimeW>()),
             time_adjuster.shift_sc(&time)
         );
 
-        let redemption_amount = next_principal_redemption_payment.value() - 
-            contract_role.role_sign() * 
-                (accrued_interest.value() + time_from_last_event * nominal_interest_rate.value() * interest_calculation_base_amount.value());
+        let redemption_amount = next_principal_redemption_payment.value() -
+            (contract_role.role_sign() *
+                (accrued_interest.value() + time_from_last_event * nominal_interest_rate.value() * interest_calculation_base_amount.value()));
 
         let redemption = redemption_amount - 0.0_f64.max(redemption_amount - notional_principal.value().abs());
 

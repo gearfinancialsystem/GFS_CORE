@@ -37,7 +37,7 @@ impl TraitStateTransitionFunction for STF_PR_NAM {
         let interest_calculation_base_amount = states.interest_calculation_base_amount.clone().expect("interestCalculationBaseAmount should always be Some");
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always be Some");
         let next_principal_redemption_payment = states.next_principal_redemption_payment.clone().expect("nextPrincipalRedemptionPayment should always be Some");
-        let accrued_interest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
+        // let accrued_interest = states.accrued_interest.clone().expect("accruedInterest should always be Some");
 
         let fee_rate_m = contract_terms.fee_rate.clone().expect("feeRateM should always be Some");
 

@@ -224,49 +224,7 @@ impl TraitContractModel for NAM {
         else {
             AccruedInterest::new(0.0).ok()
         };
-
-
-        let w = FeeRate::provide_from_input_dict(&sm, "feeRate");
-        let fee_rate = if w.is_some() {
-            w
-        }
-        else {
-            FeeRate::new(0.0).ok()
-        };
-
-
-        let w = PeriodCap::provide_from_input_dict(&sm, "periodCap");
-        let period_cap = if w.is_some() {
-            w
-        }
-        else {
-            PeriodCap::new(f64::INFINITY).ok()
-        };
-
-        let w = PeriodFloor::provide_from_input_dict(&sm, "periodFloor");
-        let period_floor = if w.is_some() {
-            w
-        }
-        else {
-            PeriodFloor::new(f64::NEG_INFINITY).ok()
-        };
-
-
-        let w = LifeCap::provide_from_input_dict(&sm, "lifeCap");
-        let life_cap = if w.is_some() {
-            w
-        }
-        else {
-            LifeCap::new(f64::INFINITY).ok()
-        };
-
-        let w = LifeFloor::provide_from_input_dict(&sm, "lifeFloor");
-        let life_floor = if w.is_some() {
-            w
-        }
-        else {
-            LifeFloor::new(f64::NEG_INFINITY).ok()
-        };
+        
 
         let mut cycle_anchor_date_of_principal_redemption = CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(&sm, "cycleAnchorDateOfPrincipalRedemption");
         cycle_anchor_date_of_principal_redemption = if cycle_anchor_date_of_principal_redemption.is_some() {

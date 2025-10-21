@@ -14,7 +14,7 @@ pub mod STF_RRY_ANN;
 pub mod STF_RR_ANN;
 pub mod STF_SC_ANN;
 pub mod STF_TD_ANN;
-pub mod STF_RRF_ANN;
+pub mod STF_PRF_ANN;
 pub mod STF_CE_ANN;
 pub mod STF_PR_ANN;
 pub mod STF_IPCB_ANN;

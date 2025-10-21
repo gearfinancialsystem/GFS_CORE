@@ -16,7 +16,7 @@ pub struct RedemptionUtils;
 
 impl RedemptionUtils {
     pub fn redemptionAmount(model: &ContractTerms, state: &StatesSpace) -> f64 {
-        let redemption_amount: f64;
+
         let status_date = state.status_date.clone().unwrap();
         let maturity: MaturityDate = if model.amortization_date.is_none() {
             state.maturity_date.clone().unwrap()
@@ -43,12 +43,28 @@ impl RedemptionUtils {
         event_times.retain(|e| e >= &status_date.convert::<PhantomIsoDatetimeW>());
         event_times.remove(&status_date.convert::<PhantomIsoDatetimeW>());
 
-        redemption_amount = match model.contract_type.clone().unwrap().to_string().as_str() {
+        let redemption_amount = match model.contract_type.clone().unwrap().to_string().as_str() {
             "LAM" => {
                 model.notional_principal.clone().unwrap().value() / event_times.len() as f64 // on est sur que cest len ?
             },
             "ANN" => {
-                0.0 // a implementer
+                let mut event_times_sorted: Vec<PhantomIsoDatetimeW> = event_times.into_iter().collect();
+
+                event_times_sorted.sort();
+                let lb = 1;
+                let ub = event_times_sorted.len();
+                let www= day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
+                                               event_times_sorted.get(0).unwrap().clone());
+                let ss = state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>().to_string();
+                let xx = event_times_sorted.get(0).unwrap().clone().to_string();
+                let scale = outstanding_notional.value() +
+                    accrued_interest.value() +
+                    day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
+                                          event_times_sorted.get(0).unwrap().clone())
+                        * interest_rate.value() * outstanding_notional.value();
+                let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone());
+                let frac = RedemptionUtils::product(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone()) / (1.0 + sum);
+                scale * frac
             },
             "NAM" => {
                 let mut event_times_sorted: Vec<PhantomIsoDatetimeW> = event_times.into_iter().collect();
@@ -58,7 +74,7 @@ impl RedemptionUtils {
                 let ub = event_times_sorted.len();
                 let scale = outstanding_notional.value() + 
                     accrued_interest.value() + 
-                    day_counter.day_count(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
+                    day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
                                           event_times_sorted.get(0).unwrap().clone())
                         * interest_rate.value() * outstanding_notional.value();
                 let sum = RedemptionUtils::sumx(lb, ub as i32, event_times_sorted.clone(), interest_rate.value(), day_counter.clone());
@@ -67,7 +83,7 @@ impl RedemptionUtils {
             },
             _ => 0.0
         };
-        
+        println!("redemption amount: {}", redemption_amount);
         // finally, return the annuity payment
         redemption_amount
     }
