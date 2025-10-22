@@ -62,6 +62,8 @@ pub struct SWAPS {
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
     pub states_space: StatesSpace,
     pub status_date: Option<StatusDate>,
+    pub first_event_date: Option<PhantomIsoDatetimeW>,
+    pub last_event_date: Option<PhantomIsoDatetimeW>,
 }
 
 impl TraitContractModel for SWAPS {
@@ -76,6 +78,8 @@ impl TraitContractModel for SWAPS {
             event_timeline: Vec::new(),
             states_space: StatesSpace::default(),
             status_date: None,
+            first_event_date: None,
+            last_event_date: None,
         }
     }
 
@@ -387,6 +391,10 @@ impl TraitContractModel for SWAPS {
     fn next(&mut self) {
         let id_ce: usize = 0;
         self.eval_pof_contract_event(id_ce);
+    }
+
+    fn next_event(&mut self) -> Option<Result<Vec<TestResult>, String>> {
+        todo!()
     }
 
     fn add_event_to_contract_event_timeline(&mut self) {

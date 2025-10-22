@@ -13,7 +13,11 @@ name = "gfs_lib_portfolio"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
+gfs_lib_types = { version = "0.0.19", path = "../gfs_lib_types", package = "gfs_lib_types" }
+gfs_lib_terms = { version = "0.0.19", path = "../gfs_lib_terms", package = "gfs_lib_terms" }
 gfs_lib_contract = { version = "0.0.19", path = "../gfs_lib_contract", package = "gfs_lib_contract" }
 chrono = "0.4.41"
 regex = "1.11.1"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
 

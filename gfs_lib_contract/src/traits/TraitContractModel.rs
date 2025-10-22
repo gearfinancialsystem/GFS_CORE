@@ -4,7 +4,6 @@ use std::sync::Arc;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_contract_identification::StatusDate::StatusDate;
 use gfs_lib_terms::terms::grp_notional_principal::MaturityDate::MaturityDate;
-
 use gfs_lib_types::types::Value::Value;
 use crate::traits::TraitExternalData::TraitExternalData;
 use crate::traits::TraitExternalEvent::TraitExternalEvent;
@@ -25,7 +24,11 @@ pub trait TraitContractModel {
     fn eval_stf_contract_event(&mut self, id_ce: usize);
     
     fn compute_payoff(&mut self); // eval pof
-    fn next(&mut self); // eval stf, modifie statespaces
+
+
+    fn next_day(&mut self, extract_results: bool) -> Option<Result<Vec<TestResult>, String>>; // eval stf, modifie statespaces
+
+    fn next_event(&mut self, extract_results: bool) -> Option<Result<TestResult, String>>;
     //fn set_result_set(&mut self);
 
     fn add_event_to_contract_event_timeline(&mut self); // peut sexecuter nimporte quand

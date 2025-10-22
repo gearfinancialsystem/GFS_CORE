@@ -12,6 +12,7 @@ use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventFactory::EventFactory;
 use crate::events::EventType::EventType;
@@ -109,8 +110,11 @@ pub struct ANN {
     pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
     pub related_contracts: Option<RelatedContracts>,
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
+    pub curr_event_index: i32,
     pub states_space: StatesSpace,
     pub status_date: Option<StatusDate>,
+    pub first_event_date: Option<PhantomIsoDatetimeW>,
+    pub last_event_date: Option<PhantomIsoDatetimeW>,
 }
 
 impl TraitContractModel for ANN {
@@ -122,8 +126,11 @@ impl TraitContractModel for ANN {
             risk_factor_external_event: None,
             related_contracts: None,
             event_timeline: Vec::new(),
+            curr_event_index: -1,
             states_space: StatesSpace::default(),
             status_date: None,
+            first_event_date: None,
+            last_event_date: None,
         }
     }
 
@@ -225,7 +232,7 @@ impl TraitContractModel for ANN {
 
         let cycle_of_principal_redemption = CycleOfPrincipalRedemption::provide_from_input_dict (&sm, "cycleOfPrincipalRedemption");
 
-        let b = InitialExchangeDate::provide_from_input_dict(&sm, "initialExchangeDate");
+        // let b = InitialExchangeDate::provide_from_input_dict(&sm, "initialExchangeDate");
         let mut cycle_anchor_date_of_principal_redemption = CycleAnchorDateOfPrincipalRedemption::provide_from_input_dict(&sm, "cycleAnchorDateOfPrincipalRedemption");
         if cycle_anchor_date_of_principal_redemption.is_none() {
             cycle_anchor_date_of_principal_redemption = {
@@ -587,9 +594,9 @@ impl TraitContractModel for ANN {
         for e in a.iter() {
             test3.push(e.to_string());
         }
-        let rr = &model.cycle_anchor_date_of_principal_redemption.unwrap().to_string();
-        let rrw = maturity.clone().to_string();
-        let ww = a.iter().map(|e| e.convert::<ScheduleTime>().to_string()).collect::<HashSet<String>>();
+        // let rr = &model.cycle_anchor_date_of_principal_redemption.unwrap().to_string();
+        // let rrw = maturity.clone().to_string();
+        // let ww = a.iter().map(|e| e.convert::<ScheduleTime>().to_string()).collect::<HashSet<String>>();
         let es = EventFactory::create_events(
             &a.iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
             &EventType::PR,
@@ -816,7 +823,7 @@ impl TraitContractModel for ANN {
             &model.end_of_month_convention,
             Some(false),
         );
-        let mut rate_reset_events = EventFactory::create_events(
+        let rate_reset_events = EventFactory::create_events(
             &s.iter().map(|e| e.convert::<ScheduleTime>()).collect::<HashSet<ScheduleTime>>(),
             &EventType::RR,
             &model.currency,
@@ -1020,9 +1027,68 @@ impl TraitContractModel for ANN {
         self.eval_pof_contract_event(id_ce);
     }
 
-    fn next(&mut self) {
-        let id_ce: usize = 0;
-        self.eval_pof_contract_event(id_ce);
+    fn next_day(&mut self, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
+        // ici on met Vec<TestResult> car il peut y avoir plusieur event le meme jour
+        // itere un jour apres lautre
+        let period1d = *PhantomIsoPeriodW::new(0,0,1);
+        let next_status_date = self.status_date.convert_option::<PhantomIsoDatetimeW>().unwrap().value()
+            + period1d;
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        let mut next_event_date = self.event_timeline.get(next_event_index).unwrap().get_schedule_time();
+
+        if next_status_date < next_event_date.value() {
+            self.status_date = StatusDate::new(next_status_date).ok();
+            let oo = self.status_date.clone()?.to_string();
+            None
+        }
+        else { // case >=, seul = doit etre matche
+            let mut result_vec: Vec<TestResult> = Vec::new();
+            let mut curr_next_event_index = next_event_index;
+            while next_status_date == next_event_date.value() {
+                let ww = next_status_date.to_string();
+                let www = next_event_date.to_string();
+
+                result_vec.push(self.next_event(extract_results).expect("ok").expect("ok"));
+                curr_next_event_index += 1;
+                if curr_next_event_index == self.event_timeline.len() {
+                    break;
+                }
+                next_event_date = self.event_timeline.get(curr_next_event_index).unwrap().get_schedule_time();
+            }
+            self.status_date = StatusDate::new(next_status_date).ok();
+            Some(Ok(result_vec))
+        }
+
+    }
+    
+    fn next_event(&mut self, extract_results: bool) -> Option<Result<TestResult, String>> {
+
+
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        if next_event_index < self.event_timeline.len() {
+
+            self.eval_pof_contract_event(next_event_index);
+            self.eval_stf_contract_event(next_event_index);
+            self.curr_event_index += 1;
+            if extract_results == true {
+                let curr_testresult = TestResult {
+                    eventDate: self.event_timeline[next_event_index].event_time.expect("fe").to_string(),
+                    eventType: self.event_timeline[next_event_index].event_type.to_string(),
+                    payoff: self.event_timeline[next_event_index].payoff.clone().expect("ok").to_string(),
+                    currency: self.event_timeline[next_event_index].currency.clone().expect("ef").0,
+                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
+                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
+                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
+                };
+                Some(Ok(curr_testresult))
+            }
+            else {
+                Some(Err("Err ave TestResult".to_string()))
+            }
+
+        } else {
+            None
+        }
     }
 
     fn add_event_to_contract_event_timeline(&mut self) {
@@ -1042,43 +1108,24 @@ impl TraitContractModel for ANN {
 
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
         self.sort_events_timeline();
-        // let model = &self.contract_terms;
-        let _maturity = &self.contract_terms.maturity_date.clone();
-        // self.init_state_space(_maturity);
-        let events = &mut self.event_timeline.clone();
-
-        events.sort_by(|a, b| a.epoch_offset.partial_cmp(&b.epoch_offset).unwrap_or(Ordering::Less));
-
+        let events_len = self.event_timeline.len();
         let mut result_vec: Vec<TestResult> = Vec::new();
-        let mut i: usize = 0;
-        for event in events.iter_mut() {
-            // let a = event.event_time.expect("fd");
-            // let b = EventTime::new(date.expect("fo").value()).expect("ok");
 
-            if date.is_some() {
-                if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
-                    break
+        while self.curr_event_index + 1 < events_len as i32 { // i < events_len {
+            if self.curr_event_index > -1 {
+                if date.is_some() {
+                    if self.event_timeline[self.curr_event_index as usize].event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
+                        break
+                    }
                 }
             }
-            self.eval_pof_contract_event(i);
-            //println!("nominalprincipal{:?}", self.states_space.notional_principal);
-            //println!("payoff{:?}", self.event_timeline[i].payoff);
-            self.eval_stf_contract_event(i);
-            // let a = self.event_timeline[i].payoff.clone().expect("ok").to_string();
-            if extract_results == true {
-                let curr_testresult = TestResult {
-                    eventDate: event.event_time.expect("fe").to_string(),
-                    eventType: event.event_type.to_string(),
-                    payoff: self.event_timeline[i].payoff.clone().expect("ok").to_string(),
-                    currency: event.currency.clone().expect("ef").0,
-                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
-                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
-                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
-                };
-                result_vec.push(curr_testresult)
-            }
 
-            i += 1;
+            let curr_testresult: Option<Result<TestResult, String>> = self.next_event(extract_results);
+            if extract_results == true {
+                if curr_testresult.clone().unwrap().is_ok() {
+                    result_vec.push(curr_testresult.clone().unwrap().unwrap());
+                }
+            }
         }
 
         if let Some(purchase_date) = &self.contract_terms.purchase_date.clone() {
@@ -1092,11 +1139,11 @@ impl TraitContractModel for ANN {
                 &self.contract_terms.contract_id,
             );
 
-            events.retain(|e|
+            self.event_timeline.retain(|e|
                 !(e.event_type != EventType::AD && e.compare_to(&purchase_event) == -1) );
         }
 
-        self.event_timeline = events.clone();
+        // self.event_timeline = events.clone();
         if extract_results == false {
 
             return None;
@@ -1179,6 +1226,9 @@ impl ANN {
 
 }
 
+
+
+
 impl fmt::Display for ANN {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "ANN")
@@ -1207,8 +1257,11 @@ impl Clone for ANN {
             risk_factor_external_event: None, // faire qqchose specifique ici ?
             related_contracts: None, // faire qqchose specifique ici ?
             event_timeline: self.event_timeline.clone(),
+            curr_event_index: self.curr_event_index.clone(),
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
+            first_event_date: self.first_event_date.clone(),
+            last_event_date: self.last_event_date.clone(),
         }
     }
 }

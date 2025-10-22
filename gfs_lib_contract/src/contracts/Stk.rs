@@ -12,6 +12,7 @@ use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_calendar::Calendar::Calendar;
 use gfs_lib_terms::terms::grp_calendar::EndOfMonthConvention::EndOfMonthConvention;
@@ -60,8 +61,11 @@ pub struct STK {
     pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
     pub related_contracts: Option<RelatedContracts>,
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
+    pub curr_event_index: i32,
     pub states_space: StatesSpace,
     pub status_date: Option<StatusDate>,
+    pub first_event_date: Option<PhantomIsoDatetimeW>,
+    pub last_event_date: Option<PhantomIsoDatetimeW>,
 }
 
 impl TraitContractModel for STK {
@@ -74,8 +78,11 @@ impl TraitContractModel for STK {
             risk_factor_external_event: None,
             related_contracts: None,
             event_timeline: Vec::new(),
+            curr_event_index: -1,
             states_space: StatesSpace::default(),
             status_date: None,
+            first_event_date: None,
+            last_event_date: None,
         }
     }
 
@@ -357,9 +364,68 @@ impl TraitContractModel for STK {
         self.eval_pof_contract_event(id_ce);
     }
 
-    fn next(&mut self) {
-        let id_ce: usize = 0;
-        self.eval_pof_contract_event(id_ce);
+    fn next_day(&mut self, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
+        // ici on met Vec<TestResult> car il peut y avoir plusieur event le meme jour
+        // itere un jour apres lautre
+        let period1d = *PhantomIsoPeriodW::new(0,0,1);
+        let next_status_date = self.status_date.convert_option::<PhantomIsoDatetimeW>().unwrap().value()
+            + period1d;
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        let mut next_event_date = self.event_timeline.get(next_event_index).unwrap().get_schedule_time();
+
+        if next_status_date < next_event_date.value() {
+            self.status_date = StatusDate::new(next_status_date).ok();
+            let oo = self.status_date.clone()?.to_string();
+            None
+        }
+        else { // case >=, seul = doit etre matche
+            let mut result_vec: Vec<TestResult> = Vec::new();
+            let mut curr_next_event_index = next_event_index;
+            while next_status_date == next_event_date.value() {
+                let ww = next_status_date.to_string();
+                let www = next_event_date.to_string();
+
+                result_vec.push(self.next_event(extract_results).expect("ok").expect("ok"));
+                curr_next_event_index += 1;
+                if curr_next_event_index == self.event_timeline.len() {
+                    break;
+                }
+                next_event_date = self.event_timeline.get(curr_next_event_index).unwrap().get_schedule_time();
+            }
+            self.status_date = StatusDate::new(next_status_date).ok();
+            Some(Ok(result_vec))
+        }
+
+    }
+
+    fn next_event(&mut self, extract_results: bool) -> Option<Result<TestResult, String>> {
+
+
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        if next_event_index < self.event_timeline.len() {
+
+            self.eval_pof_contract_event(next_event_index);
+            self.eval_stf_contract_event(next_event_index);
+            self.curr_event_index += 1;
+            if extract_results == true {
+                let curr_testresult = TestResult {
+                    eventDate: self.event_timeline[next_event_index].event_time.expect("fe").to_string(),
+                    eventType: self.event_timeline[next_event_index].event_type.to_string(),
+                    payoff: self.event_timeline[next_event_index].payoff.clone().expect("ok").to_string(),
+                    currency: self.event_timeline[next_event_index].currency.clone().expect("ef").0,
+                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
+                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
+                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
+                };
+                Some(Ok(curr_testresult))
+            }
+            else {
+                Some(Err("Err ave TestResult".to_string()))
+            }
+
+        } else {
+            None
+        }
     }
 
     fn add_event_to_contract_event_timeline(&mut self) {
@@ -378,43 +444,28 @@ impl TraitContractModel for STK {
     }
 
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
-        // Sort events according to their time sequence
         self.sort_events_timeline();
-        // Initialize state space per status date
-        let maturity = &self.contract_terms.maturity_date.clone();
-        self.init_state_space(maturity);
-        let events = &mut self.event_timeline.clone();
-
+        let events_len = self.event_timeline.len();
         let mut result_vec: Vec<TestResult> = Vec::new();
-        let mut i: usize = 0;
-        for event in events.iter_mut() {
 
-            if date.is_some() {
-                if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
-                    break
+        while self.curr_event_index + 1 < events_len as i32 { // i < events_len {
+            if self.curr_event_index > -1 {
+                if date.is_some() {
+                    if self.event_timeline[self.curr_event_index as usize].event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
+                        break
+                    }
                 }
             }
 
-            self.eval_pof_contract_event(i);
-            self.eval_stf_contract_event(i);
-
+            let curr_testresult: Option<Result<TestResult, String>> = self.next_event(extract_results);
             if extract_results == true {
-                let curr_testresult = TestResult {
-                    eventDate: event.event_time.expect("fe").to_string(),
-                    eventType: event.event_type.to_string(),
-                    payoff: self.event_timeline[i].payoff.clone().expect("ok").to_string(),
-                    currency: event.currency.clone().expect("ef").0,
-                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
-                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
-                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
-                };
-                result_vec.push(curr_testresult)
+                if curr_testresult.clone().unwrap().is_ok() {
+                    result_vec.push(curr_testresult.clone().unwrap().unwrap());
+                }
             }
-
-            i+=1;
         }
         // Return evaluated events
-        self.event_timeline = events.clone();
+        //self.event_timeline = events.clone();
         self.sort_events_timeline();
 
         // recup des resultats
@@ -452,6 +503,10 @@ impl TraitContractModel for STK {
     }
 
 }
+
+
+
+
 impl fmt::Display for STK {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "STK")
@@ -480,8 +535,11 @@ impl Clone for STK {
             risk_factor_external_event: None, // faire qqchose specifique ici ?
             related_contracts: None, // faire qqchose specifique ici ?
             event_timeline: self.event_timeline.clone(),
+            curr_event_index: self.curr_event_index.clone(),
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
+            first_event_date: self.first_event_date.clone(),
+            last_event_date: self.last_event_date.clone(),
         }
     }
 }

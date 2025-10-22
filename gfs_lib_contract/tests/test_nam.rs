@@ -5,7 +5,7 @@ use std::sync::Arc;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
-use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_test_case_terms2, load_tests};
+use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results,load_test_case_terms2, load_tests};
 
 fn extract_numbers_with_original(strings: Vec<&String>) -> Vec<(&str, i32)> {
     strings

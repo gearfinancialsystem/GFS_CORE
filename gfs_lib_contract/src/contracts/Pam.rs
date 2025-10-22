@@ -13,6 +13,7 @@ use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
+use gfs_lib_terms::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
 use crate::events::ContractEvent::ContractEvent;
 use crate::events::EventType::EventType;
 
@@ -99,8 +100,11 @@ pub struct PAM {
     pub risk_factor_external_event: Option<Arc<dyn TraitExternalEvent>>,
     pub related_contracts: Option<RelatedContracts>,
     pub event_timeline: Vec<ContractEvent>, //Vec<ContractEvent>, ScheduleTime doit être plus précis qu'event time
+    pub curr_event_index: i32,
     pub states_space: StatesSpace,
     pub status_date: Option<StatusDate>,
+    pub first_event_date: Option<PhantomIsoDatetimeW>,
+    pub last_event_date: Option<PhantomIsoDatetimeW>,
 }
 
 impl TraitContractModel for PAM { //
@@ -113,8 +117,11 @@ impl TraitContractModel for PAM { //
             risk_factor_external_event: None,
             related_contracts: None,
             event_timeline: Vec::new(),
+            curr_event_index: -1,
             states_space: StatesSpace::default(),
             status_date: None,
+            first_event_date: None,
+            last_event_date: None,
         }
     }
 
@@ -219,6 +226,8 @@ impl TraitContractModel for PAM { //
         let contract_id = ContractID::provide_from_input_dict(&sm, "contractID");
         self.contract_id =  contract_id.clone().expect("contract ID not provided");
 
+
+        let status_date = StatusDate::provide_from_input_dict(&sm, "statusDate");
         let ct = ContractTerms {
             accrued_interest: accrued_interest,
             business_day_adjuster: business_day_adjuster,
@@ -273,7 +282,7 @@ impl TraitContractModel for PAM { //
             rate_spread: RateSpread::provide_from_input_dict(&sm, "rateSpread"),
             scaling_effect: ScalingEffect::provide_from_input_dict(&sm, "scalingEffect"),
             scaling_index_at_contract_deal_date: ScalingIndexAtContractDealDate::provide_from_input_dict(&sm, "scalingIndexAtContractDealDate"),
-            status_date: StatusDate::provide_from_input_dict(&sm, "statusDate"),
+            status_date: status_date,
             termination_date: TerminationDate::provide_from_input_dict(&sm, "terminationDate"),
             ..Default::default()
         };
@@ -692,6 +701,9 @@ impl TraitContractModel for PAM { //
         // let fxx3 = events.get(3).unwrap().event_time.unwrap().to_string();
         // let fxx4 = events.get(4).unwrap().event_time.unwrap().to_string();
         self.event_timeline = events.clone();
+        self.first_event_date = self.event_timeline.first().unwrap().event_time.convert_option::<PhantomIsoDatetimeW>();
+        self.last_event_date = self.event_timeline.last().unwrap().event_time.convert_option::<PhantomIsoDatetimeW>();
+
     }
 
     fn set_status_date(&mut self, status_date: Option<StatusDate>) {
@@ -745,9 +757,69 @@ impl TraitContractModel for PAM { //
         self.eval_pof_contract_event(id_ce);
     }
 
-    fn next(&mut self) {
-        let id_ce: usize = 0;
-        self.eval_pof_contract_event(id_ce);
+    fn next_day(&mut self, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> {
+        // ici on met Vec<TestResult> car il peut y avoir plusieur event le meme jour
+        // itere un jour apres lautre
+        let period1d = *PhantomIsoPeriodW::new(0,0,1);
+        let next_status_date = self.status_date.convert_option::<PhantomIsoDatetimeW>().unwrap().value()
+            + period1d;
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        let mut next_event_date = self.event_timeline.get(next_event_index).unwrap().get_schedule_time();
+
+        if next_status_date < next_event_date.value() {
+            self.status_date = StatusDate::new(next_status_date).ok();
+            let oo = self.status_date.clone()?.to_string();
+            None
+        }
+        else { // case >=, seul = doit etre matche
+            let mut result_vec: Vec<TestResult> = Vec::new();
+            let mut curr_next_event_index = next_event_index;
+            while next_status_date == next_event_date.value() {
+                let ww = next_status_date.to_string();
+                let www = next_event_date.to_string();
+
+                result_vec.push(self.next_event(extract_results).expect("ok").expect("ok"));
+                curr_next_event_index += 1;
+                if curr_next_event_index == self.event_timeline.len() {
+                    break;
+                }
+                next_event_date = self.event_timeline.get(curr_next_event_index).unwrap().get_schedule_time();
+            }
+            self.status_date = StatusDate::new(next_status_date).ok();
+            Some(Ok(result_vec))
+        }
+
+    }
+
+    fn next_event(&mut self, extract_results: bool) -> Option<Result<TestResult, String>> {
+
+        let next_event_index = (self.curr_event_index + 1) as usize;
+        if next_event_index < self.event_timeline.len() {
+
+            self.eval_pof_contract_event(next_event_index);
+            self.eval_stf_contract_event(next_event_index);
+
+            self.curr_event_index += 1;
+            if extract_results == true {
+                let curr_testresult = TestResult {
+                    eventDate: self.event_timeline[next_event_index].event_time.expect("fe").to_string(),
+                    eventType: self.event_timeline[next_event_index].event_type.to_string(),
+                    payoff: self.event_timeline[next_event_index].payoff.clone().expect("ok").to_string(),
+                    currency: self.event_timeline[next_event_index].currency.clone().expect("ef").0,
+                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
+                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
+                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
+                };
+
+                Some(Ok(curr_testresult))
+            }
+            else {
+                Some(Err("Err ave TestResult".to_string()))
+            }
+
+        } else {
+            None
+        }
     }
 
     fn add_event_to_contract_event_timeline(&mut self) {
@@ -766,47 +838,27 @@ impl TraitContractModel for PAM { //
     }
 
     fn apply_until_date(&mut self, date: Option<PhantomIsoDatetimeW>, extract_results: bool) -> Option<Result<Vec<TestResult>, String>> { // -> Result<Vec<ContractEvent<IsoDatetime, IsoDatetime>>, String>
-        // Sort events according to their time sequence //
         self.sort_events_timeline();
-        let events = &mut self.event_timeline.clone();
-        
-        ////////////////////////////////////////////////////////////////////
-        // Apply events according to their time sequence to current state //
-        ////////////////////////////////////////////////////////////////////
+        let events_len = self.event_timeline.len();
         let mut result_vec: Vec<TestResult> = Vec::new();
 
-        //println!("ZORG ZORG");
-
-        let mut i: usize = 0;
-        for event in events.iter_mut() {
-            // let a = event.event_time.expect("fd");
-            // let b = EventTime::new(date.expect("fo").value()).expect("ok");
-
-            if date.is_some() {
-                if event.event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
-                    break
+        while self.curr_event_index + 1 < events_len as i32 { // i < events_len {
+            if self.curr_event_index > -1 {
+                if date.is_some() {
+                    if self.event_timeline[self.curr_event_index as usize].event_time.expect("fd") > EventTime::new(date.expect("fo").value()).expect("ok") {
+                        break
+                    }
                 }
             }
-            self.eval_pof_contract_event(i);
-            //println!("nominalprincipal{:?}", self.states_space.notional_principal);
-            //println!("payoff{:?}", self.event_timeline[i].payoff);
-            self.eval_stf_contract_event(i);
-            // let a = self.event_timeline[i].payoff.clone().expect("ok").to_string();
-            if extract_results == true {
-                let curr_testresult = TestResult {
-                    eventDate: event.event_time.expect("fe").to_string(),
-                    eventType: event.event_type.to_string(),
-                    payoff: self.event_timeline[i].payoff.clone().expect("ok").to_string(),
-                    currency: event.currency.clone().expect("ef").0,
-                    notionalPrincipal: self.states_space.notional_principal.clone().expect("ok").to_string(),
-                    nominalInterestRate: self.states_space.nominal_interest_rate.clone().expect("ok").to_string(),
-                    accruedInterest: self.states_space.accrued_interest.clone().expect("ok").to_string(),
-                };
-                result_vec.push(curr_testresult)
-            }
 
-            i += 1;
+            let curr_testresult: Option<Result<TestResult, String>> = self.next_event(extract_results);
+            if extract_results == true {
+                if curr_testresult.clone().unwrap().is_ok() {
+                    result_vec.push(curr_testresult.clone().unwrap().unwrap());
+                }
+            }
         }
+
 
         ////////////////////////////////////////////////////////
         // Remove pre-purchase events if purchase date is set //
@@ -823,7 +875,7 @@ impl TraitContractModel for PAM { //
                 &None,
                 &self.contract_terms.contract_id,
             );
-            events.retain(|e| {
+            self.event_timeline.retain(|e| {
                 e.get_event_type() == EventType::AD || e >= &purchase_event
             });
         }
@@ -831,12 +883,12 @@ impl TraitContractModel for PAM { //
         // Return evaluated events //
         /////////////////////////////
         //Ok(events)
-        self.event_timeline = events.clone();
+        // self.event_timeline = events.clone();
 
         // recup des resultats
         if extract_results == false {
 
-            return None;
+            None
         }
         else {
             ////////////////////////////////////////////////////////
@@ -858,7 +910,7 @@ impl TraitContractModel for PAM { //
                     EventType::from_str(e.eventType.as_str()).expect("exist") == EventType::AD || epoch_offset as f64 >= purchase_event.epoch_offset.unwrap().value()
                 } else { true }
             });
-            return Some(Ok(result_vec));
+            Some(Ok(result_vec))
         }
 
 
@@ -870,6 +922,7 @@ impl TraitContractModel for PAM { //
     }
 
 }
+
 
 
 impl fmt::Display for PAM {
@@ -900,8 +953,11 @@ impl Clone for PAM {
             risk_factor_external_event: None, // faire qqchose specifique ici ?
             related_contracts: None, // faire qqchose specifique ici ?
             event_timeline: self.event_timeline.clone(),
+            curr_event_index: self.curr_event_index.clone(),
             states_space: self.states_space.clone(),
             status_date: self.status_date.clone(),
+            first_event_date: self.first_event_date.clone(),
+            last_event_date: self.last_event_date.clone(),
         }
     }
 }

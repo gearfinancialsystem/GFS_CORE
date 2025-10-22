@@ -53,10 +53,10 @@ impl RedemptionUtils {
                 event_times_sorted.sort();
                 let lb = 1;
                 let ub = event_times_sorted.len();
-                let www= day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
-                                               event_times_sorted.get(0).unwrap().clone());
-                let ss = state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>().to_string();
-                let xx = event_times_sorted.get(0).unwrap().clone().to_string();
+                // let www= day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),
+                //                                event_times_sorted.get(0).unwrap().clone());
+                // let ss = state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>().to_string();
+                // let xx = event_times_sorted.get(0).unwrap().clone().to_string();
                 let scale = outstanding_notional.value() +
                     accrued_interest.value() +
                     day_counter.day_count_fraction(state.status_date.clone().unwrap().convert::<PhantomIsoDatetimeW>(),

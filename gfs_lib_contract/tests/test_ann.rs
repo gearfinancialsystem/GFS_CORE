@@ -5,7 +5,7 @@ use std::sync::Arc;
 use gfs_lib_contract::attributes::ContractModel::ContractModel;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::common_test_funcs::CompareTestResults::compare_test_results;
-use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms, load_test_case_terms2, load_tests};
+use crate::common_test_funcs::test_json_loader::{load_test_case, load_test_case_dataobserved, load_test_case_results, load_test_case_terms2, load_tests};
 
 fn extract_numbers_with_original(strings: Vec<&String>) -> Vec<(&str, i32)> {
     strings
@@ -29,7 +29,7 @@ fn test_ann_contract_creation() {
     test_vec.sort_by(|a, b| a.1.cmp(&b.1));
 
     for (test_id, _) in test_vec {
-        println!("{:?}", test_id);
+        // println!("{:?}", test_id);
         let curr_test = load_test_case(test_id, &d_dict).unwrap();
         //let json_value = test_read_and_parse_json(pathx).unwrap();
         let contract_terms_dict2 = load_test_case_terms2(&curr_test).unwrap();

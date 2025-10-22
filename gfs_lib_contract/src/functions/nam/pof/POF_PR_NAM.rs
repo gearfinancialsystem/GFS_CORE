@@ -38,8 +38,8 @@ impl TraitPayOffFunction for POF_PR_NAM {
         let notional_principal = states.notional_principal.clone().expect("notionalPrincipal should always exist");
         let notional_scaling_multiplier = states.notional_scaling_multiplier.clone().expect("notionalScalingMultiplier should always exist");
 
-        let z1 = time.clone().to_string();
-        let z2 = status_date.clone().to_string();
+        // let z1 = time.clone().to_string();
+        // let z2 = status_date.clone().to_string();
         let time_from_last_event = day_counter.day_count_fraction(
             time_adjuster.shift_sc(&status_date.convert::<PhantomIsoDatetimeW>()),
             time_adjuster.shift_sc(&time)

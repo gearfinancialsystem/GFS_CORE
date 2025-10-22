@@ -75,8 +75,8 @@ impl EventFactory {
                 else {
                     let tmp_time: PhantomIsoDatetimeW = time.convert();
                     let adjusted_time = convention.clone().unwrap().shift_bd(&tmp_time);
-                    let ez2 = tmp_time.to_string();
-                    let ee = adjusted_time.to_string();
+                    // let ez2 = tmp_time.to_string();
+                    // let ee = adjusted_time.to_string();
                     EventTime::new(adjusted_time.clone().value()).ok()
                 };
 

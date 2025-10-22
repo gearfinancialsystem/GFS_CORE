@@ -51,8 +51,8 @@ impl TraitStateTransitionFunction for STF_PRF_ANN {
         states.fee_accrued.add_assign(time_from_last_event * notional_principal.value() * fee_rate_m.value());
 
         states.status_date = StatusDate::new(time.value()).ok();
-        let a = contract_role_m.clone().role_sign();
-        let b = RedemptionUtils::redemptionAmount(&contract_terms, &states);
+        // let a = contract_role_m.clone().role_sign();
+        // let b = RedemptionUtils::redemptionAmount(&contract_terms, &states);
         states.next_principal_redemption_payment = NextPrincipalRedemptionPayment::new(
             contract_role_m.clone().role_sign() * RedemptionUtils::redemptionAmount(&contract_terms, &states)).ok(); // implementer redemptionm utile
         println!("ok");

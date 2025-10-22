@@ -28,7 +28,7 @@ fn test_swppv_contract_creation() {
     test_vec.sort_by(|a, b| a.1.cmp(&b.1));
 
     for (test_id, _) in test_vec {
-        println!("{:?}", test_id);
+
         let curr_test = load_test_case(test_id, &d_dict).unwrap();
 
         let contract_terms_dict2 = load_test_case_terms2(&curr_test).unwrap();
