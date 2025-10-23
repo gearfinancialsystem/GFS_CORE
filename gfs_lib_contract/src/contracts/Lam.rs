@@ -7,7 +7,6 @@ use std::str::FromStr;
 use std::sync::Arc;
 use gfs_lib_terms::non_terms::EndTime::EndTime;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
-use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::non_terms::ScheduleFactoryStartTime::StartTime;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoCycle::PhantomIsoCycleW;
