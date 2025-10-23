@@ -3,7 +3,7 @@ use std::hash::{Hash, Hasher};
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
-use gfs_lib_terms::non_terms::PayOff::Payoff;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomF64::PhantomF64W;
 use crate::events::EventSequence::EventSequence;
@@ -27,7 +27,7 @@ pub struct ContractEvent {
     pub schedule_time: Option<ScheduleTime>,
     pub event_type: EventType,
     pub currency: Option<Currency>,
-    pub payoff: Option<Payoff>,
+    pub payoff: Option<PayOff>,
     pub contract_id: Option<ContractID>,
 }
 
@@ -57,7 +57,7 @@ impl ContractEvent {
             schedule_time: schedule_time.clone(),
             event_type: event_type.clone(),
             currency: currency.clone(),
-            payoff: Some(Payoff::new(0.0).expect("ok")),
+            payoff: Some(PayOff::new(0.0).expect("ok")),
             contract_id: contract_id.clone(),
         }
     }
@@ -85,12 +85,12 @@ impl ContractEvent {
     pub fn currency(&self) -> Currency {
         self.currency.clone().unwrap()
     }
-    pub fn payoff(&self) -> Payoff {
+    pub fn payoff(&self) -> PayOff {
         self.payoff.clone().unwrap()
     }
 
     pub fn set_payoff(&mut self, payoff: f64) {
-        self.payoff = Some( Payoff::new(payoff).expect("ok")  );
+        self.payoff = Some( PayOff::new(payoff).expect("ok")  );
     }
 
     pub fn set_f_pay_off(&mut self, function: Option<PayOffFunction>) {

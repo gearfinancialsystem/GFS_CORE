@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -9,6 +10,8 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertToOption;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -28,7 +31,7 @@ impl TraitPayOffFunction for POF_IP_SWPPV {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         let day_counter = day_counter.clone().expect("sould have day counter");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
@@ -43,11 +46,15 @@ impl TraitPayOffFunction for POF_IP_SWPPV {
             time_adjuster.shift_sc(time)
         );
 
-        settlement_currency_fx_rate * (
+        let r = settlement_currency_fx_rate * (
             states.accrued_interest.clone().unwrap().value() +
                 time_from_last_event *
                     (nominal_interest_rate.value() - states.nominal_interest_rate.clone().unwrap().value()) *
                     states.notional_principal.clone().unwrap().value()
-        )
+        );
+        match PayOff::new(r) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
     }
 }

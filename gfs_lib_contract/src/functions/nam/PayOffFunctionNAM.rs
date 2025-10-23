@@ -1,11 +1,13 @@
 #![allow(non_camel_case_types)]
 
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::functions::nam::pof::POF_AD_NAM::POF_AD_NAM;
 use crate::functions::nam::pof::POF_CE_NAM::POF_CE_NAM;
 use crate::functions::nam::pof::POF_FP_NAM::POF_FP_NAM;
@@ -81,7 +83,7 @@ impl PayOffFunctionNAM {
             risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
             day_counter: &Option<DayCountConvention>,
             time_adjuster: &BusinessDayAdjuster,
-        ) -> f64 {
+        ) -> Result<PayOff, ErrorContractEnum> {
         match self {
             PayOffFunctionNAM::POF_AD_NAM(v) => v.eval(
                 time, states, contract_terms, contract_structure,

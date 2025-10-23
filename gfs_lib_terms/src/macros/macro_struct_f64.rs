@@ -53,6 +53,7 @@ macro_rules! define_struct_f64 {
         use std::fmt;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+        use crate::error::ErrorTerms::ErrorTermsEnum;
         use crate::define_option_ext;
         //define_phantom_imports_f64!($struct_name);
 
@@ -68,15 +69,15 @@ macro_rules! define_struct_f64 {
         }
 
         impl $struct_name {
-            pub fn new($value: f64) -> Result<Self, String> {
+            pub fn new($value: f64) -> Result<Self, ErrorTermsEnum> {
                 if $value.is_nan() {
-                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must not be NaN").to_string() ) )
                 } else if $value.is_finite() && $value > f64::MAX {
-                    Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string()))
                 }
                 $(
                     else if $value.is_finite() && !($condition) {
-                        Err($error.to_string())
+                        Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), stringify!($error)).to_string()  ))
                     }
                 )+
                 else {
@@ -184,12 +185,12 @@ macro_rules! define_struct_f64 {
         }
 
         impl FromStr for $struct_name {
-            type Err = String;
+            type Err = ErrorTermsEnum;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 match s.parse::<f64>() {
                     Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                    Err(e) => Err(ErrorTermsEnum::ErrorTermCreation(format!("Unable to parse {} as f64", e))),
                 }
             }
         }
@@ -214,6 +215,7 @@ macro_rules! define_struct_f64 {
         use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
         use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::traits::TraitOptionExt::TraitOptionExt;
+        use crate::error::ErrorTerms::ErrorTermsEnum;
         use crate::define_option_ext;
 
         #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
@@ -228,15 +230,15 @@ macro_rules! define_struct_f64 {
         }
 
         impl $struct_name {
-            pub fn new($value: f64) -> Result<Self, String> {
+            pub fn new($value: f64) -> Result<Self, ErrorTermsEnum> {
                 if $value.is_nan() {
-                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must not be NaN").to_string()))
                 } else if $value.is_finite() && $value > f64::MAX {
-                    Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string()))
                 }
                 $(
                     else if $value.is_finite() && !($condition) {
-                        Err($error.to_string())
+                        Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), stringify!($error)).to_string()  ))
                     }
                 )+
                 else {
@@ -353,12 +355,12 @@ macro_rules! define_struct_f64 {
         }
         
         impl FromStr for $struct_name {
-            type Err = String;
+            type Err = ErrorTermsEnum;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 match s.parse::<f64>() {
                     Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                    Err(e) => Err(ErrorTermsEnum::ErrorTermCreation(format!("Unable to parse {} as f64", e))),
                 }
             }
         }
@@ -382,6 +384,7 @@ macro_rules! define_struct_f64 {
         use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
         use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
         use crate::traits::TraitOptionExt::TraitOptionExt;
+        use crate::error::ErrorTerms::ErrorTermsEnum;
         use crate::define_option_ext;
 
         #[derive(PartialEq, Debug, Clone, Copy, PartialOrd)]
@@ -397,11 +400,11 @@ macro_rules! define_struct_f64 {
         }
 
         impl $struct_name {
-            pub fn new($value: f64) -> Result<Self, String> {
+            pub fn new($value: f64) -> Result<Self, ErrorTermsEnum> {
                 if $value.is_nan() {
-                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must not be NaN").to_string()))
                 } else if $value.is_finite() && $value > f64::MAX {
-                    Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string()))
                 }
                 else {
                     Ok($struct_name($value))
@@ -518,12 +521,12 @@ macro_rules! define_struct_f64 {
         }
         
         impl FromStr for $struct_name {
-            type Err = String;
+            type Err = ErrorTermsEnum;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 match s.parse::<f64>() {
                     Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                    Err(e) => Err(ErrorTermsEnum::ErrorTermCreation(format!("Unable to parse {} as f64", e))),
                 }
             }
         }
@@ -547,6 +550,7 @@ macro_rules! define_struct_f64 {
         use gfs_lib_types::types::Value::Value;
         use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
         use crate::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
+        use crate::error::ErrorTerms::ErrorTermsEnum;
         use crate::traits::TraitOptionExt::TraitOptionExt;
         use crate::define_option_ext;
 
@@ -563,11 +567,11 @@ macro_rules! define_struct_f64 {
         }
 
         impl $struct_name {
-            pub fn new($value: f64) -> Result<Self, String> {
+            pub fn new($value: f64) -> Result<Self, ErrorTermsEnum> {
                 if $value.is_nan() {
-                    Err(concat!(stringify!($struct_name), " value must not be NaN").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must not be NaN").to_string()))
                 } else if $value.is_finite() && $value > f64::MAX {
-                    Err(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string())
+                    Err(ErrorTermsEnum::ErrorTermCreation(concat!(stringify!($struct_name), " value must be less than or equal to f64::MAX").to_string()))
                 }
                 else {
                     Ok($struct_name($value))
@@ -677,12 +681,12 @@ macro_rules! define_struct_f64 {
             }
         }
         impl FromStr for $struct_name {
-            type Err = String;
+            type Err = ErrorTermsEnum;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 match s.parse::<f64>() {
                     Ok(value) => $struct_name::new(value),
-                    Err(_) => Err(format!("Unable to parse {} as f64", s)),
+                    Err(e) => Err(ErrorTermsEnum::ErrorTermCreation(format!("Unable to parse {} as f64", e))),
                 }
             }
         }

@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -9,6 +10,8 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -28,7 +31,11 @@ impl TraitPayOffFunction for POF_RRF_PAM {
         _risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
-        0.0
+    ) -> Result<PayOff, ErrorContractEnum> {
+
+        match PayOff::new(0.0) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
     }
 }

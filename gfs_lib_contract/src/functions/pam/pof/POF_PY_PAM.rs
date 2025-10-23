@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -9,6 +10,8 @@ use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -28,7 +31,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         let day_counter = day_counter.clone().expect("sould have day counter");
         let penalty_type = contract_terms.penalty_type.as_ref().expect("penaltyType should be Some");
         let contract_role = contract_terms.contract_role.as_ref().expect("contract role should be Some");
@@ -45,21 +48,29 @@ impl TraitPayOffFunction for POF_PY_PAM {
         match penalty_type {
             PenaltyType::A(_A) => {
                 let penalty_rate = contract_terms.penalty_rate.as_ref().expect("penaltyRate should be Some");
-                settlement_currency_fx_rate * contract_role.role_sign() * penalty_rate.value()
+                let r = settlement_currency_fx_rate * contract_role.role_sign() * penalty_rate.value();
+                match PayOff::new(r) {
+                    Ok(v) => { Ok(v) },
+                    Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+                }
             }
             PenaltyType::N(_N) => {
                 let penalty_rate = contract_terms.penalty_rate.as_ref().expect("penaltyRate should be Some");
                 let status_date = states.status_date.as_ref().expect("status date should always exist");
                 let notional_principal = states.notional_principal.as_ref().expect("notionalPrincipal should be Some");
 
-                settlement_currency_fx_rate * contract_role.role_sign()
+                let r = settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(
                     &{
                         let tmp: PhantomIsoDatetimeW = status_date.convert();
                         tmp
                     },
                 ), time_adjuster.shift_sc(&time))
-                * penalty_rate.value() * notional_principal.value()
+                * penalty_rate.value() * notional_principal.value();
+                match PayOff::new(r) {
+                    Ok(v) => { Ok(v) },
+                    Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+                }
             }
             _ => {
                 let status_date = states.status_date.as_ref().expect("status date should always exist");
@@ -74,7 +85,7 @@ impl TraitPayOffFunction for POF_PY_PAM {
                 } else {
                     None
                 };
-                settlement_currency_fx_rate * contract_role.role_sign()
+                let r = settlement_currency_fx_rate * contract_role.role_sign()
                     * day_counter.day_count_fraction(time_adjuster.shift_sc(
                     &{
                         let tmp: PhantomIsoDatetimeW = status_date.convert();
@@ -82,7 +93,11 @@ impl TraitPayOffFunction for POF_PY_PAM {
                     },
                 ), time_adjuster.shift_sc(&time))
                     * notional_principal.value()
-                    * 0.0f64.max(nominal_interest_rate.value() - cbv.unwrap())
+                    * 0.0f64.max(nominal_interest_rate.value() - cbv.unwrap());
+                match PayOff::new(r) {
+                    Ok(v) => { Ok(v) },
+                    Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+                }
             }
         }
     }

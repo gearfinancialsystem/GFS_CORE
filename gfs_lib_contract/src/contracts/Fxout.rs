@@ -6,7 +6,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 use std::sync::Arc;
 use gfs_lib_terms::non_terms::EventTime::EventTime;
-use gfs_lib_terms::non_terms::PayOff::Payoff;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::non_terms::ScheduleTime::ScheduleTime;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::phantom_terms::PhantomIsoPeriod::PhantomIsoPeriodW;
@@ -314,7 +314,8 @@ impl TraitContractModel for FXOUT {
                 &self.contract_terms.business_day_adjuster.clone().unwrap(),
             );
             //println!("{:?}\n", a);
-            self.event_timeline[id_ce].payoff = Some(Payoff::new(a).expect("ok"));
+            //self.event_timeline[id_ce].payoff = Some(Payoff::new(a).expect("ok"));
+            self.event_timeline[id_ce].payoff = Some(a.expect("ok"));
             //println!("payoff0{:?}\n", self.event_timeline[id_ce].payoff);
         }
 

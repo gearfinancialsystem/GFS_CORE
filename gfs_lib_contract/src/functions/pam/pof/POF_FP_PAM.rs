@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -12,6 +13,8 @@ use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -31,7 +34,7 @@ impl TraitPayOffFunction for POF_FP_PAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
 
         let day_counter = day_counter.clone().expect("sould have day counter");
         let fee_basis = contract_terms.fee_basis.as_ref().expect("feebasis should always be some");
@@ -43,20 +46,30 @@ impl TraitPayOffFunction for POF_FP_PAM {
             time,
             states
         );
+
         if fee_basis.eq(&FeeBasis::A(A)) {
             let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be some");
-            settlement_currency_fx_rate * contract_role.role_sign() * fee_rate.value()
+            let r = settlement_currency_fx_rate * contract_role.role_sign() * fee_rate.value();
+            match PayOff::new(r) {
+                Ok(v) => { Ok(v) },
+                Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+            }
         } 
         else {
             let notional_principal = contract_terms.notional_principal.as_ref().expect("notionalPrincipal should always be some");
             let fee_accrued = states.fee_accrued.as_ref().expect("fee accrued should always be some");
             let status_date = states.status_date.as_ref().expect("status date should always be some");
             
-            settlement_currency_fx_rate * (fee_accrued.value() + day_counter.day_count_fraction(time_adjuster.shift_sc(
+            let r = settlement_currency_fx_rate * (fee_accrued.value() + day_counter.day_count_fraction(time_adjuster.shift_sc(
                 &{let tmp: PhantomIsoDatetimeW = status_date.convert();
                     tmp
                 }
-                ), time_adjuster.shift_sc(time))) * fee_rate.value() * notional_principal.value()
+                ), time_adjuster.shift_sc(time))) * fee_rate.value() * notional_principal.value();
+
+            match PayOff::new(r) {
+                Ok(v) => { Ok(v) },
+                Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+            }
         }
         
    

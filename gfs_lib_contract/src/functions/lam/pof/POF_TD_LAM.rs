@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -10,6 +11,8 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertToOption;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -29,7 +32,7 @@ impl TraitPayOffFunction for POF_TD_LAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         let day_counter = day_counter.clone().expect("sould have day counter");
         let settlement_currency_fx_rate = crate::util::CommonUtils::CommonUtils::settlementCurrencyFxRate(
             risk_factor_external_data,
@@ -37,7 +40,7 @@ impl TraitPayOffFunction for POF_TD_LAM {
             time,
             states
         );
-        settlement_currency_fx_rate
+        let r = settlement_currency_fx_rate
             * contract_terms.clone().contract_role.unwrap().role_sign()
             * (contract_terms.price_at_termination_date.clone().unwrap().value() + states.accrued_interest.clone().unwrap().value()
             + day_counter.day_count_fraction(
@@ -47,6 +50,10 @@ impl TraitPayOffFunction for POF_TD_LAM {
             },
             time_adjuster.shift_sc(time),
         ) * states.nominal_interest_rate.clone().unwrap().value()
-            * states.interest_calculation_base_amount.clone().unwrap().value())
+            * states.interest_calculation_base_amount.clone().unwrap().value());
+        match PayOff::new(r) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
     }
 }

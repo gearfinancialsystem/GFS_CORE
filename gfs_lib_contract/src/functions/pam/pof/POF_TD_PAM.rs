@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 
@@ -10,6 +11,8 @@ use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -29,7 +32,7 @@ impl TraitPayOffFunction for POF_TD_PAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         let day_counter = day_counter.clone().expect("sould have day counter");
         let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be some");
         let price_at_termination_date = contract_terms.price_at_termination_date.as_ref().expect("priceAtTerminationDate should always exist");
@@ -44,7 +47,7 @@ impl TraitPayOffFunction for POF_TD_PAM {
             states
         );
         
-        settlement_currency_fx_rate *
+        let r = settlement_currency_fx_rate *
             contract_role.role_sign() *
             (price_at_termination_date.value() +
             accrued_interest.value() + 
@@ -58,7 +61,11 @@ impl TraitPayOffFunction for POF_TD_PAM {
                 time_adjuster.shift_sc(time)
             ) * nominal_interest_rate.value()
                 * notional_principal.value()
-            )
+            );
+        match PayOff::new(r) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
         
     }
 }

@@ -1,12 +1,12 @@
 use std::fmt::{Debug, Display};
 use std::error::Error;
 
-// Votre énumération d'erreur définie
+// Votre énumération d'error définie
 #[derive(Debug)]
 pub enum ContractError {
     MissingTerms,
     UnknownContractType,
-    Other(String),  // Ajouté pour gérer les messages d'erreur personnalisés
+    Other(String),  // Ajouté pour gérer les messages d'error personnalisés
 }
 
 impl Display for ContractError {

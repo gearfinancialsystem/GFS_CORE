@@ -2225,7 +2225,7 @@ pub struct ContractTerms {
 //
 //                 Ok(cm)
 //             },
-//             _ => Err("test erreur".to_string()),
+//             _ => Err("test error".to_string()),
 //         }
 //     }
 // }

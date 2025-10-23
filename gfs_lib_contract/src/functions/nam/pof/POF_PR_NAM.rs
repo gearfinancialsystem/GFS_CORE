@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::terms::grp_calendar::BusinessDayAdjuster::BusinessDayAdjuster;
 use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
@@ -8,6 +9,8 @@ use crate::states_space::StatesSpace::StatesSpace;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use gfs_lib_types::traits::TraitConvert::IsoDateTimeConvertTo;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -27,7 +30,7 @@ impl TraitPayOffFunction for POF_PR_NAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         day_counter: &Option<DayCountConvention>,
         time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         let day_counter = day_counter.clone().expect("sould have day counter");
         let contract_role = contract_terms.contract_role.clone().expect("contract role should always exist");
         let status_date = states.status_date.clone().expect("status date should always exist");
@@ -58,8 +61,12 @@ impl TraitPayOffFunction for POF_PR_NAM {
             states
         );
         
-        settlement_currency_fx_rate * 
+        let r = settlement_currency_fx_rate * 
             contract_role.role_sign() * 
-            notional_scaling_multiplier.value() * redemption
+            notional_scaling_multiplier.value() * redemption;
+        match PayOff::new(r) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
     }
 }

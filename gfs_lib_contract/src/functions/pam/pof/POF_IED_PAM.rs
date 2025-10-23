@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use gfs_lib_terms::non_terms::PayOff::PayOff;
 use crate::traits::TraitPayOffFunction::TraitPayOffFunction;
 use crate::attributes::ContractTerms::ContractTerms;
 use crate::states_space::StatesSpace::StatesSpace;
@@ -7,6 +8,8 @@ use gfs_lib_terms::terms::grp_interest::DayCountConvention::DayCountConvention;
 use gfs_lib_terms::phantom_terms::PhantomIsoDatetime::PhantomIsoDatetimeW;
 use gfs_lib_terms::traits::types_markers::TraitMarkerF64::TraitMarkerF64;
 use crate::attributes::RelatedContracts::RelatedContracts;
+use crate::error::error_types::ErrorPayOffComputation::ErrorPayOffComputation;
+use crate::error::ErrorContract::ErrorContractEnum;
 use crate::traits::TraitExternalData::TraitExternalData;
 
 #[allow(non_camel_case_types)]
@@ -27,7 +30,7 @@ impl TraitPayOffFunction for POF_IED_PAM {
         risk_factor_external_data: &Option<Arc<dyn TraitExternalData>>,
         _day_counter: &Option<DayCountConvention>,
         _time_adjuster: &BusinessDayAdjuster,
-    ) -> f64 {
+    ) -> Result<PayOff, ErrorContractEnum> {
         
         let contract_role = contract_terms.contract_role.as_ref().expect("contract role should always be Some");
         let notional_principal = contract_terms.notional_principal.as_ref().expect("notionalPrincipal should always be Some");
@@ -39,7 +42,10 @@ impl TraitPayOffFunction for POF_IED_PAM {
             time,
             states
         );
-        settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (notional_principal.value() + premium_discount.value())
-
+        let r = settlement_currency_fx_rate * contract_role.role_sign() * -1.0 * (notional_principal.value() + premium_discount.value());
+        match PayOff::new(r) {
+            Ok(v) => { Ok(v) },
+            Err(e) => {Err(ErrorContractEnum::ErrorPayOffComputation(ErrorPayOffComputation::ErrorTerms(e)))},
+        }
     }
 }
